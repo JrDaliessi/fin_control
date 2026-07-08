@@ -1,9 +1,10 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `FOUNDATION_DEFINED`
-- Fase atual: Dia 0 — Bootstrap operacional
+- Estado atual da máquina de estados: `CONTEXT_READY`
+- Fase atual: Dia 1 — Contexto, discovery e arquitetura
 - Data de bootstrap: 2026-07-08
+- Data de discovery inicial: 2026-07-08
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -44,6 +45,10 @@ Fora do escopo inicial:
 - A IA pode analisar, sugerir e alertar, mas não pode executar ação financeira sensível sem confirmação explícita do usuário.
 - O saldo disponível real deve considerar saldo, despesas futuras conhecidas, cartão, parcelas, contas vencidas e receitas previstas.
 - Compras parceladas devem impactar faturas futuras.
+- Compra no cartão de crédito não reduz saldo de conta bancária imediatamente; ela aumenta compromisso de fatura.
+- Pagamento de fatura reduz saldo da conta usada para pagamento.
+- Transações devem pertencer a um usuário autenticado.
+- Valores financeiros devem ser representados em centavos para evitar erro de ponto flutuante.
 - Assinaturas e recorrências devem ser tratadas como compromissos futuros.
 - Categorias devem permitir automação futura, mas o usuário deve poder revisar e corrigir classificações.
 - Dados financeiros são área crítica: autenticação, autorização, RLS, criptografia e auditoria devem ser tratados como requisitos de arquitetura.
@@ -91,13 +96,55 @@ src/
       domain/
       infrastructure/
       tests/
-    finance/
+    accounts/
+      presentation/
+      application/
+      domain/
+      infrastructure/
+      tests/
+
+    credit-cards/
+      presentation/
+      application/
+      domain/
+      infrastructure/
+      tests/
+
+    transactions/
+      presentation/
+      application/
+      domain/
+      infrastructure/
+      tests/
+
+    budgets/
+      presentation/
+      application/
+      domain/
+      infrastructure/
+      tests/
+
+    goals/
       presentation/
       application/
       domain/
       infrastructure/
       tests/
     dashboard/
+      presentation/
+      application/
+      domain/
+      infrastructure/
+      tests/
+
+    imports/
+      presentation/
+      application/
+      domain/
+      infrastructure/
+      tests/
+
+    ai-insights/
       presentation/
       application/
       domain/
@@ -151,6 +198,9 @@ src/
 - IA inicial deve ser analítica e assistiva, sem execução financeira autônoma.
 - A arquitetura deve ser pragmática, sem microserviços e sem abstrações prematuras.
 - O projeto deve operar por fases `dia 0` a `dia 7`, sem salto de fase.
+- A primeira small release funcional será cadastro manual de transação simples.
+- O setup técnico executável com Next.js, Tailwind, Jest, Supabase clients e PWA é pré-requisito operacional do Dia 2 antes da criação dos testes.
+- Features financeiras serão separadas por domínio (`accounts`, `credit-cards`, `transactions`, `budgets`, `goals`) para evitar uma feature genérica `finance` inchada.
 
 ## Features Planejadas
 - Auth
@@ -168,6 +218,93 @@ src/
 - Assinaturas e recorrências
 - Calendário financeiro
 - Open Finance
+
+## Módulos do MVP
+
+### Auth
+Responsável por autenticação, leitura segura de sessão, proteção de rotas privadas e vínculo entre usuário e dados financeiros.
+
+### Accounts
+Responsável por contas financeiras manuais, saldo inicial, saldo atual calculado e conta usada para pagamento de faturas.
+
+### Credit Cards
+Responsável por cartões de crédito, limite, vencimento, fechamento, faturas e compras parceladas.
+
+### Transactions
+Responsável por receitas, despesas, transferências, transações no cartão e transações recorrentes.
+
+### Budgets
+Responsável por orçamento mensal por categoria, acompanhamento de consumo e alertas de estouro.
+
+### Goals
+Responsável por metas/envelopes como emergência, aluguel, dívidas, viagem e investimentos.
+
+### Dashboard
+Responsável por consolidar saldo real, gastos do mês, faturas, próximas contas e risco financeiro.
+
+### Imports
+Responsável por importação futura de CSV, OFX e extratos. Não deve integrar Open Finance no MVP inicial.
+
+### AI Insights
+Responsável por análises, explicações, categorizações sugeridas, simulações e planos financeiros. Não executa ações sensíveis.
+
+## Domínio Inicial
+
+Entidades iniciais:
+- `UserProfile`
+- `FinancialAccount`
+- `CreditCard`
+- `Category`
+- `Transaction`
+- `InstallmentPlan`
+- `CreditCardInvoice`
+- `Budget`
+- `GoalEnvelope`
+- `RecurringCommitment`
+
+Value objects iniciais:
+- `Money`
+- `MonthRef`
+- `DateRange`
+- `DueDate`
+- `TransactionType`
+- `PaymentMethod`
+
+Casos de uso candidatos:
+- cadastrar conta financeira
+- cadastrar categoria
+- registrar transação manual
+- listar resumo mensal
+- calcular saldo disponível real
+- registrar compra no cartão
+- projetar parcelas futuras
+- criar orçamento mensal por categoria
+- simular compra futura
+- gerar análise financeira textual
+
+## Primeira Small Release Selecionada
+
+Small release: cadastro manual de transação simples.
+
+Escopo mínimo:
+- criar transação de receita ou despesa
+- validar descrição, valor, data, tipo, conta e categoria
+- persistir por contrato de repositório
+- permitir resumo mensal básico em caso de uso separado
+
+Fora do escopo desta small release:
+- cartão de crédito
+- parcelas
+- importação
+- IA
+- relatórios avançados
+- Open Finance
+
+Critério de pronto futuro:
+- testes de domínio e aplicação criados no Dia 2
+- implementação mínima no Dia 3
+- UI essencial apenas depois de testes essenciais
+- sem acesso direto da UI ao Supabase
 
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
@@ -203,7 +340,6 @@ src/
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
 
 ## Pendências e Próximos Passos
-- Confirmar Dia 0 concluído após validação dos artefatos.
-- Executar Dia 1 para discovery, arquitetura detalhada, domínio e backlog refinado.
-- Definir primeira small release candidata antes de qualquer implementação funcional.
-
+- Dia 1 concluído com contexto, domínio inicial, módulos e primeira small release definidos.
+- Executar Dia 2 para preparar setup técnico mínimo e criar testes essenciais da small release de transações.
+- Não iniciar implementação funcional antes dos testes essenciais.
