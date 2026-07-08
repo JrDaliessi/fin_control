@@ -2,6 +2,41 @@
 
 ## Comandos Executados
 
+## Dia 3
+
+### `npm run test:ci`
+Resultado: passou.
+
+Evidência:
+- 2 suites passaram.
+- 11 testes passaram.
+
+### `npm run type-check`
+Resultado: passou.
+
+### `npm run lint`
+Resultado: passou.
+
+### `npm audit --omit=dev`
+Resultado: passou.
+
+Evidência:
+- 0 vulnerabilidades.
+
+### `npm audit`
+Resultado: passou.
+
+Evidência:
+- 0 vulnerabilidades.
+
+### `npm run build`
+Resultado: passou.
+
+Evidência:
+- Next.js compilou e gerou rota `/` e `_not-found`.
+
+## Dia 2
+
 ### `npm audit --omit=dev`
 Resultado: passou.
 
@@ -42,4 +77,3 @@ Motivo:
 Interpretação:
 - Estado vermelho confirmado.
 - O próximo passo é implementar o mínimo necessário no Dia 3.
-

@@ -2,21 +2,21 @@
 
 ## READY
 
-### SR-003 — Implementar criação de transação manual
+### SR-004 — Expansão controlada da transação manual
 - Tipo: Small Release
-- Descrição: Implementar o mínimo necessário para satisfazer os testes de criação de transação manual.
-- Objetivo de negócio: permitir primeiro registro financeiro confiável.
-- Valor esperado: criar a base funcional para relatórios, dashboard e IA futura.
+- Descrição: Adicionar composição inicial de apresentação para transação manual, com estados essenciais de interação quando aplicável.
+- Objetivo de negócio: tornar o fluxo mínimo utilizável sem mover regra de negócio para a UI.
+- Valor esperado: preparar a feature para uso real e para futuras telas de dashboard.
 - Prioridade: Alta
-- Dependências: SR-002
+- Dependências: SR-003
 - Risco: Médio
-- Fase recomendada: Dia 3
-- Critério de pronto: testes principais passando, caso de uso implementado e sem dependência direta de UI com infraestrutura.
+- Fase recomendada: Dia 4
+- Critério de pronto: UI essencial ou composição de apresentação sem acesso direto ao Supabase; estados de erro/sucesso/loading definidos conforme aplicável.
 - Status: READY
 
 ## DISCOVERY
 
-### SR-004 — Resumo mensal básico
+### SR-005 — Resumo mensal básico
 - Tipo: Small Release
 - Descrição: Calcular total de receitas, despesas e saldo líquido por mês a partir das transações.
 - Objetivo de negócio: responder "para onde meu dinheiro está indo?" em versão inicial.
@@ -28,16 +28,28 @@
 - Critério de pronto: caso de uso testado e cálculo mensal validado.
 - Status: DISCOVERY
 
-### SR-005 — Dashboard financeiro inicial
+### SR-006 — Dashboard financeiro inicial
 - Tipo: Small Release
 - Descrição: Exibir resumo mensal básico, saldo líquido e alertas simples a partir dos casos de uso existentes.
 - Objetivo de negócio: entregar primeira tela útil do produto.
 - Valor esperado: tornar o controle financeiro visível para o usuário.
 - Prioridade: Alta
-- Dependências: SR-004
+- Dependências: SR-005
 - Risco: Médio
 - Fase recomendada: Dia 4
 - Critério de pronto: estados principais de UI definidos e sem regra de negócio na apresentação.
+- Status: DISCOVERY
+
+### SR-007 — Cadastro de conta financeira
+- Tipo: Small Release
+- Descrição: Criar fluxo mínimo para cadastrar conta financeira manual.
+- Objetivo de negócio: permitir que transações referenciem contas reais do usuário em vez de IDs de teste.
+- Valor esperado: preparar uso real do registro de transações.
+- Prioridade: Alta
+- Dependências: SR-004
+- Risco: Médio
+- Fase recomendada: ciclo futuro
+- Critério de pronto: domínio, caso de uso e testes de conta criados antes da implementação.
 - Status: DISCOVERY
 
 ### Modelar cartão, fatura e parcelas
@@ -94,7 +106,7 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
-Nenhuma dívida técnica registrada no Dia 1.
+Nenhuma dívida técnica aberta no Dia 3.
 
 ## DONE
 
@@ -102,3 +114,4 @@ Nenhuma dívida técnica registrada no Dia 1.
 - Discovery inicial, módulos do MVP e primeira small release selecionados.
 - SR-001 — Setup técnico mínimo executável.
 - SR-002 — Testes da criação de transação manual.
+- SR-003 — Implementar criação de transação manual.

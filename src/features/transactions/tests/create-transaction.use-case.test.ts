@@ -21,7 +21,7 @@ class TransactionRepositoryStub implements TransactionRepository {
     updatedAt: new Date("2026-07-08T12:01:00.000Z")
   }));
 
-  findByMonth = jest.fn();
+  findByMonth = jest.fn(async (): Promise<Transaction[]> => []);
 }
 
 describe("CreateTransactionUseCase", () => {
