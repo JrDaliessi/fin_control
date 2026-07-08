@@ -2,32 +2,6 @@
 
 ## READY
 
-### SR-001 — Setup técnico mínimo executável
-- Tipo: Hardening
-- Descrição: Criar base Next.js, TypeScript, Tailwind, Jest, Testing Library, Supabase clients e PWA mínimo para permitir testes e implementação incremental.
-- Objetivo de negócio: habilitar desenvolvimento validável do MVP.
-- Valor esperado: permitir TDD real antes de código funcional.
-- Prioridade: Alta
-- Dependências: Dia 1 concluído
-- Risco: Médio
-- Fase recomendada: Dia 2
-- Critério de pronto: scripts de test, lint, type-check e build definidos; Jest executável; estrutura base preparada sem feature funcional.
-- Status: READY
-
-### SR-002 — Testes da criação de transação manual
-- Tipo: Small Release
-- Descrição: Criar testes essenciais de domínio e aplicação para registrar receita ou despesa manual.
-- Objetivo de negócio: validar o núcleo do controle financeiro antes de UI e integrações.
-- Valor esperado: garantir que transações tenham regras claras e testáveis.
-- Prioridade: Alta
-- Dependências: SR-001
-- Risco: Médio
-- Fase recomendada: Dia 2
-- Critério de pronto: testes de cenário feliz e cenários críticos criados e inicialmente falhando.
-- Status: READY
-
-## DISCOVERY
-
 ### SR-003 — Implementar criação de transação manual
 - Tipo: Small Release
 - Descrição: Implementar o mínimo necessário para satisfazer os testes de criação de transação manual.
@@ -38,7 +12,9 @@
 - Risco: Médio
 - Fase recomendada: Dia 3
 - Critério de pronto: testes principais passando, caso de uso implementado e sem dependência direta de UI com infraestrutura.
-- Status: DISCOVERY
+- Status: READY
+
+## DISCOVERY
 
 ### SR-004 — Resumo mensal básico
 - Tipo: Small Release
@@ -124,3 +100,5 @@ Nenhuma dívida técnica registrada no Dia 1.
 
 - Bootstrap operacional do projeto.
 - Discovery inicial, módulos do MVP e primeira small release selecionados.
+- SR-001 — Setup técnico mínimo executável.
+- SR-002 — Testes da criação de transação manual.
