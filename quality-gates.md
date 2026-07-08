@@ -6,6 +6,16 @@
 - Fase atual e próximo passo estão documentados.
 - Bloqueios e riscos estão registrados.
 
+## Gate do Dia 1
+- Visão do produto refinada.
+- Escopo inicial validado.
+- Módulos do MVP definidos.
+- Domínio inicial documentado.
+- Contratos principais entre camadas mapeados.
+- Primeira small release selecionada.
+- Backlog fatiado em small releases.
+- Dependências críticas e bloqueios documentados.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.
@@ -49,4 +59,3 @@ Uma release incremental só pode ser considerada pronta quando:
 - riscos remanescentes foram documentados
 - backlog foi atualizado
 - próximo passo está claro
-
