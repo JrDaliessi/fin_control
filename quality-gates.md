@@ -82,6 +82,20 @@
 - Audit sem vulnerabilidades conhecidas.
 - Limitação de verificação visual pelo navegador integrado documentada.
 
+## Gate do Dia 7
+- Testes validados e documentados.
+- Type-check validado e documentado.
+- Lint validado e documentado.
+- Audit validado e documentado.
+- Build validado e documentado.
+- Revisão básica de segurança executada.
+- Segredos versionáveis verificados.
+- Fronteiras arquiteturais críticas verificadas.
+- Baseline de observabilidade definido.
+- Riscos residuais documentados.
+- Release incremental preparada.
+- Estado final definido como `READY_FOR_RELEASE`.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.

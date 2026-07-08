@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 — Experiência, acessibilidade e PWA concluído
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 — Qualidade final, segurança, observabilidade e entrega concluído
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -10,6 +10,7 @@
 - Data da expansão controlada inicial: 2026-07-08
 - Data do hardening interno inicial: 2026-07-08
 - Data da revisão de UX, acessibilidade e PWA inicial: 2026-07-08
+- Data da validação final e preparação de release inicial: 2026-07-08
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -490,6 +491,42 @@ Resultado dos gates:
 - `npm audit`: passou, 0 vulnerabilidades
 - `npm run build`: passou
 
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega
+
+Pipeline final executado:
+- `npm run test:ci`: passou, 5 suites e 32 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm audit`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
+Revisão básica de segurança:
+- somente `.env.example` está versionado entre os arquivos de ambiente
+- `.env`, `.env.local`, `.env.production` e `.env.development` estão ignorados pelo Git
+- `.env.example` contém placeholders vazios
+- nenhum acesso Supabase foi encontrado em `src/features/transactions/presentation` ou `src/app`
+- nenhum uso de `any` foi encontrado em `src` ou `tests`
+- nenhum segredo real foi identificado nos arquivos versionáveis verificados; o único match sensível é `SUPABASE_SERVICE_ROLE_KEY=` vazio em `.env.example`
+- clients Supabase usam `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`; `service role` não é usado no código
+
+Riscos residuais documentados:
+- autenticação real, autorização e RLS ainda não foram implementados para dados financeiros reais
+- fluxo atual usa dados demo/locais de sessão e não deve ser tratado como produção com usuários reais
+- observabilidade de runtime ainda não possui ferramenta externa dedicada
+- deploy real não foi executado nesta fase
+
+Baseline de observabilidade:
+- logs de build, lint, type-check, testes e audit são a evidência mínima de release
+- falhas de ambiente Supabase disparam erro explícito de variável ausente
+- próximos ciclos devem adicionar captura estruturada de erros de UI e eventos mínimos de produto quando houver persistência real
+- eventos candidatos futuros: `transaction_create_attempt`, `transaction_create_success`, `transaction_create_failure`
+
+Preparação de release incremental:
+- release candidata: cadastro manual de transação simples com UI acessível, sem persistência real
+- escopo liberável: fluxo local de registro manual, validações, estados de formulário e lista da sessão
+- fora da release: autenticação real, RLS, persistência real, contas reais, dashboard completo, IA, importação e Open Finance
+- estado final: `READY_FOR_RELEASE`
+
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
 - Dia 2: definir matriz de testes e criar testes essenciais da primeira small release.
@@ -517,6 +554,7 @@ Resultado dos gates:
 - Catálogo mínimo de agents e skills criado.
 - Hardening interno do Dia 5 concluído com gates verdes.
 - Revisão de UX, acessibilidade e PWA do Dia 6 concluída com gates verdes.
+- Validação final do Dia 7 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
@@ -527,6 +565,6 @@ Resultado dos gates:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 6 concluído com revisão de UX, acessibilidade, responsividade e PWA.
-- Executar Dia 7 para qualidade final, segurança, observabilidade e preparação de release incremental.
+- Dia 7 concluído com qualidade final, segurança básica, observabilidade e preparação de release incremental.
+- Próximo passo recomendado: selecionar e refinar a próxima small release do backlog, provavelmente `SR-005 — Resumo mensal básico`.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

@@ -2,6 +2,43 @@
 
 ## Comandos Executados
 
+## Dia 7
+
+### `npm run test:ci`
+Resultado: passou.
+
+Evidência:
+- 5 suites passaram.
+- 32 testes passaram.
+
+### `npm run type-check`
+Resultado: passou.
+
+### `npm run lint`
+Resultado: passou.
+
+### `npm audit`
+Resultado: passou.
+
+Evidência:
+- 0 vulnerabilidades.
+
+### `npm run build`
+Resultado: passou.
+
+Evidência:
+- Next.js compilou a rota `/` com a página de transações.
+
+### Revisão de segurança local
+Resultado: passou com riscos residuais documentados.
+
+Evidência:
+- apenas `.env.example` está versionado entre arquivos de ambiente
+- `.env` reais estão ignorados pelo Git
+- presentation e App Router não acessam Supabase diretamente
+- nenhum `any` encontrado em `src` ou `tests`
+- nenhum segredo real identificado nos arquivos versionáveis verificados
+
 ## Dia 6
 
 ### `npm run test:ci`
