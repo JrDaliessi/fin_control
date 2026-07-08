@@ -2,11 +2,17 @@
   "name": "Controle Financeiro IA",
   "short_name": "Financas IA",
   "description": "Copiloto financeiro pessoal com IA.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "browser"],
   "background_color": "#f8fafc",
   "theme_color": "#0f766e",
+  "orientation": "portrait-primary",
   "lang": "pt-BR",
+  "categories": ["finance", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon.svg",
@@ -16,4 +22,3 @@
     }
   ]
 }
-

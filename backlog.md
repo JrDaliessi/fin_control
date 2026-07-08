@@ -96,7 +96,7 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
-Nenhuma dívida técnica aberta no Dia 5.
+Nenhuma dívida técnica aberta no Dia 6.
 
 ## DONE
 
@@ -107,3 +107,4 @@ Nenhuma dívida técnica aberta no Dia 5.
 - SR-003 — Implementar criação de transação manual.
 - SR-004 — Expansão controlada da transação manual.
 - HD-001 — Hardening interno da transação manual.
+- UX-001 — Revisão de UX, acessibilidade e PWA da transação manual.

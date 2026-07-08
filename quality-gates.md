@@ -66,6 +66,22 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para nova feature de negócio.
 
+## Gate do Dia 6
+- Layout mobile first revisado.
+- Campos principais têm labels acessíveis.
+- Campos obrigatórios usam semântica nativa.
+- Erros de formulário usam `aria-invalid` e mensagens anunciáveis.
+- Estados de sucesso e erro usam roles apropriadas.
+- Região de lançamentos está semanticamente nomeada.
+- Manifest PWA revisado e servido localmente.
+- Offline não foi prometido sem estratégia real.
+- Testes passando.
+- Type-check passando.
+- Lint passando.
+- Build passando.
+- Audit sem vulnerabilidades conhecidas.
+- Limitação de verificação visual pelo navegador integrado documentada.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.

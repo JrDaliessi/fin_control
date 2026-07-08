@@ -62,13 +62,13 @@ describe("TransactionForm", () => {
       submittedInput = input;
     });
 
-    await user.type(screen.getByLabelText("Descricao"), "Mercado");
+    await user.type(screen.getByLabelText("Descrição"), "Mercado");
     await user.type(screen.getByLabelText("Valor"), "125,50");
     await user.selectOptions(screen.getByLabelText("Tipo"), "expense");
     await user.selectOptions(screen.getByLabelText("Conta"), "account-1");
     await user.selectOptions(screen.getByLabelText("Categoria"), "category-1");
     await user.type(screen.getByLabelText("Data"), "2026-07-08");
-    await user.click(screen.getByRole("button", { name: "Registrar transacao" }));
+    await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
     await waitFor(() => {
       expect(submittedInput).toEqual({
@@ -91,35 +91,39 @@ describe("TransactionForm", () => {
       });
     const { user } = renderTransactionForm(onSubmit);
 
-    await user.type(screen.getByLabelText("Descricao"), "Salario");
+    await user.type(screen.getByLabelText("Descrição"), "Salario");
     await user.type(screen.getByLabelText("Valor"), "3100");
     await user.selectOptions(screen.getByLabelText("Tipo"), "income");
     await user.type(screen.getByLabelText("Data"), "2026-07-08");
-    await user.click(screen.getByRole("button", { name: "Registrar transacao" }));
+    await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
     const submitButton = screen.getByRole("button", { name: "Salvando..." });
     expect((submitButton as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole("form", { name: "Registro manual de transação" })).toHaveAttribute(
+      "aria-busy",
+      "true"
+    );
 
     resolveSubmit();
 
     expect(
-      await screen.findByText("Transacao registrada com sucesso.")
+      await screen.findByText("Transação registrada com sucesso.")
     ).not.toBeNull();
   });
 
   it("shows an error state when creation fails", async () => {
     const { user } = renderTransactionForm(
       async () => {
-        throw new Error("Falha ao registrar transacao");
+        throw new Error("Falha ao registrar transação");
       }
     );
 
-    await user.type(screen.getByLabelText("Descricao"), "Mercado");
+    await user.type(screen.getByLabelText("Descrição"), "Mercado");
     await user.type(screen.getByLabelText("Valor"), "125,50");
     await user.type(screen.getByLabelText("Data"), "2026-07-08");
-    await user.click(screen.getByRole("button", { name: "Registrar transacao" }));
+    await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
-    expect(await screen.findByText("Falha ao registrar transacao")).not.toBeNull();
+    expect(await screen.findByText("Falha ao registrar transação")).not.toBeNull();
   });
 
   it("keeps invalid form data in the presentation layer and does not submit", async () => {
@@ -128,12 +132,26 @@ describe("TransactionForm", () => {
       submitCount += 1;
     });
 
-    await user.type(screen.getByLabelText("Descricao"), "Mercado");
-    await user.type(screen.getByLabelText("Valor"), "0");
+    const amountInput = screen.getByLabelText("Valor");
+
+    await user.type(screen.getByLabelText("Descrição"), "Mercado");
+    await user.type(amountInput, "0");
     await user.type(screen.getByLabelText("Data"), "2026-07-08");
-    await user.click(screen.getByRole("button", { name: "Registrar transacao" }));
+    await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
     expect(await screen.findByText("Informe um valor maior que zero.")).not.toBeNull();
+    expect(amountInput).toHaveAttribute("aria-invalid", "true");
     expect(submitCount).toBe(0);
+  });
+
+  it("exposes required fields and helper text to assistive technology", () => {
+    renderTransactionForm();
+
+    expect(screen.getByRole("form", { name: "Registro manual de transação" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Descrição")).toBeRequired();
+    expect(screen.getByLabelText("Valor")).toHaveAccessibleDescription(
+      "Use reais com vírgula ou ponto, por exemplo 125,50."
+    );
+    expect(screen.getByLabelText("Data")).toBeRequired();
   });
 });
