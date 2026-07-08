@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { CreateTransactionInput } from "../domain/entities/transaction.entity";
 import { TransactionForm } from "../presentation/components/TransactionForm";
+import { parseTransactionAmountToCents } from "../presentation/utils/parseTransactionAmountToCents";
 
 const accountOptions = [
   {
@@ -37,6 +38,24 @@ function renderTransactionForm(onSubmit: OnCreateTransaction = async () => undef
 }
 
 describe("TransactionForm", () => {
+  describe("parseTransactionAmountToCents", () => {
+    it.each([
+      ["125,50", 12550],
+      ["125.50", 12550],
+      ["1.234,56", 123456],
+      ["3100", 310000]
+    ])("parses %s to cents", (input, expectedAmountInCents) => {
+      expect(parseTransactionAmountToCents(input)).toBe(expectedAmountInCents);
+    });
+
+    it.each(["", "abc", "12,345", "1.2.3"])(
+      "rejects invalid amount input %s",
+      (input) => {
+        expect(parseTransactionAmountToCents(input)).toBeNull();
+      }
+    );
+  });
+
   it("submits a valid manual expense transaction", async () => {
     let submittedInput: CreateTransactionInput | null = null;
     const { user } = renderTransactionForm(async (input) => {

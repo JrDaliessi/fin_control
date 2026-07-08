@@ -2,17 +2,7 @@
 
 ## READY
 
-### HD-001 — Hardening interno da transação manual
-- Tipo: Hardening
-- Descrição: Revisar consistência, acoplamento, tamanho dos arquivos, estados da UI e fronteiras entre presentation, application e domain.
-- Objetivo de negócio: estabilizar o primeiro fluxo funcional antes de novas expansões.
-- Valor esperado: reduzir entropia e preparar evolução segura.
-- Prioridade: Alta
-- Dependências: SR-004
-- Risco: Médio
-- Fase recomendada: Dia 5
-- Critério de pronto: plano de refatoração documentado, ajustes estruturais necessários aplicados e gates verdes.
-- Status: READY
+Nenhum item pronto no momento.
 
 ## DISCOVERY
 
@@ -106,7 +96,7 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
-Nenhuma dívida técnica aberta no Dia 3.
+Nenhuma dívida técnica aberta no Dia 5.
 
 ## DONE
 
@@ -116,3 +106,4 @@ Nenhuma dívida técnica aberta no Dia 3.
 - SR-002 — Testes da criação de transação manual.
 - SR-003 — Implementar criação de transação manual.
 - SR-004 — Expansão controlada da transação manual.
+- HD-001 — Hardening interno da transação manual.

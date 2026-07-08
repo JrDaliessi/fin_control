@@ -17,6 +17,7 @@ const invalidCases: Array<[string, TransactionInputPatch, string]> = [
   ["empty description", { description: "" }, "description"],
   ["zero amount", { amountInCents: 0 }, "amount"],
   ["negative amount", { amountInCents: -1 }, "amount"],
+  ["decimal amount", { amountInCents: 125.5 }, "amount"],
   ["missing user", { userId: "" }, "user"],
   ["missing account", { accountId: "" }, "account"],
   ["missing category", { categoryId: "" }, "category"]
@@ -51,5 +52,29 @@ describe("Transaction", () => {
     expect(() => Transaction.create({ ...baseInput, ...patch })).toThrow(
       expectedMessage
     );
+  });
+
+  it("normalizes identifiers and description", () => {
+    const transaction = Transaction.create({
+      ...baseInput,
+      userId: " user-1 ",
+      accountId: " account-1 ",
+      categoryId: " category-1 ",
+      description: " Mercado "
+    });
+
+    expect(transaction.userId).toBe("user-1");
+    expect(transaction.accountId).toBe("account-1");
+    expect(transaction.categoryId).toBe("category-1");
+    expect(transaction.description).toBe("Mercado");
+  });
+
+  it("rejects invalid payment method", () => {
+    expect(() =>
+      Transaction.create({
+        ...baseInput,
+        paymentMethod: "credit-card" as never
+      })
+    ).toThrow("payment method");
   });
 });

@@ -2,6 +2,33 @@
 
 ## Comandos Executados
 
+## Dia 5
+
+### `npm run test:ci`
+Resultado: passou.
+
+Evidência:
+- 4 suites passaram.
+- 30 testes passaram.
+
+### `npm run type-check`
+Resultado: passou.
+
+### `npm run lint`
+Resultado: passou.
+
+### `npm audit`
+Resultado: passou.
+
+Evidência:
+- 0 vulnerabilidades.
+
+### `npm run build`
+Resultado: passou.
+
+Evidência:
+- Next.js compilou a rota `/` com a página de transações.
+
 ## Dia 4
 
 ### `npm run test:ci`
