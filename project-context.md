@@ -1,11 +1,12 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 — Estratégia de testes e fundação TDD
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 — Implementação mínima orientada por teste
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
+- Data da implementação mínima inicial: 2026-07-08
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -336,6 +337,32 @@ Implementação bloqueada até o Dia 3:
 - `src/features/transactions/domain/interfaces/transaction.repository.ts`
 - `src/features/transactions/application/use-cases/create-transaction.use-case.ts`
 
+## Dia 3 — Implementação Mínima
+
+Implementação criada:
+- `src/features/transactions/domain/entities/transaction.entity.ts`
+- `src/features/transactions/domain/interfaces/transaction.repository.ts`
+- `src/features/transactions/application/use-cases/create-transaction.use-case.ts`
+
+Escopo entregue:
+- entidade `Transaction` com validação de usuário, conta, categoria, descrição, valor em centavos, tipo e data
+- contrato `TransactionRepository`
+- caso de uso `CreateTransactionUseCase` persistindo apenas por contrato injetado
+- nenhum acesso direto da UI ao Supabase
+- nenhuma migration real
+- nenhuma expansão para cartão, parcelas, dashboard, IA, importação ou Open Finance
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 2 suites e 11 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm audit`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
+Risco tratado:
+- `.env.example` foi restaurado para placeholders após detecção de valores reais. Arquivos `.env` reais foram reforçados no `.gitignore`.
+
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
 - Dia 2: definir matriz de testes e criar testes essenciais da primeira small release.
@@ -368,8 +395,9 @@ Implementação bloqueada até o Dia 3:
 - Erro: acessar Supabase pela camada visual. Prevenção: usar repositórios em `infrastructure`.
 - Erro: expandir escopo por conveniência. Prevenção: registrar item no backlog antes de executar.
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
+- Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 2 concluído com setup técnico mínimo, matriz de testes e testes essenciais criados.
-- Executar Dia 3 para implementar o mínimo necessário e fazer os testes de transação passarem.
-- Manter fora do escopo do Dia 3: cartão, parcelas, dashboard completo, IA, importação e Open Finance.
+- Dia 3 concluído com implementação mínima da criação manual de transação.
+- Executar Dia 4 para expansão controlada da feature, incluindo composição inicial de UI e estados de interação quando aplicável.
+- Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

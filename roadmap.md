@@ -53,7 +53,7 @@ Resultado:
 
 ## Marco 3 — Primeira Small Release Funcional
 Fases: Dia 3 e Dia 4
-Status: próximo.
+Status: em andamento.
 
 Candidatas:
 - cadastro manual de transação simples
@@ -63,10 +63,15 @@ Candidatas:
 
 Ordem recomendada:
 1. cadastro manual de transação simples
-2. resumo mensal básico
-3. cadastro de conta financeira
-4. dashboard financeiro inicial
-5. compra parcelada no cartão
+2. expansão controlada da transação manual
+3. resumo mensal básico
+4. cadastro de conta financeira
+5. dashboard financeiro inicial
+6. compra parcelada no cartão
+
+Resultado parcial:
+- Dia 3 implementou `Transaction`, `TransactionRepository` e `CreateTransactionUseCase`.
+- Testes, type-check, lint, audit e build passaram.
 
 ## Marco 4 — Hardening e Experiência
 Fases: Dia 5 e Dia 6

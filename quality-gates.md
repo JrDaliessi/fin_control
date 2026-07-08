@@ -28,6 +28,18 @@
 - Audit sem vulnerabilidades conhecidas.
 - Implementação funcional segue bloqueada até Dia 3.
 
+## Gate do Dia 3
+- Código mínimo funcional implementado.
+- Entidade de domínio criada sem dependência de framework.
+- Caso de uso criado sem dependência de UI.
+- Persistência acessada apenas por contrato.
+- Testes principais passando.
+- Type-check passando.
+- Lint passando.
+- Build passando.
+- Audit sem vulnerabilidades conhecidas.
+- Escopo não expandido para módulos fora da small release.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.
