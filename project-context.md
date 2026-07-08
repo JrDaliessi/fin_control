@@ -1,14 +1,15 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 — Refatoração, consistência e hardening interno concluído
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 — Experiência, acessibilidade e PWA concluído
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
 - Data da implementação mínima inicial: 2026-07-08
 - Data da expansão controlada inicial: 2026-07-08
 - Data do hardening interno inicial: 2026-07-08
+- Data da revisão de UX, acessibilidade e PWA inicial: 2026-07-08
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -439,6 +440,56 @@ Resultado dos gates:
 - `npm audit`: passou, 0 vulnerabilidades
 - `npm run build`: passou
 
+## Dia 6 — Experiência, Acessibilidade e PWA
+
+Melhorias aplicadas:
+- labels da interface revisados para português correto com acentuação
+- formulário recebeu nome acessível via `aria-label`
+- formulário expõe `aria-busy` durante envio
+- campos obrigatórios receberam `required`
+- campos com erro recebem `aria-invalid`
+- campo de valor recebeu descrição acessível com formato esperado
+- mensagens de sucesso e erro usam `role="status"` e `role="alert"`
+- seção de lançamentos recebeu região acessível nomeada
+- empty state recebeu `role="status"`
+- foco visível reforçado em campos e botão
+- layout refinado para mobile first, com largura estável e sem depender de textos grandes
+- lista de transações ajustada para quebrar melhor em telas pequenas
+- metadata PWA ampliada com app name, ícones e viewport theme color
+- manifest PWA ampliado com `id`, `scope`, `display_override`, `orientation`, categorias e `prefer_related_applications`
+
+Implementação criada ou alterada:
+- `src/features/transactions/presentation/components/TransactionForm.tsx`
+- `src/features/transactions/presentation/hooks/useTransactionForm.ts`
+- `src/features/transactions/presentation/pages/TransactionsPage.tsx`
+- `src/features/transactions/tests/TransactionForm.test.tsx`
+- `src/features/transactions/tests/TransactionsPage.test.tsx`
+- `src/app/layout.tsx`
+- `public/manifest.webmanifest`
+- `tests/setupTests.ts`
+
+Validação de acessibilidade mínima:
+- testes de apresentação cobrem nome acessível do formulário
+- testes cobrem campos obrigatórios
+- testes cobrem descrição acessível do campo de valor
+- testes cobrem erro por campo com `aria-invalid`
+- testes cobrem landmarks da página e região de lançamentos
+
+Validação PWA:
+- `public/manifest.webmanifest` servido localmente com status 200
+- rota `/` servida localmente com status 200
+- offline não foi prometido nem implementado nesta fase
+
+Limitação registrada:
+- a tentativa de verificação interativa pelo navegador integrado travou em timeout ao navegar para `localhost`; a validação visual foi substituída por testes automatizados, build e verificação HTTP local.
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 5 suites e 32 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm audit`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
 - Dia 2: definir matriz de testes e criar testes essenciais da primeira small release.
@@ -465,6 +516,7 @@ Resultado dos gates:
 - Workflows do Dia 0 ao Dia 7 criados.
 - Catálogo mínimo de agents e skills criado.
 - Hardening interno do Dia 5 concluído com gates verdes.
+- Revisão de UX, acessibilidade e PWA do Dia 6 concluída com gates verdes.
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
@@ -475,6 +527,6 @@ Resultado dos gates:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 5 concluído com refatoração, consistência e hardening interno da transação manual.
-- Executar Dia 6 para revisar UX, acessibilidade, responsividade e PWA.
+- Dia 6 concluído com revisão de UX, acessibilidade, responsividade e PWA.
+- Executar Dia 7 para qualidade final, segurança, observabilidade e preparação de release incremental.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

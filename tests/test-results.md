@@ -2,6 +2,41 @@
 
 ## Comandos Executados
 
+## Dia 6
+
+### `npm run test:ci`
+Resultado: passou.
+
+Evidência:
+- 5 suites passaram.
+- 32 testes passaram.
+
+### `npm run type-check`
+Resultado: passou.
+
+### `npm run lint`
+Resultado: passou.
+
+### `npm audit`
+Resultado: passou.
+
+Evidência:
+- 0 vulnerabilidades.
+
+### `npm run build`
+Resultado: passou.
+
+Evidência:
+- Next.js compilou a rota `/` com a página de transações.
+
+### Verificação HTTP local
+Resultado: passou parcialmente.
+
+Evidência:
+- `http://localhost:3000/` respondeu com status 200.
+- `http://localhost:3000/manifest.webmanifest` respondeu com status 200.
+- Navegação pelo navegador integrado travou em timeout e não foi usada como evidência final.
+
 ## Dia 5
 
 ### `npm run test:ci`
