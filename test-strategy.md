@@ -16,7 +16,7 @@ Definir a estratégia de testes antes da implementação funcional da primeira s
 | domain | `Transaction` | criar receita/despesa válida; rejeitar descrição vazia; rejeitar valor zero/negativo; rejeitar usuário/conta/categoria ausente | testes criados |
 | application | `CreateTransactionUseCase` | validar entrada; persistir via contrato; não persistir entrada inválida; propagar erro de repositório | testes criados |
 | infrastructure | `SupabaseTransactionRepository` | mapear dados e respeitar `user_id` | futuro |
-| presentation | `TransactionForm` | estados de erro, submit e loading | futuro |
+| presentation | `TransactionForm` | estados de erro, submit, loading e sucesso | testes criados |
 
 ## Cenário Feliz
 Usuário autenticado registra uma despesa manual com descrição, valor em centavos, data, conta e categoria. O sistema valida os dados, chama o repositório por contrato e retorna a transação criada.
@@ -40,4 +40,3 @@ Usuário autenticado registra uma despesa manual com descrição, valor em centa
 - testes essenciais existem
 - testes falham antes da implementação
 - implementação funcional permanece bloqueada até Dia 3
-

@@ -2,11 +2,12 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 — Implementação mínima orientada por teste
+- Fase atual: Dia 4 — Expansão controlada da feature
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
 - Data da implementação mínima inicial: 2026-07-08
+- Data da expansão controlada inicial: 2026-07-08
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -363,6 +364,36 @@ Resultado dos gates:
 Risco tratado:
 - `.env.example` foi restaurado para placeholders após detecção de valores reais. Arquivos `.env` reais foram reforçados no `.gitignore`.
 
+## Dia 4 — Expansão Controlada
+
+Implementação criada:
+- `src/features/transactions/presentation/hooks/useTransactionForm.ts`
+- `src/features/transactions/presentation/components/TransactionForm.tsx`
+- `src/features/transactions/presentation/pages/TransactionsPage.tsx`
+- `src/features/transactions/tests/TransactionForm.test.tsx`
+- `src/app/page.tsx` como composição da página de entrada
+
+Escopo entregue:
+- formulário manual de transação com campos de descrição, valor, tipo, conta, categoria e data
+- estados de `idle`, `loading`, `success` e `error`
+- validação leve de apresentação para valor, descrição, conta, categoria e data
+- conversão de valor em reais para centavos antes de chamar a camada superior
+- rota inicial renderizando a experiência de transação manual
+- lista local de transações da sessão, sem persistência real
+
+Limites preservados:
+- UI não acessa Supabase
+- UI não cria repositório
+- nenhuma migration real foi criada
+- cartão, parcelas, dashboard completo, IA, importação e Open Finance permanecem fora do escopo
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 3 suites e 15 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm audit`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
 - Dia 2: definir matriz de testes e criar testes essenciais da primeira small release.
@@ -398,6 +429,6 @@ Risco tratado:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 3 concluído com implementação mínima da criação manual de transação.
-- Executar Dia 4 para expansão controlada da feature, incluindo composição inicial de UI e estados de interação quando aplicável.
+- Dia 4 concluído com apresentação inicial e estados de interação da transação manual.
+- Executar Dia 5 para refatoração, consistência e hardening interno da feature.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.
