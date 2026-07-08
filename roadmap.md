@@ -53,7 +53,7 @@ Resultado:
 
 ## Marco 3 — Primeira Small Release Funcional
 Fases: Dia 3 e Dia 4
-Status: em andamento.
+Status: concluído para o recorte inicial.
 
 Candidatas:
 - cadastro manual de transação simples
@@ -72,6 +72,11 @@ Ordem recomendada:
 Resultado parcial:
 - Dia 3 implementou `Transaction`, `TransactionRepository` e `CreateTransactionUseCase`.
 - Testes, type-check, lint, audit e build passaram.
+- Dia 4 implementou apresentação inicial da transação manual, estados de interação e rota inicial.
+- Testes, type-check, lint, audit e build passaram.
+
+Próximo marco:
+- Dia 5 deve revisar estrutura, consistência interna e riscos antes de expandir novas regras.
 
 ## Marco 4 — Hardening e Experiência
 Fases: Dia 5 e Dia 6

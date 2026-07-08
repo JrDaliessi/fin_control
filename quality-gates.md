@@ -40,6 +40,19 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para módulos fora da small release.
 
+## Gate do Dia 4
+- Presentation inicial criada.
+- Estados de idle, loading, success e error implementados quando aplicável.
+- UI não acessa Supabase diretamente.
+- UI não contém regra de negócio pesada.
+- Testes relevantes de frontend criados.
+- Testes passando.
+- Type-check passando.
+- Lint passando.
+- Build passando.
+- Audit sem vulnerabilidades conhecidas.
+- Escopo não expandido para cartão, parcelas, dashboard completo, IA, importação ou Open Finance.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.

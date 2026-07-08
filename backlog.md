@@ -2,16 +2,16 @@
 
 ## READY
 
-### SR-004 — Expansão controlada da transação manual
-- Tipo: Small Release
-- Descrição: Adicionar composição inicial de apresentação para transação manual, com estados essenciais de interação quando aplicável.
-- Objetivo de negócio: tornar o fluxo mínimo utilizável sem mover regra de negócio para a UI.
-- Valor esperado: preparar a feature para uso real e para futuras telas de dashboard.
+### HD-001 — Hardening interno da transação manual
+- Tipo: Hardening
+- Descrição: Revisar consistência, acoplamento, tamanho dos arquivos, estados da UI e fronteiras entre presentation, application e domain.
+- Objetivo de negócio: estabilizar o primeiro fluxo funcional antes de novas expansões.
+- Valor esperado: reduzir entropia e preparar evolução segura.
 - Prioridade: Alta
-- Dependências: SR-003
+- Dependências: SR-004
 - Risco: Médio
-- Fase recomendada: Dia 4
-- Critério de pronto: UI essencial ou composição de apresentação sem acesso direto ao Supabase; estados de erro/sucesso/loading definidos conforme aplicável.
+- Fase recomendada: Dia 5
+- Critério de pronto: plano de refatoração documentado, ajustes estruturais necessários aplicados e gates verdes.
 - Status: READY
 
 ## DISCOVERY
@@ -115,3 +115,4 @@ Nenhuma dívida técnica aberta no Dia 3.
 - SR-001 — Setup técnico mínimo executável.
 - SR-002 — Testes da criação de transação manual.
 - SR-003 — Implementar criação de transação manual.
+- SR-004 — Expansão controlada da transação manual.
