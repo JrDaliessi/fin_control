@@ -53,6 +53,19 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para cartão, parcelas, dashboard completo, IA, importação ou Open Finance.
 
+## Gate do Dia 5
+- Arquivos inchados identificados.
+- Plano de refatoração incremental documentado.
+- Refatorações aplicadas preservando comportamento.
+- Integridade de dados revisada.
+- Consistência visual e estrutural preservada.
+- Testes passando.
+- Type-check passando.
+- Lint passando.
+- Build passando.
+- Audit sem vulnerabilidades conhecidas.
+- Escopo não expandido para nova feature de negócio.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.

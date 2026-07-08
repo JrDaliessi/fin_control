@@ -2,12 +2,13 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 — Expansão controlada da feature
+- Fase atual: Dia 5 — Refatoração, consistência e hardening interno concluído
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
 - Data da implementação mínima inicial: 2026-07-08
 - Data da expansão controlada inicial: 2026-07-08
+- Data do hardening interno inicial: 2026-07-08
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -74,7 +75,7 @@ Feature-Based + Clean Architecture leve.
 Cada feature deve ser organizada em:
 - `presentation`: componentes, páginas internas da feature, hooks e estados visuais.
 - `application`: casos de uso e orquestração de fluxos.
-- `domain`: entidades, tipos, contratos, schemas e regras puras.
+- `domain`: entidades, value objects, tipos, contratos, schemas e regras puras.
 - `infrastructure`: repositórios, clients, adapters e integrações externas.
 
 O diretório `src/app` deve atuar como entrada do Next.js App Router, com rotas, layouts e composição macro. Regras de negócio devem ficar nas features.
@@ -394,6 +395,50 @@ Resultado dos gates:
 - `npm audit`: passou, 0 vulnerabilidades
 - `npm run build`: passou
 
+## Dia 5 — Refatoração, Consistência e Hardening Interno
+
+Arquivos inchados identificados:
+- `TransactionForm.tsx` tem tamanho moderado, mas sem necessidade de extração estrutural ampla neste momento.
+- `TransactionsPage.tsx` permanece aceitável para composição da tela inicial.
+- `useTransactionForm.ts` concentrava parsing monetário junto do fluxo visual e foi reduzido.
+
+Plano de refatoração aplicado:
+- extrair parsing de valor monetário para utilitário de apresentação testável
+- criar value object `Money` no domínio para validar centavos positivos
+- normalizar identificadores e descrição na entidade `Transaction`
+- validar `paymentMethod` na entidade `Transaction`
+- preservar fluxo visual e contrato do caso de uso existente
+
+Implementação criada ou alterada:
+- `src/features/transactions/domain/value-objects/money.ts`
+- `src/features/transactions/presentation/utils/parseTransactionAmountToCents.ts`
+- `src/features/transactions/domain/entities/transaction.entity.ts`
+- `src/features/transactions/presentation/hooks/useTransactionForm.ts`
+- `src/features/transactions/tests/money.test.ts`
+- `src/features/transactions/tests/TransactionForm.test.tsx`
+- `src/features/transactions/tests/transaction.entity.test.ts`
+
+Escopo entregue:
+- validação de dinheiro em centavos isolada no domínio
+- parsing de entrada monetária isolado da lógica do hook
+- rejeição de entradas monetárias ambíguas com mais de duas casas decimais
+- normalização de `userId`, `accountId`, `categoryId` e `description`
+- rejeição de `paymentMethod` inválido em runtime
+
+Limites preservados:
+- nenhuma nova feature de negócio criada
+- UI continua sem acesso ao Supabase
+- caso de uso continua dependendo apenas do contrato de repositório
+- nenhuma migration real foi criada
+- cartão, parcelas, dashboard completo, IA, importação e Open Finance permanecem fora do escopo
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 4 suites e 30 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm audit`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
 - Dia 2: definir matriz de testes e criar testes essenciais da primeira small release.
@@ -419,6 +464,7 @@ Resultado dos gates:
 - Quality gates definidos.
 - Workflows do Dia 0 ao Dia 7 criados.
 - Catálogo mínimo de agents e skills criado.
+- Hardening interno do Dia 5 concluído com gates verdes.
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
@@ -429,6 +475,6 @@ Resultado dos gates:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 4 concluído com apresentação inicial e estados de interação da transação manual.
-- Executar Dia 5 para refatoração, consistência e hardening interno da feature.
+- Dia 5 concluído com refatoração, consistência e hardening interno da transação manual.
+- Executar Dia 6 para revisar UX, acessibilidade, responsividade e PWA.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

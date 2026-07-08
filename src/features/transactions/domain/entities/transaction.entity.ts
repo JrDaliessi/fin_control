@@ -1,3 +1,5 @@
+import { Money } from "../value-objects/money";
+
 export type TransactionType = "income" | "expense";
 
 export type PaymentMethod = "manual" | "pix" | "cash" | "debit";
@@ -19,6 +21,8 @@ export type TransactionProps = CreateTransactionInput & {
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+const validPaymentMethods = ["manual", "pix", "cash", "debit"];
 
 export class Transaction {
   readonly id?: string;
@@ -50,17 +54,21 @@ export class Transaction {
   }
 
   static create(input: CreateTransactionInput): Transaction {
+    const userId = input.userId.trim();
+    const accountId = input.accountId.trim();
+    const categoryId = input.categoryId.trim();
     const description = input.description.trim();
+    const paymentMethod = input.paymentMethod ?? "manual";
 
-    if (!input.userId.trim()) {
+    if (!userId) {
       throw new Error("user is required");
     }
 
-    if (!input.accountId.trim()) {
+    if (!accountId) {
       throw new Error("account is required");
     }
 
-    if (!input.categoryId.trim()) {
+    if (!categoryId) {
       throw new Error("category is required");
     }
 
@@ -68,12 +76,14 @@ export class Transaction {
       throw new Error("description is required");
     }
 
-    if (!Number.isInteger(input.amountInCents) || input.amountInCents <= 0) {
-      throw new Error("amount must be a positive integer in cents");
-    }
+    const amount = Money.fromPositiveCents(input.amountInCents);
 
     if (input.type !== "income" && input.type !== "expense") {
       throw new Error("transaction type is invalid");
+    }
+
+    if (!validPaymentMethods.includes(paymentMethod)) {
+      throw new Error("payment method is invalid");
     }
 
     if (!(input.occurredAt instanceof Date) || Number.isNaN(input.occurredAt.getTime())) {
@@ -82,8 +92,12 @@ export class Transaction {
 
     return new Transaction({
       ...input,
-      description
+      userId,
+      accountId,
+      categoryId,
+      description,
+      amountInCents: amount.amountInCents,
+      paymentMethod
     });
   }
 }
-

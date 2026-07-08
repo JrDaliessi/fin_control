@@ -25,7 +25,7 @@ Deve:
 - concentrar regras de aplicação
 
 ### domain
-Responsável por entidades, tipos, schemas, contratos e regras puras.
+Responsável por entidades, value objects, tipos, schemas, contratos e regras puras.
 
 Não pode depender de:
 - React
@@ -97,6 +97,11 @@ Cada feature deve conter, quando houver código:
 presentation/
 application/
 domain/
+  entities/
+  interfaces/
+  schemas/
+  types/
+  value-objects/
 infrastructure/
 tests/
 ```
