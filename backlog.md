@@ -96,7 +96,7 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
-Nenhuma dívida técnica aberta no Dia 6.
+Nenhuma dívida técnica aberta no Dia 7.
 
 ## DONE
 
@@ -108,3 +108,4 @@ Nenhuma dívida técnica aberta no Dia 6.
 - SR-004 — Expansão controlada da transação manual.
 - HD-001 — Hardening interno da transação manual.
 - UX-001 — Revisão de UX, acessibilidade e PWA da transação manual.
+- REL-001 — Validação final e preparação de release incremental da transação manual.
