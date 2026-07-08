@@ -1,10 +1,11 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `CONTEXT_READY`
-- Fase atual: Dia 1 — Contexto, discovery e arquitetura
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 — Estratégia de testes e fundação TDD
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
+- Data de estratégia de testes inicial: 2026-07-08
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -306,6 +307,35 @@ Critério de pronto futuro:
 - UI essencial apenas depois de testes essenciais
 - sem acesso direto da UI ao Supabase
 
+## Dia 2 — Estratégia de Testes
+
+Setup técnico criado:
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Jest
+- Testing Library
+- Supabase clients isolados em `src/lib/supabase`
+- PWA mínimo com manifest e ícone
+- ESLint
+- scripts de `test`, `test:ci`, `lint`, `type-check` e `build`
+
+Testes essenciais criados:
+- `src/features/transactions/tests/transaction.entity.test.ts`
+- `src/features/transactions/tests/create-transaction.use-case.test.ts`
+
+Resultado esperado do TDD:
+- `npm run test:ci` falha porque `Transaction` e `CreateTransactionUseCase` ainda não existem.
+- `npm run type-check` falha pelo mesmo motivo: módulos de implementação ainda ausentes.
+- `npm run lint` passa.
+- `npm audit` e `npm audit --omit=dev` passam com 0 vulnerabilidades.
+
+Implementação bloqueada até o Dia 3:
+- `src/features/transactions/domain/entities/transaction.entity.ts`
+- `src/features/transactions/domain/interfaces/transaction.repository.ts`
+- `src/features/transactions/application/use-cases/create-transaction.use-case.ts`
+
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
 - Dia 2: definir matriz de testes e criar testes essenciais da primeira small release.
@@ -340,6 +370,6 @@ Critério de pronto futuro:
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
 
 ## Pendências e Próximos Passos
-- Dia 1 concluído com contexto, domínio inicial, módulos e primeira small release definidos.
-- Executar Dia 2 para preparar setup técnico mínimo e criar testes essenciais da small release de transações.
-- Não iniciar implementação funcional antes dos testes essenciais.
+- Dia 2 concluído com setup técnico mínimo, matriz de testes e testes essenciais criados.
+- Executar Dia 3 para implementar o mínimo necessário e fazer os testes de transação passarem.
+- Manter fora do escopo do Dia 3: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

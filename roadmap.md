@@ -32,6 +32,7 @@ Resultado:
 
 ## Marco 2 — Estratégia de Testes
 Fase: Dia 2
+Status: concluído.
 
 Entregas:
 - matriz de testes
@@ -44,8 +45,15 @@ Ordem planejada:
 - criar testes de aplicação do caso de uso de criação de transação
 - documentar matriz de testes por camada
 
+Resultado:
+- setup técnico mínimo criado
+- matriz de testes documentada em `test-strategy.md`
+- testes essenciais de transação criados
+- testes falhando por implementação ausente, conforme TDD
+
 ## Marco 3 — Primeira Small Release Funcional
 Fases: Dia 3 e Dia 4
+Status: próximo.
 
 Candidatas:
 - cadastro manual de transação simples

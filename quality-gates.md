@@ -16,6 +16,18 @@
 - Backlog fatiado em small releases.
 - Dependências críticas e bloqueios documentados.
 
+## Gate do Dia 2
+- Setup técnico mínimo criado.
+- Jest configurado.
+- Testing Library configurada.
+- Matriz de testes documentada.
+- Testes essenciais de domínio criados.
+- Testes essenciais de aplicação criados.
+- Testes falham antes da implementação.
+- Lint passa.
+- Audit sem vulnerabilidades conhecidas.
+- Implementação funcional segue bloqueada até Dia 3.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.
