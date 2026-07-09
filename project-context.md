@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 — Estratégia de testes da SR-005 concluída
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 — Implementação mínima da SR-005 concluída
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -12,6 +12,7 @@
 - Data da revisão de UX, acessibilidade e PWA inicial: 2026-07-08
 - Data da validação final e preparação de release inicial: 2026-07-08
 - Data da estratégia de testes da SR-005: 2026-07-09
+- Data da implementação mínima da SR-005: 2026-07-09
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -444,6 +445,41 @@ Resultado dos gates:
 Risco tratado:
 - `.env.example` foi restaurado para placeholders após detecção de valores reais. Arquivos `.env` reais foram reforçados no `.gitignore`.
 
+## Dia 3 — Implementação Mínima da SR-005
+
+Small release: `SR-005 — Resumo mensal básico`.
+
+Implementação criada:
+- `src/features/transactions/domain/value-objects/month-ref.ts`
+- `src/features/transactions/application/use-cases/list-monthly-summary.use-case.ts`
+
+Escopo entregue:
+- value object `MonthRef` validando `YYYY-MM`
+- normalização de espaços externos em `monthRef`
+- rejeição de mês inválido ou formato inválido
+- caso de uso `ListMonthlySummaryUseCase`
+- normalização e validação de `userId`
+- busca de transações por `TransactionRepository.findByMonth`
+- cálculo de receitas do mês em centavos
+- cálculo de despesas do mês em centavos
+- cálculo de saldo líquido em centavos
+- contagem de transações consideradas
+- filtro defensivo para ignorar transações fora do mês retornadas pelo repositório
+
+Limites preservados:
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+- nenhuma UI nova criada
+- nenhuma integração direta entre apresentação e banco
+- dashboard completo, gráficos, cartões, parcelas, IA e importação continuam fora do escopo
+
+Resultado dos gates:
+- `npm run test:ci -- src/features/transactions/tests/month-ref.test.ts src/features/transactions/tests/list-monthly-summary.use-case.test.ts`: passou, 2 suites e 12 testes
+- `npm run test:ci`: passou, 7 suites e 44 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm run build`: passou
+
 ## Dia 4 — Expansão Controlada
 
 Implementação criada:
@@ -642,6 +678,6 @@ Preparação de release incremental:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 2 da `SR-005 — Resumo mensal básico` concluído com testes essenciais criados e falhando pela implementação ausente, conforme TDD.
-- Próximo passo recomendado: executar Dia 3 para implementar o mínimo necessário de `MonthRef` e `ListMonthlySummaryUseCase`.
+- Dia 3 da `SR-005 — Resumo mensal básico` concluído com implementação mínima e gates verdes.
+- Próximo passo recomendado: executar Dia 4 para decidir se o resumo mensal deve ser exposto na apresentação com estados simples.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

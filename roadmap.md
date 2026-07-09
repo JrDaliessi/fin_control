@@ -112,12 +112,12 @@ Entregas:
 ## Marco 6 — Resumo Mensal Básico
 Fases: próximo ciclo Dia 2, Dia 3 e Dia 4
 
-Status: selecionado.
+Status: implementação mínima concluída no Dia 3.
 
 Entregas planejadas:
-- testes essenciais do resumo mensal
-- caso de uso `list-monthly-summary.use-case.ts`
-- cálculo de receitas, despesas e saldo líquido em centavos
+- testes essenciais do resumo mensal concluídos
+- caso de uso `list-monthly-summary.use-case.ts` implementado
+- cálculo de receitas, despesas e saldo líquido em centavos implementado
 - integração visual mínima apenas depois dos testes e da implementação estável
 
 Fora do marco:

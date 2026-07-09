@@ -90,3 +90,12 @@ Usuário solicita o resumo de `2026-07`. O sistema valida `userId` e `monthRef`,
 - `npm run test:ci -- src/features/transactions/tests/month-ref.test.ts src/features/transactions/tests/list-monthly-summary.use-case.test.ts`: falhou com 2 suites por módulos ausentes.
 - `npm run type-check`: falhou com `TS2307` para `../domain/value-objects/month-ref` e `../application/use-cases/list-monthly-summary.use-case`.
 - A falha é esperada e válida para a etapa vermelha do TDD.
+
+## Resultado Observado do Dia 3
+- `MonthRef` implementado em `src/features/transactions/domain/value-objects/month-ref.ts`.
+- `ListMonthlySummaryUseCase` implementado em `src/features/transactions/application/use-cases/list-monthly-summary.use-case.ts`.
+- `npm run test:ci -- src/features/transactions/tests/month-ref.test.ts src/features/transactions/tests/list-monthly-summary.use-case.test.ts`: passou, 2 suites e 12 testes.
+- `npm run test:ci`: passou, 7 suites e 44 testes.
+- `npm run type-check`: passou.
+- `npm run lint`: passou.
+- `npm run build`: passou.
