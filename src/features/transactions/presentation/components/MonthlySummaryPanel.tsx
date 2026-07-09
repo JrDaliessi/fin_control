@@ -1,4 +1,5 @@
 import type { MonthlySummary } from "../../application/use-cases/list-monthly-summary.use-case";
+import { formatCents } from "../utils/formatCents";
 
 export type MonthlySummaryPanelStatus = "loading" | "success" | "error";
 
@@ -86,13 +87,6 @@ function SummaryMetric({ label, value }: SummaryMetricProps) {
       <dd className="text-base font-semibold text-slate-950">{value}</dd>
     </div>
   );
-}
-
-function formatCents(amountInCents: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    currency: "BRL",
-    style: "currency"
-  }).format(amountInCents / 100);
 }
 
 function formatMonthRef(monthRef: string) {
