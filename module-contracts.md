@@ -36,7 +36,7 @@ export interface TransactionRepository {
 }
 ```
 
-Contrato planejado para `list-monthly-summary.use-case.ts`:
+Contrato implementado para `list-monthly-summary.use-case.ts`:
 
 ```ts
 export interface ListMonthlySummaryInput {
@@ -61,6 +61,7 @@ Regras planejadas para a SR-005:
 - saldo líquido é receitas menos despesas
 - valores permanecem em centavos
 - o caso de uso não conhece Supabase nem UI
+- transações fora do mês selecionado são ignoradas defensivamente
 
 ### Infrastructure
 Implementações futuras:
