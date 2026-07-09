@@ -99,3 +99,14 @@ Usuário solicita o resumo de `2026-07`. O sistema valida `userId` e `monthRef`,
 - `npm run type-check`: passou.
 - `npm run lint`: passou.
 - `npm run build`: passou.
+
+## Resultado Observado do Dia 4
+- `MonthlySummaryPanel` criado para expor o resumo mensal na apresentação.
+- `list-session-monthly-summary.use-case.ts` criado como adapter local de sessão sobre o `ListMonthlySummaryUseCase`.
+- `TransactionsPage` passou a exibir o resumo mensal sem Supabase e sem persistência real.
+- `TransactionsPage.test.tsx` cobre empty state e resumo com receitas, despesas, saldo líquido e quantidade.
+- `npm run test:ci -- src/features/transactions/tests/TransactionsPage.test.tsx`: passou, 1 suite e 2 testes.
+- `npm run test:ci`: passou, 7 suites e 45 testes.
+- `npm run type-check`: passou.
+- `npm run lint`: passou.
+- `npm run build`: passou.

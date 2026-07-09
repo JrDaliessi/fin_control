@@ -16,7 +16,7 @@ Nenhum item pronto no momento.
 - Risco: Médio
 - Fase recomendada: próximo ciclo TDD, começando por Dia 2 para testes; Dia 3 para implementação mínima; Dia 4 para exposição visual se fizer sentido.
 - Critério de pronto: caso de uso testado, cálculo mensal validado, arquitetura preservada e sem acesso direto da UI ao Supabase.
-- Status: IN_PROGRESS — Dia 3 concluído; implementação mínima criada e gates verdes; aguardando decisão do Dia 4 para exposição visual.
+- Status: IN_PROGRESS — Dia 4 concluído; painel de resumo mensal integrado à experiência atual; aguardando Dia 5 para hardening interno.
 
 Escopo mínimo:
 - receber `userId` e `monthRef` no formato `YYYY-MM`

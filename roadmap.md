@@ -112,13 +112,14 @@ Entregas:
 ## Marco 6 — Resumo Mensal Básico
 Fases: próximo ciclo Dia 2, Dia 3 e Dia 4
 
-Status: implementação mínima concluída no Dia 3.
+Status: expansão controlada concluída no Dia 4.
 
 Entregas planejadas:
 - testes essenciais do resumo mensal concluídos
 - caso de uso `list-monthly-summary.use-case.ts` implementado
 - cálculo de receitas, despesas e saldo líquido em centavos implementado
-- integração visual mínima apenas depois dos testes e da implementação estável
+- integração visual mínima concluída na tela atual de transações
+- estados de loading, empty, success e error adicionados ao painel do resumo
 
 Fora do marco:
 - Supabase Database
