@@ -80,11 +80,19 @@ Componentes futuros:
 - `TransactionForm.tsx`
 - `TransactionList.tsx`
 - `MonthlySummaryPanel.tsx`
+- `TransactionSessionList.tsx`
+
+Hooks:
+- `useSessionMonthlySummary.ts`
+
+Utils:
+- `formatCents.ts`
 
 Regras:
 - componente não calcula regra financeira crítica
 - componente não importa Supabase
 - resumo mensal visível deve consumir resultado da camada de aplicação
+- página deve compor fluxo, evitando concentrar estado derivado e lista detalhada
 
 ## Accounts
 

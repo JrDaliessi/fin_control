@@ -112,7 +112,7 @@ Entregas:
 ## Marco 6 — Resumo Mensal Básico
 Fases: próximo ciclo Dia 2, Dia 3 e Dia 4
 
-Status: expansão controlada concluída no Dia 4.
+Status: hardening interno concluído no Dia 5.
 
 Entregas planejadas:
 - testes essenciais do resumo mensal concluídos
@@ -120,6 +120,7 @@ Entregas planejadas:
 - cálculo de receitas, despesas e saldo líquido em centavos implementado
 - integração visual mínima concluída na tela atual de transações
 - estados de loading, empty, success e error adicionados ao painel do resumo
+- responsabilidades internas refinadas entre página, hook e componentes de apresentação
 
 Fora do marco:
 - Supabase Database

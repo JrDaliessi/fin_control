@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 — Expansão controlada da SR-005 concluída
+- Fase atual: Dia 5 — Refatoração e hardening interno da SR-005 concluídos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -14,6 +14,7 @@
 - Data da estratégia de testes da SR-005: 2026-07-09
 - Data da implementação mínima da SR-005: 2026-07-09
 - Data da expansão controlada da SR-005: 2026-07-09
+- Data da refatoração e hardening interno da SR-005: 2026-07-09
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -513,6 +514,50 @@ Resultado dos gates:
 - `npm run lint`: passou
 - `npm run build`: passou
 
+## Dia 5 — Refatoração e Hardening Interno da SR-005
+
+Small release: `SR-005 — Resumo mensal básico`.
+
+Arquivos inchados identificados:
+- `TransactionsPage.tsx` estava com 165 linhas e misturava composição da página, efeito de resumo mensal, cálculo de mês visível, lista de sessão e formatação monetária.
+- `MonthlySummaryPanel.tsx` estava aceitável, mas duplicava formatação monetária com a página.
+- `list-session-monthly-summary.use-case.ts` permaneceu pequeno e com escopo claro como adapter local de sessão.
+
+Plano de refatoração aplicado:
+- extrair formatação monetária para utilitário de apresentação compartilhado
+- extrair estado visual do resumo mensal para hook de apresentação
+- extrair lista de lançamentos da sessão para componente dedicado
+- manter o caso de uso de aplicação como fonte do cálculo financeiro
+- preservar comportamento coberto pelos testes existentes
+
+Implementação criada ou alterada:
+- `src/features/transactions/presentation/utils/formatCents.ts`
+- `src/features/transactions/presentation/hooks/useSessionMonthlySummary.ts`
+- `src/features/transactions/presentation/components/TransactionSessionList.tsx`
+- `src/features/transactions/presentation/components/MonthlySummaryPanel.tsx`
+- `src/features/transactions/presentation/pages/TransactionsPage.tsx`
+
+Resultado estrutural:
+- `TransactionsPage.tsx` reduziu de 165 para 64 linhas
+- lista de transações ficou isolada em `TransactionSessionList`
+- estado assíncrono do resumo ficou isolado em `useSessionMonthlySummary`
+- duplicação de `Intl.NumberFormat` foi removida da feature
+- regras financeiras continuam fora da UI
+
+Limites preservados:
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+- nenhum repositório Supabase criado
+- nenhuma nova regra de negócio criada
+- nenhuma integração direta entre apresentação e banco
+
+Resultado dos gates:
+- `npm run test:ci -- src/features/transactions/tests/TransactionsPage.test.tsx`: passou, 1 suite e 2 testes
+- `npm run test:ci`: passou, 7 suites e 45 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm run build`: passou
+
 ## Dia 4 — Expansão Controlada
 
 Implementação criada:
@@ -711,6 +756,6 @@ Preparação de release incremental:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 4 da `SR-005 — Resumo mensal básico` concluído com painel visual, estados principais e gates verdes.
-- Próximo passo recomendado: executar Dia 5 para refatoração e hardening interno da SR-005.
+- Dia 5 da `SR-005 — Resumo mensal básico` concluído com refatoração interna, responsabilidades mais claras e gates verdes.
+- Próximo passo recomendado: executar Dia 6 para revisar experiência, acessibilidade, responsividade e PWA.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

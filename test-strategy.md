@@ -110,3 +110,14 @@ Usuário solicita o resumo de `2026-07`. O sistema valida `userId` e `monthRef`,
 - `npm run type-check`: passou.
 - `npm run lint`: passou.
 - `npm run build`: passou.
+
+## Resultado Observado do Dia 5
+- `TransactionsPage.tsx` reduziu de 165 para 64 linhas.
+- `useSessionMonthlySummary.ts` passou a concentrar o estado visual do resumo mensal.
+- `TransactionSessionList.tsx` passou a concentrar a lista local da sessão.
+- `formatCents.ts` removeu duplicação de formatação monetária na apresentação.
+- `npm run test:ci -- src/features/transactions/tests/TransactionsPage.test.tsx`: passou, 1 suite e 2 testes.
+- `npm run test:ci`: passou, 7 suites e 45 testes.
+- `npm run type-check`: passou.
+- `npm run lint`: passou.
+- `npm run build`: passou.
