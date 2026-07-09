@@ -40,3 +40,53 @@ Usuário autenticado registra uma despesa manual com descrição, valor em centa
 - testes essenciais existem
 - testes falham antes da implementação
 - implementação funcional permanece bloqueada até Dia 3
+
+## Dia 2 — SR-005 Resumo Mensal Básico
+
+## Objetivo
+Definir a estratégia de testes da small release `SR-005 — Resumo mensal básico` antes de implementar o caso de uso de cálculo mensal.
+
+## Prioridade por Camada
+1. `domain`: validar `MonthRef` como value object puro.
+2. `application`: validar `ListMonthlySummaryUseCase` calculando totais a partir de transações.
+3. `infrastructure`: permanece fora do escopo até persistência real com Supabase, auth e RLS.
+4. `presentation`: permanece fora do escopo até o caso de uso estar estável.
+
+## Matriz de Testes da SR-005
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `MonthRef` | criar `YYYY-MM` válido; normalizar espaços; rejeitar formato inválido; rejeitar mês fora de 1-12 | testes criados |
+| application | `ListMonthlySummaryUseCase` | calcular receitas, despesas, saldo líquido e quantidade; retornar resumo zerado; rejeitar `monthRef` inválido; rejeitar usuário vazio | testes criados |
+| infrastructure | `SupabaseTransactionRepository` | buscar transações por usuário e mês respeitando RLS | futuro |
+| presentation | resumo mensal na UI | loading, empty, success e error | futuro |
+
+## Cenário Feliz
+Usuário solicita o resumo de `2026-07`. O sistema valida `userId` e `monthRef`, busca transações pelo contrato `TransactionRepository.findByMonth`, soma receitas, soma despesas, calcula saldo líquido e retorna a quantidade de transações consideradas.
+
+## Cenários Alternativos
+- mês válido sem transações retorna totais zerados
+- transações fora do mês selecionado não entram no cálculo
+- `userId` com espaços deve ser normalizado antes de consultar o repositório
+
+## Edge Cases Críticos
+- `monthRef` vazio
+- `monthRef` fora do formato `YYYY-MM`
+- mês `00`
+- mês `13`
+- `userId` vazio
+- valores financeiros permanecem em centavos
+
+## Testes Criados
+- `src/features/transactions/tests/month-ref.test.ts`
+- `src/features/transactions/tests/list-monthly-summary.use-case.test.ts`
+
+## Resultado Esperado do TDD
+- `npm run test:ci` deve falhar porque `MonthRef` e `ListMonthlySummaryUseCase` ainda não existem.
+- `npm run type-check` deve falhar pelo mesmo motivo enquanto a implementação mínima não for criada.
+- implementação funcional permanece bloqueada até o Dia 3.
+
+## Resultado Observado do Dia 2
+- `npm run test:ci -- src/features/transactions/tests/month-ref.test.ts src/features/transactions/tests/list-monthly-summary.use-case.test.ts`: falhou com 2 suites por módulos ausentes.
+- `npm run type-check`: falhou com `TS2307` para `../domain/value-objects/month-ref` e `../application/use-cases/list-monthly-summary.use-case`.
+- A falha é esperada e válida para a etapa vermelha do TDD.

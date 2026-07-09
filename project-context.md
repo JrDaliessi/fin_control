@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 — Qualidade final, segurança, observabilidade e entrega concluído
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 — Estratégia de testes da SR-005 concluída
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -11,6 +11,7 @@
 - Data do hardening interno inicial: 2026-07-08
 - Data da revisão de UX, acessibilidade e PWA inicial: 2026-07-08
 - Data da validação final e preparação de release inicial: 2026-07-08
+- Data da estratégia de testes da SR-005: 2026-07-09
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -312,6 +313,50 @@ Critério de pronto futuro:
 - UI essencial apenas depois de testes essenciais
 - sem acesso direto da UI ao Supabase
 
+## Próximo Ciclo Selecionado — SR-005 Resumo Mensal Básico
+
+Small release selecionada: resumo mensal básico.
+
+Motivo da escolha:
+- é a próxima dependência lógica antes de dashboard financeiro inicial
+- aproveita a feature de transações já criada
+- entrega valor de produto sem antecipar Supabase Database, migrations ou RLS
+- mantém o ciclo incremental dentro de TDD
+
+Escopo mínimo:
+- receber `userId` e `monthRef` no formato `YYYY-MM`
+- buscar transações por contrato de repositório
+- calcular receitas do mês em centavos
+- calcular despesas do mês em centavos
+- calcular saldo líquido do mês em centavos
+- retornar quantidade de transações consideradas
+
+Fora do escopo deste ciclo:
+- migrations Supabase
+- autenticação real
+- persistência real
+- dashboard completo
+- gráficos
+- cartões de crédito
+- parcelas
+- IA
+- importação de extrato
+
+Ordem de execução obrigatória:
+1. Dia 2: criar testes essenciais de domínio/aplicação para o resumo mensal.
+2. Dia 3: implementar o mínimo necessário para satisfazer os testes.
+3. Dia 4: integrar ou expor o resumo na apresentação apenas se o caso de uso estiver estável.
+
+Critérios de pronto planejados:
+- cenário feliz com receita e despesa no mesmo mês testado
+- mês sem transações testado
+- `monthRef` inválido rejeitado
+- `userId` vazio rejeitado
+- transações fora do mês ignoradas
+- valores calculados em centavos
+- UI sem acesso direto ao Supabase
+- nenhuma migration criada antes de autenticação, contas, categorias e RLS estarem prontos
+
 ## Dia 2 — Estratégia de Testes
 
 Setup técnico criado:
@@ -340,6 +385,38 @@ Implementação bloqueada até o Dia 3:
 - `src/features/transactions/domain/entities/transaction.entity.ts`
 - `src/features/transactions/domain/interfaces/transaction.repository.ts`
 - `src/features/transactions/application/use-cases/create-transaction.use-case.ts`
+
+## Dia 2 — Estratégia de Testes da SR-005
+
+Small release: `SR-005 — Resumo mensal básico`.
+
+Testes essenciais criados:
+- `src/features/transactions/tests/month-ref.test.ts`
+- `src/features/transactions/tests/list-monthly-summary.use-case.test.ts`
+
+Cenários cobertos:
+- `MonthRef` aceita `YYYY-MM` válido
+- `MonthRef` normaliza espaços externos
+- `MonthRef` rejeita formatos inválidos e meses fora de 1-12
+- `ListMonthlySummaryUseCase` calcula receitas, despesas, saldo líquido e quantidade de transações
+- mês sem transações retorna totais zerados
+- `monthRef` inválido é rejeitado antes de consultar repositório
+- `userId` vazio é rejeitado antes de consultar repositório
+- transações fora do mês selecionado não compõem o resumo
+
+Resultado esperado do TDD:
+- `npm run test:ci -- src/features/transactions/tests/month-ref.test.ts src/features/transactions/tests/list-monthly-summary.use-case.test.ts`: falhou porque `MonthRef` e `ListMonthlySummaryUseCase` ainda não existem.
+- `npm run type-check`: falhou com `TS2307` pelos mesmos módulos ausentes.
+
+Implementação bloqueada até o Dia 3:
+- `src/features/transactions/domain/value-objects/month-ref.ts`
+- `src/features/transactions/application/use-cases/list-monthly-summary.use-case.ts`
+
+Limites preservados:
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+- nenhuma UI nova criada
+- nenhuma integração direta entre apresentação e banco
 
 ## Dia 3 — Implementação Mínima
 
@@ -565,6 +642,6 @@ Preparação de release incremental:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 7 concluído com qualidade final, segurança básica, observabilidade e preparação de release incremental.
-- Próximo passo recomendado: selecionar e refinar a próxima small release do backlog, provavelmente `SR-005 — Resumo mensal básico`.
+- Dia 2 da `SR-005 — Resumo mensal básico` concluído com testes essenciais criados e falhando pela implementação ausente, conforme TDD.
+- Próximo passo recomendado: executar Dia 3 para implementar o mínimo necessário de `MonthRef` e `ListMonthlySummaryUseCase`.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.
