@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 — Implementação mínima da SR-005 concluída
+- Fase atual: Dia 4 — Expansão controlada da SR-005 concluída
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -13,6 +13,7 @@
 - Data da validação final e preparação de release inicial: 2026-07-08
 - Data da estratégia de testes da SR-005: 2026-07-09
 - Data da implementação mínima da SR-005: 2026-07-09
+- Data da expansão controlada da SR-005: 2026-07-09
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -480,6 +481,38 @@ Resultado dos gates:
 - `npm run lint`: passou
 - `npm run build`: passou
 
+## Dia 4 — Expansão Controlada da SR-005
+
+Small release: `SR-005 — Resumo mensal básico`.
+
+Implementação criada ou alterada:
+- `src/features/transactions/application/use-cases/list-session-monthly-summary.use-case.ts`
+- `src/features/transactions/presentation/components/MonthlySummaryPanel.tsx`
+- `src/features/transactions/presentation/pages/TransactionsPage.tsx`
+- `src/features/transactions/tests/TransactionsPage.test.tsx`
+
+Escopo entregue:
+- painel de resumo mensal visível na tela atual de transações
+- cálculo do resumo alimentado pelo `ListMonthlySummaryUseCase`
+- adapter local de sessão para converter transações locais em entidades de domínio
+- estados de `loading`, `empty`, `success` e `error` no painel
+- teste de apresentação cobrindo empty state e resumo com receita, despesa, saldo líquido e quantidade
+- mês visível baseado na transação mais recente da sessão quando houver lançamentos
+
+Limites preservados:
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+- nenhum repositório Supabase criado
+- nenhuma integração direta entre apresentação e banco
+- dashboard completo, gráficos, cartões, parcelas, IA e importação continuam fora do escopo
+
+Resultado dos gates:
+- `npm run test:ci -- src/features/transactions/tests/TransactionsPage.test.tsx`: passou, 1 suite e 2 testes
+- `npm run test:ci`: passou, 7 suites e 45 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm run build`: passou
+
 ## Dia 4 — Expansão Controlada
 
 Implementação criada:
@@ -678,6 +711,6 @@ Preparação de release incremental:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 3 da `SR-005 — Resumo mensal básico` concluído com implementação mínima e gates verdes.
-- Próximo passo recomendado: executar Dia 4 para decidir se o resumo mensal deve ser exposto na apresentação com estados simples.
+- Dia 4 da `SR-005 — Resumo mensal básico` concluído com painel visual, estados principais e gates verdes.
+- Próximo passo recomendado: executar Dia 5 para refatoração e hardening interno da SR-005.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

@@ -1,7 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  listSessionMonthlySummary
+} from "../../application/use-cases/list-session-monthly-summary.use-case";
+import type { MonthlySummary } from "../../application/use-cases/list-monthly-summary.use-case";
 import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
+import {
+  MonthlySummaryPanel,
+  type MonthlySummaryPanelStatus
+} from "../components/MonthlySummaryPanel";
 import { TransactionForm } from "../components/TransactionForm";
 
 const demoAccounts = [
@@ -22,8 +30,63 @@ const demoCategories = [
   }
 ];
 
+const demoUserId = "user-1";
+
+type MonthlySummaryState = {
+  errorMessage?: string;
+  status: MonthlySummaryPanelStatus;
+  summary: MonthlySummary | null;
+};
+
 export function TransactionsPage() {
   const [transactions, setTransactions] = useState<CreateTransactionInput[]>([]);
+  const [monthlySummaryState, setMonthlySummaryState] =
+    useState<MonthlySummaryState>({
+      status: "loading",
+      summary: null
+    });
+  const monthRef = useMemo(
+    () => getVisibleMonthRef(transactions),
+    [transactions]
+  );
+
+  useEffect(() => {
+    let shouldUpdate = true;
+
+    listSessionMonthlySummary({
+      monthRef,
+      transactions,
+      userId: demoUserId
+    })
+      .then((summary) => {
+        if (!shouldUpdate) {
+          return;
+        }
+
+        setMonthlySummaryState({
+          status: "success",
+          summary
+        });
+      })
+      .catch((error) => {
+        if (!shouldUpdate) {
+          return;
+        }
+
+        setMonthlySummaryState({
+          errorMessage:
+            error instanceof Error
+              ? error.message
+              : "Não foi possível calcular o resumo mensal.",
+          status: "error",
+          summary: null
+        });
+      });
+
+    return () => {
+      shouldUpdate = false;
+    };
+  }, [monthRef, transactions]);
 
   async function handleCreateTransaction(input: CreateTransactionInput) {
     setTransactions((currentTransactions) => [input, ...currentTransactions]);
@@ -46,53 +109,61 @@ export function TransactionsPage() {
             accounts={demoAccounts}
             categories={demoCategories}
             onCreateTransaction={handleCreateTransaction}
-            userId="user-1"
+            userId={demoUserId}
           />
         </section>
 
-        <section
-          aria-labelledby="session-transactions-title"
-          className="grid content-start gap-3"
-        >
-          <h2
-            className="text-lg font-semibold text-slate-950"
-            id="session-transactions-title"
-          >
-            Lançamentos desta sessão
-          </h2>
+        <div className="grid content-start gap-4">
+          <MonthlySummaryPanel
+            errorMessage={monthlySummaryState.errorMessage}
+            status={monthlySummaryState.status}
+            summary={monthlySummaryState.summary}
+          />
 
-          {transactions.length === 0 ? (
-            <div
-              className="rounded-md border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-600"
-              role="status"
+          <section
+            aria-labelledby="session-transactions-title"
+            className="grid content-start gap-3"
+          >
+            <h2
+              className="text-lg font-semibold text-slate-950"
+              id="session-transactions-title"
             >
-              Nenhuma transação registrada nesta sessão.
-            </div>
-          ) : (
-            <ul className="grid gap-3">
-              {transactions.map((transaction, index) => (
-                <li
-                  className="rounded-md border border-slate-200 bg-white p-4 shadow-sm"
-                  key={`${transaction.description}-${transaction.occurredAt.toISOString()}-${index}`}
-                >
-                  <div className="grid gap-2 sm:flex sm:items-start sm:justify-between sm:gap-4">
-                    <div className="min-w-0">
-                      <p className="font-medium text-slate-950">
-                        {transaction.description}
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        {transaction.type === "income" ? "Receita" : "Despesa"}
+              Lançamentos desta sessão
+            </h2>
+
+            {transactions.length === 0 ? (
+              <div
+                className="rounded-md border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-600"
+                role="status"
+              >
+                Nenhuma transação registrada nesta sessão.
+              </div>
+            ) : (
+              <ul className="grid gap-3">
+                {transactions.map((transaction, index) => (
+                  <li
+                    className="rounded-md border border-slate-200 bg-white p-4 shadow-sm"
+                    key={`${transaction.description}-${transaction.occurredAt.toISOString()}-${index}`}
+                  >
+                    <div className="grid gap-2 sm:flex sm:items-start sm:justify-between sm:gap-4">
+                      <div className="min-w-0">
+                        <p className="font-medium text-slate-950">
+                          {transaction.description}
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          {transaction.type === "income" ? "Receita" : "Despesa"}
+                        </p>
+                      </div>
+                      <p className="text-sm font-semibold text-slate-950 sm:text-right">
+                        {formatCents(transaction.amountInCents)}
                       </p>
                     </div>
-                    <p className="text-sm font-semibold text-slate-950 sm:text-right">
-                      {formatCents(transaction.amountInCents)}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
       </div>
     </main>
   );
@@ -103,4 +174,12 @@ function formatCents(amountInCents: number) {
     currency: "BRL",
     style: "currency"
   }).format(amountInCents / 100);
+}
+
+function getVisibleMonthRef(transactions: CreateTransactionInput[]) {
+  const visibleDate = transactions[0]?.occurredAt ?? new Date();
+  const year = visibleDate.getUTCFullYear();
+  const month = String(visibleDate.getUTCMonth() + 1).padStart(2, "0");
+
+  return `${year}-${month}`;
 }

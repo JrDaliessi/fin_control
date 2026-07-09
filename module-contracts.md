@@ -26,6 +26,7 @@ Validações:
 Casos de uso:
 - `create-transaction.use-case.ts`
 - `list-monthly-summary.use-case.ts`
+- `list-session-monthly-summary.use-case.ts`
 
 Contrato previsto:
 
@@ -63,6 +64,12 @@ Regras planejadas para a SR-005:
 - o caso de uso não conhece Supabase nem UI
 - transações fora do mês selecionado são ignoradas defensivamente
 
+Adapter local de sessão:
+- `list-session-monthly-summary.use-case.ts` recebe transações locais da sessão e reutiliza `ListMonthlySummaryUseCase`
+- não persiste dados
+- não acessa Supabase
+- existe apenas para a experiência local antes da infraestrutura real
+
 ### Infrastructure
 Implementações futuras:
 - `supabase-transaction.repository.ts`
@@ -72,10 +79,12 @@ Implementações futuras:
 Componentes futuros:
 - `TransactionForm.tsx`
 - `TransactionList.tsx`
+- `MonthlySummaryPanel.tsx`
 
 Regras:
 - componente não calcula regra financeira crítica
 - componente não importa Supabase
+- resumo mensal visível deve consumir resultado da camada de aplicação
 
 ## Accounts
 
