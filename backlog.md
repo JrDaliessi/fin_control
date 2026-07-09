@@ -4,19 +4,47 @@
 
 Nenhum item pronto no momento.
 
-## DISCOVERY
+## IN_PROGRESS
 
 ### SR-005 — Resumo mensal básico
 - Tipo: Small Release
-- Descrição: Calcular total de receitas, despesas e saldo líquido por mês a partir das transações.
+- Descrição: Calcular total de receitas, despesas e saldo líquido por mês a partir das transações já existentes no domínio.
 - Objetivo de negócio: responder "para onde meu dinheiro está indo?" em versão inicial.
-- Valor esperado: preparar dashboard e relatórios simples.
+- Valor esperado: preparar dashboard e relatórios simples sem antecipar banco de dados real.
 - Prioridade: Alta
-- Dependências: SR-003
+- Dependências: SR-003 e SR-004 concluídas.
 - Risco: Médio
-- Fase recomendada: Dia 3 ou Dia 4
-- Critério de pronto: caso de uso testado e cálculo mensal validado.
-- Status: DISCOVERY
+- Fase recomendada: próximo ciclo TDD, começando por Dia 2 para testes; Dia 3 para implementação mínima; Dia 4 para exposição visual se fizer sentido.
+- Critério de pronto: caso de uso testado, cálculo mensal validado, arquitetura preservada e sem acesso direto da UI ao Supabase.
+- Status: IN_PROGRESS — Dia 2 concluído; testes essenciais criados e falhando conforme TDD; implementação bloqueada até Dia 3.
+
+Escopo mínimo:
+- receber `userId` e `monthRef` no formato `YYYY-MM`
+- buscar transações por contrato de repositório, sem persistência real neste recorte
+- calcular `incomeTotalInCents`
+- calcular `expenseTotalInCents`
+- calcular `netBalanceInCents`
+- informar quantidade de transações consideradas
+
+Fora do escopo:
+- migrations Supabase
+- autenticação real
+- dashboard completo
+- gráficos
+- cartões de crédito
+- parcelas
+- IA
+- importação de extrato
+
+Testes essenciais planejados:
+- cenário feliz com receita e despesa no mesmo mês
+- mês sem transações retorna totais zerados
+- `monthRef` inválido deve ser rejeitado
+- `userId` vazio deve ser rejeitado
+- transações fora do mês não devem compor o resumo
+- totais devem ser calculados em centavos
+
+## DISCOVERY
 
 ### SR-006 — Dashboard financeiro inicial
 - Tipo: Small Release

@@ -75,11 +75,20 @@ Resultado parcial:
 - Dia 4 implementou apresentação inicial da transação manual, estados de interação e rota inicial.
 - Testes, type-check, lint, audit e build passaram.
 
-Próximo marco:
-- Dia 5 deve revisar estrutura, consistência interna e riscos antes de expandir novas regras.
+Resultado final do ciclo:
+- Dia 5 revisou estrutura, consistência interna e riscos.
+- Dia 6 refinou experiência, acessibilidade e PWA.
+- Dia 7 validou testes, lint, type-check, audit, build, segurança básica e release incremental.
+
+Próxima small release selecionada:
+- `SR-005 — Resumo mensal básico`
+- Entrada recomendada: Dia 2 para criar testes essenciais antes da implementação.
+- Banco de dados real e migrations permanecem fora deste recorte.
 
 ## Marco 4 — Hardening e Experiência
 Fases: Dia 5 e Dia 6
+
+Status: concluído para a primeira small release.
 
 Entregas:
 - refatoração orientada por testes
@@ -90,6 +99,8 @@ Entregas:
 ## Marco 5 — Release Incremental
 Fase: Dia 7
 
+Status: concluído para a primeira small release.
+
 Entregas:
 - lint verde
 - type-check verde
@@ -97,3 +108,20 @@ Entregas:
 - build verde
 - revisão básica de segurança
 - baseline de observabilidade
+
+## Marco 6 — Resumo Mensal Básico
+Fases: próximo ciclo Dia 2, Dia 3 e Dia 4
+
+Status: selecionado.
+
+Entregas planejadas:
+- testes essenciais do resumo mensal
+- caso de uso `list-monthly-summary.use-case.ts`
+- cálculo de receitas, despesas e saldo líquido em centavos
+- integração visual mínima apenas depois dos testes e da implementação estável
+
+Fora do marco:
+- Supabase Database
+- migrations
+- autenticação real
+- dashboard completo

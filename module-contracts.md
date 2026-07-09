@@ -36,6 +36,32 @@ export interface TransactionRepository {
 }
 ```
 
+Contrato planejado para `list-monthly-summary.use-case.ts`:
+
+```ts
+export interface ListMonthlySummaryInput {
+  userId: string;
+  monthRef: string;
+}
+
+export interface MonthlySummary {
+  monthRef: string;
+  incomeTotalInCents: number;
+  expenseTotalInCents: number;
+  netBalanceInCents: number;
+  transactionCount: number;
+}
+```
+
+Regras planejadas para a SR-005:
+- `monthRef` deve usar o formato `YYYY-MM`
+- `userId` é obrigatório
+- receitas somam em `incomeTotalInCents`
+- despesas somam em `expenseTotalInCents`
+- saldo líquido é receitas menos despesas
+- valores permanecem em centavos
+- o caso de uso não conhece Supabase nem UI
+
 ### Infrastructure
 Implementações futuras:
 - `supabase-transaction.repository.ts`
@@ -123,4 +149,3 @@ export interface OpenFinanceProviderGateway {
 Status:
 - bloqueado para ciclo futuro
 - exige ADR, revisão de segurança e escolha entre Pluggy, Belvo ou alternativa formal
-
