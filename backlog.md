@@ -14,9 +14,9 @@ Nenhum item pronto no momento.
 - Prioridade: Alta
 - Dependências: SR-003 e SR-004 concluídas.
 - Risco: Médio
-- Fase recomendada: próximo ciclo TDD, começando por Dia 2 para testes; Dia 3 para implementação mínima; Dia 4 para exposição visual se fizer sentido.
+- Fase recomendada: ciclo atual concluído até Dia 6; próximo passo é Dia 7 para validação final e release incremental.
 - Critério de pronto: caso de uso testado, cálculo mensal validado, arquitetura preservada e sem acesso direto da UI ao Supabase.
-- Status: IN_PROGRESS — Dia 5 concluído; responsabilidades internas refinadas e gates verdes; aguardando Dia 6 para revisão de UX, acessibilidade e PWA.
+- Status: IN_PROGRESS — Dia 6 concluído; UX, acessibilidade e PWA revisados; aguardando Dia 7 para quality gates finais.
 
 Escopo mínimo:
 - receber `userId` e `monthRef` no formato `YYYY-MM`

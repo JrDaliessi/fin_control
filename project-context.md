@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 — Refatoração e hardening interno da SR-005 concluídos
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 — Experiência, acessibilidade e PWA da SR-005 concluídos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -15,6 +15,7 @@
 - Data da implementação mínima da SR-005: 2026-07-09
 - Data da expansão controlada da SR-005: 2026-07-09
 - Data da refatoração e hardening interno da SR-005: 2026-07-09
+- Data da revisão de UX, acessibilidade e PWA da SR-005: 2026-07-09
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -558,6 +559,48 @@ Resultado dos gates:
 - `npm run lint`: passou
 - `npm run build`: passou
 
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-005
+
+Small release: `SR-005 — Resumo mensal básico`.
+
+Melhorias aplicadas:
+- tipo da transação trocado de `select` para controle segmentado com radios nativos acessíveis
+- regiões de resumo mensal e lançamentos da sessão passaram a usar `aria-live="polite"`
+- painel de resumo mensal expõe `aria-busy` durante cálculo
+- métricas do resumo mensal receberam `role="group"` com nome acessível contendo rótulo e valor
+- lista de lançamentos recebeu `aria-relevant="additions text"` para anunciar novas transações
+- descrições longas de lançamentos agora quebram linha para reduzir risco de overflow em mobile
+- manifest PWA recebeu shortcut para abrir o fluxo de registro manual de transação
+
+Testes criados ou alterados:
+- `src/features/transactions/tests/TransactionForm.test.tsx`
+- `src/features/transactions/tests/TransactionsPage.test.tsx`
+- `tests/pwa-manifest.test.ts`
+
+Limites preservados:
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+- nenhuma autenticação real criada
+- nenhum repositório Supabase criado
+- nenhuma nova regra financeira criada
+- nenhuma promessa de offline sem estratégia real
+- dashboard completo, gráficos, cartões, parcelas, IA e importação continuam fora do escopo
+
+Resultado TDD:
+- `npm run test:ci -- src/features/transactions/tests/TransactionForm.test.tsx src/features/transactions/tests/TransactionsPage.test.tsx tests/pwa-manifest.test.ts`: falhou antes da implementação porque radios, `aria-live`, grupos de métricas e shortcut PWA ainda não existiam.
+- Após implementação, o mesmo recorte passou com 3 suites e 16 testes.
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 8 suites e 46 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou
+- `npm audit`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
+Estado de saída:
+- projeto preparado para `QUALITY_VALIDATION`
+- próximo passo recomendado: executar Dia 7 da SR-005 para validar testes, type-check, lint, build, segurança básica e readiness de release
+
 ## Dia 4 — Expansão Controlada
 
 Implementação criada:
@@ -744,7 +787,7 @@ Preparação de release incremental:
 - Workflows do Dia 0 ao Dia 7 criados.
 - Catálogo mínimo de agents e skills criado.
 - Hardening interno do Dia 5 concluído com gates verdes.
-- Revisão de UX, acessibilidade e PWA do Dia 6 concluída com gates verdes.
+- Revisão de UX, acessibilidade e PWA do Dia 6 da SR-005 concluída com testes direcionados verdes.
 - Validação final do Dia 7 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
@@ -756,6 +799,6 @@ Preparação de release incremental:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
 ## Pendências e Próximos Passos
-- Dia 5 da `SR-005 — Resumo mensal básico` concluído com refatoração interna, responsabilidades mais claras e gates verdes.
-- Próximo passo recomendado: executar Dia 6 para revisar experiência, acessibilidade, responsividade e PWA.
+- Dia 6 da `SR-005 — Resumo mensal básico` concluído com melhorias de UX, acessibilidade e PWA.
+- Próximo passo recomendado: executar Dia 7 para quality gates finais, segurança básica, observabilidade e preparação de release da SR-005.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.

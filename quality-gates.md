@@ -70,16 +70,20 @@
 - Layout mobile first revisado.
 - Campos principais têm labels acessíveis.
 - Campos obrigatórios usam semântica nativa.
+- Tipo de transação usa radios nativos em controle segmentado.
 - Erros de formulário usam `aria-invalid` e mensagens anunciáveis.
 - Estados de sucesso e erro usam roles apropriadas.
 - Região de lançamentos está semanticamente nomeada.
+- Regiões de resumo mensal e lançamentos usam `aria-live="polite"`.
+- Métricas do resumo mensal têm nomes acessíveis com rótulo e valor.
+- Manifest PWA inclui shortcut para registro manual de transação.
 - Manifest PWA revisado e servido localmente.
 - Offline não foi prometido sem estratégia real.
-- Testes passando.
-- Type-check passando.
-- Lint passando.
-- Build passando.
-- Audit sem vulnerabilidades conhecidas.
+- `npm run test:ci` passou com 8 suites e 46 testes.
+- `npm run type-check` passou.
+- `npm run lint` passou.
+- `npm run build` passou.
+- `npm audit` passou com 0 vulnerabilidades.
 - Limitação de verificação visual pelo navegador integrado documentada.
 
 ## Gate do Dia 7

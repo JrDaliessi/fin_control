@@ -16,7 +16,9 @@ export function MonthlySummaryPanel({
 }: MonthlySummaryPanelProps) {
   return (
     <section
+      aria-busy={status === "loading"}
       aria-labelledby="monthly-summary-title"
+      aria-live="polite"
       className="grid gap-3 rounded-md border border-slate-200 bg-white p-4 shadow-sm"
     >
       <div>
@@ -82,7 +84,11 @@ type SummaryMetricProps = {
 
 function SummaryMetric({ label, value }: SummaryMetricProps) {
   return (
-    <div className="grid min-h-20 content-between rounded-md border border-slate-200 bg-slate-50 p-3">
+    <div
+      aria-label={`${label}: ${value}`}
+      className="grid min-h-20 content-between rounded-md border border-slate-200 bg-slate-50 p-3"
+      role="group"
+    >
       <dt className="text-xs font-medium uppercase text-slate-600">{label}</dt>
       <dd className="text-base font-semibold text-slate-950">{value}</dd>
     </div>
