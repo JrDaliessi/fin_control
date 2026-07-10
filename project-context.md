@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `CONTEXT_READY`
-- Fase atual: Dia 1 — Discovery e contexto da SR-006 concluídos
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 — Estratégia de testes e fundação TDD da SR-006 concluídos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -18,6 +18,7 @@
 - Data da revisão de UX, acessibilidade e PWA da SR-005: 2026-07-09
 - Data da validação final e entrega da SR-005: 2026-07-10
 - Data do discovery da SR-006: 2026-07-10
+- Data da estratégia de testes da SR-006: 2026-07-10
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -899,7 +900,49 @@ Critérios de pronto planejados:
 - nenhum acesso Supabase na apresentação
 - pipeline verde
 
+## Dia 2 — Estratégia de Testes da SR-006
+
+Small release: `SR-006 — Dashboard financeiro inicial`.
+
+Testes essenciais criados:
+- `src/features/dashboard/tests/get-dashboard-summary.use-case.test.ts`
+- `src/features/dashboard/tests/DashboardPage.test.tsx`
+
+Cenários cobertos pelo caso de uso:
+- cenário feliz com receita e despesa: resumo mensal correto e transações recentes retornadas
+- limite de transações recentes respeitado (máximo 5)
+- transações recentes ordenadas da mais recente para a mais antiga
+- mês sem transações retorna resumo zerado e lista vazia
+- `userId` vazio rejeitado com `user is required`
+- `monthRef` inválido rejeitado com `monthRef is invalid`
+- resumo mensal considera apenas transações do mês selecionado
+- transações recentes incluem todas as transações da sessão independentemente do mês
+
+Cenários cobertos pela apresentação:
+- heading do dashboard visível
+- empty state renderizado quando não há transações
+- link CTA para `/transactions` presente
+- landmark `main` presente
+
+Resultado esperado do TDD:
+- `npm run test:ci -- src/features/dashboard/tests`: falhou com `Cannot find module` porque `GetDashboardSummaryUseCase` e `DashboardPage` ainda não existem.
+- testes existentes (8 suítes, 46 testes) continuam passando.
+
+Implementação bloqueada até o Dia 3:
+- `src/features/dashboard/application/use-cases/get-dashboard-summary.use-case.ts`
+- `src/features/dashboard/presentation/pages/DashboardPage.tsx`
+- `src/features/dashboard/presentation/components/DashboardEmptyState.tsx`
+- `src/features/dashboard/presentation/components/RecentTransactionsList.tsx`
+- `src/shared/utils/formatCents.ts`
+
+Limites preservados:
+- nenhuma implementação funcional criada
+- nenhuma UI nova criada
+- nenhuma rota nova criada
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+
 ## Pendências e Próximos Passos
-- SR-006 em andamento. Discovery concluído no Dia 1.
-- Próximo passo: executar Dia 2 para criar testes essenciais do caso de uso e componentes do dashboard antes da implementação.
+- SR-006 em andamento. Testes essenciais criados no Dia 2.
+- Próximo passo: executar Dia 3 para implementar o mínimo necessário para satisfazer os testes.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
