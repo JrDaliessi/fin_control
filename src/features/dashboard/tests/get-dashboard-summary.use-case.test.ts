@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import type { CreateTransactionInput } from "../../transactions/domain/entities/transaction.entity";
 import {
   GetDashboardSummaryUseCase,
@@ -167,5 +168,31 @@ describe("GetDashboardSummaryUseCase", () => {
     });
 
     expect(result.recentTransactions).toHaveLength(2);
+  });
+
+  it("should only include recent transactions from the requested user", async () => {
+    const transactions: CreateTransactionInput[] = [
+      makeTransaction({
+        description: "Transação do usuário",
+        occurredAt: new Date("2026-07-15T12:00:00Z")
+      }),
+      makeTransaction({
+        userId: "user-2",
+        description: "Transação de outro usuário",
+        occurredAt: new Date("2026-07-20T12:00:00Z")
+      })
+    ];
+
+    const useCase = new GetDashboardSummaryUseCase();
+    const result = await useCase.execute({
+      userId: "user-1",
+      monthRef: "2026-07",
+      transactions
+    });
+
+    expect(result.recentTransactions).toHaveLength(1);
+    expect(result.recentTransactions[0].description).toBe(
+      "Transação do usuário"
+    );
   });
 });
