@@ -176,3 +176,14 @@ Usuário visualiza o dashboard de `2026-07`. O sistema reutiliza o resumo mensal
 - Nesse estado, `npm run test:ci -- src/features/dashboard/tests` falhou com `Cannot find module`, registrando a etapa vermelha esperada do TDD.
 - As 8 suítes e os 46 testes anteriores permaneceram verdes.
 - Implementação funcional permanece reservada ao Dia 3.
+
+## Resultado Observado do Dia 3 — SR-006
+- Os três arquivos parciais existentes foram revisados antes de serem incorporados ao escopo da fase.
+- Um novo cenário crítico verificou que transações recentes pertencem apenas ao usuário solicitado.
+- Etapa vermelha: o teste recebeu duas transações quando esperava uma, expondo uma transação de outro usuário.
+- Etapa verde: `GetDashboardSummaryUseCase` passou a filtrar pelo `userId` normalizado.
+- O adapter de repositório duplicado foi removido de `dashboard`; o resumo passou a reutilizar `listSessionMonthlySummary`.
+- Testes do dashboard passaram com 2 suites e 13 testes.
+- Suíte completa passou com 10 suites e 59 testes.
+- Os testes novos foram alinhados ao padrão de imports de `@jest/globals` após o type-check detectar globais implícitos.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
