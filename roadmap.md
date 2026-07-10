@@ -110,26 +110,41 @@ Entregas:
 - baseline de observabilidade
 
 ## Marco 6 — Resumo Mensal Básico
-Fases: ciclo atual Dia 2 a Dia 6
+Fases: Dia 2 a Dia 7
 
-Status: Dia 6 concluído; projeto preparado para quality validation da SR-005.
+Status: concluído. SR-005 entregue com pipeline verde.
 
-Entregas planejadas:
+Entregas:
 - testes essenciais do resumo mensal concluídos
 - caso de uso `list-monthly-summary.use-case.ts` implementado
 - cálculo de receitas, despesas e saldo líquido em centavos implementado
 - exposição visual do resumo mensal criada
 - responsabilidades internas refinadas no Dia 5
 - UX, acessibilidade e PWA revisados no Dia 6
-
-Próximo passo:
-- executar Dia 7 para validação final da SR-005.
-- integração visual mínima concluída na tela atual de transações
-- estados de loading, empty, success e error adicionados ao painel do resumo
-- responsabilidades internas refinadas entre página, hook e componentes de apresentação
+- quality gates finais validados no Dia 7
 
 Fora do marco:
 - Supabase Database
 - migrations
 - autenticação real
 - dashboard completo
+
+## Marco 7 — Dashboard Financeiro Inicial
+Fases: Dia 1 a Dia 7 (ciclo atual)
+
+Status: Dia 1 (discovery) concluído.
+
+Small release: SR-006
+
+Entregas planejadas:
+- caso de uso `GetDashboardSummaryUseCase` testado
+- painel de resumo mensal reutilizando caso de uso existente
+- lista resumida de transações recentes
+- empty state com call-to-action
+- rotas `/` (dashboard) e `/transactions` (registro)
+- navegação mínima entre telas
+- `formatCents` compartilhado em `src/shared/utils/`
+
+Próximo passo:
+- executar Dia 2 para testes essenciais antes da implementação
+

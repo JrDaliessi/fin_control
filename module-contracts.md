@@ -128,17 +128,58 @@ Uso inicial:
 
 ## Dashboard
 
-Contrato inicial:
+### Domain
+
+Nesta SR, o dashboard não introduz novas entidades de domínio. Consome tipos existentes de transactions:
+- `MonthlySummary` de `list-monthly-summary.use-case.ts`
+- `CreateTransactionInput` de `transaction.entity.ts`
+
+### Application
+
+Caso de uso:
+- `get-dashboard-summary.use-case.ts`
+
+Contrato:
 
 ```ts
-export interface FinancialSummaryRepository {
-  getMonthlySummary(input: MonthlySummaryInput): Promise<MonthlySummary>;
-}
+export type DashboardSummaryInput = {
+  userId: string;
+  monthRef: string;
+  transactions: CreateTransactionInput[];
+};
+
+export type DashboardSummary = {
+  monthlySummary: MonthlySummary;
+  recentTransactions: CreateTransactionInput[];
+};
 ```
 
-Regra:
-- dashboard consome casos de uso e resumos
-- dashboard não consulta tabela diretamente
+Regras:
+- orquestra resumo mensal via `ListMonthlySummaryUseCase` (reuso, não duplicação)
+- seleciona as N transações mais recentes da sessão
+- não acessa repositórios diretamente
+- `userId` e `monthRef` validados antes de execução
+
+### Presentation
+
+Componentes:
+- `DashboardPage.tsx` — composição macro da tela
+- `DashboardSummaryPanel.tsx` — reutiliza ou compõe sobre `MonthlySummaryPanel`
+- `RecentTransactionsList.tsx` — lista compacta das últimas transações
+- `DashboardEmptyState.tsx` — call-to-action quando não há dados
+
+Hooks:
+- `useDashboardSummary.ts` — estado assíncrono do cálculo do resumo
+
+Regras:
+- componente não calcula regra financeira
+- componente não importa Supabase
+- estados visuais anunciáveis por semântica acessível
+- navegação mínima entre dashboard e registro de transação
+
+### Infrastructure
+
+Nenhuma infraestrutura nova nesta SR. Sem repositórios, sem clients, sem Supabase.
 
 ## AI Insights
 

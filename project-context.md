@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 — Qualidade final, segurança, observabilidade e entrega da SR-005 concluídos
+- Estado atual da máquina de estados: `CONTEXT_READY`
+- Fase atual: Dia 1 — Discovery e contexto da SR-006 concluídos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -17,6 +17,7 @@
 - Data da refatoração e hardening interno da SR-005: 2026-07-09
 - Data da revisão de UX, acessibilidade e PWA da SR-005: 2026-07-09
 - Data da validação final e entrega da SR-005: 2026-07-10
+- Data do discovery da SR-006: 2026-07-10
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -845,7 +846,60 @@ Preparação de release incremental:
 - fora da release: autenticação real, RLS, persistência real, dashboard completo, gráficos, cartões, parcelas, IA, importação e Open Finance
 - estado final: `READY_FOR_RELEASE`
 
+## Dia 1 — Discovery e Contexto da SR-006
+
+Small release: `SR-006 — Dashboard financeiro inicial`.
+
+Visão:
+- o dashboard é a primeira tela útil do produto
+- responde "quanto eu tenho?", "para onde vai meu dinheiro?" e "o que aconteceu recentemente?"
+- opera com dados locais de sessão neste recorte
+
+Escopo mínimo:
+- painel de resumo mensal reutilizando `ListMonthlySummaryUseCase` via adapter de sessão
+- lista resumida das 5 últimas transações registradas na sessão
+- empty state com call-to-action para registrar primeira transação
+- navegação mínima entre dashboard e registro de transação
+- rota `/dashboard` dedicada
+- rota `/` renderiza o dashboard como tela de entrada do produto
+- rota `/transactions` para a página de registro de transações
+
+Fora do escopo:
+- gráficos e visualizações avançadas
+- saldo por conta
+- faturas e cartões
+- orçamento mensal visual
+- alertas de estouro e risco financeiro
+- IA e insights
+- persistência real e migrations Supabase
+- autenticação real
+- importação de extrato
+- navegação por mês (seletor de período)
+
+Decisões arquiteturais:
+- feature `dashboard/` dedicada em `src/features/dashboard/`
+- reuso do caso de uso `ListMonthlySummaryUseCase` sem duplicar lógica financeira
+- `formatCents` movido para `src/shared/utils/formatCents.ts` para compartilhamento entre features
+- caso de uso `GetDashboardSummaryUseCase` orquestra resumo mensal + transações recentes
+- dashboard não acessa repositórios diretamente
+- dashboard não introduz novas entidades de domínio nesta SR
+
+Contratos entre camadas:
+- domain: consome tipos existentes de transactions (`MonthlySummary`, `CreateTransactionInput`)
+- application: `GetDashboardSummaryUseCase` retorna `DashboardSummary` com resumo mensal e transações recentes
+- presentation: `DashboardPage`, `DashboardSummaryPanel`, `RecentTransactionsList`, `DashboardEmptyState`, `useDashboardSummary`
+- infrastructure: nenhuma infraestrutura nova nesta SR
+
+Critérios de pronto planejados:
+- caso de uso testado com TDD (cenário feliz, sem transações, userId vazio, monthRef inválido)
+- componente de dashboard renderiza empty state e estado com dados
+- `formatCents` em shared sem quebrar testes existentes
+- rotas `/dashboard` e `/transactions` funcionais
+- navegação mínima entre as duas telas
+- nenhum acesso Supabase na apresentação
+- pipeline verde
+
 ## Pendências e Próximos Passos
-- SR-005 concluída com Dia 7 verde. Estado: `READY_FOR_RELEASE`.
-- Próximo ciclo recomendado: iniciar discovery da `SR-006 — Dashboard financeiro inicial` ou `SR-007 — Cadastro de conta financeira`.
-- Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.
+- SR-006 em andamento. Discovery concluído no Dia 1.
+- Próximo passo: executar Dia 2 para criar testes essenciais do caso de uso e componentes do dashboard antes da implementação.
+- Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
