@@ -139,6 +139,7 @@ Cenários críticos:
 ## Casos de Uso Iniciais
 - `create-transaction.use-case.ts`
 - `list-monthly-summary.use-case.ts`
+- `get-dashboard-summary.use-case.ts`
 - `calculate-real-balance.use-case.ts`
 
 ## Fora do Primeiro Recorte
@@ -147,5 +148,5 @@ Cenários críticos:
 - importação
 - IA
 - Open Finance
-- dashboard completo
+
 

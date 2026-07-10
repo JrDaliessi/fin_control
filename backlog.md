@@ -6,21 +6,39 @@ Nenhum item pronto no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em progresso no momento.
-
-## DISCOVERY
-
 ### SR-006 — Dashboard financeiro inicial
 - Tipo: Small Release
-- Descrição: Exibir resumo mensal básico, saldo líquido e alertas simples a partir dos casos de uso existentes.
+- Descrição: Exibir resumo mensal básico, lista de transações recentes e navegação mínima a partir dos casos de uso existentes.
 - Objetivo de negócio: entregar primeira tela útil do produto.
 - Valor esperado: tornar o controle financeiro visível para o usuário.
 - Prioridade: Alta
-- Dependências: SR-005
+- Dependências: SR-005 concluída.
 - Risco: Médio
-- Fase recomendada: Dia 4
-- Critério de pronto: estados principais de UI definidos e sem regra de negócio na apresentação.
-- Status: DISCOVERY
+- Fase recomendada: ciclo atual.
+- Critério de pronto: caso de uso testado, dashboard funcional com empty state e dados, rotas `/` e `/transactions` funcionais, pipeline verde.
+- Status: IN_PROGRESS — Dia 1 (discovery) concluído; aguardando Dia 2 para testes essenciais.
+
+Escopo mínimo:
+- painel de resumo mensal reutilizando `ListMonthlySummaryUseCase`
+- lista resumida das 5 últimas transações da sessão
+- empty state com call-to-action
+- navegação mínima entre dashboard e registro de transação
+- rota `/` renderiza dashboard
+- rota `/transactions` renderiza registro de transações
+
+Fora do escopo:
+- gráficos e visualizações avançadas
+- saldo por conta
+- faturas e cartões
+- orçamento mensal visual
+- alertas de estouro e risco financeiro
+- IA e insights
+- persistência real e migrations Supabase
+- autenticação real
+- importação de extrato
+- navegação por mês
+
+## DISCOVERY
 
 ### SR-007 — Cadastro de conta financeira
 - Tipo: Small Release
