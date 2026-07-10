@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 — Experiência, acessibilidade e PWA da SR-005 concluídos
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 — Qualidade final, segurança, observabilidade e entrega da SR-005 concluídos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -16,6 +16,7 @@
 - Data da expansão controlada da SR-005: 2026-07-09
 - Data da refatoração e hardening interno da SR-005: 2026-07-09
 - Data da revisão de UX, acessibilidade e PWA da SR-005: 2026-07-09
+- Data da validação final e entrega da SR-005: 2026-07-10
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -789,6 +790,7 @@ Preparação de release incremental:
 - Hardening interno do Dia 5 concluído com gates verdes.
 - Revisão de UX, acessibilidade e PWA do Dia 6 da SR-005 concluída com testes direcionados verdes.
 - Validação final do Dia 7 concluída com pipeline verde.
+- Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
@@ -798,7 +800,52 @@ Preparação de release incremental:
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-005
+
+Small release: `SR-005 — Resumo mensal básico`.
+
+Pipeline final executado:
+- `npm run test:ci`: passou, 8 suites e 46 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
+Revisão básica de segurança:
+- somente `.env.example` está versionado entre os arquivos de ambiente
+- `.env`, `.env.local`, `.env.production`, `.env.development` e variantes estão ignorados pelo Git
+- `.env.example` contém apenas placeholders vazios
+- nenhum acesso Supabase encontrado em `src/features/transactions/presentation` ou `src/app`
+- nenhum uso de `any` encontrado em `src` ou `tests`
+- nenhum segredo real identificado nos arquivos versionáveis verificados
+- clients Supabase usam `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`; `service role` não é usado no código
+
+Cobertura de testes por camada:
+- domain: `Transaction`, `Money`, `MonthRef` — 3 suites
+- application: `CreateTransactionUseCase`, `ListMonthlySummaryUseCase` — 2 suites
+- presentation: `TransactionForm`, `TransactionsPage` — 2 suites
+- infraestrutura PWA: `pwa-manifest` — 1 suite
+- total: 8 suites, 46 testes
+
+Riscos residuais documentados:
+- autenticação real, autorização e RLS ainda não foram implementados para dados financeiros reais
+- fluxo atual usa dados demo/locais de sessão e não deve ser tratado como produção com usuários reais
+- observabilidade de runtime ainda não possui ferramenta externa dedicada
+- deploy real não foi executado nesta fase
+
+Baseline de observabilidade:
+- logs de build, lint, type-check, testes e audit são a evidência mínima de release
+- falhas de ambiente Supabase disparam erro explícito de variável ausente
+- próximos ciclos devem adicionar captura estruturada de erros de UI e eventos mínimos de produto quando houver persistência real
+- eventos candidatos futuros: `monthly_summary_view`, `monthly_summary_empty_state`
+
+Preparação de release incremental:
+- release candidata: resumo mensal básico com painel visual, integrado à tela de transações
+- escopo liberável: cálculo de receitas, despesas, saldo líquido e contagem de transações por mês; painel visual com estados de loading, empty, success e error; UX acessível com aria-live, radios nativos e landmarks
+- fora da release: autenticação real, RLS, persistência real, dashboard completo, gráficos, cartões, parcelas, IA, importação e Open Finance
+- estado final: `READY_FOR_RELEASE`
+
 ## Pendências e Próximos Passos
-- Dia 6 da `SR-005 — Resumo mensal básico` concluído com melhorias de UX, acessibilidade e PWA.
-- Próximo passo recomendado: executar Dia 7 para quality gates finais, segurança básica, observabilidade e preparação de release da SR-005.
+- SR-005 concluída com Dia 7 verde. Estado: `READY_FOR_RELEASE`.
+- Próximo ciclo recomendado: iniciar discovery da `SR-006 — Dashboard financeiro inicial` ou `SR-007 — Cadastro de conta financeira`.
 - Manter fora do escopo imediato: cartão, parcelas, dashboard completo, IA, importação e Open Finance.
