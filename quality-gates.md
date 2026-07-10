@@ -28,6 +28,19 @@
 - Audit sem vulnerabilidades conhecidas.
 - Implementação funcional segue bloqueada até Dia 3.
 
+### Resultado observado — SR-006
+- Matriz de testes do dashboard documentada em `test-strategy.md`.
+- Testes de aplicação criados com 8 cenários para `GetDashboardSummaryUseCase`.
+- Testes de apresentação criados com 4 cenários para `DashboardPage`.
+- Testes de domínio novos não se aplicam: a SR-006 reutiliza tipos e regras já cobertos em `transactions` e não introduz entidade de domínio.
+- Commit `0952a70` contém os testes e não contém implementação do dashboard, confirmando a etapa vermelha antes do Dia 3.
+- Import não utilizado removido do teste de aplicação para satisfazer o lint com zero warnings.
+- Suíte anterior passou com 8 suites e 46 testes.
+- Testes do dashboard passaram no worktree atual com 2 suites e 12 testes devido à implementação do Dia 3 ainda não rastreada; essa execução não substitui a evidência histórica da etapa vermelha.
+- `npm run lint` passou.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+
 ## Gate do Dia 3
 - Código mínimo funcional implementado.
 - Entidade de domínio criada sem dependência de framework.

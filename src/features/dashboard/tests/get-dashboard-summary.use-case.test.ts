@@ -1,8 +1,7 @@
 import type { CreateTransactionInput } from "../../transactions/domain/entities/transaction.entity";
 import {
   GetDashboardSummaryUseCase,
-  type DashboardSummary,
-  type DashboardSummaryInput
+  type DashboardSummary
 } from "../application/use-cases/get-dashboard-summary.use-case";
 
 function makeTransaction(

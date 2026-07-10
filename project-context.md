@@ -942,7 +942,25 @@ Limites preservados:
 - nenhuma migration Supabase criada
 - nenhuma persistência real criada
 
+## Validação Formal do Dia 2 — SR-006
+
+Resultado da auditoria:
+- commit `0952a70` contém os dois arquivos de teste da SR-006 e não contém implementação do dashboard, comprovando testes antes do código funcional
+- matriz por camada, cenário feliz, cenários alternativos e edge cases foram registrados em `test-strategy.md`
+- import não utilizado removido do teste de aplicação para corrigir o único warning de lint encontrado
+- suíte anterior passou com 8 suites e 46 testes
+- testes do dashboard passaram no worktree atual com 2 suites e 12 testes porque existem arquivos não rastreados antecipando o Dia 3; a evidência histórica da etapa vermelha permanece no commit do Dia 2
+- `npm run lint` passou sem warnings
+- `npm audit --omit=dev` passou com 0 vulnerabilidades
+
+Estado de saída confirmado:
+- `TEST_STRATEGY_READY`
+- Dia 2 da SR-006 concluído
+- implementação funcional permanece condicionada ao workflow e à aprovação do Dia 3
+
 ## Pendências e Próximos Passos
-- SR-006 em andamento. Testes essenciais criados no Dia 2.
+- SR-006 em andamento. Dia 2 formalmente auditado e concluído com matriz, cenários críticos e testes essenciais documentados.
+- O commit `0952a70` comprova que os testes foram versionados antes da implementação do dashboard.
+- Existem três arquivos de implementação do Dia 3 não rastreados no worktree; eles foram preservados e não integram a conclusão do Dia 2.
 - Próximo passo: executar Dia 3 para implementar o mínimo necessário para satisfazer os testes.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
