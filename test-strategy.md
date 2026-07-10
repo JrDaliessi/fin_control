@@ -131,3 +131,48 @@ Usuário solicita o resumo de `2026-07`. O sistema valida `userId` e `monthRef`,
 - Etapa verde: o mesmo comando passou com 3 suites e 16 testes.
 - Suíte completa: `npm run test:ci` passou com 8 suites e 46 testes.
 - `npm run type-check`, `npm run lint`, `npm audit` e `npm run build` passaram.
+
+## Dia 2 — SR-006 Dashboard Financeiro Inicial
+
+## Objetivo
+Definir a estratégia de testes da small release `SR-006 — Dashboard financeiro inicial` antes da implementação do caso de uso e da apresentação.
+
+## Prioridade por Camada
+1. `domain`: reutilizar entidades e value objects já cobertos em `transactions`; nenhum tipo de domínio novo será criado nesta SR.
+2. `application`: validar `GetDashboardSummaryUseCase` como orquestrador do resumo mensal e das transações recentes.
+3. `presentation`: validar heading, empty state, call-to-action e landmark principal do dashboard.
+4. `infrastructure`: permanece fora do escopo enquanto os dados forem locais de sessão.
+
+## Matriz de Testes da SR-006
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | tipos existentes de `transactions` | valores financeiros, transações e referência mensal já cobertos pelas suítes existentes | reutilizado; sem novo teste necessário |
+| application | `GetDashboardSummaryUseCase` | resumo mensal; limite e ordenação das recentes; lista vazia; usuário e mês inválidos; filtro mensal; recentes entre meses | 8 testes criados |
+| presentation | `DashboardPage` | heading; empty state; CTA para `/transactions`; landmark `main` | 4 testes criados |
+| infrastructure | persistência do dashboard | acesso por repositório e isolamento por usuário | futuro; fora do escopo da SR-006 |
+
+## Cenário Feliz
+Usuário visualiza o dashboard de `2026-07`. O sistema reutiliza o resumo mensal existente e retorna, em ordem decrescente de data, até cinco transações recentes da sessão.
+
+## Cenários Alternativos
+- sessão sem transações retorna resumo zerado, lista vazia e empty state com CTA
+- transações fora do mês não entram no resumo, mas podem aparecer na lista de recentes
+- mais de cinco transações são limitadas às cinco mais recentes
+
+## Edge Cases Críticos
+- `userId` vazio ou composto apenas por espaços
+- `monthRef` inválido
+- transações fora do mês selecionado
+- ordenação de transações recebidas fora de ordem
+- ausência total de transações
+
+## Testes Criados
+- `src/features/dashboard/tests/get-dashboard-summary.use-case.test.ts`
+- `src/features/dashboard/tests/DashboardPage.test.tsx`
+
+## Resultado Observado do Dia 2
+- O commit `0952a70` contém os dois arquivos de teste e não contém arquivos de implementação em `src/features/dashboard/application` ou `src/features/dashboard/presentation`.
+- Nesse estado, `npm run test:ci -- src/features/dashboard/tests` falhou com `Cannot find module`, registrando a etapa vermelha esperada do TDD.
+- As 8 suítes e os 46 testes anteriores permaneceram verdes.
+- Implementação funcional permanece reservada ao Dia 3.
