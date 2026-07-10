@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 — Estratégia de testes e fundação TDD da SR-006 concluídos
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 — Implementação mínima orientada por teste da SR-006 concluída
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -19,6 +19,7 @@
 - Data da validação final e entrega da SR-005: 2026-07-10
 - Data do discovery da SR-006: 2026-07-10
 - Data da estratégia de testes da SR-006: 2026-07-10
+- Data da implementação mínima da SR-006: 2026-07-10
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -958,9 +959,54 @@ Estado de saída confirmado:
 - Dia 2 da SR-006 concluído
 - implementação funcional permanece condicionada ao workflow e à aprovação do Dia 3
 
+## Dia 3 — Implementação Mínima da SR-006
+
+Small release: `SR-006 — Dashboard financeiro inicial`.
+
+Implementação criada ou revisada:
+- `src/features/dashboard/application/use-cases/get-dashboard-summary.use-case.ts`
+- `src/features/dashboard/presentation/components/DashboardEmptyState.tsx`
+- `src/features/dashboard/presentation/pages/DashboardPage.tsx`
+- `src/features/dashboard/tests/get-dashboard-summary.use-case.test.ts`
+- `src/features/dashboard/tests/DashboardPage.test.tsx`
+
+Escopo entregue:
+- `GetDashboardSummaryUseCase` reutiliza `listSessionMonthlySummary` sem conhecer repositório ou duplicar cálculo financeiro
+- `userId` é normalizado e obrigatório
+- resumo mensal permanece delegado aos casos de uso de `transactions`
+- transações recentes são isoladas pelo usuário solicitado, ordenadas da mais recente para a mais antiga e limitadas a cinco
+- `DashboardPage` e `DashboardEmptyState` implementam a apresentação mínima coberta pelos testes
+- empty state mantém CTA para o futuro fluxo `/transactions`
+
+Resultado TDD:
+- novo teste de isolamento por usuário falhou inicialmente porque uma transação de outro usuário aparecia na lista de recentes
+- após a correção, os testes do dashboard passaram com 2 suites e 13 testes
+- suíte completa passou com 10 suites e 59 testes
+
+Correção de gate:
+- `npm run type-check` identificou globais Jest implícitos nos dois testes novos
+- os testes foram alinhados ao padrão local com imports de `@jest/globals`
+- `npm run type-check` passou após a correção
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 10 suites e 59 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou
+
+Limites preservados:
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+- nenhuma autenticação ou RLS criada
+- nenhum acesso a repositório ou Supabase dentro de `dashboard`
+- rotas dedicadas, lista visual de recentes, painel com dados e estados adicionais permanecem para expansão controlada no Dia 4
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar Dia 4 da SR-006
+
 ## Pendências e Próximos Passos
-- SR-006 em andamento. Dia 2 formalmente auditado e concluído com matriz, cenários críticos e testes essenciais documentados.
-- O commit `0952a70` comprova que os testes foram versionados antes da implementação do dashboard.
-- Existem três arquivos de implementação do Dia 3 não rastreados no worktree; eles foram preservados e não integram a conclusão do Dia 2.
-- Próximo passo: executar Dia 3 para implementar o mínimo necessário para satisfazer os testes.
+- SR-006 em andamento. Dia 3 concluído com implementação mínima e pipeline verde.
+- Próximo passo: executar Dia 4 para integrar rotas, dados de sessão e estados visuais adicionais de forma controlada.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.

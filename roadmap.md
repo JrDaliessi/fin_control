@@ -132,7 +132,7 @@ Fora do marco:
 ## Marco 7 — Dashboard Financeiro Inicial
 Fases: Dia 1 a Dia 7 (ciclo atual)
 
-Status: Dias 1 e 2 concluídos. Estratégia TDD e testes essenciais da SR-006 validados.
+Status: Dias 1 a 3 concluídos. Implementação mínima da SR-006 validada com pipeline verde.
 
 Small release: SR-006
 
@@ -146,4 +146,4 @@ Entregas planejadas:
 - `formatCents` compartilhado em `src/shared/utils/`
 
 Próximo passo:
-- executar Dia 3 para implementar o mínimo necessário para satisfazer os testes
+- executar Dia 4 para integrar rotas, dados da sessão e estados visuais adicionais

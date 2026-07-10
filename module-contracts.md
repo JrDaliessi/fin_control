@@ -155,10 +155,11 @@ export type DashboardSummary = {
 ```
 
 Regras:
-- orquestra resumo mensal via `ListMonthlySummaryUseCase` (reuso, não duplicação)
+- orquestra resumo mensal via `listSessionMonthlySummary`, que reutiliza `ListMonthlySummaryUseCase`
 - seleciona as N transações mais recentes da sessão
 - não acessa repositórios diretamente
 - `userId` e `monthRef` validados antes de execução
+- transações recentes são filtradas pelo `userId` solicitado antes da ordenação e do limite
 
 ### Presentation
 

@@ -53,6 +53,18 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para módulos fora da small release.
 
+### Resultado observado — SR-006
+- `GetDashboardSummaryUseCase` implementado sem acesso direto a repositório.
+- Resumo mensal delegado a `listSessionMonthlySummary`.
+- Transações recentes isoladas por usuário, ordenadas por data e limitadas a cinco.
+- `DashboardPage` e `DashboardEmptyState` implementados no escopo mínimo dos testes.
+- Teste adicional reproduziu e corrigiu vazamento de transação recente entre usuários.
+- Testes do dashboard passaram com 2 suites e 13 testes.
+- Suíte completa passou com 10 suites e 59 testes.
+- `npm run type-check`, `npm run lint` e `npm run build` passaram.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate do Dia 4
 - Presentation inicial criada.
 - Estados de idle, loading, success e error implementados quando aplicável.
