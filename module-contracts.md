@@ -93,6 +93,8 @@ Regras:
 - componente não importa Supabase
 - resumo mensal visível deve consumir resultado da camada de aplicação
 - página deve compor fluxo, evitando concentrar estado derivado e lista detalhada
+- estados visuais relevantes devem ser anunciáveis por semântica acessível quando mudarem
+- controles de escolha de modo, como receita/despesa, devem preferir radios nativos ou controle segmentado acessível
 
 ## Accounts
 

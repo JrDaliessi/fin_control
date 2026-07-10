@@ -13,6 +13,14 @@
   "lang": "pt-BR",
   "categories": ["finance", "productivity"],
   "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Registrar transação",
+      "short_name": "Registrar",
+      "description": "Abrir o fluxo de registro manual de transação.",
+      "url": "/"
+    }
+  ],
   "icons": [
     {
       "src": "/icon.svg",

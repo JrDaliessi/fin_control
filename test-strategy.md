@@ -121,3 +121,13 @@ Usuário solicita o resumo de `2026-07`. O sistema valida `userId` e `monthRef`,
 - `npm run type-check`: passou.
 - `npm run lint`: passou.
 - `npm run build`: passou.
+
+## Resultado Observado do Dia 6
+- Testes de apresentação passaram a validar controle segmentado com radios nativos para o tipo da transação.
+- Testes de página passaram a validar `aria-live` nas regiões de resumo mensal e lançamentos da sessão.
+- Testes de resumo passaram a validar métricas com `role="group"` e nomes acessíveis contendo rótulo e valor.
+- Teste de PWA `tests/pwa-manifest.test.ts` passou a validar metadados instaláveis e shortcut de registro manual.
+- Etapa vermelha: `npm run test:ci -- src/features/transactions/tests/TransactionForm.test.tsx src/features/transactions/tests/TransactionsPage.test.tsx tests/pwa-manifest.test.ts` falhou antes da implementação por ausência dos contratos de acessibilidade/PWA.
+- Etapa verde: o mesmo comando passou com 3 suites e 16 testes.
+- Suíte completa: `npm run test:ci` passou com 8 suites e 46 testes.
+- `npm run type-check`, `npm run lint`, `npm audit` e `npm run build` passaram.

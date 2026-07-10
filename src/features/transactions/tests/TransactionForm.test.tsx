@@ -37,6 +37,13 @@ function renderTransactionForm(onSubmit: OnCreateTransaction = async () => undef
   };
 }
 
+async function selectTransactionType(
+  user: ReturnType<typeof userEvent.setup>,
+  type: "Despesa" | "Receita"
+) {
+  await user.click(screen.getByRole("radio", { name: type }));
+}
+
 describe("TransactionForm", () => {
   describe("parseTransactionAmountToCents", () => {
     it.each([
@@ -64,7 +71,7 @@ describe("TransactionForm", () => {
 
     await user.type(screen.getByLabelText("Descrição"), "Mercado");
     await user.type(screen.getByLabelText("Valor"), "125,50");
-    await user.selectOptions(screen.getByLabelText("Tipo"), "expense");
+    await selectTransactionType(user, "Despesa");
     await user.selectOptions(screen.getByLabelText("Conta"), "account-1");
     await user.selectOptions(screen.getByLabelText("Categoria"), "category-1");
     await user.type(screen.getByLabelText("Data"), "2026-07-08");
@@ -93,7 +100,7 @@ describe("TransactionForm", () => {
 
     await user.type(screen.getByLabelText("Descrição"), "Salario");
     await user.type(screen.getByLabelText("Valor"), "3100");
-    await user.selectOptions(screen.getByLabelText("Tipo"), "income");
+    await selectTransactionType(user, "Receita");
     await user.type(screen.getByLabelText("Data"), "2026-07-08");
     await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
@@ -148,6 +155,9 @@ describe("TransactionForm", () => {
     renderTransactionForm();
 
     expect(screen.getByRole("form", { name: "Registro manual de transação" })).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup", { name: "Tipo" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Despesa" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Receita" })).not.toBeChecked();
     expect(screen.getByLabelText("Descrição")).toBeRequired();
     expect(screen.getByLabelText("Valor")).toHaveAccessibleDescription(
       "Use reais com vírgula ou ponto, por exemplo 125,50."

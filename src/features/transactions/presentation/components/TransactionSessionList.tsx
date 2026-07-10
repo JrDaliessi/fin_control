@@ -11,6 +11,8 @@ export function TransactionSessionList({
   return (
     <section
       aria-labelledby="session-transactions-title"
+      aria-live="polite"
+      aria-relevant="additions text"
       className="grid content-start gap-3"
     >
       <h2
@@ -31,12 +33,13 @@ export function TransactionSessionList({
         <ul className="grid gap-3">
           {transactions.map((transaction, index) => (
             <li
+              aria-label={`${transaction.type === "income" ? "Receita" : "Despesa"}: ${transaction.description}, ${formatCents(transaction.amountInCents)}`}
               className="rounded-md border border-slate-200 bg-white p-4 shadow-sm"
               key={`${transaction.description}-${transaction.occurredAt.toISOString()}-${index}`}
             >
               <div className="grid gap-2 sm:flex sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0">
-                  <p className="font-medium text-slate-950">
+                  <p className="break-words font-medium text-slate-950">
                     {transaction.description}
                   </p>
                   <p className="text-sm text-slate-600">

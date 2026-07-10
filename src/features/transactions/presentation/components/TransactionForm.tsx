@@ -26,6 +26,9 @@ const fieldClassName =
 const fieldErrorClassName =
   "border-danger focus-visible:border-danger focus-visible:ring-danger/30";
 
+const typeOptionClassName =
+  "grid min-h-11 cursor-pointer place-items-center rounded px-3 py-2 text-sm font-semibold transition peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40 peer-focus-visible:ring-offset-2";
+
 const messageId = "transaction-form-message";
 
 export function TransactionForm({
@@ -128,23 +131,42 @@ export function TransactionForm({
         </p>
       </div>
 
-      <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="transaction-type">
-          Tipo
-        </label>
-        <select
-          className={fieldClassName}
-          id="transaction-type"
-          name="type"
-          onChange={(event) =>
-            updateValue("type", event.target.value === "income" ? "income" : "expense")
-          }
-          value={values.type}
+      <fieldset
+        aria-labelledby="transaction-type-legend"
+        className="grid gap-1.5"
+        role="radiogroup"
+      >
+        <legend
+          className="text-sm font-medium text-slate-800"
+          id="transaction-type-legend"
         >
-          <option value="expense">Despesa</option>
-          <option value="income">Receita</option>
-        </select>
-      </div>
+          Tipo
+        </legend>
+        <div className="grid grid-cols-2 rounded-md border border-slate-300 bg-slate-50 p-1">
+          <label>
+            <input
+              checked={values.type === "expense"}
+              className="peer sr-only"
+              name="type"
+              onChange={() => updateValue("type", "expense")}
+              type="radio"
+              value="expense"
+            />
+            <span className={typeOptionClassName}>Despesa</span>
+          </label>
+          <label>
+            <input
+              checked={values.type === "income"}
+              className="peer sr-only"
+              name="type"
+              onChange={() => updateValue("type", "income")}
+              type="radio"
+              value="income"
+            />
+            <span className={typeOptionClassName}>Receita</span>
+          </label>
+        </div>
+      </fieldset>
 
       <div className="grid gap-1.5">
         <label className="text-sm font-medium text-slate-800" htmlFor="transaction-account">

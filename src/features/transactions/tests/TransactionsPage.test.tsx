@@ -19,6 +19,12 @@ describe("TransactionsPage", () => {
       screen.getByRole("region", { name: "Resumo mensal" })
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("region", { name: "Lançamentos desta sessão" })
+    ).toHaveAttribute("aria-live", "polite");
+    expect(
+      screen.getByRole("region", { name: "Resumo mensal" })
+    ).toHaveAttribute("aria-live", "polite");
+    expect(
       screen.getByText("Nenhuma transação registrada nesta sessão.")
     ).toHaveAttribute("role", "status");
     expect(
@@ -34,13 +40,13 @@ describe("TransactionsPage", () => {
 
     await user.type(screen.getByLabelText("Descrição"), "Salario");
     await user.type(screen.getByLabelText("Valor"), "5000");
-    await user.selectOptions(screen.getByLabelText("Tipo"), "income");
+    await user.click(screen.getByRole("radio", { name: "Receita" }));
     await user.type(screen.getByLabelText("Data"), "2026-07-05");
     await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
     await user.type(screen.getByLabelText("Descrição"), "Mercado");
     await user.type(screen.getByLabelText("Valor"), "125,50");
-    await user.selectOptions(screen.getByLabelText("Tipo"), "expense");
+    await user.click(screen.getByRole("radio", { name: "Despesa" }));
     await user.type(screen.getByLabelText("Data"), "2026-07-08");
     await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
@@ -50,5 +56,8 @@ describe("TransactionsPage", () => {
     expect(within(summaryRegion).getByText(/R\$\s*125,50/)).toBeInTheDocument();
     expect(within(summaryRegion).getByText(/R\$\s*4\.874,50/)).toBeInTheDocument();
     expect(within(summaryRegion).getByText("2")).toBeInTheDocument();
+    expect(
+      within(summaryRegion).getByRole("group", { name: /Receitas: R\$\s*5\.000,00/ })
+    ).toBeInTheDocument();
   });
 });
