@@ -187,3 +187,14 @@ Usuário visualiza o dashboard de `2026-07`. O sistema reutiliza o resumo mensal
 - Suíte completa passou com 10 suites e 59 testes.
 - Os testes novos foram alinhados ao padrão de imports de `@jest/globals` após o type-check detectar globais implícitos.
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+
+## Resultado Observado do Dia 4 — SR-006
+- Testes de `DashboardPage` passaram a cobrir loading, empty state, success com resumo e recentes, error e CTA.
+- `TransactionSessionProvider.test.tsx` cobre estado inicial e adição de transação à sessão em memória.
+- `DashboardRoutes.test.tsx` cobre a composição de `/`, `/dashboard` e `/transactions`.
+- `TransactionsPage.test.tsx` passou a renderizar sob o provider e validar o link de retorno ao dashboard.
+- Etapa vermelha: 4 suites falharam porque provider e rotas ainda não existiam.
+- Etapa verde direcionada: 5 suites e 21 testes passaram.
+- Suíte completa: 12 suites e 65 testes passaram.
+- O lint detectou `setState` síncrono dentro do efeito do dashboard; a correção passou a derivar loading pela requisição ativa.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.

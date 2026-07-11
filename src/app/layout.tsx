@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { Viewport } from "next";
+import { TransactionSessionProvider } from "@/features/transactions/presentation/providers/TransactionSessionProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,7 +32,9 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <TransactionSessionProvider>{children}</TransactionSessionProvider>
+      </body>
     </html>
   );
 }

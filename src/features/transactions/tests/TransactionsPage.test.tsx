@@ -3,10 +3,19 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/react";
 import { TransactionsPage } from "../presentation/pages/TransactionsPage";
+import { TransactionSessionProvider } from "../presentation/providers/TransactionSessionProvider";
+
+function renderTransactionsPage() {
+  render(
+    <TransactionSessionProvider>
+      <TransactionsPage />
+    </TransactionSessionProvider>
+  );
+}
 
 describe("TransactionsPage", () => {
   it("renders the manual transaction flow with accessible landmarks", async () => {
-    render(<TransactionsPage />);
+    renderTransactionsPage();
 
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(
@@ -32,11 +41,14 @@ describe("TransactionsPage", () => {
         screen.getByRole("region", { name: "Resumo mensal" })
       ).findByText("Nenhuma transação no mês selecionado.")
     ).toHaveAttribute("role", "status");
+    expect(
+      screen.getByRole("link", { name: "Voltar ao dashboard" })
+    ).toHaveAttribute("href", "/");
   });
 
   it("shows monthly income, expenses and net balance from session transactions", async () => {
     const user = userEvent.setup();
-    render(<TransactionsPage />);
+    renderTransactionsPage();
 
     await user.type(screen.getByLabelText("Descrição"), "Salario");
     await user.type(screen.getByLabelText("Valor"), "5000");

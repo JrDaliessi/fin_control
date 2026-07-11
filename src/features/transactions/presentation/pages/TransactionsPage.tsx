@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
 import { MonthlySummaryPanel } from "../components/MonthlySummaryPanel";
 import { TransactionForm } from "../components/TransactionForm";
 import { TransactionSessionList } from "../components/TransactionSessionList";
 import { useSessionMonthlySummary } from "../hooks/useSessionMonthlySummary";
+import { useTransactionSession } from "../providers/TransactionSessionProvider";
 
 const demoAccounts = [
   {
@@ -28,14 +30,14 @@ const demoCategories = [
 const demoUserId = "user-1";
 
 export function TransactionsPage() {
-  const [transactions, setTransactions] = useState<CreateTransactionInput[]>([]);
+  const { addTransaction, transactions } = useTransactionSession();
   const monthlySummaryState = useSessionMonthlySummary({
     transactions,
     userId: demoUserId
   });
 
   async function handleCreateTransaction(input: CreateTransactionInput) {
-    setTransactions((currentTransactions) => [input, ...currentTransactions]);
+    await addTransaction(input);
   }
 
   return (
@@ -43,6 +45,13 @@ export function TransactionsPage() {
       <div className="mx-auto grid w-full max-w-6xl gap-5 lg:grid-cols-[minmax(0,430px)_1fr] lg:gap-8">
         <section className="grid content-start gap-4">
           <div>
+            <Link
+              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              href="/"
+            >
+              <ArrowLeft aria-hidden="true" size={18} />
+              Voltar ao dashboard
+            </Link>
             <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
               Controle Financeiro IA
             </p>

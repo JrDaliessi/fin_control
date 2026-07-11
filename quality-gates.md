@@ -78,6 +78,21 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para cartão, parcelas, dashboard completo, IA, importação ou Open Finance.
 
+### Resultado observado — SR-006
+- Estados loading, empty, success e error implementados no dashboard.
+- Provider local mantém transações em memória entre rotas sem acessar infraestrutura.
+- Painel mensal e lista de até cinco transações recentes implementados.
+- Rotas `/`, `/dashboard` e `/transactions` geradas pelo build.
+- Navegação entre dashboard e registro manual implementada.
+- `formatCents` compartilhado em `src/shared/utils`.
+- Etapa vermelha registrada com 4 suites falhando por módulos e rotas ausentes.
+- Recorte direcionado passou com 5 suites e 21 testes.
+- Suíte completa passou com 12 suites e 65 testes.
+- `npm run type-check`, `npm run lint` e `npm run build` passaram.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Desktop de 1280px e mobile de 390px sem overflow horizontal no navegador integrado.
+- Limitação de automação do campo nativo de data documentada.
+
 ## Gate do Dia 5
 - Arquivos inchados identificados.
 - Plano de refatoração incremental documentado.

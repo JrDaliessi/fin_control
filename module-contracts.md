@@ -165,7 +165,7 @@ Regras:
 
 Componentes:
 - `DashboardPage.tsx` — composição macro da tela
-- `DashboardSummaryPanel.tsx` — reutiliza ou compõe sobre `MonthlySummaryPanel`
+- `DashboardSummaryPanel.tsx` — exibe o resumo mensal retornado pela aplicação
 - `RecentTransactionsList.tsx` — lista compacta das últimas transações
 - `DashboardEmptyState.tsx` — call-to-action quando não há dados
 
@@ -177,6 +177,23 @@ Regras:
 - componente não importa Supabase
 - estados visuais anunciáveis por semântica acessível
 - navegação mínima entre dashboard e registro de transação
+- `DashboardPage` consome a sessão local por `useTransactionSession`
+- `useDashboardSummary` coordena loading, success e error sobre `GetDashboardSummaryUseCase`
+
+### Sessão Local de Apresentação
+
+- `TransactionSessionProvider` pertence à apresentação de `transactions`
+- o provider é composto em `src/app/layout.tsx`
+- transações existem apenas em memória durante a navegação
+- recarregar a aplicação reinicia a sessão
+- o provider não substitui repositório, Supabase, autenticação ou RLS
+- `formatCents` fica em `src/shared/utils` por ser usado em mais de uma feature
+
+### Rotas
+
+- `/` renderiza `DashboardPage`
+- `/dashboard` renderiza `DashboardPage`
+- `/transactions` renderiza `TransactionsPage`
 
 ### Infrastructure
 

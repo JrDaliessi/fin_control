@@ -1,5 +1,5 @@
 import type { MonthlySummary } from "../../application/use-cases/list-monthly-summary.use-case";
-import { formatCents } from "../utils/formatCents";
+import { formatCents } from "@/shared/utils/formatCents";
 
 export type MonthlySummaryPanelStatus = "loading" | "success" | "error";
 
