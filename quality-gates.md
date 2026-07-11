@@ -118,6 +118,20 @@
 - Desktop de 1280px e mobile de 390px sem overflow horizontal no navegador integrado.
 - Limitação de automação do campo nativo de data documentada.
 
+### Resultado observado — SR-007
+- Estados `idle`, `submitting`, `success` e `error` implementados no cadastro local.
+- `AccountSessionProvider` mantém contas somente em memória e executa `CreateAccountUseCase`.
+- Formulário, lista, página e rota `/accounts` implementados.
+- Dashboard oferece link acessível para `Contas`.
+- UI não importa Supabase e não contém regra financeira pesada.
+- Saldo negativo é explicado como saldo informado, não limite de crédito.
+- Etapa vermelha registrada por módulos, rota e link ausentes.
+- Etapa verde direcionada passou com 7 suítes e 35 testes.
+- Suíte completa passou com 20 suítes e 99 testes.
+- `npm run type-check`, `npm run lint` e `npm run build` passaram.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Build gerou `/`, `/accounts`, `/dashboard` e `/transactions`.
+
 ## Gate do Dia 5
 - Arquivos inchados identificados.
 - Plano de refatoração incremental documentado.

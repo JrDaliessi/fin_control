@@ -272,3 +272,14 @@ O usuário informa uma conta corrente em BRL com nome e saldo inicial em centavo
 - `npm run test:ci`: passou com 16 suítes e 90 testes.
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
 - Apresentação, sessão local, Supabase e integração com transações permanecem fora do Dia 3.
+
+## Resultado Observado do Dia 4 — SR-007
+- Testes de formulário cobrem parsing em reais, submitting, success, erro local e erro do fluxo.
+- Testes do provider cobrem estado inicial e criação validada em memória.
+- Testes da página cobrem landmark, empty state, navegação e listagem com saldo negativo.
+- Teste da rota cobre `/accounts`; teste do dashboard cobre o link `Contas`.
+- Etapa vermelha: quatro módulos/rota ausentes e link do dashboard inexistente.
+- Etapa verde direcionada: 7 suítes e 35 testes passaram.
+- Suíte completa: 20 suítes e 99 testes passaram.
+- Type-check detectou inferência incorreta de argumentos no mock assíncrono; a tipagem foi explicitada sem alterar comportamento.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.

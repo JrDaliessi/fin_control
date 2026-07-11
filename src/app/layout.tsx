@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { Viewport } from "next";
+import { AccountSessionProvider } from "@/features/accounts/presentation/providers/AccountSessionProvider";
 import { TransactionSessionProvider } from "@/features/transactions/presentation/providers/TransactionSessionProvider";
 import "./globals.css";
 
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR">
       <body>
-        <TransactionSessionProvider>{children}</TransactionSessionProvider>
+        <AccountSessionProvider>
+          <TransactionSessionProvider>{children}</TransactionSessionProvider>
+        </AccountSessionProvider>
       </body>
     </html>
   );

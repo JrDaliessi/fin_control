@@ -167,11 +167,21 @@ Decisões:
 
 ### Presentation
 
-Planejada somente para os Dias 3 e 4, depois dos testes essenciais:
-- formulário mínimo com nome, tipo e saldo inicial
-- conversão de reais digitados para centavos na fronteira de apresentação
-- estados `idle`, `submitting`, `success` e `error`
-- sessão local explicitamente temporária
+Implementada no Dia 4:
+- `AccountForm.tsx`: nome, tipo, saldo inicial e feedback acessível
+- `useAccountForm.ts`: estados `idle`, `submitting`, `success` e `error`
+- `parseAccountBalanceToCents.ts`: conversão de reais para centavos, incluindo saldo negativo
+- `AccountSessionProvider.tsx`: adapter local que executa `CreateAccountUseCase` e mantém contas em memória
+- `AccountSessionList.tsx`: empty state e lista das contas locais
+- `AccountsPage.tsx`: composição da experiência
+- `/accounts`: rota do App Router
+
+Regras preservadas:
+- provider local não substitui repositório Supabase
+- recarregar a aplicação reinicia as contas
+- erros de entrada são associados ao campo e anunciados
+- saldo negativo tem explicação explícita na interface
+- dashboard oferece navegação para `/accounts`
 
 Fora da SR-007:
 - listar, editar ou excluir contas
