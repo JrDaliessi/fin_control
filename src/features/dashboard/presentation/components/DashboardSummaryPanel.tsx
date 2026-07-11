@@ -1,5 +1,6 @@
 import type { MonthlySummary } from "../../../transactions/application/use-cases/list-monthly-summary.use-case";
 import { formatCents } from "@/shared/utils/formatCents";
+import { formatMonthRef } from "@/shared/utils/formatMonthRef";
 
 type DashboardSummaryPanelProps = {
   summary: MonthlySummary;
@@ -63,10 +64,4 @@ function SummaryMetric({ label, value }: SummaryMetricProps) {
       <dd className="text-base font-semibold text-slate-950">{value}</dd>
     </div>
   );
-}
-
-function formatMonthRef(monthRef: string) {
-  const [year, month] = monthRef.split("-");
-
-  return `${month}/${year}`;
 }

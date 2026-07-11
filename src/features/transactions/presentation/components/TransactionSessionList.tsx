@@ -2,7 +2,7 @@ import type { CreateTransactionInput } from "../../domain/entities/transaction.e
 import { formatCents } from "@/shared/utils/formatCents";
 
 type TransactionSessionListProps = {
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
 };
 
 export function TransactionSessionList({

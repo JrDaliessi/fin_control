@@ -12,7 +12,7 @@ import type { CreateTransactionInput } from "../../domain/entities/transaction.e
 
 type TransactionSessionContextValue = {
   addTransaction: (input: CreateTransactionInput) => Promise<void>;
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
 };
 
 const TransactionSessionContext =
@@ -20,7 +20,7 @@ const TransactionSessionContext =
 
 type TransactionSessionProviderProps = {
   children: ReactNode;
-  initialTransactions?: CreateTransactionInput[];
+  initialTransactions?: readonly CreateTransactionInput[];
 };
 
 export function TransactionSessionProvider({
@@ -28,9 +28,14 @@ export function TransactionSessionProvider({
   initialTransactions = []
 }: TransactionSessionProviderProps) {
   const [transactions, setTransactions] =
-    useState<CreateTransactionInput[]>(initialTransactions);
+    useState<CreateTransactionInput[]>(() =>
+      initialTransactions.map(cloneTransactionInput)
+    );
   const addTransaction = useCallback(async (input: CreateTransactionInput) => {
-    setTransactions((currentTransactions) => [input, ...currentTransactions]);
+    setTransactions((currentTransactions) => [
+      cloneTransactionInput(input),
+      ...currentTransactions
+    ]);
   }, []);
   const value = useMemo(
     () => ({ addTransaction, transactions }),
@@ -54,4 +59,13 @@ export function useTransactionSession() {
   }
 
   return context;
+}
+
+function cloneTransactionInput(
+  input: CreateTransactionInput
+): CreateTransactionInput {
+  return {
+    ...input,
+    occurredAt: new Date(input.occurredAt.getTime())
+  };
 }

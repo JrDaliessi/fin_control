@@ -14,11 +14,13 @@ import {
 export type ListSessionMonthlySummaryInput = {
   userId: string;
   monthRef: string;
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
 };
 
 class SessionTransactionRepository implements TransactionRepository {
-  constructor(private readonly transactions: CreateTransactionInput[]) {}
+  constructor(
+    private readonly transactions: readonly CreateTransactionInput[]
+  ) {}
 
   async create(input: Transaction): Promise<Transaction> {
     return input;

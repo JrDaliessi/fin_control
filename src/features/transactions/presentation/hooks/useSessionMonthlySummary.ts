@@ -5,6 +5,7 @@ import {
   listSessionMonthlySummary
 } from "../../application/use-cases/list-session-monthly-summary.use-case";
 import type { MonthlySummary } from "../../application/use-cases/list-monthly-summary.use-case";
+import { resolveSessionMonthRef } from "../../application/utils/resolve-session-month-ref";
 import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
 import type { MonthlySummaryPanelStatus } from "../components/MonthlySummaryPanel";
 
@@ -15,7 +16,7 @@ type MonthlySummaryState = {
 };
 
 type UseSessionMonthlySummaryParams = {
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
   userId: string;
 };
 
@@ -27,9 +28,9 @@ export function useSessionMonthlySummary({
     useState<MonthlySummaryState>({
       status: "loading",
       summary: null
-    });
+  });
   const monthRef = useMemo(
-    () => getVisibleMonthRef(transactions),
+    () => resolveSessionMonthRef(transactions),
     [transactions]
   );
 
@@ -72,12 +73,4 @@ export function useSessionMonthlySummary({
   }, [monthRef, transactions, userId]);
 
   return monthlySummaryState;
-}
-
-function getVisibleMonthRef(transactions: CreateTransactionInput[]) {
-  const visibleDate = transactions[0]?.occurredAt ?? new Date();
-  const year = visibleDate.getUTCFullYear();
-  const month = String(visibleDate.getUTCMonth() + 1).padStart(2, "0");
-
-  return `${year}-${month}`;
 }
