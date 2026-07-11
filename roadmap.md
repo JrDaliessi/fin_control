@@ -146,5 +146,35 @@ Entregas planejadas:
 - `formatCents` compartilhado em `src/shared/utils/`
 
 Próximo passo:
-- publicar os commits locais com autorização explícita
-- selecionar e refinar a próxima small release do backlog
+- aprovar a expansao planejada e iniciar `dia 1` da SR-007
+- manter analytics avancados bloqueados ate a fundacao de dados reais
+
+## Marco 8 - Fundacao de Dados Reais
+
+Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
+
+Saida: dados isolados por usuario e prontos para consultas por periodo.
+
+## Marco 9 - Periodos e Evolucao
+
+Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
+
+## Marco 10 - Candles Financeiros
+
+SR-015 entrega OHLC de saldo, intervalos vazios, tooltip acessivel, volume e seletor Linha/Candles, sem recursos de trading.
+
+## Marco 11 - Distribuicao de Frequencia
+
+SR-016 entrega algoritmo continuo, tabela, FI, FR, percentuais, acumuladas e medidas agrupadas. SR-017 adiciona histograma, toggle, filtros e comparacao. O metodo inicial usa `k = ceil(sqrt(n))`.
+
+## Marco 12 - Metas e Gamificacao
+
+Ordem: SR-018 metas/contribuicoes, SR-019 progresso/projecao, SR-020 eventos/pontos/conquistas, SR-021 desafios/sequencias e SR-022 desafios opcionais baseados em frequencia.
+
+## Marco 13 - Insights de IA
+
+SR-023 entra somente com calculos deterministas, consentimento, minimizacao e politica de privacidade.
+
+## Cadencia
+
+Cada SR executa, sem salto, Dias 1 a 7. Nenhum marco autoriza implementacao one-shot ou varias SRs simultaneas.
