@@ -299,3 +299,36 @@ Evidência:
 Interpretação:
 - implementação mínima satisfez os testes sem expandir apresentação ou infraestrutura.
 - próxima expansão controlada depende do comando `dia 4`.
+
+## Dia 4 — SR-007
+
+### Etapa vermelha de apresentação
+Resultado: falha esperada.
+
+Evidência:
+- quatro suítes falharam por formulário, provider, página e rota ausentes.
+- cenário do dashboard falhou pelo link `Contas` ainda inexistente.
+
+### Testes direcionados
+Resultado: passou.
+
+Evidência:
+- 7 suítes passaram.
+- 35 testes passaram.
+
+### Suíte completa
+Resultado: passou.
+
+Evidência:
+- 20 suítes passaram.
+- 99 testes passaram.
+
+### Quality gates
+- type-check: passou após correção da tipagem do mock de teste.
+- lint: passou, sem warnings.
+- audit de produção: passou, 0 vulnerabilidades.
+- build: passou com a nova rota `/accounts`.
+
+Interpretação:
+- expansão controlada utilizável durante a sessão.
+- persistência, autenticação e RLS continuam fora do escopo.

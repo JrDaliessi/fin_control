@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-007 concluído; aguardando comando explícito `dia 4`
+- Fase atual: Dia 4 da SR-007 concluído; aguardando comando explícito `dia 5`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -27,6 +27,7 @@
 - Data do discovery e arquitetura da SR-007: 2026-07-11
 - Data da estratégia de testes da SR-007: 2026-07-11
 - Data da implementação mínima da SR-007: 2026-07-11
+- Data da expansão controlada da SR-007: 2026-07-11
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1179,8 +1180,8 @@ Estado de saída:
 
 ## Pendências e Próximos Passos
 - SR-006 concluída e classificada como `READY_FOR_RELEASE`.
-- Dia 3 da SR-007 concluído; item em `IN_PROGRESS` e estado `IMPLEMENTATION_IN_PROGRESS`.
-- Próximo passo operacional: executar `dia 4` para decidir e implementar somente a expansão controlada de apresentação/sessão local.
+- Dia 4 da SR-007 concluído; item em `IN_PROGRESS` e estado `IMPLEMENTATION_IN_PROGRESS`.
+- Próximo passo operacional: executar `dia 5` para refatoração, consistência e hardening interno sem nova regra de negócio.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1360,6 +1361,59 @@ Limites preservados:
 Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-007
+
+Small release: `SR-007 — Cadastro local de conta financeira`.
+
+Testes criados antes da expansão:
+- `src/features/accounts/tests/AccountForm.test.tsx`
+- `src/features/accounts/tests/AccountSessionProvider.test.tsx`
+- `src/features/accounts/tests/AccountsPage.test.tsx`
+- `src/features/accounts/tests/AccountsRoute.test.tsx`
+- cenário de navegação para `/accounts` adicionado a `DashboardPage.test.tsx`
+
+Etapa vermelha:
+- quatro suítes falharam por ausência de formulário, provider, página e rota
+- teste do dashboard falhou pela ausência do link `Contas`
+- testes anteriores de domínio e aplicação permaneceram verdes
+
+Implementação criada:
+- `AccountForm` com nome, tipo, saldo inicial e estados de envio
+- `useAccountForm` orquestrando parsing, validação e feedback
+- `parseAccountBalanceToCents` aceitando formatos em reais e saldo negativo
+- `AccountSessionProvider` usando `CreateAccountUseCase` e estado somente em memória
+- `AccountSessionList` com empty state e lista acessível
+- `AccountsPage` compondo cadastro e contas da sessão
+- rota `/accounts`
+- provider de contas composto no layout raiz
+- link `Contas` adicionado ao dashboard
+
+Estados e experiência:
+- `idle`, `submitting`, `success` e `error` cobertos
+- erro de saldo inválido associado ao campo com `aria-invalid`
+- mensagens de sucesso usam `role=status` e falhas usam `role=alert`
+- região de contas usa `aria-live=polite`
+- interface informa que os dados são temporários e perdidos ao recarregar
+- saldo negativo é explicado como saldo informado, não limite de crédito
+
+Resultado TDD e quality gates:
+- etapa verde direcionada: 7 suítes e 35 testes passaram
+- suíte completa: 20 suítes e 99 testes passaram
+- `npm run type-check`: passou após tipagem explícita do mock assíncrono do formulário
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`
+
+Limites preservados:
+- provider local não acessa Supabase e não persiste após recarga
+- nenhuma migration, autenticação ou RLS
+- nenhuma edição, exclusão, cálculo de saldo atual ou integração com transações
+- nenhuma refatoração ampla de módulos anteriores
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar `dia 5`
 
 ## Dia 6 — Experiência, Acessibilidade e PWA da SR-006
 

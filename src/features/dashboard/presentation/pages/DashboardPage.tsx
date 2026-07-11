@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, WalletCards } from "lucide-react";
 import { useTransactionSession } from "../../../transactions/presentation/providers/TransactionSessionProvider";
 import { DashboardSummaryPanel } from "../components/DashboardSummaryPanel";
 import { DashboardEmptyState } from "../components/DashboardEmptyState";
@@ -34,15 +34,25 @@ export function DashboardPage({ userId = demoUserId }: DashboardPageProps) {
             </h1>
           </div>
 
-          {dashboardState.status === "success" && hasTransactions ? (
+          <div className="flex flex-wrap gap-2">
             <Link
-              className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              href="/transactions"
+              className="inline-flex min-h-11 items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              href="/accounts"
             >
-              <Plus aria-hidden="true" size={18} />
-              Nova transação
+              <WalletCards aria-hidden="true" size={18} />
+              Contas
             </Link>
-          ) : null}
+
+            {dashboardState.status === "success" && hasTransactions ? (
+              <Link
+                className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                href="/transactions"
+              >
+                <Plus aria-hidden="true" size={18} />
+                Nova transação
+              </Link>
+            ) : null}
+          </div>
         </header>
 
         {dashboardState.status === "loading" ? (

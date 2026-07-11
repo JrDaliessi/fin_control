@@ -67,6 +67,16 @@ describe("DashboardPage", () => {
     expect(ctaLink).toHaveClass("min-h-11", "focus-visible:ring-2");
   });
 
+  it("should provide navigation to financial accounts", async () => {
+    renderDashboard();
+
+    expect(
+      screen.getByRole("link", { name: "Contas" })
+    ).toHaveAttribute("href", "/accounts");
+
+    await screen.findByText(/nenhuma transação registrada/i);
+  });
+
   it("should render the monthly summary and recent transactions", async () => {
     renderDashboard([
       makeTransaction({
