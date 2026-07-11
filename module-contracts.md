@@ -70,6 +70,11 @@ Adapter local de sessão:
 - não acessa Supabase
 - existe apenas para a experiência local antes da infraestrutura real
 
+Resolução de competência da sessão:
+- `resolve-session-month-ref.ts` seleciona a transação mais recente sem depender da ordem de entrada
+- sessão vazia usa uma data de fallback
+- hooks de dashboard e transações reutilizam o mesmo contrato
+
 ### Infrastructure
 Implementações futuras:
 - `supabase-transaction.repository.ts`
@@ -187,7 +192,9 @@ Regras:
 - transações existem apenas em memória durante a navegação
 - recarregar a aplicação reinicia a sessão
 - o provider não substitui repositório, Supabase, autenticação ou RLS
-- `formatCents` fica em `src/shared/utils` por ser usado em mais de uma feature
+- o provider clona a transação e sua data na entrada para impedir mutação externa da sessão
+- contratos de leitura expõem coleções readonly
+- `formatCents` e `formatMonthRef` ficam em `src/shared/utils` por serem usados em mais de uma feature
 
 ### Rotas
 

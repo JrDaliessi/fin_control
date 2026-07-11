@@ -1,6 +1,8 @@
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  currency: "BRL",
+  style: "currency"
+});
+
 export function formatCents(amountInCents: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    currency: "BRL",
-    style: "currency"
-  }).format(amountInCents / 100);
+  return currencyFormatter.format(amountInCents / 100);
 }

@@ -106,6 +106,20 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para nova feature de negócio.
 
+### Resultado observado — SR-006
+- Arquivos de produção do dashboard medidos; nenhum ultrapassava 100 linhas.
+- Resolução duplicada de competência consolidada em utilitário de aplicação.
+- `formatMonthRef` centralizado em `src/shared/utils`.
+- Instâncias de formatadores `Intl` reutilizadas.
+- Provider passou a clonar transações na entrada e contratos de leitura passaram a readonly.
+- Teste reproduziu e corrigiu mutação externa da sessão.
+- Componentes de métrica permaneceram separados por diferença visual intencional.
+- `TransactionForm.tsx` registrado como fora do escopo da SR-006, sem refatoração oportunista.
+- Recorte direcionado passou com 7 suites e 25 testes.
+- Suíte completa passou com 14 suites e 69 testes.
+- `npm run type-check`, `npm run lint` e `npm run build` passaram.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+
 ## Gate do Dia 6
 - Layout mobile first revisado.
 - Campos principais têm labels acessíveis.

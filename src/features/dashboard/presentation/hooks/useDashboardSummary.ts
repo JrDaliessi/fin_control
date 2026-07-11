@@ -6,6 +6,7 @@ import {
   type DashboardSummary
 } from "../../application/use-cases/get-dashboard-summary.use-case";
 import type { CreateTransactionInput } from "../../../transactions/domain/entities/transaction.entity";
+import { resolveSessionMonthRef } from "../../../transactions/application/utils/resolve-session-month-ref";
 
 export type DashboardSummaryStatus = "loading" | "success" | "error";
 
@@ -17,7 +18,7 @@ type DashboardSummaryState = {
 
 type DashboardSummaryRequest = {
   monthRef: string;
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
   userId: string;
 };
 
@@ -26,7 +27,7 @@ type DashboardSummaryResult = DashboardSummaryState & {
 };
 
 type UseDashboardSummaryParams = {
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
   userId: string;
 };
 
@@ -40,7 +41,7 @@ export function useDashboardSummary({
     summary: null
   });
   const monthRef = useMemo(
-    () => getVisibleMonthRef(transactions),
+    () => resolveSessionMonthRef(transactions),
     [transactions]
   );
   const request = useMemo<DashboardSummaryRequest>(
@@ -80,18 +81,4 @@ export function useDashboardSummary({
   }
 
   return result;
-}
-
-function getVisibleMonthRef(transactions: CreateTransactionInput[]) {
-  const visibleDate = transactions.reduce<Date>(
-    (latestDate, transaction) =>
-      transaction.occurredAt.getTime() > latestDate.getTime()
-        ? transaction.occurredAt
-        : latestDate,
-    transactions[0]?.occurredAt ?? new Date()
-  );
-  const year = visibleDate.getUTCFullYear();
-  const month = String(visibleDate.getUTCMonth() + 1).padStart(2, "0");
-
-  return `${year}-${month}`;
 }

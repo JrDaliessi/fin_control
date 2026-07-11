@@ -7,12 +7,12 @@ const MAX_RECENT_TRANSACTIONS = 5;
 export type DashboardSummaryInput = {
   userId: string;
   monthRef: string;
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
 };
 
 export type DashboardSummary = {
   monthlySummary: MonthlySummary;
-  recentTransactions: CreateTransactionInput[];
+  recentTransactions: readonly CreateTransactionInput[];
 };
 
 export class GetDashboardSummaryUseCase {

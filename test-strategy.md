@@ -198,3 +198,13 @@ Usuário visualiza o dashboard de `2026-07`. O sistema reutiliza o resumo mensal
 - Suíte completa: 12 suites e 65 testes passaram.
 - O lint detectou `setState` síncrono dentro do efeito do dashboard; a correção passou a derivar loading pela requisição ativa.
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+
+## Resultado Observado do Dia 5 — SR-006
+- `resolve-session-month-ref.test.ts` cobre seleção da transação mais recente fora de ordem e fallback para sessão vazia.
+- `month-ref-formatter.test.ts` cobre a formatação compartilhada de competência mensal.
+- `TransactionSessionProvider.test.tsx` passou a reproduzir mutação externa do objeto submetido.
+- Etapa vermelha: dois módulos estavam ausentes e o provider expôs `Descrição alterada externamente` no lugar de `Mercado`.
+- Etapa verde: provider clona entradas, contratos de leitura são readonly e hooks reutilizam a mesma resolução de competência.
+- Recorte direcionado passou com 7 suites e 25 testes.
+- Suíte completa passou com 14 suites e 69 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.

@@ -2,8 +2,14 @@ import type { CreateTransactionInput } from "../../../transactions/domain/entiti
 import { formatCents } from "@/shared/utils/formatCents";
 
 type RecentTransactionsListProps = {
-  transactions: CreateTransactionInput[];
+  transactions: readonly CreateTransactionInput[];
 };
+
+const transactionDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "short",
+  timeZone: "UTC"
+});
 
 export function RecentTransactionsList({
   transactions
@@ -59,9 +65,5 @@ export function RecentTransactionsList({
 }
 
 function formatTransactionDate(date: Date) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    timeZone: "UTC"
-  }).format(date);
+  return transactionDateFormatter.format(date);
 }

@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 — Expansão controlada da SR-006 concluída
+- Fase atual: Dia 5 — Refatoração e hardening interno da SR-006 concluídos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -21,6 +21,7 @@
 - Data da estratégia de testes da SR-006: 2026-07-10
 - Data da implementação mínima da SR-006: 2026-07-10
 - Data da expansão controlada da SR-006: 2026-07-10
+- Data da refatoração e hardening interno da SR-006: 2026-07-10
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1071,7 +1072,59 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar Dia 5 da SR-006
 
+## Dia 5 — Refatoração e Hardening Interno da SR-006
+
+Small release: `SR-006 — Dashboard financeiro inicial`.
+
+Diagnóstico estrutural:
+- nenhum arquivo de produção do dashboard ultrapassava 100 linhas; `useDashboardSummary.ts` era o maior, com 97 linhas
+- resolução da competência mensal estava duplicada e tinha comportamento diferente entre os hooks de dashboard e transações
+- `formatMonthRef` estava duplicado nos dois painéis mensais
+- formatadores `Intl` eram recriados a cada chamada/renderização
+- o provider armazenava referências externas mutáveis de transação
+- `TransactionForm.tsx` permanece com 255 linhas, mas pertence ao fluxo anterior e não apresentou duplicação ou regressão ligada à SR-006; não foi refatorado neste ciclo
+
+Plano aplicado:
+- extrair resolução de competência para utilitário de aplicação compartilhado pela sessão
+- centralizar formatação visual de `monthRef`
+- reutilizar instâncias de `Intl.NumberFormat` e `Intl.DateTimeFormat`
+- clonar transações na fronteira de entrada do provider
+- expor coleções de transações como readonly nos contratos de leitura
+- preservar componentes `SummaryMetric` separados porque seus tratamentos visuais são intencionalmente diferentes
+
+Implementação criada ou alterada:
+- `src/features/transactions/application/utils/resolve-session-month-ref.ts`
+- `src/shared/utils/formatMonthRef.ts`
+- `src/shared/utils/formatCents.ts`
+- `src/features/transactions/presentation/providers/TransactionSessionProvider.tsx`
+- `src/features/transactions/presentation/hooks/useSessionMonthlySummary.ts`
+- `src/features/dashboard/presentation/hooks/useDashboardSummary.ts`
+- contratos de sessão, dashboard e listas atualizados para leitura readonly
+
+Resultado TDD:
+- testes dos novos utilitários falharam inicialmente por módulos ausentes
+- teste do provider falhou ao receber `Descrição alterada externamente` em vez de `Mercado`, comprovando mutação por referência
+- etapa verde direcionada: 7 suites e 25 testes passaram
+- suíte completa: 14 suites e 69 testes passaram
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 14 suites e 69 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/dashboard` e `/transactions`
+
+Limites preservados:
+- nenhuma regra financeira nova criada
+- nenhuma persistência real, migration, autenticação ou RLS criada
+- nenhuma abstração genérica criada apenas por semelhança visual
+- comportamento e rotas do Dia 4 preservados
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` após encerramento do hardening
+- próximo passo recomendado: executar Dia 6 da SR-006
+
 ## Pendências e Próximos Passos
-- SR-006 em andamento. Dia 4 concluído com rotas, sessão em memória e estados visuais validados.
-- Próximo passo: executar Dia 5 para refatoração, consistência e hardening interno.
+- SR-006 em andamento. Dia 5 concluído com integridade da sessão e duplicações internas revisadas.
+- Próximo passo: executar Dia 6 para UX, acessibilidade e PWA.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
