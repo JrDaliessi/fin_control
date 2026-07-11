@@ -103,18 +103,81 @@ Regras:
 
 ## Accounts
 
-Contrato previsto:
+### Domain
+
+Tipos aprovados para a SR-007:
+
+```ts
+export type FinancialAccountType =
+  | "checking"
+  | "savings"
+  | "cash"
+  | "payment"
+  | "investment";
+
+export type CreateFinancialAccountInput = {
+  userId: string;
+  name: string;
+  type: FinancialAccountType;
+  initialBalanceInCents: number;
+  currency?: "BRL";
+};
+
+export type FinancialAccountProps = CreateFinancialAccountInput & {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+```
+
+Invariantes:
+- nome normalizado e limitado a 80 caracteres
+- saldo inicial representado por inteiro seguro em centavos, aceitando valores negativos
+- moeda padrão e única da SR-007: `BRL`
+- nenhum saldo atual mutável armazenado na entidade
+
+### Application
+
+Caso de uso planejado:
+- `create-account.use-case.ts`
+
+Fluxo:
+1. receber `CreateFinancialAccountInput`
+2. criar e validar `FinancialAccount`
+3. chamar `AccountRepository.create` uma única vez
+4. retornar a conta criada pelo repositório
+
+### Repository
+
+Contrato aprovado:
 
 ```ts
 export interface AccountRepository {
-  findById(input: FindAccountByIdInput): Promise<FinancialAccount | null>;
-  create(input: CreateAccountInput): Promise<FinancialAccount>;
+  create(input: FinancialAccount): Promise<FinancialAccount>;
+  findById?: (input: FindAccountByIdInput) => Promise<FinancialAccount | null>;
 }
 ```
 
-Uso inicial:
-- validar se uma transação referencia conta existente
-- calcular saldo em casos de uso futuros
+Decisões:
+- `create` é o único método obrigatório na SR-007
+- `findById` permanece opcional até um caso de uso real exigir consulta
+- a implementação local pode existir na apresentação apenas em ciclo posterior e não substitui infraestrutura
+- repositório Supabase, migrations e RLS pertencem à SR-009
+- componentes React não recebem nem importam clients Supabase
+
+### Presentation
+
+Planejada somente para os Dias 3 e 4, depois dos testes essenciais:
+- formulário mínimo com nome, tipo e saldo inicial
+- conversão de reais digitados para centavos na fronteira de apresentação
+- estados `idle`, `submitting`, `success` e `error`
+- sessão local explicitamente temporária
+
+Fora da SR-007:
+- listar, editar ou excluir contas
+- selecionar instituição e agência
+- calcular saldo atual
+- associar automaticamente transações existentes
 
 ## Categories
 

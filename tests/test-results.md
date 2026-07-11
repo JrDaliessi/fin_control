@@ -231,3 +231,36 @@ Resultado: passou.
 Evidência:
 - Next.js compilou `/`, `/dashboard` e `/transactions`.
 - Workflow de CI versionado para reproduzir os mesmos gates.
+
+## Dia 2 — SR-007
+
+### Testes direcionados de accounts
+Resultado: falha esperada.
+
+Evidência:
+- 2 suítes falharam com `Cannot find module`.
+- módulos ausentes: `FinancialAccount`, `AccountRepository` e `CreateAccountUseCase`.
+- nenhuma implementação funcional foi criada.
+
+### Suíte anterior isolada
+Resultado: passou.
+
+Evidência:
+- 14 suítes passaram.
+- 69 testes passaram.
+
+### `npm run type-check`
+Resultado: falha esperada.
+
+Evidência:
+- quatro erros `TS2307` referentes exclusivamente aos módulos ainda ausentes da SR-007.
+
+### `npm run lint`
+Resultado: passou, sem warnings.
+
+### `npm audit --omit=dev`
+Resultado: passou, 0 vulnerabilidades.
+
+Interpretação:
+- etapa vermelha do TDD confirmada.
+- implementação mínima autorizável somente no Dia 3.

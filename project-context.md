@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 — Qualidade final e preparação de release da SR-006 concluídas
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-007 concluído; implementação bloqueada até comando explícito `dia 3`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -24,6 +24,8 @@
 - Data da refatoração e hardening interno da SR-006: 2026-07-10
 - Data da revisão de UX, acessibilidade e PWA da SR-006: 2026-07-10
 - Data da validação final e preparação de release da SR-006: 2026-07-11
+- Data do discovery e arquitetura da SR-007: 2026-07-11
+- Data da estratégia de testes da SR-007: 2026-07-11
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -813,7 +815,7 @@ Sequencia aprovada:
 Regra operacional:
 - cada SR percorre integralmente Dias 1 a 7
 - nenhuma implementacao funcional foi autorizada nesta analise
-- proximo item valido permanece SR-007, iniciando por `dia 1` apos aprovacao humana
+- SR-007 foi selecionada e teve o Dia 1 concluído; o próximo comando válido é `dia 2`
 
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
@@ -1176,8 +1178,139 @@ Estado de saída:
 
 ## Pendências e Próximos Passos
 - SR-006 concluída e classificada como `READY_FOR_RELEASE`.
-- Próximo passo: publicar os commits locais com autorização explícita e selecionar a próxima small release.
+- Dia 2 da SR-007 concluído; item em `IN_PROGRESS` e estado `TEST_STRATEGY_READY`.
+- Próximo passo operacional: executar `dia 3` para implementar somente o necessário para satisfazer os testes.
+- A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
+
+## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
+
+Small release selecionada: `SR-007 — Cadastro local de conta financeira`.
+
+Motivo da escolha:
+- é o primeiro item de alta prioridade cujas dependências já estão concluídas
+- cria a base de domínio necessária para substituir IDs demonstrativos de conta
+- habilita a sequência segura SR-008 (autenticação), SR-009 (persistência/RLS de contas), SR-010 (categorias) e SR-011 (transações persistidas)
+- entrega uma fronteira pequena e testável sem antecipar infraestrutura crítica
+
+Escopo mínimo planejado:
+- modelar `FinancialAccount` com identificadores, nome, tipo, saldo inicial em centavos, moeda e timestamps
+- validar entradas no domínio e orquestrar o cadastro por caso de uso
+- definir `AccountRepository` como contrato, sem implementação Supabase neste ciclo
+- usar apenas memória/sessão caso a apresentação seja aprovada nas fases de implementação
+
+Decisões fechadas no Dia 1:
+- enumeração mínima dos tipos de conta aceitos
+- política explícita para saldo inicial negativo
+- limite de tamanho e normalização do nome
+- responsabilidade pela geração de `id` e timestamps no recorte local
+
+Bloqueios e limites:
+- autenticação, migrations, persistência real e RLS estão fora da SR-007
+- nenhuma transação será migrada para dados persistidos neste ciclo
+- persistência de contas só pode começar após SR-008 e dentro da SR-009, com RLS e testes de isolamento
+
+Ordem obrigatória do ciclo:
+1. Dia 1: fechar regras, tipos e contratos, atualizando contexto e arquitetura se necessário.
+2. Dia 2: escrever testes essenciais e observar a etapa vermelha.
+3. Dia 3: implementar o mínimo para satisfazer os testes.
+4. Dias 4 a 7: expandir de forma controlada, refatorar, revisar UX/PWA e executar os quality gates.
+
+Estado após a seleção:
+- SR-006 permanece registrada como release anterior pronta, sem controlar o estado do novo ciclo
+- SR-007 está `IN_PROGRESS`, com Dia 1 concluído
+- nenhum código funcional da SR-007 foi criado
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-007
+
+Small release: `SR-007 — Cadastro local de conta financeira`.
+
+Decisões de domínio:
+- tipos iniciais: `checking`, `savings`, `cash`, `payment` e `investment`
+- nome obrigatório, espaços normalizados e limite de 80 caracteres
+- saldo inicial armazenado em centavos como inteiro seguro
+- saldo inicial negativo permitido para representar a realidade informada; não equivale a limite de crédito
+- moeda fixa como `BRL` no recorte inicial
+- ID e timestamps opcionais antes da persistência e atribuídos pela infraestrutura futura
+- saldo atual não será um campo mutável; será derivado futuramente do saldo inicial e dos movimentos
+
+Contratos definidos:
+- `FinancialAccount` concentra as invariantes puras
+- `CreateAccountUseCase` cria a entidade e chama `AccountRepository.create`
+- `AccountRepository.create` é obrigatório; `findById` permanece opcional até existir consumidor real
+- apresentação futura converte reais digitados para centavos antes de chamar a aplicação
+
+Estrutura planejada para nascer com testes no Dia 2:
+- `src/features/accounts/domain/entities/financial-account.entity.ts`
+- `src/features/accounts/domain/interfaces/account.repository.ts`
+- `src/features/accounts/application/use-cases/create-account.use-case.ts`
+- `src/features/accounts/tests/financial-account.entity.test.ts`
+- `src/features/accounts/tests/create-account.use-case.test.ts`
+
+Dependências críticas:
+- SR-008 deve criar autenticação e sessão protegida antes de persistência real
+- SR-009 deve criar migrations, repositório Supabase, RLS e testes de isolamento de contas
+- integração de contas com transações será outro incremento testado e não faz parte da SR-007
+
+Riscos:
+- bloqueio duro: persistir dados financeiros sem autenticação e RLS
+- bloqueio leve: o estado local será perdido ao recarregar até a fundação de dados reais
+- risco controlado: saldo negativo pode ser confundido com crédito; a UI futura deverá explicar que representa o saldo informado
+
+Validação arquitetural:
+- feature permanece separada em `presentation`, `application`, `domain` e `infrastructure` conforme necessidade real
+- domínio não depende de framework
+- aplicação depende apenas do contrato de repositório
+- UI não acessará Supabase
+- nenhuma abstração adicional de relógio ou gerador de ID foi criada prematuramente
+- nenhum ADR novo é necessário porque as decisões aplicam a arquitetura-base existente
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- próximo passo recomendado: executar `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-007
+
+Small release: `SR-007 — Cadastro local de conta financeira`.
+
+Matriz criada:
+- domínio: `FinancialAccount` cobrindo saldos, tipos, normalização, moeda e entradas inválidas
+- aplicação: `CreateAccountUseCase` cobrindo persistência por contrato, bloqueio de entrada inválida e propagação de erro
+- infraestrutura: bloqueada até autenticação e RLS nas SR-008/SR-009
+- apresentação: adiada até estabilidade do caso de uso e aprovação da expansão
+
+Testes criados:
+- `src/features/accounts/tests/financial-account.entity.test.ts`
+- `src/features/accounts/tests/create-account.use-case.test.ts`
+
+Etapa vermelha observada:
+- `npm run test:ci -- src/features/accounts/tests`: falhou com 2 suítes por módulos ausentes
+- `FinancialAccount`, `AccountRepository` e `CreateAccountUseCase` continuam deliberadamente inexistentes
+- `npm run type-check`: falhou com quatro erros `TS2307` para os mesmos módulos ausentes
+
+Rede de segurança anterior:
+- `npx jest --runInBand --testPathIgnorePatterns=src/features/accounts/tests`: passou
+- 14 suítes e 69 testes anteriores passaram
+- uma tentativa anterior de exclusão via argumento do npm foi interpretada como configuração; mesmo assim, registrou 14 suítes anteriores verdes e somente as duas novas vermelhas
+
+Gates aplicáveis:
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- build não foi executado porque o type-check deve permanecer vermelho por design nesta fase
+
+Implementação bloqueada até o Dia 3:
+- `src/features/accounts/domain/entities/financial-account.entity.ts`
+- `src/features/accounts/domain/interfaces/account.repository.ts`
+- `src/features/accounts/application/use-cases/create-account.use-case.ts`
+
+Limites preservados:
+- nenhum código funcional criado
+- nenhuma apresentação, rota ou sessão local criada
+- nenhuma migration, autenticação, persistência Supabase ou RLS criada
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar `dia 3`
 
 ## Dia 6 — Experiência, Acessibilidade e PWA da SR-006
 

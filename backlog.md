@@ -2,25 +2,26 @@
 
 ## READY
 
-Nenhum item pronto no momento.
+Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SR-007 — Cadastro local de conta financeira
+- Tipo: Small Release
+- Objetivo de negócio: substituir IDs demonstrativos por contas válidas da sessão e preparar a fundação segura de dados reais.
+- Prioridade: Alta
+- Dependências: satisfeitas para o recorte local.
+- Risco: Médio
+- Fase atual: Dia 2 concluído; aguardando Dia 3.
+- Escopo aprovado: entidade `FinancialAccount`, tipos de conta, contrato `AccountRepository`, caso de uso de criação e possível sessão local posterior.
+- Tipos aprovados: `checking`, `savings`, `cash`, `payment` e `investment`.
+- Regras aprovadas: nome normalizado de até 80 caracteres, moeda `BRL`, saldo inicial inteiro seguro com negativo permitido, ID e timestamps opcionais antes da persistência.
+- Evidência TDD: duas suítes criadas e vermelhas por módulos ausentes; 14 suítes e 69 testes anteriores permanecem verdes.
+- Critério imediato: implementar somente o mínimo necessário para satisfazer os testes no Dia 3.
+- Bloqueios: expansão de escopo no Dia 3; Supabase, migrations e RLS antes das SR-008/SR-009.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
-
-### SR-007 — Cadastro de conta financeira
-- Tipo: Small Release
-- Descrição: Criar fluxo mínimo para cadastrar conta financeira manual.
-- Objetivo de negócio: permitir que transações referenciem contas reais do usuário em vez de IDs de teste.
-- Valor esperado: preparar uso real do registro de transações.
-- Prioridade: Alta
-- Dependências: SR-004
-- Risco: Médio
-- Fase recomendada: ciclo futuro
-- Critério de pronto: domínio, caso de uso e testes de conta criados antes da implementação.
-- Status: DISCOVERY
 
 ### SR-008 - Autenticacao e sessao protegida
 - Tipo: Security Item / Small Release
