@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 — Implementação mínima orientada por teste da SR-006 concluída
+- Fase atual: Dia 4 — Expansão controlada da SR-006 concluída
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -20,6 +20,7 @@
 - Data do discovery da SR-006: 2026-07-10
 - Data da estratégia de testes da SR-006: 2026-07-10
 - Data da implementação mínima da SR-006: 2026-07-10
+- Data da expansão controlada da SR-006: 2026-07-10
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1006,7 +1007,71 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar Dia 4 da SR-006
 
+## Dia 4 — Expansão Controlada da SR-006
+
+Small release: `SR-006 — Dashboard financeiro inicial`.
+
+Implementação criada ou alterada:
+- `src/features/transactions/presentation/providers/TransactionSessionProvider.tsx`
+- `src/features/dashboard/presentation/hooks/useDashboardSummary.ts`
+- `src/features/dashboard/presentation/components/DashboardSummaryPanel.tsx`
+- `src/features/dashboard/presentation/components/RecentTransactionsList.tsx`
+- `src/features/dashboard/presentation/pages/DashboardPage.tsx`
+- `src/features/transactions/presentation/pages/TransactionsPage.tsx`
+- `src/shared/utils/formatCents.ts`
+- `src/app/layout.tsx`
+- `src/app/page.tsx`
+- `src/app/dashboard/page.tsx`
+- `src/app/transactions/page.tsx`
+
+Escopo entregue:
+- provider mantém transações somente em memória durante a navegação sob o layout raiz
+- `TransactionsPage` e `DashboardPage` consomem a mesma sessão sem persistência real
+- dashboard implementa estados de loading, empty, success e error
+- painel mensal exibe receitas, despesas, saldo líquido e quantidade de transações
+- lista exibe até cinco transações recentes ordenadas pelo caso de uso
+- rota `/` renderiza o dashboard
+- rota `/dashboard` oferece endereço dedicado para o dashboard
+- rota `/transactions` renderiza o registro manual
+- navegação mínima entre dashboard e transações implementada com links do App Router
+- `formatCents` movido para `src/shared/utils` para uso entre features
+
+Resultado TDD:
+- etapa vermelha: 4 suites falharam pela ausência do provider e das novas rotas
+- etapa verde direcionada: 5 suites e 21 testes passaram após a implementação
+- suíte completa: 12 suites e 65 testes passaram
+
+Correção de gate:
+- lint identificou atualização síncrona de estado dentro de `useEffect` em `useDashboardSummary`
+- loading passou a ser derivado pela identidade da requisição, mantendo atualizações de estado apenas nas respostas assíncronas
+- testes do dashboard e lint passaram após a correção
+
+Validação local:
+- `/`, `/dashboard` e `/transactions` responderam com HTTP 200
+- dashboard e formulário foram inspecionados no navegador integrado em desktop e mobile
+- viewport de 390px e desktop de 1280px não apresentaram overflow horizontal
+- nenhum erro de console foi encontrado em `/dashboard`
+- a automação do navegador integrado não conseguiu preencher o campo nativo `input[type=date]`; por isso, o submit completo e a persistência entre rotas foram validados pelos testes automatizados, não pela interação no navegador
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 12 suites e 65 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com as rotas `/`, `/dashboard` e `/transactions`
+
+Limites preservados:
+- estado existe apenas em memória e é reiniciado ao recarregar a aplicação
+- nenhuma migration Supabase criada
+- nenhuma persistência real criada
+- nenhuma autenticação ou RLS criada
+- nenhum gráfico, cartão, parcela, IA, importação ou Open Finance criado
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar Dia 5 da SR-006
+
 ## Pendências e Próximos Passos
-- SR-006 em andamento. Dia 3 concluído com implementação mínima e pipeline verde.
-- Próximo passo: executar Dia 4 para integrar rotas, dados de sessão e estados visuais adicionais de forma controlada.
+- SR-006 em andamento. Dia 4 concluído com rotas, sessão em memória e estados visuais validados.
+- Próximo passo: executar Dia 5 para refatoração, consistência e hardening interno.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.

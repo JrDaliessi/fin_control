@@ -1,5 +1,5 @@
 import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
-import { formatCents } from "../utils/formatCents";
+import { formatCents } from "@/shared/utils/formatCents";
 
 type TransactionSessionListProps = {
   transactions: CreateTransactionInput[];
