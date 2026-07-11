@@ -140,6 +140,21 @@
 - `npm audit` passou com 0 vulnerabilidades.
 - Limitação de verificação visual pelo navegador integrado documentada.
 
+### Resultado observado — SR-006
+- Dashboard e registro manual inspecionados em 390x844 e 1280x800 sem overflow horizontal.
+- Empty state do dashboard passou a ser anunciado como status.
+- CTA do empty state passou a ter alvo mínimo de 44 px e foco visível consistente.
+- Atalho do manifest corrigido para `/transactions`.
+- Restrição de orientação removida por não ser essencial ao produto.
+- Manifest permanece vinculado à aplicação e configurado para modo standalone.
+- Offline permaneceu fora do escopo porque o estado financeiro atual existe apenas em memória.
+- Etapa vermelha registrada com 3 falhas esperadas; etapa verde direcionada passou com 2 suites e 6 testes.
+- `npm run test:ci`: passou, 14 suites e 69 testes.
+- `npm run type-check`: passou.
+- `npm run lint`: passou, 0 warnings.
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades.
+- `npm run build`: passou com `/`, `/dashboard` e `/transactions`.
+
 ## Gate do Dia 7
 - Testes validados e documentados.
 - Type-check validado e documentado.

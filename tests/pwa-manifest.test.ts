@@ -6,6 +6,7 @@ type WebAppManifest = {
   background_color?: string;
   display?: string;
   name?: string;
+  orientation?: string;
   scope?: string;
   shortcuts?: Array<{
     name?: string;
@@ -38,9 +39,10 @@ describe("PWA manifest", () => {
         expect.objectContaining({
           name: "Registrar transação",
           short_name: "Registrar",
-          url: "/"
+          url: "/transactions"
         })
       ])
     );
+    expect(manifest.orientation).toBeUndefined();
   });
 });
