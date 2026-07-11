@@ -208,3 +208,58 @@ Usuário visualiza o dashboard de `2026-07`. O sistema reutiliza o resumo mensal
 - Recorte direcionado passou com 7 suites e 25 testes.
 - Suíte completa passou com 14 suites e 69 testes.
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+
+## Dia 2 — SR-007 Cadastro Local de Conta Financeira
+
+## Objetivo
+Transformar as invariantes e o contrato aprovados no Dia 1 em testes executáveis antes de criar `FinancialAccount`, `AccountRepository` ou `CreateAccountUseCase`.
+
+## Prioridade por Camada
+1. `domain`: validar criação, normalização, tipos, moeda e saldo inicial.
+2. `application`: validar a orquestração de `AccountRepository.create`.
+3. `infrastructure`: fora do escopo até autenticação e RLS nas SR-008 e SR-009.
+4. `presentation`: adiada até o caso de uso ficar estável e a expansão ser aprovada no Dia 4.
+
+## Matriz de Testes da SR-007
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `FinancialAccount` | saldos positivo, zero e negativo; cinco tipos válidos; normalização; moeda padrão; entradas inválidas | testes criados |
+| application | `CreateAccountUseCase` | validar e enviar ao repositório; não chamar com entrada inválida; propagar falha do repositório | testes criados |
+| infrastructure | `SupabaseAccountRepository` | persistência e isolamento por usuário | futuro; bloqueado até SR-009 |
+| presentation | formulário e sessão local | idle, submitting, success, error e explicação do saldo negativo | futuro; não aplicável ao Dia 2 |
+
+## Cenário Feliz
+O usuário informa uma conta corrente em BRL com nome e saldo inicial em centavos. O domínio normaliza e valida os dados; o caso de uso chama `AccountRepository.create` uma única vez e retorna a conta fornecida pelo contrato.
+
+## Cenários Alternativos
+- saldo inicial igual a zero
+- saldo inicial negativo para representar a situação informada
+- conta dos tipos poupança, dinheiro, pagamento ou investimento
+- moeda omitida assume `BRL`
+- repositório falha e o caso de uso preserva o erro
+
+## Edge Cases Críticos
+- usuário ou nome vazio
+- nome normalizado acima de 80 caracteres
+- tipo não suportado
+- moeda diferente de `BRL`
+- saldo fracionário, `NaN`, infinito ou fora do intervalo seguro
+- repositório chamado diante de entidade inválida
+
+## Testes Criados
+- `src/features/accounts/tests/financial-account.entity.test.ts`
+- `src/features/accounts/tests/create-account.use-case.test.ts`
+
+## Resultado Esperado do TDD
+- os testes direcionados devem falhar com `Cannot find module` porque os três módulos funcionais ainda não existem
+- a suíte anterior deve permanecer verde quando executada sem `src/features/accounts/tests`
+- implementação funcional permanece bloqueada até o Dia 3
+
+## Resultado Observado do Dia 2 — SR-007
+- `npm run test:ci -- src/features/accounts/tests`: falhou com 2 suítes por ausência de `FinancialAccount`, `AccountRepository` e `CreateAccountUseCase`.
+- `npx jest --runInBand --testPathIgnorePatterns=src/features/accounts/tests`: passou com 14 suítes e 69 testes anteriores.
+- `npm run type-check`: falhou com quatro erros `TS2307` para os módulos deliberadamente ausentes.
+- `npm run lint`: passou sem warnings.
+- `npm audit --omit=dev`: passou com 0 vulnerabilidades.
+- Estado vermelho confirmado; implementação funcional permanece reservada ao Dia 3.

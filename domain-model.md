@@ -21,7 +21,7 @@ Representa contas onde o usuário controla dinheiro disponível.
 Entidades:
 - `FinancialAccount`
 
-Campos candidatos:
+Campos aprovados para a SR-007:
 - `id`
 - `userId`
 - `name`
@@ -32,9 +32,39 @@ Campos candidatos:
 - `updatedAt`
 
 Regras:
-- valores monetários em centavos
-- conta deve pertencer ao usuário
-- saldo calculado não deve depender apenas de campo mutável
+- `userId` é obrigatório e normalizado com remoção de espaços externos
+- `name` é obrigatório, normalizado com espaços internos simples e limitado a 80 caracteres
+- `type` aceita somente `checking`, `savings`, `cash`, `payment` ou `investment`
+- `initialBalanceInCents` deve ser inteiro finito dentro do intervalo seguro de inteiros do JavaScript
+- saldo inicial negativo é permitido para representar a situação real informada pelo usuário; não representa limite de crédito
+- `currency` é fixa como `BRL` na SR-007; outras moedas ficam fora do recorte
+- `id`, `createdAt` e `updatedAt` são metadados opcionais na criação local e serão atribuídos pela infraestrutura quando houver persistência
+- a conta deve pertencer ao usuário indicado; isolamento real depende de autenticação e RLS nas SR-008 e SR-009
+- saldo atual será calculado futuramente a partir do saldo inicial e dos movimentos; não haverá campo mutável de saldo atual na entidade
+
+### SR-007 — Cadastro Local de Conta Financeira
+
+Cenário feliz:
+- usuário informa nome, tipo e saldo inicial em reais na apresentação futura
+- a apresentação converte o valor para centavos antes do caso de uso
+- o domínio normaliza e valida os dados
+- o caso de uso envia a entidade válida ao `AccountRepository`
+- o repositório retorna a conta criada
+
+Cenários críticos para o Dia 2:
+- usuário ou nome ausente deve falhar antes do repositório
+- nome acima de 80 caracteres deve falhar
+- tipo fora da enumeração deve falhar
+- saldo fracionário, infinito, `NaN` ou fora do intervalo seguro deve falhar
+- moeda diferente de `BRL` deve falhar
+- saldo inicial positivo, zero ou negativo deve ser aceito quando inteiro e seguro
+- repositório deve ser chamado uma única vez somente para entrada válida
+
+Limites da SR-007:
+- sem autenticação, banco, migrations ou RLS
+- sem cálculo de saldo atual
+- sem edição, exclusão, transferência, instituição bancária, cartão ou Open Finance
+- sem integração da conta ao formulário de transações antes dos testes e contratos do ciclo correspondente
 
 ### Categorias
 Classifica transações e permite orçamento por grupo.
@@ -137,6 +167,7 @@ Cenários críticos:
 - usuário ausente deve falhar
 
 ## Casos de Uso Iniciais
+- `create-account.use-case.ts`
 - `create-transaction.use-case.ts`
 - `list-monthly-summary.use-case.ts`
 - `get-dashboard-summary.use-case.ts`
@@ -148,5 +179,4 @@ Cenários críticos:
 - importação
 - IA
 - Open Finance
-
 

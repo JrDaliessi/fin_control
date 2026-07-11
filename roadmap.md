@@ -146,12 +146,19 @@ Entregas planejadas:
 - `formatCents` compartilhado em `src/shared/utils/`
 
 Próximo passo:
-- aprovar a expansao planejada e iniciar `dia 1` da SR-007
+- Dia 1 da SR-007 concluído com domínio, regras e contratos definidos
+- executar `dia 2` para criar os testes essenciais antes da implementação
 - manter analytics avancados bloqueados ate a fundacao de dados reais
 
 ## Marco 8 - Fundacao de Dados Reais
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
+
+Estado atual: Dia 2 da SR-007 concluído; estado `TEST_STRATEGY_READY`, aguardando implementação mínima do Dia 3.
+
+Evidência: testes de domínio e aplicação criados antes da implementação; duas suítes vermelhas por módulos ausentes e 14 suítes anteriores verdes.
+
+Recorte da SR-007: domínio, contrato e cadastro local de conta financeira, sem Supabase Database, migrations, autenticação ou RLS.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

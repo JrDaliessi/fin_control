@@ -166,6 +166,7 @@ Services previstos:
 - `OpenFinanceProviderGateway`
 
 Casos de uso previstos:
+- `create-account.use-case.ts`
 - `create-transaction.use-case.ts`
 - `list-monthly-summary.use-case.ts`
 - `calculate-real-balance.use-case.ts`
@@ -202,6 +203,19 @@ Regras:
 - clients separados para browser e server
 - acesso isolado em `src/lib/supabase` e `infrastructure`
 - RLS obrigatório antes de manipular dados financeiros reais
+
+## Decisões Arquiteturais da SR-007
+
+- `accounts` nasce como feature isolada nas camadas `domain`, `application`, `infrastructure` e `presentation` conforme necessidade de cada fase.
+- No Dia 1 não será criada estrutura vazia nem código funcional; os diretórios surgirão junto dos testes no Dia 2.
+- `FinancialAccount` pertence ao domínio e não depende de React, Next.js ou Supabase.
+- `AccountRepository` é contrato do domínio; apenas `create` é obrigatório no recorte inicial.
+- `CreateAccountUseCase` depende do contrato e não conhece UI ou persistência concreta.
+- ID e timestamps são metadados opcionais na criação; a futura infraestrutura persistente será responsável por atribuí-los.
+- Saldo atual não será armazenado como campo mutável: será derivado futuramente do saldo inicial e dos movimentos válidos.
+- Estado local de apresentação, se criado nos Dias 3 e 4, é temporário e não constitui infraestrutura.
+- Autenticação, persistência Supabase e RLS permanecem separadas nas SR-008 e SR-009.
+- A decisão é uma aplicação da arquitetura-base existente e não exige novo ADR.
 
 ## PWA
 O projeto deve ter:

@@ -41,6 +41,19 @@
 - `npm audit --omit=dev` passou com 0 vulnerabilidades.
 - Estado de saída validado como `TEST_STRATEGY_READY`.
 
+### Resultado observado — SR-007
+- Matriz da SR-007 documentada em `test-strategy.md`.
+- Teste de domínio criado para `FinancialAccount` com saldos positivo, zero e negativo, cinco tipos, normalização, BRL e entradas inválidas.
+- Teste de aplicação criado para `CreateAccountUseCase` com chamada única ao contrato, bloqueio de entrada inválida e propagação de erro.
+- Testes de apresentação não se aplicam ao Dia 2; formulário e sessão local permanecem futuros.
+- Etapa vermelha: 2 suítes falharam por módulos funcionais ausentes.
+- Rede anterior: 14 suítes e 69 testes passaram ao excluir `src/features/accounts/tests`.
+- `npm run type-check` falhou com quatro `TS2307`, conforme esperado no estado vermelho.
+- `npm run lint` passou sem warnings.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Implementação permanece bloqueada até o Dia 3.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+
 ## Gate do Dia 3
 - Código mínimo funcional implementado.
 - Entidade de domínio criada sem dependência de framework.
