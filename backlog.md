@@ -6,37 +6,7 @@ Nenhum item pronto no momento.
 
 ## IN_PROGRESS
 
-### SR-006 — Dashboard financeiro inicial
-- Tipo: Small Release
-- Descrição: Exibir resumo mensal básico, lista de transações recentes e navegação mínima a partir dos casos de uso existentes.
-- Objetivo de negócio: entregar primeira tela útil do produto.
-- Valor esperado: tornar o controle financeiro visível para o usuário.
-- Prioridade: Alta
-- Dependências: SR-005 concluída.
-- Risco: Médio
-- Fase recomendada: ciclo atual.
-- Critério de pronto: caso de uso testado, dashboard funcional com empty state e dados, rotas `/` e `/transactions` funcionais, pipeline verde.
-- Status: IN_PROGRESS — Dias 1 a 6 concluídos; aguardando Dia 7 para quality validation e entrega incremental.
-
-Escopo mínimo:
-- painel de resumo mensal reutilizando `ListMonthlySummaryUseCase`
-- lista resumida das 5 últimas transações da sessão
-- empty state com call-to-action
-- navegação mínima entre dashboard e registro de transação
-- rota `/` renderiza dashboard
-- rota `/transactions` renderiza registro de transações
-
-Fora do escopo:
-- gráficos e visualizações avançadas
-- saldo por conta
-- faturas e cartões
-- orçamento mensal visual
-- alertas de estouro e risco financeiro
-- IA e insights
-- persistência real e migrations Supabase
-- autenticação real
-- importação de extrato
-- navegação por mês
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -120,3 +90,4 @@ Nenhuma dívida técnica aberta no Dia 7.
 - UX-001 — Revisão de UX, acessibilidade e PWA da transação manual.
 - REL-001 — Validação final e preparação de release incremental da transação manual.
 - SR-005 — Resumo mensal básico (Dia 2 ao Dia 7 concluídos, pipeline verde, release incremental pronta).
+- SR-006 — Dashboard financeiro inicial (Dias 1 a 7 concluídos, pipeline verde, CI versionado e release incremental pronta).
