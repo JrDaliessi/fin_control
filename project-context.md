@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-007 concluído; implementação bloqueada até comando explícito `dia 3`
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-007 concluído; aguardando comando explícito `dia 4`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -26,6 +26,7 @@
 - Data da validação final e preparação de release da SR-006: 2026-07-11
 - Data do discovery e arquitetura da SR-007: 2026-07-11
 - Data da estratégia de testes da SR-007: 2026-07-11
+- Data da implementação mínima da SR-007: 2026-07-11
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1178,8 +1179,8 @@ Estado de saída:
 
 ## Pendências e Próximos Passos
 - SR-006 concluída e classificada como `READY_FOR_RELEASE`.
-- Dia 2 da SR-007 concluído; item em `IN_PROGRESS` e estado `TEST_STRATEGY_READY`.
-- Próximo passo operacional: executar `dia 3` para implementar somente o necessário para satisfazer os testes.
+- Dia 3 da SR-007 concluído; item em `IN_PROGRESS` e estado `IMPLEMENTATION_IN_PROGRESS`.
+- Próximo passo operacional: executar `dia 4` para decidir e implementar somente a expansão controlada de apresentação/sessão local.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1311,6 +1312,54 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-007
+
+Small release: `SR-007 — Cadastro local de conta financeira`.
+
+Implementação criada:
+- `src/features/accounts/domain/entities/financial-account.entity.ts`
+- `src/features/accounts/domain/interfaces/account.repository.ts`
+- `src/features/accounts/application/use-cases/create-account.use-case.ts`
+
+Escopo entregue:
+- entidade `FinancialAccount` sem dependência de framework
+- tipos `checking`, `savings`, `cash`, `payment` e `investment`
+- normalização de `userId` e espaços do nome
+- nome obrigatório com limite de 80 caracteres
+- saldo inicial positivo, zero ou negativo quando inteiro seguro em centavos
+- moeda padrão e exclusiva `BRL`
+- contrato `AccountRepository` com `create` obrigatório e `findById` opcional
+- `CreateAccountUseCase` validando no domínio e persistindo apenas pelo contrato injetado
+- erros do repositório propagados sem ocultação
+
+Resultado TDD:
+- etapa vermelha registrada no Dia 2 por módulos ausentes
+- `npm run test:ci -- src/features/accounts/tests`: passou com 2 suítes e 21 testes
+- `npm run test:ci`: passou com 16 suítes e 90 testes
+
+Resultado dos gates:
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/dashboard` e `/transactions`
+
+Validação arquitetural:
+- domínio não importa React, Next.js ou Supabase
+- aplicação depende somente de `AccountRepository`
+- nenhuma implementação concreta de repositório foi criada
+- nenhum componente, hook, provider ou rota foi criado
+- integração mínima desta fase é apenas o contrato injetado
+
+Limites preservados:
+- nenhuma autenticação, migration, persistência Supabase ou RLS
+- nenhuma integração de contas com transações
+- nenhuma listagem, edição ou exclusão de conta
+- apresentação e sessão local permanecem reservadas ao Dia 4
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar `dia 4`
 
 ## Dia 6 — Experiência, Acessibilidade e PWA da SR-006
 

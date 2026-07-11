@@ -264,3 +264,38 @@ Resultado: passou, 0 vulnerabilidades.
 Interpretação:
 - etapa vermelha do TDD confirmada.
 - implementação mínima autorizável somente no Dia 3.
+
+## Dia 3 — SR-007
+
+### Testes direcionados de accounts
+Resultado: passou.
+
+Evidência:
+- 2 suítes passaram.
+- 21 testes passaram.
+
+### Suíte completa
+Resultado: passou.
+
+Evidência:
+- 16 suítes passaram.
+- 90 testes passaram.
+
+### `npm run type-check`
+Resultado: passou.
+
+### `npm run lint`
+Resultado: passou, sem warnings.
+
+### `npm audit --omit=dev`
+Resultado: passou, 0 vulnerabilidades.
+
+### `npm run build`
+Resultado: passou.
+
+Evidência:
+- Next.js compilou `/`, `/dashboard` e `/transactions`.
+
+Interpretação:
+- implementação mínima satisfez os testes sem expandir apresentação ou infraestrutura.
+- próxima expansão controlada depende do comando `dia 4`.
