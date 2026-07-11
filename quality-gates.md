@@ -169,6 +169,19 @@
 - Release incremental preparada.
 - Estado final definido como `READY_FOR_RELEASE`.
 
+### Resultado observado — SR-006
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou, 14 suites e 69 testes.
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades.
+- `npm run build`: passou com `/`, `/dashboard` e `/transactions`.
+- `.github/workflows/ci.yml` criado para reproduzir os gates em push e pull request para `main`.
+- Nenhum segredo real, service role, `any`, armazenamento persistente no navegador ou acesso Supabase fora de `src/lib/supabase` foi identificado.
+- Autenticação e RLS permanecem pré-requisitos duros antes de persistir dados financeiros reais.
+- Baseline de observabilidade definida por logs de CI, falhas explícitas de configuração e estados de erro anunciáveis.
+- Nenhum risco crítico aberto dentro do escopo demonstrativo da SR-006.
+- Estado final: `READY_FOR_RELEASE`.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.

@@ -132,7 +132,7 @@ Fora do marco:
 ## Marco 7 — Dashboard Financeiro Inicial
 Fases: Dia 1 a Dia 7 (ciclo atual)
 
-Status: Dias 1 a 6 concluídos. Dashboard revisado em UX, acessibilidade, responsividade e PWA com pipeline verde.
+Status: concluído. SR-006 validada com pipeline verde, revisão de segurança, baseline de observabilidade e CI versionado.
 
 Small release: SR-006
 
@@ -146,4 +146,5 @@ Entregas planejadas:
 - `formatCents` compartilhado em `src/shared/utils/`
 
 Próximo passo:
-- executar Dia 7 para qualidade final, segurança, observabilidade e entrega incremental
+- publicar os commits locais com autorização explícita
+- selecionar e refinar a próxima small release do backlog

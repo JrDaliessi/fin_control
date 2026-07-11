@@ -203,3 +203,31 @@ Motivo:
 Interpretação:
 - Estado vermelho confirmado.
 - O próximo passo é implementar o mínimo necessário no Dia 3.
+
+## Dia 7 — SR-006
+
+### `npm run lint`
+Resultado: passou, 0 warnings.
+
+### `npm run type-check`
+Resultado: passou.
+
+### `npm run test:ci`
+Resultado: passou.
+
+Evidência:
+- 14 suites passaram.
+- 69 testes passaram.
+
+### `npm audit --audit-level=high`
+Resultado: passou.
+
+Evidência:
+- 0 vulnerabilidades.
+
+### `npm run build`
+Resultado: passou.
+
+Evidência:
+- Next.js compilou `/`, `/dashboard` e `/transactions`.
+- Workflow de CI versionado para reproduzir os mesmos gates.

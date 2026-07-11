@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 6 — Experiência, acessibilidade e PWA da SR-006 concluídos
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 — Qualidade final e preparação de release da SR-006 concluídas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -23,6 +23,7 @@
 - Data da expansão controlada da SR-006: 2026-07-10
 - Data da refatoração e hardening interno da SR-006: 2026-07-10
 - Data da revisão de UX, acessibilidade e PWA da SR-006: 2026-07-10
+- Data da validação final e preparação de release da SR-006: 2026-07-11
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -796,6 +797,7 @@ Preparação de release incremental:
 - Hardening interno do Dia 5 concluído com gates verdes.
 - Revisão de UX, acessibilidade e PWA do Dia 6 da SR-005 concluída com testes direcionados verdes.
 - Revisão de UX, acessibilidade e PWA do Dia 6 da SR-006 concluída com pipeline verde.
+- Validação final do Dia 7 da SR-006 concluída com pipeline verde e CI versionado.
 - Validação final do Dia 7 concluída com pipeline verde.
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
@@ -1127,8 +1129,8 @@ Estado de saída:
 - próximo passo recomendado: executar Dia 6 da SR-006
 
 ## Pendências e Próximos Passos
-- SR-006 em andamento. Dia 6 concluído com experiência mobile, acessibilidade essencial e manifest PWA revisados.
-- Próximo passo: executar Dia 7 para qualidade final, segurança, observabilidade e entrega incremental.
+- SR-006 concluída e classificada como `READY_FOR_RELEASE`.
+- Próximo passo: publicar os commits locais com autorização explícita e selecionar a próxima small release.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
 ## Dia 6 — Experiência, Acessibilidade e PWA da SR-006
@@ -1175,3 +1177,52 @@ Resultado dos gates:
 Estado de saída:
 - projeto preparado para entrar em `QUALITY_VALIDATION`
 - próximo passo recomendado: executar Dia 7 da SR-006
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-006
+
+Small release: `SR-006 — Dashboard financeiro inicial`.
+
+Pipeline final executado:
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 14 suites e 69 testes
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/dashboard` e `/transactions`
+
+Automação de qualidade criada:
+- `.github/workflows/ci.yml`
+- execução em push e pull request para `main`
+- Node.js 22 com cache do npm
+- gates de lint, type-check, testes, auditoria de dependências e build
+- permissões do workflow limitadas a leitura de conteúdo
+- placeholders não sensíveis usados somente no ambiente de CI
+
+Revisão básica de segurança:
+- apenas `.env.example` está versionado entre arquivos de ambiente
+- arquivos `.env` reais permanecem ignorados
+- nenhum segredo real foi identificado nos arquivos versionáveis
+- o único alerta do scanner foi a documentação do placeholder vazio `SUPABASE_SERVICE_ROLE_KEY=`
+- nenhum uso de service role, `any`, `eval`, `dangerouslySetInnerHTML`, `localStorage` ou `sessionStorage` encontrado no código da release
+- nenhum acesso Supabase encontrado em `src/app` ou `src/features`; clients permanecem isolados em `src/lib/supabase`
+- a release usa apenas dados locais de sessão e não envia dados financeiros a serviços externos
+
+Threat model resumido:
+- ativo: dados financeiros digitados durante a sessão
+- fronteira atual: memória do navegador, sem persistência e sem sincronização externa
+- ameaça mitigada: exposição de segredos por versionamento, com `.gitignore` e placeholders vazios
+- ameaça não aplicável neste recorte: acesso indevido a registros persistidos, pois banco e autenticação ainda não participam do fluxo
+- requisito obrigatório antes de dados reais: autenticação, autorização, RLS por usuário e testes de isolamento
+- requisito antes de produção pública: revisar headers de segurança, política de conteúdo e observabilidade externa no ambiente de deploy
+
+Baseline de observabilidade:
+- logs de CI para lint, type-check, testes, audit e build
+- erros de configuração Supabase falham explicitamente por variável ausente
+- estados de erro de dashboard e formulário são visíveis e anunciáveis
+- eventos candidatos futuros: `dashboard_view`, `dashboard_empty_state`, `transaction_create_attempt`, `transaction_create_success`, `transaction_create_failure`
+- ferramenta externa de erros e métricas será escolhida quando houver persistência ou deploy real
+
+Preparação de release incremental:
+- escopo liberável: dashboard inicial com resumo mensal, últimas cinco transações, empty state, navegação e registro manual em sessão
+- fora da release: persistência, autenticação, RLS, dados multiusuário reais, gráficos, cartões, parcelas, IA, importação e Open Finance
+- riscos críticos abertos: nenhum dentro do escopo local demonstrativo
+- estado final: `READY_FOR_RELEASE`
