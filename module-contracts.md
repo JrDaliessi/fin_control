@@ -179,9 +179,11 @@ Implementada no Dia 4:
 Regras preservadas:
 - provider local não substitui repositório Supabase
 - recarregar a aplicação reinicia as contas
+- provider armazena cópias congeladas e isoladas das referências de entrada e retorno
 - erros de entrada são associados ao campo e anunciados
 - saldo negativo tem explicação explícita na interface
 - dashboard oferece navegação para `/accounts`
+- parsing monetário comum fica em `src/shared/utils/parseCurrencyToCents.ts`; wrappers das features definem se negativos são permitidos
 
 Fora da SR-007:
 - listar, editar ou excluir contas

@@ -30,6 +30,16 @@ function SessionConsumer() {
       <button onClick={() => void createAccount(input)} type="button">
         Adicionar conta
       </button>
+      <button
+        onClick={() =>
+          void createAccount(input).then((createdAccount) => {
+            (createdAccount as { name: string }).name = "Retorno alterado";
+          })
+        }
+        type="button"
+      >
+        Adicionar e alterar retorno
+      </button>
     </div>
   );
 }
@@ -59,6 +69,48 @@ describe("AccountSessionProvider", () => {
     await user.click(screen.getByRole("button", { name: "Adicionar conta" }));
 
     expect(screen.getByLabelText("Quantidade de contas")).toHaveTextContent("1");
+    expect(screen.getByLabelText("Primeira conta")).toHaveTextContent(
+      "Conta principal"
+    );
+  });
+
+  it("isolates initial session state from external mutations", () => {
+    const initialAccount = FinancialAccount.create(input);
+    const { rerender } = render(
+      <AccountSessionProvider initialAccounts={[initialAccount]}>
+        <SessionConsumer />
+      </AccountSessionProvider>
+    );
+
+    (initialAccount as { name: string }).name = "Conta alterada externamente";
+    rerender(
+      <AccountSessionProvider initialAccounts={[initialAccount]}>
+        <SessionConsumer />
+      </AccountSessionProvider>
+    );
+
+    expect(screen.getByLabelText("Primeira conta")).toHaveTextContent(
+      "Conta principal"
+    );
+  });
+
+  it("isolates stored session state from mutations to the returned account", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <AccountSessionProvider>
+        <SessionConsumer />
+      </AccountSessionProvider>
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "Adicionar e alterar retorno" })
+    );
+    rerender(
+      <AccountSessionProvider>
+        <SessionConsumer />
+      </AccountSessionProvider>
+    );
+
     expect(screen.getByLabelText("Primeira conta")).toHaveTextContent(
       "Conta principal"
     );

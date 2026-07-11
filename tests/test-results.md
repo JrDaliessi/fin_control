@@ -332,3 +332,37 @@ Evidência:
 Interpretação:
 - expansão controlada utilizável durante a sessão.
 - persistência, autenticação e RLS continuam fora do escopo.
+
+## Dia 5 — SR-007
+
+### Etapa vermelha de hardening
+Resultado: falha esperada.
+
+Evidência:
+- parser monetário compartilhado ainda não existia.
+- mutação da conta inicial alterou o estado da sessão.
+- mutação da conta retornada alterou o estado após nova renderização.
+
+### Testes direcionados
+Resultado: passou.
+
+Evidência:
+- 4 suítes passaram.
+- 28 testes passaram.
+
+### Suíte completa
+Resultado: passou.
+
+Evidência:
+- 21 suítes passaram.
+- 109 testes passaram.
+
+### Quality gates
+- type-check: passou.
+- lint: passou, sem warnings.
+- audit de produção: passou, 0 vulnerabilidades.
+- build: passou com `/accounts` preservada.
+
+Interpretação:
+- duplicação monetária removida sem regressão.
+- sessão local protegida contra referências externas mutáveis.

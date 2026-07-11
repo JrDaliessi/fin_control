@@ -283,3 +283,13 @@ O usuário informa uma conta corrente em BRL com nome e saldo inicial em centavo
 - Suíte completa: 20 suítes e 99 testes passaram.
 - Type-check detectou inferência incorreta de argumentos no mock assíncrono; a tipagem foi explicitada sem alterar comportamento.
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+
+## Resultado Observado do Dia 5 — SR-007
+- `parseCurrencyToCents.test.ts` cobre formatos decimal/brasileiro, zero, negativos opt-in e entradas inválidas.
+- `AccountSessionProvider.test.tsx` reproduziu mutação externa da conta inicial e da conta retornada.
+- Etapa vermelha: parser ausente e duas referências externas alterando o estado visível.
+- Etapa verde: parser compartilhado criado; contas armazenadas são cópias congeladas.
+- Wrappers de `accounts` e `transactions` preservam políticas diferentes para saldo negativo.
+- Recorte direcionado passou com 4 suítes e 28 testes.
+- Suíte completa passou com 21 suítes e 109 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
