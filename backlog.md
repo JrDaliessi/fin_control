@@ -16,7 +16,7 @@ Nenhum item pronto no momento.
 - Risco: Médio
 - Fase recomendada: ciclo atual.
 - Critério de pronto: caso de uso testado, dashboard funcional com empty state e dados, rotas `/` e `/transactions` funcionais, pipeline verde.
-- Status: IN_PROGRESS — Dias 1 a 5 concluídos; aguardando Dia 6 para UX, acessibilidade e PWA.
+- Status: IN_PROGRESS — Dias 1 a 6 concluídos; aguardando Dia 7 para quality validation e entrega incremental.
 
 Escopo mínimo:
 - painel de resumo mensal reutilizando `ListMonthlySummaryUseCase`

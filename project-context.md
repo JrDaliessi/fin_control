@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 — Refatoração e hardening interno da SR-006 concluídos
+- Fase atual: Dia 6 — Experiência, acessibilidade e PWA da SR-006 concluídos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -22,6 +22,7 @@
 - Data da implementação mínima da SR-006: 2026-07-10
 - Data da expansão controlada da SR-006: 2026-07-10
 - Data da refatoração e hardening interno da SR-006: 2026-07-10
+- Data da revisão de UX, acessibilidade e PWA da SR-006: 2026-07-10
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -794,6 +795,7 @@ Preparação de release incremental:
 - Catálogo mínimo de agents e skills criado.
 - Hardening interno do Dia 5 concluído com gates verdes.
 - Revisão de UX, acessibilidade e PWA do Dia 6 da SR-005 concluída com testes direcionados verdes.
+- Revisão de UX, acessibilidade e PWA do Dia 6 da SR-006 concluída com pipeline verde.
 - Validação final do Dia 7 concluída com pipeline verde.
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
@@ -1125,6 +1127,51 @@ Estado de saída:
 - próximo passo recomendado: executar Dia 6 da SR-006
 
 ## Pendências e Próximos Passos
-- SR-006 em andamento. Dia 5 concluído com integridade da sessão e duplicações internas revisadas.
-- Próximo passo: executar Dia 6 para UX, acessibilidade e PWA.
+- SR-006 em andamento. Dia 6 concluído com experiência mobile, acessibilidade essencial e manifest PWA revisados.
+- Próximo passo: executar Dia 7 para qualidade final, segurança, observabilidade e entrega incremental.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-006
+
+Small release: `SR-006 — Dashboard financeiro inicial`.
+
+Auditoria executada:
+- dashboard e registro manual inspecionados em viewport mobile de 390x844 e desktop de 1280x800
+- nenhum overflow horizontal identificado
+- landmarks, headings, labels, radiogroup, estados de loading, empty, success e error revisados
+- controles do formulário mantêm altura mínima de 44 px
+- manifest servido por `link[rel="manifest"]` e metadados de instalação revisados
+
+Resultado TDD:
+- teste do estado vazio falhou inicialmente porque a mensagem não era anunciável
+- teste do CTA falhou inicialmente pela ausência de alvo mínimo e foco visível consistente
+- teste do manifest falhou inicialmente porque o atalho apontava para `/` e a orientação estava bloqueada em retrato
+- etapa verde direcionada: 2 suites e 6 testes passaram
+
+Implementação criada ou alterada:
+- `src/features/dashboard/presentation/components/DashboardEmptyState.tsx`
+- `src/features/dashboard/tests/DashboardPage.test.tsx`
+- `public/manifest.webmanifest`
+- `tests/pwa-manifest.test.ts`
+
+Melhorias aplicadas:
+- empty state do dashboard anunciado com semântica de status
+- CTA do empty state com altura mínima de 44 px e foco visível
+- atalho PWA `Registrar transação` corrigido para `/transactions`
+- bloqueio `portrait-primary` removido para permitir orientação compatível com o dispositivo
+- aviso assíncrono de `act(...)` removido do teste do dashboard ao aguardar a estabilização do estado
+
+Estratégia PWA:
+- manifest, metadados, ícone, modo standalone e shortcut permanecem configurados
+- service worker e offline não foram adicionados porque as transações ainda existem apenas em memória; cachear o shell sem consistência de dados criaria expectativa enganosa
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 14 suites e 69 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/dashboard` e `/transactions`
+
+Estado de saída:
+- projeto preparado para entrar em `QUALITY_VALIDATION`
+- próximo passo recomendado: executar Dia 7 da SR-006

@@ -31,13 +31,16 @@ function renderDashboard(
 }
 
 describe("DashboardPage", () => {
-  it("should render the dashboard heading", () => {
+  it("should render the dashboard heading", async () => {
     renderDashboard();
 
     expect(
       screen.getByRole("heading", { name: /dashboard/i })
     ).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
+    expect(
+      await screen.findByText(/nenhuma transação registrada/i)
+    ).toBeInTheDocument();
   });
 
   it("should render loading and empty states when there are no transactions", async () => {
@@ -49,7 +52,7 @@ describe("DashboardPage", () => {
 
     expect(
       await screen.findByText(/nenhuma transação registrada/i)
-    ).toBeInTheDocument();
+    ).toHaveAttribute("role", "status");
   });
 
   it("should render a call-to-action link to register a transaction", async () => {
@@ -61,6 +64,7 @@ describe("DashboardPage", () => {
 
     expect(ctaLink).toBeInTheDocument();
     expect(ctaLink).toHaveAttribute("href", "/transactions");
+    expect(ctaLink).toHaveClass("min-h-11", "focus-visible:ring-2");
   });
 
   it("should render the monthly summary and recent transactions", async () => {
