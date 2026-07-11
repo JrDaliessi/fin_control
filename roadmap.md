@@ -154,9 +154,9 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 2 da SR-007 concluído; estado `TEST_STRATEGY_READY`, aguardando implementação mínima do Dia 3.
+Estado atual: Dia 3 da SR-007 concluído; estado `IMPLEMENTATION_IN_PROGRESS`, aguardando expansão controlada do Dia 4.
 
-Evidência: testes de domínio e aplicação criados antes da implementação; duas suítes vermelhas por módulos ausentes e 14 suítes anteriores verdes.
+Evidência: testes de domínio e aplicação criados antes da implementação; 2 suítes e 21 testes direcionados, 16 suítes e 90 testes totais verdes.
 
 Recorte da SR-007: domínio, contrato e cadastro local de conta financeira, sem Supabase Database, migrations, autenticação ou RLS.
 

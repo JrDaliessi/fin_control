@@ -263,3 +263,12 @@ O usuário informa uma conta corrente em BRL com nome e saldo inicial em centavo
 - `npm run lint`: passou sem warnings.
 - `npm audit --omit=dev`: passou com 0 vulnerabilidades.
 - Estado vermelho confirmado; implementação funcional permanece reservada ao Dia 3.
+
+## Resultado Observado do Dia 3 — SR-007
+- `FinancialAccount` implementado com as invariantes definidas no Dia 1.
+- `AccountRepository` implementado como contrato de domínio, sem infraestrutura concreta.
+- `CreateAccountUseCase` implementado com injeção do contrato.
+- `npm run test:ci -- src/features/accounts/tests`: passou com 2 suítes e 21 testes.
+- `npm run test:ci`: passou com 16 suítes e 90 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Apresentação, sessão local, Supabase e integração com transações permanecem fora do Dia 3.

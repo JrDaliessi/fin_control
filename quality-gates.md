@@ -78,6 +78,18 @@
 - `npm audit --omit=dev` passou com 0 vulnerabilidades.
 - Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
+### Resultado observado — SR-007
+- `FinancialAccount` implementado sem dependência de framework.
+- `AccountRepository` criado como contrato no domínio.
+- `CreateAccountUseCase` depende apenas do contrato e não conhece UI ou Supabase.
+- Saldos em centavos, tipos, BRL, nome e identificadores seguem as invariantes aprovadas.
+- Testes direcionados passaram com 2 suítes e 21 testes.
+- Suíte completa passou com 16 suítes e 90 testes.
+- `npm run type-check`, `npm run lint` e `npm run build` passaram.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Nenhuma apresentação ou infraestrutura concreta foi antecipada.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate do Dia 4
 - Presentation inicial criada.
 - Estados de idle, loading, success e error implementados quando aplicável.

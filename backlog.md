@@ -12,13 +12,13 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: satisfeitas para o recorte local.
 - Risco: Médio
-- Fase atual: Dia 2 concluído; aguardando Dia 3.
+- Fase atual: Dia 3 concluído; aguardando Dia 4.
 - Escopo aprovado: entidade `FinancialAccount`, tipos de conta, contrato `AccountRepository`, caso de uso de criação e possível sessão local posterior.
 - Tipos aprovados: `checking`, `savings`, `cash`, `payment` e `investment`.
 - Regras aprovadas: nome normalizado de até 80 caracteres, moeda `BRL`, saldo inicial inteiro seguro com negativo permitido, ID e timestamps opcionais antes da persistência.
-- Evidência TDD: duas suítes criadas e vermelhas por módulos ausentes; 14 suítes e 69 testes anteriores permanecem verdes.
-- Critério imediato: implementar somente o mínimo necessário para satisfazer os testes no Dia 3.
-- Bloqueios: expansão de escopo no Dia 3; Supabase, migrations e RLS antes das SR-008/SR-009.
+- Evidência TDD: etapa vermelha preservada; implementação mínima passou com 2 suítes e 21 testes direcionados, 16 suítes e 90 testes totais.
+- Critério imediato: expandir apresentação e sessão local somente no recorte aprovado do Dia 4.
+- Bloqueios: persistência real, autenticação, migrations e RLS antes das SR-008/SR-009; integração automática com transações fora da SR-007.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
