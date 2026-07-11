@@ -71,6 +71,8 @@ src/
     transactions/
     budgets/
     goals/
+    financial-analytics/
+    gamification/
     dashboard/
     imports/
     ai-insights/
@@ -126,6 +128,12 @@ Orçamento mensal por categoria, alertas de limite e acompanhamento de consumo.
 ### goals
 Metas e envelopes financeiros, incluindo reserva de emergência, dívidas e objetivos pessoais.
 
+### financial-analytics
+Periodos financeiros, evolucao de saldo, agregacoes, candles OHLC, comparacao e distribuicao de frequencia. A matematica fica no dominio e nao depende da biblioteca visual.
+
+### gamification
+Eventos idempotentes, pontos, niveis, conquistas, sequencias e desafios opcionais. Recompensa apenas comportamentos financeiros saudaveis e auditaveis.
+
 ### dashboard
 Composição de resumo financeiro, saldo real, risco de falta de dinheiro e próximos compromissos.
 
@@ -147,6 +155,9 @@ Contratos previstos:
 - `BudgetRepository`
 - `GoalRepository`
 - `FinancialSummaryRepository`
+- `FinancialAnalyticsQueryRepository`
+- `GoalContributionRepository`
+- `GamificationEventRepository`
 
 Services previstos:
 - `AuthSessionProvider`
@@ -160,6 +171,11 @@ Casos de uso previstos:
 - `calculate-real-balance.use-case.ts`
 - `register-credit-card-purchase.use-case.ts`
 - `simulate-purchase.use-case.ts`
+- `aggregate-financial-evolution.use-case.ts`
+- `build-financial-candles.use-case.ts`
+- `build-frequency-distribution.use-case.ts`
+- `record-goal-contribution.use-case.ts`
+- `process-gamification-event.use-case.ts`
 
 ## Fronteiras de Dependência
 
@@ -175,6 +191,9 @@ Proibido:
 - `presentation` importar clients Supabase.
 - `app/page.tsx` conter regra de negócio.
 - `ai-insights` executar ação financeira sensível.
+- `dashboard` calcular OHLC, classes de frequencia ou pontuacao.
+- `presentation` depender diretamente de biblioteca de grafico sem adapter local.
+- gamificacao conceder pontos sem chave de idempotencia.
 
 ## Supabase
 Supabase será usado para autenticação, banco de dados e storage quando necessário.
@@ -217,6 +236,13 @@ Tabelas candidatas para fases futuras:
 - `recurring_commitments`
 - `import_batches`
 - `ai_insights`
+- `financial_goals`
+- `goal_contributions`
+- `gamification_events`
+- `achievements`
+- `user_achievements`
+- `user_gamification_profiles`
+- `user_financial_preferences`
 
 Regras de dados:
 - Todas as tabelas financeiras devem ter `user_id`.
@@ -224,6 +250,24 @@ Regras de dados:
 - Valores monetários devem ser salvos em centavos.
 - Datas de competência mensal devem usar referência explícita de mês.
 - Dados importados devem guardar origem e lote de importação.
+- Eventos de gamificacao devem ter idempotencia por usuario e origem.
+- Analytics devem consultar por usuario e intervalo, sem misturar caches.
+
+## Analytics Financeiros e Gamificacao
+
+As decisoes detalhadas estao em `docs/product/advanced-financial-analytics-gamification.md` e `adr/0002-advanced-financial-analytics-sequence.md`.
+
+Regras:
+- semana, janela movel, quinzena, mes e personalizado sao tipos de dominio explicitos
+- evolucao, candles e frequencia sao funcoes puras e deterministicas
+- valores permanecem em centavos
+- candles exigem saldo inicial e ordenacao estavel
+- frequencia automatica inicial usa `ceil(sqrt(n))`
+- medidas por classes sao estimativas agrupadas
+- graficos recebem view models e nao consultam repositorios
+- tabela textual e alternativa acessivel obrigatoria
+- metas precedem gamificacao e desafios baseados em frequencia
+- autenticacao, RLS e persistencia precedem analytics de producao
 
 ## ADRs
 Decisões arquiteturais relevantes devem ser registradas em `adr/`.

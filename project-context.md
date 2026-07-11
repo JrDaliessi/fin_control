@@ -216,6 +216,13 @@ src/
 - MVP começa com lançamento manual e importação de extratos.
 - IA inicial deve ser analítica e assistiva, sem execução financeira autônoma.
 - A arquitetura deve ser pragmática, sem microserviços e sem abstrações prematuras.
+- Analytics avancados dependem de autenticacao, RLS e persistencia real.
+- Frequencia automatica inicial usa `k = ceil(sqrt(n))`, conforme o PDF analisado.
+- Medidas calculadas sobre classes sao estimativas agrupadas.
+- Frequencia e opcional e desligada por padrao na primeira versao.
+- Grafico de linha precede candles; biblioteca de grafico depende de spike e adapter.
+- Metas precedem gamificacao; desafios por frequencia dependem de ambos.
+- Gamificacao nao pode incentivar gasto, culpa, risco ou ranking publico por patrimonio.
 - O projeto deve operar por fases `dia 0` a `dia 7`, sem salto de fase.
 - A primeira small release funcional será cadastro manual de transação simples.
 - O setup técnico executável com Next.js, Tailwind, Jest, Supabase clients e PWA é pré-requisito operacional do Dia 2 antes da criação dos testes.
@@ -237,6 +244,10 @@ src/
 - Assinaturas e recorrências
 - Calendário financeiro
 - Open Finance
+- Evolucao financeira semanal, quinzenal, mensal e personalizada
+- Candles financeiros de saldo
+- Distribuicao de frequencia continua
+- Gamificacao de metas e habitos financeiros
 
 ## Módulos do MVP
 
@@ -768,6 +779,41 @@ Preparação de release incremental:
 - escopo liberável: fluxo local de registro manual, validações, estados de formulário e lista da sessão
 - fora da release: autenticação real, RLS, persistência real, contas reais, dashboard completo, IA, importação e Open Finance
 - estado final: `READY_FOR_RELEASE`
+
+## Expansao Planejada - Analytics Financeiros e Gamificacao
+
+Data: 2026-07-11.
+
+Fontes analisadas:
+- conversas fornecidas pelo usuario
+- `contexto-codex-novas-ideias-financeiras-2.md`
+- PDF `1783573359393.pdf` com exemplo de distribuicao continua
+
+Artefatos:
+- `docs/product/advanced-financial-analytics-gamification.md`
+- `adr/0002-advanced-financial-analytics-sequence.md`
+
+Decisoes:
+- features novas: `financial-analytics` e `gamification`
+- contas, autenticacao, RLS, categorias e transacoes persistidas precedem analytics de producao
+- periodos distinguem semana/ultimos 7 dias e quinzena/ultimos 15 dias
+- classes iniciais usam raiz quadrada, intervalos em centavos e ultimo limite inclusivo
+- media, mediana e moda agrupadas sao estimativas, nao substitutos silenciosos das medidas exatas
+- linha precede candles; frequencia precede gamificacao baseada em frequencia
+- IA entra por ultimo, com consentimento e minimizacao
+
+Sequencia aprovada:
+1. SR-007 a SR-011 - fundacao de dados reais
+2. SR-012 a SR-014 - periodos, agregacao e linha
+3. SR-015 - candles
+4. SR-016 e SR-017 - frequencia
+5. SR-018 a SR-022 - metas e gamificacao
+6. SR-023 - IA
+
+Regra operacional:
+- cada SR percorre integralmente Dias 1 a 7
+- nenhuma implementacao funcional foi autorizada nesta analise
+- proximo item valido permanece SR-007, iniciando por `dia 1` apos aprovacao humana
 
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
