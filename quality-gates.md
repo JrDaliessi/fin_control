@@ -39,6 +39,7 @@
 - Testes do dashboard passaram no worktree atual com 2 suites e 12 testes devido à implementação do Dia 3 ainda não rastreada; essa execução não substitui a evidência histórica da etapa vermelha.
 - `npm run lint` passou.
 - `npm audit --omit=dev` passou com 0 vulnerabilidades.
+
 - Estado de saída validado como `TEST_STRATEGY_READY`.
 
 ### Resultado observado — SR-007
@@ -158,6 +159,19 @@
 - Suíte completa passou com 14 suites e 69 testes.
 - `npm run type-check`, `npm run lint` e `npm run build` passaram.
 - `npm audit --omit=dev` passou com 0 vulnerabilidades.
+
+### Resultado observado — SR-007
+- Arquivos de produção medidos; `AccountForm.tsx` é o maior com 177 linhas e mantém responsabilidade única de renderização do formulário.
+- Parsing monetário duplicado consolidado em utilitário compartilhado com negativo opt-in.
+- Mutações externas de entrada e retorno da sessão foram reproduzidas por testes.
+- Provider passou a armazenar cópias congeladas das contas.
+- Estilos de formulário não foram abstraídos prematuramente.
+- Recorte direcionado passou com 4 suítes e 28 testes.
+- Suíte completa passou com 21 suítes e 109 testes.
+- `npm run type-check`, `npm run lint` e `npm run build` passaram.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Nenhuma regra de negócio ou feature nova foi adicionada.
+- Hardening encerrado com retorno a `IMPLEMENTATION_IN_PROGRESS`.
 
 ## Gate do Dia 6
 - Layout mobile first revisado.

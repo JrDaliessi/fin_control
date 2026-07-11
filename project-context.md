@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SR-007 concluído; aguardando comando explícito `dia 5`
+- Fase atual: Dia 5 da SR-007 concluído; aguardando comando explícito `dia 6`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -28,6 +28,7 @@
 - Data da estratégia de testes da SR-007: 2026-07-11
 - Data da implementação mínima da SR-007: 2026-07-11
 - Data da expansão controlada da SR-007: 2026-07-11
+- Data da refatoração e hardening interno da SR-007: 2026-07-11
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1180,8 +1181,8 @@ Estado de saída:
 
 ## Pendências e Próximos Passos
 - SR-006 concluída e classificada como `READY_FOR_RELEASE`.
-- Dia 4 da SR-007 concluído; item em `IN_PROGRESS` e estado `IMPLEMENTATION_IN_PROGRESS`.
-- Próximo passo operacional: executar `dia 5` para refatoração, consistência e hardening interno sem nova regra de negócio.
+- Dia 5 da SR-007 concluído; item em `IN_PROGRESS` e estado estável `IMPLEMENTATION_IN_PROGRESS`.
+- Próximo passo operacional: executar `dia 6` para revisão de UX, acessibilidade, responsividade e PWA.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1414,6 +1415,59 @@ Limites preservados:
 Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-007
+
+Small release: `SR-007 — Cadastro local de conta financeira`.
+
+Diagnóstico:
+- maior arquivo de produção da feature: `AccountForm.tsx`, com 177 linhas; não caracterizado como monólito crítico
+- parsing de moeda duplicado entre `accounts` e `transactions`
+- `AccountSessionProvider` armazenava referências recebidas em `initialAccounts`
+- conta retornada por `createAccount` compartilhava referência com o estado armazenado
+- estilos semelhantes dos formulários permaneceram locais porque ainda existem diferenças reais e não há componente compartilhado estável
+- nenhum gargalo de performance ou dependência proibida identificado
+
+Plano aplicado:
+1. criar teste para um parser monetário compartilhado com negativo opt-in
+2. reproduzir mutação externa da conta inicial e do objeto retornado
+3. extrair o parser compartilhado preservando wrappers específicos por feature
+4. clonar e congelar contas na fronteira de armazenamento da sessão
+5. executar regressão completa e gates
+
+Etapa vermelha:
+- teste do parser falhou por módulo compartilhado ausente
+- teste da conta inicial recebeu `Conta alterada externamente`
+- teste do retorno recebeu `Retorno alterado` após nova renderização
+
+Refatorações e correções:
+- criado `src/shared/utils/parseCurrencyToCents.ts`
+- `parseTransactionAmountToCents` passou a rejeitar negativos pelo comportamento padrão compartilhado
+- `parseAccountBalanceToCents` habilita negativos explicitamente
+- provider clona contas iniciais antes de armazenar
+- provider armazena uma cópia diferente da conta retornada pelo caso de uso
+- cópias mantidas na sessão são congeladas para impedir mutação acidental em runtime
+- import runtime de `FinancialAccount` corrigido após o teste direcionado expor o uso apenas como tipo
+
+Resultado dos gates:
+- recorte direcionado: 4 suítes e 28 testes passaram
+- suíte completa: 21 suítes e 109 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`
+
+Integridade e limites:
+- comportamento visual preservado
+- nenhuma regra financeira, rota ou feature nova
+- nenhuma persistência, autenticação, migration ou RLS
+- nenhuma dívida técnica crítica ou alta aberta
+- extração de estilos genéricos não foi feita sem repetição estável suficiente
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado
+- retorno a `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar `dia 6`
 
 ## Dia 6 — Experiência, Acessibilidade e PWA da SR-006
 

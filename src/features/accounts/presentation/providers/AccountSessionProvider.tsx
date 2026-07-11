@@ -9,9 +9,9 @@ import {
   type ReactNode
 } from "react";
 import { CreateAccountUseCase } from "../../application/use-cases/create-account.use-case";
-import type {
-  CreateFinancialAccountInput,
-  FinancialAccount
+import {
+  FinancialAccount,
+  type CreateFinancialAccountInput
 } from "../../domain/entities/financial-account.entity";
 import type { AccountRepository } from "../../domain/interfaces/account.repository";
 
@@ -34,14 +34,17 @@ export function AccountSessionProvider({
   children,
   initialAccounts = []
 }: AccountSessionProviderProps) {
-  const [accounts, setAccounts] = useState<FinancialAccount[]>(() => [
-    ...initialAccounts
-  ]);
+  const [accounts, setAccounts] = useState<FinancialAccount[]>(() =>
+    initialAccounts.map(cloneAccount)
+  );
   const createAccount = useCallback(
     async (input: CreateFinancialAccountInput) => {
       const accountRepository: AccountRepository = {
         create: async (account) => {
-          setAccounts((currentAccounts) => [account, ...currentAccounts]);
+          setAccounts((currentAccounts) => [
+            cloneAccount(account),
+            ...currentAccounts
+          ]);
           return account;
         }
       };
@@ -60,6 +63,18 @@ export function AccountSessionProvider({
     <AccountSessionContext.Provider value={value}>
       {children}
     </AccountSessionContext.Provider>
+  );
+}
+
+function cloneAccount(account: FinancialAccount): FinancialAccount {
+  return Object.freeze(
+    FinancialAccount.create({
+      userId: account.userId,
+      name: account.name,
+      type: account.type,
+      initialBalanceInCents: account.initialBalanceInCents,
+      currency: account.currency
+    })
   );
 }
 
