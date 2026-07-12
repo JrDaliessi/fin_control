@@ -293,3 +293,98 @@ O usuário informa uma conta corrente em BRL com nome e saldo inicial em centavo
 - Recorte direcionado passou com 4 suítes e 28 testes.
 - Suíte completa passou com 21 suítes e 109 testes.
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+
+## Dia 2 — SR-008 Autenticação e Sessão Protegida
+
+## Objetivo
+Transformar o ADR 0003, os contratos de autenticação e o threat model em testes executáveis antes de criar qualquer implementação funcional.
+
+## Prioridade por Camada
+1. `domain`: identidade autenticada mínima, normalizada e válida.
+2. `application`: login, logout, usuário atual e política pura de rotas.
+3. `infrastructure`: mapping do Supabase Auth, claims verificadas e propagação de cookies no Proxy.
+4. `presentation`: formulário, feedback e redirecionamento permanecem planejados para a expansão controlada após estabilidade dos casos de uso.
+
+## Matriz de Testes da SR-008
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `AuthUser` | normalizar ID/e-mail; rejeitar ID vazio, e-mail vazio e e-mail inválido | 4 testes criados |
+| application | `SignInUseCase` | normalização; senha preservada; entradas inválidas; erro genérico sem enumeração | 5 testes criados |
+| application | `SignOutUseCase` | logout da sessão corrente; falha controlada | 2 testes criados |
+| application | `GetCurrentUserUseCase` | identidade verificada presente ou ausente | 2 testes criados |
+| application | `resolveAuthRoute` | login público; usuário autenticado no login; quatro rotas privadas; acesso privado autenticado | 7 testes criados |
+| infrastructure | `SupabaseAuthGateway` | login mapeado; claims válidas; claims ausentes/expiradas; logout local | 5 testes criados |
+| infrastructure | `updateSupabaseSession` | claims válidas; cookie renovado; claims ausentes/expiradas; redirecionamento do login | 4 testes criados |
+| presentation | login/logout | labels, loading, erro genérico, sucesso e foco | futuro; reservado à expansão controlada |
+
+Total planejado no Dia 2: 7 suítes e 29 testes.
+
+## Cenário Feliz
+Usuário existente informa e-mail e senha válidos. O caso de uso normaliza apenas o e-mail, preserva a senha, autentica pelo contrato, recebe uma identidade válida e a sessão verificada permite acesso às rotas privadas. Cookies renovados são propagados para a resposta.
+
+## Cenários Alternativos
+- usuário sem sessão abre `/login`
+- usuário autenticado abre `/login` e é redirecionado para `/dashboard`
+- logout encerra somente a sessão corrente
+- ausência de identidade verificada retorna `null`
+- publishable key e URL são fornecidas ao adapter por configuração, sem chave privilegiada
+
+## Edge Cases Críticos
+- ID, e-mail ou senha vazios
+- e-mail inválido ou com caixa/espaços inconsistentes
+- senha contendo espaços intencionais não pode ser alterada
+- erro do provedor não pode revelar existência do usuário
+- claims ausentes, inválidas ou expiradas
+- cookie renovado deve chegar à resposta
+- usuário anônimo não acessa `/`, `/dashboard`, `/accounts` ou `/transactions`
+- usuário autenticado não permanece na tela de login
+- logout deve usar escopo local nesta primeira versão
+
+## Fixtures
+- identidades e credenciais exclusivamente demonstrativas em `src/features/auth/tests/fixtures/auth.fixtures.ts`
+- nenhuma credencial real, token ou segredo foi usado
+
+## Testes Criados
+- `src/features/auth/tests/auth-user.entity.test.ts`
+- `src/features/auth/tests/sign-in.use-case.test.ts`
+- `src/features/auth/tests/sign-out.use-case.test.ts`
+- `src/features/auth/tests/get-current-user.use-case.test.ts`
+- `src/features/auth/tests/auth-route-policy.test.ts`
+- `src/features/auth/tests/supabase-auth.gateway.test.ts`
+- `src/features/auth/tests/supabase-proxy.test.ts`
+
+## Resultado Observado do Dia 2 — SR-008
+- primeira execução expôs um problema no próprio teste do Proxy: `jsdom` não fornecia `Request`
+- o teste do Proxy foi isolado com `@jest-environment node`, sem criar código funcional
+- etapa vermelha válida: 7 suítes falharam exclusivamente por módulos deliberadamente ausentes
+- `npm run type-check` falhou somente com `TS2307` para os mesmos módulos ausentes
+- a rede anterior passou com 21 suítes e 110 testes
+- `npm run lint` passou sem warnings
+- `npm audit --omit=dev` passou com 0 vulnerabilidades
+
+## Implementação Bloqueada até o Dia 3
+- `src/features/auth/domain/entities/auth-user.entity.ts`
+- `src/features/auth/domain/interfaces/auth.gateway.ts`
+- `src/features/auth/application/use-cases/sign-in.use-case.ts`
+- `src/features/auth/application/use-cases/sign-out.use-case.ts`
+- `src/features/auth/application/use-cases/get-current-user.use-case.ts`
+- `src/features/auth/application/policies/auth-route-policy.ts`
+- `src/features/auth/infrastructure/supabase/supabase-auth.gateway.ts`
+- `src/lib/supabase/proxy.ts`
+
+Nenhum formulário, rota, route group, migration ou política RLS pode ser criado no Dia 2.
+
+## Resultado Observado do Dia 3 — SR-008
+- `AuthUser`, `AuthGateway`, três casos de uso, política de rotas, gateway Supabase e adapter de Proxy foram implementados.
+- `SignInUseCase` normaliza o e-mail, preserva a senha e converte falhas do provedor em erro genérico.
+- `SupabaseAuthGateway` usa `getClaims()` para identidade verificada e logout com escopo `local`.
+- `updateSupabaseSession` propaga cookies e headers anti-cache fornecidos por `@supabase/ssr`.
+- O primeiro type-check revelou que `setAll` do pacote 0.12 usa `Record<string,string>` para headers; produção e teste foram alinhados sem `any`.
+- Teste de regressão reproduziu `x-middleware-next: 1` sendo copiado indevidamente para redirects; o adapter passou a copiar somente cookies e headers de sessão fornecidos pelo Supabase.
+- Suítes direcionadas: 7 suítes e 29 testes passaram.
+- Suíte completa: 28 suítes e 139 testes passaram.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Gates finais foram executados sequencialmente porque build e type-check paralelos disputaram temporariamente `.next/types`.
+- Nenhuma UI, rota `/login`, route group, migration, tabela financeira ou política RLS foi criada.
+- A composição do `proxy.ts` raiz e das rotas públicas/privadas permanece reservada à expansão controlada do Dia 4.

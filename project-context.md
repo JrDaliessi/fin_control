@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-007 concluído; aguardando comando explícito `dia 7`
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-008 concluído; aguardando comando explícito `dia 4`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -30,6 +30,10 @@
 - Data da expansão controlada da SR-007: 2026-07-11
 - Data da refatoração e hardening interno da SR-007: 2026-07-11
 - Data da revisão de UX, acessibilidade e PWA da SR-007: 2026-07-12
+- Data da validação final e preparação de release da SR-007: 2026-07-12
+- Data do discovery e arquitetura da SR-008: 2026-07-12
+- Data da estratégia de testes da SR-008: 2026-07-12
+- Data da implementação mínima da SR-008: 2026-07-12
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1182,8 +1186,11 @@ Estado de saída:
 
 ## Pendências e Próximos Passos
 - SR-006 concluída e classificada como `READY_FOR_RELEASE`.
-- Dia 6 da SR-007 concluído; item em `IN_PROGRESS` e estado `QUALITY_VALIDATION`.
-- Próximo passo operacional: executar `dia 7` para quality gates finais, segurança, observabilidade e preparação de release.
+- SR-007 concluída e classificada como `READY_FOR_RELEASE`.
+- Dia 1 da SR-008 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0003.
+- Dia 2 da SR-008 concluído; 7 suítes e 29 testes essenciais criados em estado vermelho válido.
+- Dia 3 da SR-008 concluído; implementação mínima passou em 28 suítes e 139 testes.
+- Próximo passo operacional: executar `dia 4` para compor Proxy, rotas públicas/privadas e apresentação de login de forma controlada.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1315,6 +1322,66 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-008
+
+Small release: `SR-008 — Autenticação e sessão protegida`.
+
+Implementação criada:
+- `src/features/auth/domain/entities/auth-user.entity.ts`
+- `src/features/auth/domain/interfaces/auth.gateway.ts`
+- `src/features/auth/application/use-cases/sign-in.use-case.ts`
+- `src/features/auth/application/use-cases/sign-out.use-case.ts`
+- `src/features/auth/application/use-cases/get-current-user.use-case.ts`
+- `src/features/auth/application/policies/auth-route-policy.ts`
+- `src/features/auth/infrastructure/supabase/supabase-auth.gateway.ts`
+- `src/lib/supabase/proxy.ts`
+
+Escopo entregue:
+- entidade `AuthUser` normalizando ID e e-mail e rejeitando identidade inválida
+- contrato `AuthGateway` independente de Supabase
+- login com normalização de e-mail, preservação da senha e erro genérico de credenciais
+- logout local com erro controlado
+- leitura de usuário atual verificado
+- política pura para `/login` e rotas privadas
+- gateway Supabase mapeando usuário, `getClaims()` e `signOut({ scope: "local" })`
+- adapter de Proxy renovando sessão, propagando cookies e headers anti-cache e aplicando redirecionamentos fixos
+- publishable key aceita como contrato preferencial, com fallback isolado para legacy anon key
+
+Correção orientada pelos gates:
+- a primeira execução completa passou nos testes, mas type-check/build detectaram que os headers de `setAll` são `Record<string,string>` no `@supabase/ssr` 0.12
+- teste e produção foram corrigidos para o contrato real instalado
+- nenhuma asserção foi removida ou afrouxada
+- teste de regressão reproduziu o header interno `x-middleware-next: 1` em uma resposta de redirect
+- redirects passaram a receber somente cookies e headers anti-cache fornecidos pelo Supabase
+- uma execução paralela de build/type-check gerou falha transitória em `.next/types`; os gates finais foram repetidos sequencialmente e passaram
+
+Resultado TDD e quality gates:
+- etapa vermelha registrada no Dia 2 com 7 suítes por módulos ausentes
+- etapa verde direcionada: 7 suítes e 29 testes passaram
+- suíte completa: 28 suítes e 139 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`
+
+Validação arquitetural:
+- domínio não importa React, Next.js ou Supabase
+- aplicação depende somente do contrato `AuthGateway`
+- integração Supabase está isolada em `infrastructure` e `src/lib/supabase`
+- apresentação existente não importa client Supabase
+- política de rotas é pura e testável
+
+Limites preservados:
+- nenhuma UI, `/login` ou route group criado
+- `middleware.ts` raiz ainda não foi substituído por `proxy.ts`
+- nenhuma migration, tabela financeira, persistência ou política RLS
+- nenhum cadastro, recuperação de senha, OAuth ou MFA
+- nenhum ID demonstrativo foi substituído antes da composição autenticada do Dia 4
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar `dia 4`
 
 ## Dia 3 — Implementação Mínima Orientada por Teste da SR-007
 
@@ -1618,3 +1685,243 @@ Limites preservados:
 Estado de saída:
 - `QUALITY_VALIDATION`
 - próximo passo recomendado: executar `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-007
+
+Small release: `SR-007 — Cadastro local de conta financeira`.
+
+Pipeline final executado:
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 21 suítes e 110 testes
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`
+
+Revisão básica de segurança:
+- somente `.env.example` está versionado entre arquivos de ambiente
+- `.env`, variantes locais e arquivos de chave permanecem ignorados
+- `SUPABASE_SERVICE_ROLE_KEY` aparece somente como placeholder vazio em `.env.example`
+- nenhum uso de service role, `eval`, `dangerouslySetInnerHTML`, `localStorage` ou `sessionStorage` foi identificado no código da release
+- Supabase permanece isolado em `src/lib/supabase`; nenhum acesso foi encontrado em `src/app` ou `src/features`
+- domínio e aplicação de contas não importam React, Next.js ou Supabase
+- `package-lock.json` está presente e as dependências Supabase usam versões fixadas
+
+Validação Supabase atualizada em 2026-07-12:
+- changelog e documentação oficial de segurança foram consultados
+- a mudança de defaults de exposição de tabelas não afeta esta release, pois nenhuma tabela ou migration foi criada
+- para a futura SR-009, grants mínimos e RLS por proprietário devem ser entregues e testados juntos
+- `service_role` ou secret key nunca podem ser expostos ao cliente
+- autenticação da SR-008 continua sendo pré-requisito duro para persistência financeira
+
+Threat model resumido:
+- ativo: nome, tipo e saldo inicial da conta digitados na sessão
+- fronteira atual: memória do navegador, sem banco, sincronização ou transmissão externa
+- ameaça mitigada: versionamento acidental de segredos por `.gitignore` e placeholders
+- ameaça mitigada: acesso direto da UI ao backend, inexistente nesta release
+- ameaça residual aceita no recorte demonstrativo: perda dos dados ao recarregar
+- risco bloqueado para produção: dados financeiros persistidos sem autenticação, autorização, grants mínimos, RLS por usuário e testes de isolamento
+
+Baseline de observabilidade:
+- logs do CI para lint, type-check, testes, audit e build
+- falhas de configuração Supabase são explícitas
+- formulário anuncia estados de sucesso e erro
+- eventos candidatos futuros: `account_create_attempt`, `account_create_success`, `account_create_failure`, `accounts_empty_state`
+- ferramenta externa de erros e métricas será escolhida quando houver autenticação, persistência ou deploy real
+
+Preparação de release incremental:
+- escopo liberável: domínio e caso de uso de conta financeira, cadastro local, lista da sessão, rota `/accounts`, navegação, experiência acessível e shortcut PWA
+- fora da release: autenticação, persistência, migrations, RLS, edição, exclusão, saldo calculado e integração automática com transações
+- riscos críticos abertos: nenhum dentro do escopo local demonstrativo
+- dívida técnica crítica ou alta: nenhuma aberta
+- próximo ciclo recomendado: SR-008 — Autenticação e sessão protegida
+- estado final: `READY_FOR_RELEASE`
+
+## Próximo Ciclo Selecionado — SR-008 Autenticação e Sessão Protegida
+
+Seleção registrada em 2026-07-12.
+
+Motivo da escolha:
+- é o próximo item crítico na sequência aprovada da fundação de dados reais
+- cria a fronteira de identidade necessária antes de qualquer persistência financeira
+- reduz o risco de associação de contas, categorias e transações ao usuário errado
+- desbloqueia a futura SR-009 sem antecipar migrations ou RLS
+
+Estado da seleção:
+- backlog: `IN_PROGRESS`
+- Dia 3 concluído
+- estado do ciclo: `IMPLEMENTATION_IN_PROGRESS`
+- próximo comando válido: `dia 4`
+
+Escopo preliminar a refinar no Dia 1:
+- login e logout
+- leitura segura de sessão no servidor
+- proteção de rotas privadas
+- contratos entre apresentação, aplicação e infraestrutura de autenticação
+- cenários essenciais de sessão válida, ausente, expirada e encerrada
+
+Limites obrigatórios:
+- nenhuma persistência de contas, categorias ou transações nesta seleção
+- nenhuma migration financeira ou política RLS antecipada
+- nenhuma `service_role` ou secret key exposta ao cliente
+- nenhuma decisão sobre provedor adicional além do Supabase Auth já definido na arquitetura
+- nenhum código funcional antes dos testes essenciais do Dia 2
+
+Pendências para o Dia 1:
+- definir método inicial de autenticação dentro do Supabase Auth
+- definir comportamento de redirecionamento e proteção das rotas
+- definir contratos de sessão browser/server compatíveis com Next.js App Router
+- produzir threat model específico do fluxo de autenticação
+- fatiar a SR-008 em critérios testáveis sem expandir para persistência financeira
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-008
+
+Small release: `SR-008 — Autenticação e sessão protegida`.
+
+Objetivo refinado:
+- estabelecer identidade real e verificável antes de qualquer persistência financeira
+- permitir login e logout com sessão disponível no browser e no servidor
+- impedir acesso anônimo às rotas financeiras atuais
+- substituir progressivamente IDs demonstrativos pela identidade verificada sem antecipar banco financeiro
+
+Escopo aprovado:
+- login por e-mail e senha para usuário existente
+- logout da sessão corrente
+- refresh de tokens e cookies na fronteira Proxy
+- leitura de identidade verificada no servidor
+- proteção de `/`, `/dashboard`, `/accounts` e `/transactions`
+- `/login` como rota pública
+- redirecionamentos fixos: login bem-sucedido para `/dashboard`, logout ou ausência de sessão para `/login`
+
+Fora do escopo:
+- cadastro e confirmação de e-mail
+- recuperação ou alteração de senha
+- OAuth, telefone, magic link, OTP e MFA
+- gestão de dispositivos e revogação global
+- migrations, tabelas financeiras, repositórios persistentes e políticas RLS
+- perfis, papéis administrativos e autorização por `user_metadata`
+
+Regras de sessão e segurança:
+- `getClaims()` valida identidade para proteção de páginas e dados
+- `getUser()` só será usado quando o registro mais atual do usuário for necessário
+- `getSession()` não será usado como fonte de autorização server-side
+- Proxy renova cookies e faz guarda otimista, sem substituir validação dentro de operações sensíveis
+- destinos de redirecionamento são fixos para evitar open redirect
+- rotas autenticadas não podem compartilhar cache/ISR com respostas contendo sessão
+- `service_role` e secret keys são proibidos no cliente
+- publishable key é o contrato público alvo; compatibilidade temporária com anon key deve ser isolada e testada
+- erros de credencial não devem revelar se o e-mail existe
+
+Contratos entre camadas:
+- `AuthUser`: identidade mínima com `id` e `email`
+- `AuthGateway`: autenticar com senha, encerrar sessão e obter identidade verificada
+- `SignInUseCase`: validar entrada e autenticar pelo contrato
+- `SignOutUseCase`: encerrar a sessão corrente e tratar falhas
+- `GetCurrentUserUseCase`: retornar usuário verificado ou ausência explícita
+- `SupabaseAuthGateway`: implementação concreta em `infrastructure`
+- adapter de Proxy: atualizar cookies e aplicar a política de rotas na fronteira Next.js
+
+Estrutura planejada:
+- feature `src/features/auth` separada em `presentation`, `application`, `domain`, `infrastructure` e `tests`
+- route groups `(public)` e `(private)` sem alterar as URLs
+- providers locais financeiros devem ficar no layout privado, não no layout raiz público
+- `middleware.ts` raiz e `src/lib/supabase/middleware.ts` serão migrados para `proxy.ts` e `src/lib/supabase/proxy.ts`
+- nenhum diretório vazio ou arquivo funcional foi criado no Dia 1
+
+Threat model:
+- cookie/JWT adulterado: validar claims assinadas no servidor
+- token expirado: refresh no Proxy; falha vira ausência de sessão
+- credencial inválida: resposta genérica e sem enumeração de usuário
+- open redirect: destinos fixos
+- cache entre usuários: impedir cache compartilhado em rotas autenticadas
+- chave privilegiada vazada: somente publishable/anon pública pode chegar ao browser
+- ID demonstrativo: deve ser substituído pela identidade validada antes de persistência
+
+Matriz preliminar para o Dia 2:
+- domínio/contrato: identidade válida, ID obrigatório e e-mail normalizado
+- aplicação: login feliz, entrada inválida, credencial rejeitada e propagação controlada de falha
+- aplicação: logout feliz e falha do gateway
+- aplicação: usuário atual presente e ausente
+- infraestrutura/Proxy: claims válidas, ausentes e expiradas; cookies propagados; rotas públicas e privadas
+- apresentação futura: formulário acessível, loading, erro genérico e redirecionamento após sucesso
+
+Auditoria da base existente:
+- clients browser/server já existem em `src/lib/supabase`
+- refresh atual usa `getUser()` e deve migrar para `getClaims()` com testes
+- projeto usa `middleware.ts`, convenção depreciada no Next.js 16; migração para `proxy.ts` foi aprovada
+- feature `auth` ainda não existe
+- `.env.example` usa legacy anon key; contrato de publishable key será tratado incrementalmente
+
+Banco de dados:
+- nenhuma tabela, migration ou política foi desenhada ou criada nesta SR
+- schema `auth` permanece gerenciado pelo Supabase
+- tabelas financeiras e RLS continuam reservadas à SR-009 e posteriores
+
+Artefatos:
+- `adr/0003-auth-session-boundary.md`
+- `architecture.md`
+- `project-context.md`
+- `roadmap.md`
+- `backlog.md`
+- `quality-gates.md`
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- próximo passo recomendado: executar `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-008
+
+Small release: `SR-008 — Autenticação e sessão protegida`.
+
+Matriz criada:
+- domínio: `AuthUser` com normalização e validações de ID/e-mail
+- aplicação: login, logout, usuário atual e política pura de rotas
+- infraestrutura: mapping do Supabase Auth por `getClaims()` e adapter de Proxy com propagação de cookies
+- apresentação: cenários documentados, mas testes adiados até os casos de uso ficarem estáveis
+
+Testes e fixture criados:
+- `src/features/auth/tests/fixtures/auth.fixtures.ts`
+- `src/features/auth/tests/auth-user.entity.test.ts`
+- `src/features/auth/tests/sign-in.use-case.test.ts`
+- `src/features/auth/tests/sign-out.use-case.test.ts`
+- `src/features/auth/tests/get-current-user.use-case.test.ts`
+- `src/features/auth/tests/auth-route-policy.test.ts`
+- `src/features/auth/tests/supabase-auth.gateway.test.ts`
+- `src/features/auth/tests/supabase-proxy.test.ts`
+
+Cenários cobertos:
+- identidade normalizada e entradas inválidas
+- login feliz, e-mail normalizado, senha preservada e erro sem enumeração de usuário
+- logout local feliz e falha controlada
+- usuário atual presente ou ausente
+- acesso público/privado para usuário autenticado ou anônimo
+- claims válidas, ausentes ou expiradas
+- cookie atualizado propagado para a resposta
+- redirecionamento fixo de `/login` e rotas privadas
+
+Resultado TDD:
+- a primeira execução revelou que o teste do Proxy precisava de ambiente Node para expor `Request`
+- somente o ambiente do teste foi corrigido; nenhum código funcional foi criado
+- etapa vermelha válida: 7 suítes falharam por módulos deliberadamente ausentes
+- total planejado: 29 testes
+- `npm run type-check` falhou somente com `TS2307` para os mesmos módulos ausentes
+- rede anterior passou com 21 suítes e 110 testes
+- `npm run lint` passou sem warnings
+- `npm audit --omit=dev` passou com 0 vulnerabilidades
+
+Implementação bloqueada até o Dia 3:
+- entidade e contrato de autenticação
+- três casos de uso
+- política de rotas
+- gateway Supabase
+- adapter `src/lib/supabase/proxy.ts`
+
+Limites preservados:
+- nenhuma UI ou rota de login criada
+- `middleware.ts` não foi renomeado
+- `getUser()` existente não foi alterado
+- nenhuma migration, tabela financeira ou política RLS
+- nenhuma credencial real, token ou segredo em fixture
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar `dia 3`

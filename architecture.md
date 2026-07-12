@@ -217,6 +217,19 @@ Regras:
 - Autenticação, persistência Supabase e RLS permanecem separadas nas SR-008 e SR-009.
 - A decisão é uma aplicação da arquitetura-base existente e não exige novo ADR.
 
+## Decisões Arquiteturais da SR-008
+
+- Supabase Auth com e-mail e senha será o primeiro método; cadastro, recuperação, OAuth e MFA ficam fora desta small release.
+- Sessões SSR usarão cookies e PKCE por `@supabase/ssr`.
+- `getClaims()` validará identidade para páginas e dados privados; `getSession()` não será usado como autorização no servidor.
+- `getUser()` ficará restrito a casos que exijam o registro atual do usuário no Auth server.
+- `middleware.ts` será migrado para `proxy.ts`, convenção do Next.js 16, somente após os testes do Dia 2.
+- Proxy executa refresh e redirecionamento otimista, mas não substitui validação de identidade em operações sensíveis.
+- Rotas públicas e privadas serão organizadas por route groups sem mudar URLs.
+- A camada de apresentação dependerá de casos de uso e contratos de `auth`; somente `infrastructure` e `src/lib/supabase` conhecerão Supabase.
+- Dados financeiros e RLS permanecem fora da SR-008.
+- A decisão completa está em `adr/0003-auth-session-boundary.md`.
+
 ## PWA
 O projeto deve ter:
 - manifest
