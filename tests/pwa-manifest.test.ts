@@ -24,7 +24,7 @@ function readManifest(): WebAppManifest {
 }
 
 describe("PWA manifest", () => {
-  it("defines installable app metadata and the primary manual transaction shortcut", () => {
+  it("defines installable app metadata and shortcuts for primary flows", () => {
     const manifest = readManifest();
 
     expect(manifest.name).toBe("Controle Financeiro IA");
@@ -40,6 +40,11 @@ describe("PWA manifest", () => {
           name: "Registrar transação",
           short_name: "Registrar",
           url: "/transactions"
+        }),
+        expect.objectContaining({
+          name: "Cadastrar conta",
+          short_name: "Contas",
+          url: "/accounts"
         })
       ])
     );

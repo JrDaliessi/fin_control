@@ -17,7 +17,7 @@ export function AccountsPage() {
         <section className="grid content-start gap-4">
           <div>
             <Link
-              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               href="/"
             >
               <ArrowLeft aria-hidden="true" size={18} />

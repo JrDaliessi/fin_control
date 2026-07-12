@@ -18,6 +18,12 @@
       "short_name": "Registrar",
       "description": "Abrir o fluxo de registro manual de transação.",
       "url": "/transactions"
+    },
+    {
+      "name": "Cadastrar conta",
+      "short_name": "Contas",
+      "description": "Abrir o cadastro local de conta financeira.",
+      "url": "/accounts"
     }
   ],
   "icons": [

@@ -38,13 +38,15 @@ export function AccountSessionList({ accounts }: AccountSessionListProps) {
               className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-slate-200 p-3"
               key={`${account.userId}-${account.name}-${index}`}
             >
-              <div>
-                <p className="font-medium text-slate-950">{account.name}</p>
+              <div className="min-w-0 flex-1">
+                <p className="break-words font-medium text-slate-950">
+                  {account.name}
+                </p>
                 <p className="text-sm text-slate-600">
                   {accountTypeLabels[account.type]}
                 </p>
               </div>
-              <p className="font-semibold text-slate-950">
+              <p className="shrink-0 font-semibold text-slate-950">
                 {formatCents(account.initialBalanceInCents)}
               </p>
             </li>

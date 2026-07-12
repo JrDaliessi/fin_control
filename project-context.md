@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-007 concluído; aguardando comando explícito `dia 6`
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SR-007 concluído; aguardando comando explícito `dia 7`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -29,6 +29,7 @@
 - Data da implementação mínima da SR-007: 2026-07-11
 - Data da expansão controlada da SR-007: 2026-07-11
 - Data da refatoração e hardening interno da SR-007: 2026-07-11
+- Data da revisão de UX, acessibilidade e PWA da SR-007: 2026-07-12
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1181,8 +1182,8 @@ Estado de saída:
 
 ## Pendências e Próximos Passos
 - SR-006 concluída e classificada como `READY_FOR_RELEASE`.
-- Dia 5 da SR-007 concluído; item em `IN_PROGRESS` e estado estável `IMPLEMENTATION_IN_PROGRESS`.
-- Próximo passo operacional: executar `dia 6` para revisão de UX, acessibilidade, responsividade e PWA.
+- Dia 6 da SR-007 concluído; item em `IN_PROGRESS` e estado `QUALITY_VALIDATION`.
+- Próximo passo operacional: executar `dia 7` para quality gates finais, segurança, observabilidade e preparação de release.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1562,3 +1563,58 @@ Preparação de release incremental:
 - fora da release: persistência, autenticação, RLS, dados multiusuário reais, gráficos, cartões, parcelas, IA, importação e Open Finance
 - riscos críticos abertos: nenhum dentro do escopo local demonstrativo
 - estado final: `READY_FOR_RELEASE`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-007
+
+Small release: `SR-007 — Cadastro local de conta financeira`.
+
+Auditoria executada:
+- fluxo `/accounts` revisado por código, semântica acessível e testes de apresentação
+- formulário mantém nome acessível, labels, campos obrigatórios, `aria-invalid`, descrição do saldo, `aria-busy` e mensagens anunciáveis
+- lista mantém região nomeada com `aria-live="polite"` e empty state anunciado
+- layout permanece mobile first, com composição em uma coluna antes do breakpoint `lg`
+- manifest e experiência instalável foram revisados sem adicionar offline inconsistente
+
+Resultado TDD:
+- etapa vermelha confirmou três falhas: alvo de retorno com 40 px, nome longo sem quebra responsiva e ausência de shortcut PWA para contas
+- etapa verde direcionada passou com 2 suítes e 4 testes
+- suíte completa passou com 21 suítes e 110 testes
+
+Implementação criada ou alterada:
+- `src/features/accounts/presentation/pages/AccountsPage.tsx`
+- `src/features/accounts/presentation/components/AccountSessionList.tsx`
+- `src/features/accounts/tests/AccountsPage.test.tsx`
+- `public/manifest.webmanifest`
+- `tests/pwa-manifest.test.ts`
+
+Melhorias aplicadas:
+- link de retorno passou a ter alvo mínimo de 44 px
+- nomes longos sem espaços passaram a quebrar dentro do contêiner flexível sem causar overflow horizontal
+- saldo permaneceu não redutível na composição da linha
+- manifest ganhou shortcut `Cadastrar conta` apontando para `/accounts`
+
+Estratégia PWA:
+- manifest, metadados, ícone, modo standalone e atalhos para transações e contas permanecem configurados
+- service worker e offline não foram adicionados porque contas e transações ainda existem somente em memória
+- nenhuma promessa de disponibilidade offline foi feita
+
+Limitação registrada:
+- a inspeção visual interativa foi interrompida porque a automação do Windows não conseguiu confirmar a URL local com segurança
+- conforme autorização do usuário, a fase foi concluída sem nova inspeção visual interativa, usando testes automatizados, revisão semântica, classes responsivas e build como evidência
+
+Resultado dos gates:
+- `npm run test:ci`: passou, 21 suítes e 110 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`
+
+Limites preservados:
+- nenhuma autenticação, migration, persistência Supabase ou RLS
+- nenhuma integração automática entre contas e transações
+- nenhuma edição, exclusão ou nova regra financeira
+- nenhuma expansão para cartões, parcelas, IA, importação ou Open Finance
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- próximo passo recomendado: executar `dia 7`
