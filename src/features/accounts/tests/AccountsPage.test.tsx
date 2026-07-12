@@ -26,9 +26,10 @@ describe("AccountsPage", () => {
     expect(
       screen.getByText("Nenhuma conta cadastrada nesta sessão.")
     ).toHaveAttribute("role", "status");
-    expect(
-      screen.getByRole("link", { name: "Voltar ao dashboard" })
-    ).toHaveAttribute("href", "/");
+    const backLink = screen.getByRole("link", { name: "Voltar ao dashboard" });
+
+    expect(backLink).toHaveAttribute("href", "/");
+    expect(backLink).toHaveClass("min-h-11");
   });
 
   it("creates and lists an account with a negative informed balance", async () => {
@@ -45,5 +46,17 @@ describe("AccountsPage", () => {
     expect(await within(region).findByText("Conta do dia a dia")).toBeInTheDocument();
     expect(within(region).getByText("Conta de pagamento")).toBeInTheDocument();
     expect(within(region).getByText(/-R\$\s*250,00/)).toBeInTheDocument();
+  });
+
+  it("keeps a long account name breakable on narrow screens", async () => {
+    const user = userEvent.setup();
+    const longName = "ContaComNomeMuitoLongoSemEspacosParaValidarQuebraResponsiva";
+    renderAccountsPage();
+
+    await user.type(screen.getByLabelText("Nome da conta"), longName);
+    await user.type(screen.getByLabelText("Saldo inicial"), "0,00");
+    await user.click(screen.getByRole("button", { name: "Cadastrar conta" }));
+
+    expect(await screen.findByText(longName)).toHaveClass("break-words");
   });
 });

@@ -12,13 +12,13 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: satisfeitas para o recorte local.
 - Risco: Médio
-- Fase atual: Dia 5 concluído; aguardando Dia 6.
+- Fase atual: Dia 6 concluído; aguardando Dia 7.
 - Escopo aprovado: entidade `FinancialAccount`, tipos de conta, contrato `AccountRepository`, caso de uso de criação e possível sessão local posterior.
 - Tipos aprovados: `checking`, `savings`, `cash`, `payment` e `investment`.
 - Regras aprovadas: nome normalizado de até 80 caracteres, moeda `BRL`, saldo inicial inteiro seguro com negativo permitido, ID e timestamps opcionais antes da persistência.
-- Evidência TDD: parsing compartilhado e duas mutações externas reproduzidos antes da correção; 4 suítes e 28 testes direcionados, 21 suítes e 109 testes totais verdes.
-- Entrega atual: formulário, provider local, lista de sessão, rota `/accounts` e navegação pelo dashboard.
-- Critério imediato: revisar UX, acessibilidade, responsividade e PWA no Dia 6.
+- Evidência TDD: Dia 6 iniciou com três falhas esperadas para alvo móvel, quebra responsiva e shortcut PWA; etapa verde direcionada com 2 suítes e 4 testes, seguida de 21 suítes e 110 testes totais verdes.
+- Entrega atual: formulário, provider local, lista de sessão, rota `/accounts`, navegação pelo dashboard, alvo móvel de 44 px, nomes longos quebráveis e shortcut PWA de contas.
+- Critério imediato: executar quality gate final, segurança, observabilidade e preparação de release no Dia 7.
 - Bloqueios: persistência real, autenticação, migrations e RLS antes das SR-008/SR-009; integração automática com transações fora da SR-007.
 - Status: IN_PROGRESS
 

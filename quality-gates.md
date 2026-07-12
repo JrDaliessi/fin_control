@@ -208,6 +208,22 @@
 - `npm audit --omit=dev`: passou, 0 vulnerabilidades.
 - `npm run build`: passou com `/`, `/dashboard` e `/transactions`.
 
+### Resultado observado — SR-007
+- Fluxo de contas revisado por código, semântica e testes de apresentação.
+- Link de retorno passou de 40 px para alvo mínimo de 44 px.
+- Nomes de conta sem espaços receberam quebra responsiva e contêiner flexível sem largura mínima implícita.
+- Manifest passou a oferecer shortcut `Cadastrar conta` para `/accounts`.
+- Offline e service worker permaneceram fora do escopo porque as contas existem somente em memória.
+- Inspeção visual interativa foi interrompida pela automação ao não conseguir confirmar a URL local com segurança; a limitação foi registrada e a validação continuou por testes, semântica, build e revisão de classes responsivas.
+- Etapa vermelha direcionada: 2 suítes falharam com 3 critérios ainda ausentes.
+- Etapa verde direcionada: 2 suítes e 4 testes passaram.
+- `npm run test:ci`: passou, 21 suítes e 110 testes.
+- `npm run type-check`: passou.
+- `npm run lint`: passou, 0 warnings.
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades.
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`.
+- Estado de saída validado como `QUALITY_VALIDATION`.
+
 ## Gate do Dia 7
 - Testes validados e documentados.
 - Type-check validado e documentado.
