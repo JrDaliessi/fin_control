@@ -16,6 +16,32 @@
 - Backlog fatiado em small releases.
 - Dependências críticas e bloqueios documentados.
 
+### Resultado observado — SR-008
+- Objetivo refinado para criar identidade verificável antes da persistência financeira.
+- Escopo limitado a login por e-mail/senha, logout, sessão SSR, Proxy e proteção de rotas.
+- Cadastro, recuperação, OAuth, MFA, banco financeiro e RLS permaneceram fora do escopo.
+- Contratos `AuthUser`, `AuthGateway`, `SignInUseCase`, `SignOutUseCase` e `GetCurrentUserUseCase` definidos.
+- Rotas públicas e privadas, redirecionamentos fixos e route groups planejados.
+- Threat model documentado para cookies/JWT, expiração, enumeração, open redirect, cache e chaves.
+- Auditoria identificou `getUser()` no refresh atual e `middleware.ts` depreciado; migração para `getClaims()` e `proxy.ts` foi planejada para nascer com testes.
+- Nenhum código funcional, teste, migration, tabela ou política RLS criado.
+- ADR `0003-auth-session-boundary.md` criado.
+- Estado de saída validado como `ARCHITECTURE_READY`.
+
+### Resultado observado do Dia 2 — SR-008
+- Matriz de testes documentada em `test-strategy.md`.
+- 7 suítes e 29 cenários criados para domínio, aplicação e infraestrutura crítica.
+- Cenários cobrem login, logout, usuário atual, política de rotas, claims e cookies do Proxy.
+- Fixtures usam somente identidade e credenciais demonstrativas.
+- Primeira execução corrigiu apenas o ambiente do teste do Proxy de `jsdom` para `node`.
+- Etapa vermelha válida: 7 suítes falharam exclusivamente por módulos funcionais ausentes.
+- Rede anterior: 21 suítes e 110 testes passaram.
+- `npm run type-check` falhou somente com `TS2307` dos módulos ausentes.
+- `npm run lint` passou sem warnings.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Implementação, UI, rotas, migration e RLS permanecem bloqueados até o Dia 3.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+
 ## Gate do Dia 2
 - Setup técnico mínimo criado.
 - Jest configurado.
@@ -66,6 +92,22 @@
 - Build passando.
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para módulos fora da small release.
+
+### Resultado observado — SR-008
+- `AuthUser` implementado sem dependência de framework.
+- `AuthGateway` criado como contrato do domínio.
+- `SignInUseCase`, `SignOutUseCase` e `GetCurrentUserUseCase` dependem apenas do contrato.
+- Política de rotas implementada como função pura.
+- `SupabaseAuthGateway` concentra mapping de login, `getClaims()` e logout local na infraestrutura.
+- Adapter de Proxy propaga cookies e headers anti-cache do `@supabase/ssr`.
+- Primeiro type-check detectou contrato incorreto de headers; tipos foram alinhados ao pacote 0.12 sem `any`.
+- Teste de regressão impediu que `x-middleware-next` fosse copiado de `NextResponse.next()` para redirects.
+- Testes direcionados passaram com 7 suítes e 29 testes.
+- Suíte completa passou com 28 suítes e 139 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Gates finais foram repetidos sequencialmente após uma disputa transitória de `.next/types` entre build e type-check paralelos.
+- Nenhuma UI, rota de login, migration, tabela financeira ou RLS foi antecipada.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
 ### Resultado observado — SR-006
 - `GetDashboardSummaryUseCase` implementado sem acesso direto a repositório.
@@ -249,6 +291,21 @@
 - Autenticação e RLS permanecem pré-requisitos duros antes de persistir dados financeiros reais.
 - Baseline de observabilidade definida por logs de CI, falhas explícitas de configuração e estados de erro anunciáveis.
 - Nenhum risco crítico aberto dentro do escopo demonstrativo da SR-006.
+- Estado final: `READY_FOR_RELEASE`.
+
+### Resultado observado — SR-007
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou, 21 suítes e 110 testes.
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades.
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`.
+- Somente `.env.example` está versionado entre arquivos de ambiente; valores permanecem vazios ou demonstrativos.
+- Nenhum uso de service role, `eval`, `dangerouslySetInnerHTML`, armazenamento persistente no navegador ou acesso Supabase fora de `src/lib/supabase` foi identificado no código da release.
+- `package-lock.json` está versionado e as versões de `@supabase/ssr` e `@supabase/supabase-js` permanecem fixadas.
+- Domínio e aplicação de contas não importam React, Next.js ou Supabase; apresentação não acessa banco.
+- Orientação oficial atual do Supabase revisada: grants e RLS devem compor a mesma fronteira de segurança antes de expor tabelas; isso permanece bloqueado para a SR-009, após autenticação na SR-008.
+- Baseline de observabilidade definida por logs de CI, erros de formulário anunciáveis e falhas explícitas de configuração.
+- Nenhum risco crítico aberto dentro do escopo local e efêmero da SR-007.
 - Estado final: `READY_FOR_RELEASE`.
 
 ## Gate de Arquitetura

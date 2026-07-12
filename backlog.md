@@ -6,34 +6,24 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-007 — Cadastro local de conta financeira
-- Tipo: Small Release
-- Objetivo de negócio: substituir IDs demonstrativos por contas válidas da sessão e preparar a fundação segura de dados reais.
-- Prioridade: Alta
-- Dependências: satisfeitas para o recorte local.
-- Risco: Médio
-- Fase atual: Dia 6 concluído; aguardando Dia 7.
-- Escopo aprovado: entidade `FinancialAccount`, tipos de conta, contrato `AccountRepository`, caso de uso de criação e possível sessão local posterior.
-- Tipos aprovados: `checking`, `savings`, `cash`, `payment` e `investment`.
-- Regras aprovadas: nome normalizado de até 80 caracteres, moeda `BRL`, saldo inicial inteiro seguro com negativo permitido, ID e timestamps opcionais antes da persistência.
-- Evidência TDD: Dia 6 iniciou com três falhas esperadas para alvo móvel, quebra responsiva e shortcut PWA; etapa verde direcionada com 2 suítes e 4 testes, seguida de 21 suítes e 110 testes totais verdes.
-- Entrega atual: formulário, provider local, lista de sessão, rota `/accounts`, navegação pelo dashboard, alvo móvel de 44 px, nomes longos quebráveis e shortcut PWA de contas.
-- Critério imediato: executar quality gate final, segurança, observabilidade e preparação de release no Dia 7.
-- Bloqueios: persistência real, autenticação, migrations e RLS antes das SR-008/SR-009; integração automática com transações fora da SR-007.
+### SR-008 — Autenticação e sessão protegida
+- Tipo: Security Item / Small Release
+- Objetivo de negócio: criar a fronteira real de usuário antes da persistência financeira.
+- Valor esperado: identificar o usuário com segurança, proteger rotas privadas e habilitar isolamento futuro dos dados.
+- Prioridade: Crítica
+- Dependências: SR-007 concluída; nenhuma persistência real pode preceder esta SR.
+- Risco: Alto
+- Fase atual: Dia 3 concluído; aguardando Dia 4.
+- Escopo aprovado: login por e-mail/senha de usuário existente, logout, identidade verificada no servidor, refresh por Proxy e proteção das rotas privadas.
+- Fora do escopo: cadastro, recuperação de senha, confirmação de e-mail, OAuth, telefone, MFA, migrations financeiras e RLS.
+- Contratos planejados: `AuthUser`, `AuthGateway`, `SignInUseCase`, `SignOutUseCase`, `GetCurrentUserUseCase` e adapter Supabase.
+- Evidência TDD: 7 suítes e 29 testes criados; etapa vermelha válida por módulos ausentes; rede anterior com 21 suítes e 110 testes verdes.
+- Entrega atual: domínio, contrato, três casos de uso, política de rotas, gateway Supabase e adapter de Proxy; 28 suítes e 139 testes verdes.
+- Critério imediato: integrar Proxy e criar apresentação/rotas mínimas no Dia 4, começando por testes.
+- Bloqueios: SR-009 continua bloqueada até autenticação funcional e testes essenciais; credenciais reais não devem ser registradas em artefatos.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
-
-### SR-008 - Autenticacao e sessao protegida
-- Tipo: Security Item / Small Release
-- Objetivo de negocio: criar fronteira real de usuario antes da persistencia.
-- Valor esperado: isolamento seguro dos dados financeiros.
-- Prioridade: Critica
-- Dependencias: nenhuma persistencia real pode preceder esta SR.
-- Risco: Alto
-- Fase recomendada: ciclo apos SR-007.
-- Criterio de pronto: login/logout, sessao server-side, rotas privadas e testes essenciais.
-- Status: DISCOVERY
 
 ### SR-009 - Persistencia e RLS de contas
 - Tipo: Security Item / Small Release
@@ -280,3 +270,4 @@ Nenhuma dívida técnica aberta no Dia 7.
 - REL-001 — Validação final e preparação de release incremental da transação manual.
 - SR-005 — Resumo mensal básico (Dia 2 ao Dia 7 concluídos, pipeline verde, release incremental pronta).
 - SR-006 — Dashboard financeiro inicial (Dias 1 a 7 concluídos, pipeline verde, CI versionado e release incremental pronta).
+- SR-007 — Cadastro local de conta financeira (Dias 1 a 7 concluídos, 21 suítes e 110 testes verdes, release incremental pronta; persistência permanece bloqueada até autenticação e RLS).
