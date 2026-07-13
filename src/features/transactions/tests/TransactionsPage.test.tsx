@@ -2,14 +2,19 @@ import { describe, expect, it } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/react";
+import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
 import { TransactionsPage } from "../presentation/pages/TransactionsPage";
 import { TransactionSessionProvider } from "../presentation/providers/TransactionSessionProvider";
 
 function renderTransactionsPage() {
   render(
-    <TransactionSessionProvider>
-      <TransactionsPage />
-    </TransactionSessionProvider>
+    <AuthSessionProvider
+      user={{ id: "user-1", email: "usuario@example.com" }}
+    >
+      <TransactionSessionProvider>
+        <TransactionsPage />
+      </TransactionSessionProvider>
+    </AuthSessionProvider>
   );
 }
 

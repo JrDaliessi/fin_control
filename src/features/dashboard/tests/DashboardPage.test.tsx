@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { render, screen, within } from "@testing-library/react";
+import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
 import type { CreateTransactionInput } from "../../transactions/domain/entities/transaction.entity";
 import { TransactionSessionProvider } from "../../transactions/presentation/providers/TransactionSessionProvider";
 import { DashboardPage } from "../presentation/pages/DashboardPage";
@@ -21,12 +22,16 @@ function makeTransaction(
 
 function renderDashboard(
   transactions: CreateTransactionInput[] = [],
-  userId?: string
+  userId = "user-1"
 ) {
   render(
-    <TransactionSessionProvider initialTransactions={transactions}>
-      <DashboardPage userId={userId} />
-    </TransactionSessionProvider>
+    <AuthSessionProvider
+      user={{ id: userId, email: "usuario@example.com" }}
+    >
+      <TransactionSessionProvider initialTransactions={transactions}>
+        <DashboardPage />
+      </TransactionSessionProvider>
+    </AuthSessionProvider>
   );
 }
 

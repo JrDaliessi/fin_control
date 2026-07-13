@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
 import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
 import { MonthlySummaryPanel } from "../components/MonthlySummaryPanel";
 import { TransactionForm } from "../components/TransactionForm";
@@ -27,13 +28,12 @@ const demoCategories = [
   }
 ];
 
-const demoUserId = "user-1";
-
 export function TransactionsPage() {
+  const { user } = useAuthSession();
   const { addTransaction, transactions } = useTransactionSession();
   const monthlySummaryState = useSessionMonthlySummary({
     transactions,
-    userId: demoUserId
+    userId: user.id
   });
 
   async function handleCreateTransaction(input: CreateTransactionInput) {
@@ -64,7 +64,7 @@ export function TransactionsPage() {
             accounts={demoAccounts}
             categories={demoCategories}
             onCreateTransaction={handleCreateTransaction}
-            userId={demoUserId}
+            userId={user.id}
           />
         </section>
 

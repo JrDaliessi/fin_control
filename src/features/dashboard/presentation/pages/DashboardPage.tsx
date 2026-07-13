@@ -2,21 +2,20 @@
 
 import Link from "next/link";
 import { Plus, WalletCards } from "lucide-react";
+import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
 import { useTransactionSession } from "../../../transactions/presentation/providers/TransactionSessionProvider";
 import { DashboardSummaryPanel } from "../components/DashboardSummaryPanel";
 import { DashboardEmptyState } from "../components/DashboardEmptyState";
 import { RecentTransactionsList } from "../components/RecentTransactionsList";
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
 
-const demoUserId = "user-1";
-
-type DashboardPageProps = {
-  userId?: string;
-};
-
-export function DashboardPage({ userId = demoUserId }: DashboardPageProps) {
+export function DashboardPage() {
+  const { user } = useAuthSession();
   const { transactions } = useTransactionSession();
-  const dashboardState = useDashboardSummary({ transactions, userId });
+  const dashboardState = useDashboardSummary({
+    transactions,
+    userId: user.id
+  });
   const hasTransactions = Boolean(
     dashboardState.summary?.recentTransactions.length
   );

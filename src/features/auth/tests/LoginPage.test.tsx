@@ -1,0 +1,76 @@
+import { describe, expect, it, jest } from "@jest/globals";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { SignInWithPasswordInput } from "../domain/interfaces/auth.gateway";
+import { LoginPage } from "../presentation/pages/LoginPage";
+
+function createDeferred() {
+  let resolve!: () => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<void>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+
+  return { promise, reject, resolve };
+}
+
+async function fillCredentials() {
+  const user = userEvent.setup();
+
+  await user.type(screen.getByLabelText("E-mail"), "usuario@example.com");
+  await user.type(screen.getByLabelText("Senha"), "senha-segura");
+
+  return user;
+}
+
+describe("LoginPage", () => {
+  it("renders an accessible password login form", () => {
+    render(<LoginPage onSignIn={jest.fn(async () => undefined)} />);
+
+    expect(
+      screen.getByRole("heading", { name: "Entrar na sua conta" })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("E-mail")).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText("Senha")).toHaveAttribute("type", "password");
+    expect(screen.getByRole("button", { name: "Entrar" })).toBeEnabled();
+  });
+
+  it("shows a loading state and prevents duplicate submissions", async () => {
+    const deferred = createDeferred();
+    const onSignIn = jest.fn<
+      (input: SignInWithPasswordInput) => Promise<void>
+    >(() => deferred.promise);
+    render(<LoginPage onSignIn={onSignIn} />);
+    const user = await fillCredentials();
+
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(onSignIn).toHaveBeenCalledWith({
+      email: "usuario@example.com",
+      password: "senha-segura"
+    });
+    expect(screen.getByRole("button", { name: "Entrando..." })).toBeDisabled();
+
+    deferred.resolve();
+    expect(
+      await screen.findByText("Login realizado. Redirecionando...")
+    ).toBeInTheDocument();
+  });
+
+  it("shows a generic error without exposing provider details", async () => {
+    const onSignIn = jest.fn(async () => {
+      throw new Error("user does not exist");
+    });
+    render(<LoginPage onSignIn={onSignIn} />);
+    const user = await fillCredentials();
+
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Não foi possível entrar. Verifique suas credenciais e tente novamente."
+    );
+    expect(screen.queryByText("user does not exist")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Entrar" })).toBeEnabled();
+  });
+});

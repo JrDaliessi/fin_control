@@ -387,4 +387,27 @@ Nenhum formulário, rota, route group, migration ou política RLS pode ser criad
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
 - Gates finais foram executados sequencialmente porque build e type-check paralelos disputaram temporariamente `.next/types`.
 - Nenhuma UI, rota `/login`, route group, migration, tabela financeira ou política RLS foi criada.
-- A composição do `proxy.ts` raiz e das rotas públicas/privadas permanece reservada à expansão controlada do Dia 4.
+- A composição do Proxy e das rotas públicas/privadas permanece reservada à expansão controlada do Dia 4.
+
+## Resultado Observado do Dia 4 — SR-008
+- Testes foram criados antes da apresentação para `LoginPage`, `SignOutButton`, `AuthSessionProvider`, route groups e convenção do Proxy.
+- Etapa vermelha válida: 6 suítes falharam por componentes, provider, route groups e Proxy ainda inexistentes.
+- Login cobre renderização acessível, loading com bloqueio de duplicidade, sucesso e erro genérico sem enumeração.
+- Logout cobre progresso, sucesso, falha controlada e possibilidade de nova tentativa.
+- Contexto de sessão cobre disponibilização da identidade verificada à apresentação privada.
+- Teste de convenção cobre a função e o matcher de `src/proxy.ts`.
+- Etapa verde direcionada: 9 suítes e 22 testes passaram.
+- Suíte completa: 32 suítes e 146 testes passaram.
+- `npm run type-check`, `npm run lint`, `npm audit --audit-level=high` e `npm run build` passaram.
+- O cache obsoleto `.next/dev/types` foi removido após a migração das rotas; os tipos foram regenerados antes da validação final.
+- O primeiro `proxy.ts` foi criado na raiz e não apareceu na saída do build; após registro do erro, foi movido para `src/proxy.ts` e o build passou a declarar `ƒ Proxy (Middleware)`.
+- A inspeção visual foi tentada novamente em 2026-07-13; o navegador integrado bloqueou `localhost` e `127.0.0.1` antes do carregamento, sem navegador alternativo disponível. Testes de apresentação, revisão semântica e build foram mantidos como evidências.
+
+## Correção TDD — BUG-001 URL inválida do Supabase
+
+- Incidente: `createServerClient` lançou `Invalid supabaseUrl` no Proxy e impediu a abertura do app.
+- RED: dois testes reproduziram a falha de inicialização em uma rota privada e em `/login`; ambos falharam pela exceção não tratada.
+- GREEN: o Proxy passou a tratar falhas de configuração, inicialização e claims como sessão não autenticada.
+- Segurança esperada: rota privada redireciona para `/login`; `/login` continua acessível; nenhuma configuração sensível é registrada.
+- Teste direcionado: 1 suíte e 6 testes passaram.
+- Rede completa: 32 suítes e 148 testes passaram.

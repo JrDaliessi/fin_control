@@ -88,6 +88,29 @@ describe("updateSupabaseSession", () => {
     );
   });
 
+  it.each([
+    ["private route", "/dashboard", "https://app.example.com/login"],
+    ["public login", "/login", null]
+  ])(
+    "fails closed when Supabase initialization fails on a %s",
+    async (_caseName, pathname, expectedLocation) => {
+      const factory = jest.fn(() => {
+        throw new Error(
+          "Invalid supabaseUrl: Must be a valid HTTP or HTTPS URL."
+        );
+      });
+      const request = new NextRequest(`https://app.example.com${pathname}`);
+
+      const response = await updateSupabaseSession(request, {
+        ...config,
+        createServerClient: factory
+      });
+
+      expect(factory).toHaveBeenCalledTimes(1);
+      expect(response.headers.get("location")).toBe(expectedLocation);
+    }
+  );
+
   it("redirects a verified user away from login", async () => {
     const { factory } = createServerClientFactory(undefined, [
       { name: "sb-token", value: "refreshed", options: { path: "/" } }
