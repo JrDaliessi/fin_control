@@ -202,6 +202,8 @@ Supabase será usado para autenticação, banco de dados e storage quando necess
 Regras:
 - clients separados para browser e server
 - acesso isolado em `src/lib/supabase` e `infrastructure`
+- configuração pública centralizada em `src/lib/supabase/config.ts`, com URL HTTP/HTTPS validada e mensagens que não revelam valores
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` preferida; `NEXT_PUBLIC_SUPABASE_ANON_KEY` aceita somente como fallback legado
 - RLS obrigatório antes de manipular dados financeiros reais
 
 ## Decisões Arquiteturais da SR-007
@@ -229,6 +231,8 @@ Regras:
 - O layout privado valida a identidade por `GetCurrentUserUseCase` e disponibiliza apenas `{ id, email }` serializável para a apresentação.
 - `src/app` atua como composition root: containers de login/logout montam casos de uso e infraestrutura, enquanto componentes em `presentation` recebem callbacks e não conhecem Supabase.
 - A camada de apresentação dependerá de casos de uso e contratos de `auth`; somente `infrastructure` e `src/lib/supabase` conhecerão Supabase.
+- Browser, server e Proxy resolvem a mesma configuração pública pelo módulo compartilhado; o Proxy continua falhando fechado quando configuração ou claims não podem ser validadas.
+- O matcher do Proxy exclui assets de imagem estáticos e o manifest, evitando trabalho de autenticação em recursos que não usam sessão.
 - Dados financeiros e RLS permanecem fora da SR-008.
 - A decisão completa está em `adr/0003-auth-session-boundary.md`.
 

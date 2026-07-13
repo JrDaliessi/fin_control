@@ -411,3 +411,14 @@ Nenhum formulário, rota, route group, migration ou política RLS pode ser criad
 - Segurança esperada: rota privada redireciona para `/login`; `/login` continua acessível; nenhuma configuração sensível é registrada.
 - Teste direcionado: 1 suíte e 6 testes passaram.
 - Rede completa: 32 suítes e 148 testes passaram.
+
+## Resultado Observado do Dia 5 — SR-008
+
+- Auditoria detectou três implementações divergentes para URL e chave pública do Supabase.
+- Testes foram criados antes do módulo compartilhado e da ampliação do matcher.
+- RED: `supabase-public-config.test.ts` falhou por módulo ausente; `root-proxy.test.ts` falhou pelo matcher antigo.
+- GREEN: configuração prefere publishable key, mantém fallback anon, normaliza URL e rejeita valor malformado sem expô-lo.
+- Testes direcionados: 3 suítes e 11 testes.
+- Rede completa: 33 suítes e 152 testes.
+- Lint, type-check, audit e build passaram.
+- Validação externa concluída: URL e publishable key válidas; endpoint público do Supabase Auth respondeu `200`.

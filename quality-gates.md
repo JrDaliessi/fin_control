@@ -230,6 +230,23 @@
 - Nenhuma regra de negócio ou feature nova foi adicionada.
 - Hardening encerrado com retorno a `IMPLEMENTATION_IN_PROGRESS`.
 
+### Resultado observado — SR-008
+- Auditoria identificou duplicação e divergência na configuração pública entre browser, server e Proxy.
+- `LoginPage.tsx` e o adapter de Proxy foram mantidos coesos; não houve divisão cosmética por contagem de linhas.
+- TDD RED: módulo de configuração ainda ausente e matcher limitado fizeram 2 suítes falharem.
+- TDD GREEN direcionado: 3 suítes e 11 testes passaram.
+- Configuração consolidada em `src/lib/supabase/config.ts`, preferindo publishable key e aceitando anon key como fallback legado.
+- URL é normalizada e validada sem incluir seu conteúdo em mensagens de erro.
+- Matcher do Proxy exclui SVG, PNG, JPG, JPEG, GIF e WebP, além dos assets internos e manifest.
+- `npm run test:ci`: passou, 33 suítes e 152 testes.
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades.
+- `npm run build`: passou e declarou `ƒ Proxy (Middleware)`.
+- Runtime local: `/` respondeu `307` para `/login`; `/login` e `/icon.svg` responderam `200`.
+- Bloqueio resolvido: Project URL HTTPS e publishable key válidas; endpoint público do Supabase Auth respondeu `200` sem exposição dos valores.
+- Estado de saída: retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
+
 ## Gate do Dia 6
 - Layout mobile first revisado.
 - Campos principais têm labels acessíveis.

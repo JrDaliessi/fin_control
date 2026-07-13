@@ -8,8 +8,8 @@ PWA de finanças pessoais que busca explicar o dinheiro do usuário, antecipar r
 
 - Máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
 - Small release ativa: `SR-008 — Autenticação e sessão protegida`
-- Fase concluída: Dia 4 — expansão controlada da autenticação; `BUG-001` corrigido antes do hardening
-- Próximo passo: retomar o Dia 5 — refatoração, consistência e hardening interno
+- Fase concluída: Dia 5 — refatoração, consistência e hardening interno
+- Próximo passo: Dia 6 — experiência, acessibilidade e PWA
 - Persistência financeira, migrations e políticas RLS ainda não fazem parte da entrega atual
 
 O estado detalhado e as decisões vigentes ficam em [`project-context.md`](project-context.md).
@@ -88,11 +88,11 @@ Consulte [`architecture.md`](architecture.md) e os registros em [`adr/`](adr/) p
 3. Preencha em `.env.local`:
 
    ```dotenv
-   NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-publica
+   NEXT_PUBLIC_SUPABASE_URL=https://abcdefghijklmnopqrst.supabase.co
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_sua_chave
    ```
 
-   `NEXT_PUBLIC_SUPABASE_URL` deve ser a **Project URL completa**, iniciada por `https://`. Um nome de projeto, identificador isolado ou URL sem protocolo não é válido.
+   Substitua os valores ilustrativos pelos dados do diálogo **Connect** do seu projeto. A URL deve ser a **Project URL completa**, iniciada por `https://`, sem `<`, `>` ou outros marcadores de placeholder.
 
 4. Inicie o ambiente de desenvolvimento:
 
@@ -102,7 +102,7 @@ Consulte [`architecture.md`](architecture.md) e os registros em [`adr/`](adr/) p
 
 5. Acesse `http://localhost:3000`.
 
-O projeto ainda mantém `NEXT_PUBLIC_SUPABASE_ANON_KEY` por compatibilidade. A migração controlada para publishable key está planejada no ciclo de autenticação.
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` é a opção preferida. `NEXT_PUBLIC_SUPABASE_ANON_KEY` permanece disponível apenas como fallback temporário para projetos legados.
 
 Se a configuração pública do Supabase estiver ausente ou malformada, o Proxy trata a sessão como não autenticada: rotas privadas redirecionam para `/login`, que permanece acessível. Esse fallback evita erro global, mas o login real só funciona depois que a URL e a chave locais forem corrigidas.
 

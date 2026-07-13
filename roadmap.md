@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 4 da SR-008 concluído; autenticação utilizável e proteção de rotas validadas com 32 suítes e 146 testes, aguardando Dia 5.
+Estado atual: Dia 5 da SR-008 concluído com 33 suítes e 152 testes verdes; configuração pública e endpoint Supabase Auth validados.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -162,7 +162,7 @@ Recorte da SR-007: domínio, contrato e cadastro local de conta financeira, sem 
 
 Recorte da SR-008: login por e-mail/senha, logout, identidade validada no servidor, Proxy do Next.js 16 e proteção de rotas privadas; cadastro, recuperação, OAuth, MFA, banco financeiro e RLS permanecem fora.
 
-Próximo passo: Dia 5 deve revisar duplicações, fronteiras de composição e hardening interno, preservando login/logout, identidade verificada e proteção das rotas.
+Próximo passo: executar o Dia 6 para revisar UX, acessibilidade, responsividade e experiência PWA da autenticação.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
