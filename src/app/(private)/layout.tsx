@@ -1,0 +1,36 @@
+import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
+import { GetCurrentUserUseCase } from "@/features/auth/application/use-cases/get-current-user.use-case";
+import { SupabaseAuthGateway } from "@/features/auth/infrastructure/supabase/supabase-auth.gateway";
+import { AuthSessionProvider } from "@/features/auth/presentation/providers/AuthSessionProvider";
+import { AccountSessionProvider } from "@/features/accounts/presentation/providers/AccountSessionProvider";
+import { TransactionSessionProvider } from "@/features/transactions/presentation/providers/TransactionSessionProvider";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { PrivateAppShell } from "./PrivateAppShell";
+
+export const dynamic = "force-dynamic";
+
+type PrivateLayoutProps = {
+  children: ReactNode;
+};
+
+export default async function PrivateLayout({ children }: PrivateLayoutProps) {
+  const authGateway = new SupabaseAuthGateway({
+    supabaseClient: await createSupabaseServerClient()
+  });
+  const user = await new GetCurrentUserUseCase({ authGateway }).execute();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return (
+    <AuthSessionProvider user={{ id: user.id, email: user.email }}>
+      <AccountSessionProvider>
+        <TransactionSessionProvider>
+          <PrivateAppShell email={user.email}>{children}</PrivateAppShell>
+        </TransactionSessionProvider>
+      </AccountSessionProvider>
+    </AuthSessionProvider>
+  );
+}

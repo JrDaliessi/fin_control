@@ -175,6 +175,21 @@
 - `npm audit --omit=dev` passou com 0 vulnerabilidades.
 - Build gerou `/`, `/accounts`, `/dashboard` e `/transactions`.
 
+### Resultado observado — SR-008
+- Testes de apresentação e composição foram escritos antes da implementação; 6 suítes falharam por módulos e route groups ausentes.
+- Login implementa estados `idle`, `loading`, `success` e `error`, com labels, autocomplete, bloqueio de envio duplicado e erro genérico.
+- Logout usa o caso de uso e escopo local, com feedback de progresso, sucesso e falha controlada.
+- `AuthSessionProvider` distribui a identidade verificada; IDs demonstrativos foram removidos das páginas financeiras.
+- Providers financeiros foram removidos do layout raiz e compostos somente no layout privado.
+- `/login` foi criada no route group público; `/`, `/dashboard`, `/accounts` e `/transactions` foram movidas para o route group privado sem alterar URLs.
+- `middleware.ts` foi substituído por `src/proxy.ts`; o primeiro posicionamento na raiz foi corrigido após o build não declarar o Proxy.
+- Etapa verde direcionada passou com 9 suítes e 22 testes.
+- Suíte completa passou com 32 suítes e 146 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --audit-level=high` e `npm run build` passaram.
+- Build declarou `ƒ Proxy (Middleware)` e gerou `/login` estática, com rotas financeiras dinâmicas.
+- Inspeção visual reexecutada em 2026-07-13: o navegador integrado bloqueou os endereços locais antes do carregamento e não havia navegador alternativo; semântica, estados, responsividade e build permanecem validados por testes e revisão de código.
+- Nenhuma migration, tabela financeira, política RLS, cadastro, recuperação, OAuth ou MFA foi adicionada.
+
 ## Gate do Dia 5
 - Arquivos inchados identificados.
 - Plano de refatoração incremental documentado.
@@ -351,3 +366,14 @@ Uma release incremental só pode ser considerada pronta quando:
 - riscos remanescentes foram documentados
 - backlog foi atualizado
 - próximo passo está claro
+
+## Correção crítica antes do Dia 5 — BUG-001
+
+- `npm run test:ci -- src/features/auth/tests/supabase-proxy.test.ts`: passou, 1 suíte e 6 testes.
+- `npm run test:ci`: passou, 32 suítes e 148 testes.
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm run build`: passou e declarou `ƒ Proxy (Middleware)`.
+- Verificação HTTP com a configuração malformada: `/` respondeu `307` para `/login`; `/login` respondeu `200`; nenhum erro 500.
+- Segurança: fallback falha fechado, sem liberar rota privada e sem expor valores de ambiente.
+- Risco remanescente: autenticação real permanece indisponível enquanto `NEXT_PUBLIC_SUPABASE_URL` não for substituída pela Project URL HTTPS correta em `.env.local`.

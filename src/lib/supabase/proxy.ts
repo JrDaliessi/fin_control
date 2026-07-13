@@ -72,38 +72,46 @@ export async function updateSupabaseSession(
     dependencies.createServerClient ??
     ((url, key, options) => createServerClient(url, key, options));
 
-  const supabase = factory(
-    dependencies.supabaseUrl ?? requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL"),
-    dependencies.supabaseKey ?? resolvePublicKey(),
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet, responseHeaders) {
-          sessionHeaders = { ...(responseHeaders ?? {}) };
-          cookiesToSet.forEach(({ name, value }) => {
-            request.cookies.set(name, value);
-          });
+  let isAuthenticated = false;
 
-          response = NextResponse.next({ request });
+  try {
+    const supabase = factory(
+      dependencies.supabaseUrl ?? requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL"),
+      dependencies.supabaseKey ?? resolvePublicKey(),
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet, responseHeaders) {
+            sessionHeaders = { ...(responseHeaders ?? {}) };
+            cookiesToSet.forEach(({ name, value }) => {
+              request.cookies.set(name, value);
+            });
 
-          Object.entries(sessionHeaders).forEach(([name, value]) => {
-            response.headers.set(name, value);
-          });
+            response = NextResponse.next({ request });
 
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
-          });
+            Object.entries(sessionHeaders).forEach(([name, value]) => {
+              response.headers.set(name, value);
+            });
+
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options);
+            });
+          }
         }
       }
-    }
-  );
+    );
 
-  const { data, error } = await supabase.auth.getClaims();
+    const { data, error } = await supabase.auth.getClaims();
+    isAuthenticated = !error && Boolean(data?.claims?.sub);
+  } catch {
+    isAuthenticated = false;
+  }
+
   const decision = resolveAuthRoute({
     pathname: request.nextUrl.pathname,
-    isAuthenticated: !error && Boolean(data?.claims?.sub)
+    isAuthenticated
   });
 
   if (decision.action === "allow") {

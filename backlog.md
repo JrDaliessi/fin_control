@@ -13,13 +13,13 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Crítica
 - Dependências: SR-007 concluída; nenhuma persistência real pode preceder esta SR.
 - Risco: Alto
-- Fase atual: Dia 3 concluído; aguardando Dia 4.
+- Fase atual: Dia 4 concluído; `BUG-001` corrigido; Dia 5 aguarda retomada.
 - Escopo aprovado: login por e-mail/senha de usuário existente, logout, identidade verificada no servidor, refresh por Proxy e proteção das rotas privadas.
 - Fora do escopo: cadastro, recuperação de senha, confirmação de e-mail, OAuth, telefone, MFA, migrations financeiras e RLS.
 - Contratos planejados: `AuthUser`, `AuthGateway`, `SignInUseCase`, `SignOutUseCase`, `GetCurrentUserUseCase` e adapter Supabase.
 - Evidência TDD: 7 suítes e 29 testes criados; etapa vermelha válida por módulos ausentes; rede anterior com 21 suítes e 110 testes verdes.
-- Entrega atual: domínio, contrato, três casos de uso, política de rotas, gateway Supabase e adapter de Proxy; 28 suítes e 139 testes verdes.
-- Critério imediato: integrar Proxy e criar apresentação/rotas mínimas no Dia 4, começando por testes.
+- Entrega atual: domínio, casos de uso, gateway Supabase, login/logout acessíveis, identidade verificada no layout privado, route groups e `src/proxy.ts`; 32 suítes e 146 testes verdes.
+- Critério imediato: revisar fronteiras, duplicações, consistência e hardening interno no Dia 5 sem expandir o escopo.
 - Bloqueios: SR-009 continua bloqueada até autenticação funcional e testes essenciais; credenciais reais não devem ser registradas em artefatos.
 - Status: IN_PROGRESS
 
@@ -258,6 +258,14 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 Nenhuma dívida técnica aberta no Dia 7.
 
 ## DONE
+
+### BUG-001 — Proxy quebra o app com URL inválida do Supabase
+- Tipo: Bug / Security Item
+- Resultado: falhas de configuração, inicialização do client ou claims são tratadas como sessão não autenticada; rotas privadas redirecionam a `/login` e `/login` permanece acessível.
+- Evidência TDD: 2 cenários falharam em RED pela exceção não tratada e passaram em GREEN após a correção; suíte completa com 32 suítes e 148 testes.
+- Quality gates: lint, type-check e build passaram; `/` respondeu `307` para `/login` e `/login` respondeu `200` com o `.env.local` malformado.
+- Pendência operacional: corrigir a Project URL HTTPS em `.env.local` para habilitar autenticação real.
+- Status: DONE
 
 - Bootstrap operacional do projeto.
 - Discovery inicial, módulos do MVP e primeira small release selecionados.

@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
 import { AccountForm } from "../components/AccountForm";
 import { AccountSessionList } from "../components/AccountSessionList";
 import { useAccountSession } from "../providers/AccountSessionProvider";
 
-const demoUserId = "user-1";
-
 export function AccountsPage() {
+  const { user } = useAuthSession();
   const { accounts, createAccount } = useAccountSession();
 
   return (
@@ -36,7 +36,7 @@ export function AccountsPage() {
 
           <AccountForm
             onCreateAccount={createAccount}
-            userId={demoUserId}
+            userId={user.id}
           />
         </section>
 

@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-008 concluído; aguardando comando explícito `dia 4`
+- Fase atual: `BUG-001` corrigido; Dia 5 da SR-008 aguarda retomada explícita
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -34,6 +34,7 @@
 - Data do discovery e arquitetura da SR-008: 2026-07-12
 - Data da estratégia de testes da SR-008: 2026-07-12
 - Data da implementação mínima da SR-008: 2026-07-12
+- Data da expansão controlada da SR-008: 2026-07-13
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -864,6 +865,8 @@ Regra operacional:
 - Erro: expandir escopo por conveniência. Prevenção: registrar item no backlog antes de executar.
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
+- Erro: criar `proxy.ts` na raiz em um projeto cujo App Router está em `src/app`; o build passou, mas não declarou o Proxy. Prevenção: manter `src/proxy.ts` no mesmo nível de `src/app` e exigir `ƒ Proxy (Middleware)` na saída de `next build`; o `middleware-manifest.json` legado pode permanecer vazio no Turbopack.
+- Erro: uma `NEXT_PUBLIC_SUPABASE_URL` malformada fez a criação do client SSR lançar uma exceção no Proxy e derrubou toda a navegação com o overlay `Invalid supabaseUrl`. Prevenção: validar a configuração sem registrar valores sensíveis, cobrir falhas de inicialização e de leitura de claims com testes e fazer a proteção de rotas falhar de forma fechada — rota privada redireciona para `/login` e `/login` permanece acessível.
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-005
 
@@ -1322,6 +1325,71 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 4 — Expansão Controlada da SR-008
+
+Small release: `SR-008 — Autenticação e sessão protegida`.
+
+TDD e apresentação:
+- testes foram criados antes de `LoginPage`, `SignOutButton`, `AuthSessionProvider`, route groups e Proxy
+- etapa vermelha: 6 suítes falharam exclusivamente por módulos planejados ainda ausentes
+- login acessível com e-mail/senha, estados `idle`, `loading`, `success` e `error`, prevenção de envio duplicado e mensagem genérica
+- logout da sessão corrente com progresso, sucesso, erro controlado e redirecionamento fixo
+
+Composição e proteção:
+- `/login` pertence ao route group público
+- `/`, `/dashboard`, `/accounts` e `/transactions` pertencem ao route group privado, sem mudança de URL
+- layout privado valida identidade por `GetCurrentUserUseCase`, usa `dynamic = "force-dynamic"` e redireciona ausência de identidade para `/login`
+- `AuthSessionProvider` fornece `id` e `email` verificados às páginas; IDs demonstrativos foram removidos
+- providers de contas e transações foram movidos do layout raiz para o layout privado
+- containers em `src/app` compõem casos de uso e infraestrutura; componentes da apresentação recebem callbacks e não acessam Supabase
+- `middleware.ts` e o adapter legado foram removidos; `src/proxy.ts` compõe `src/lib/supabase/proxy.ts`
+
+Correção governada:
+- o primeiro `proxy.ts` foi colocado na raiz, embora o projeto use `src/app`
+- o build passou sem declarar o Proxy, evidenciando que a fronteira não estava ativa
+- o erro e a prevenção foram registrados antes da correção
+- o arquivo foi movido para `src/proxy.ts`; o build passou a declarar `ƒ Proxy (Middleware)`
+
+Validações:
+- etapa verde direcionada: 9 suítes e 22 testes
+- suíte completa: 32 suítes e 146 testes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/login`, `/`, `/accounts`, `/dashboard`, `/transactions` e Proxy
+- inspeção visual reexecutada em 2026-07-13: o navegador integrado ficou disponível, mas bloqueou `http://localhost:3000/login` e `http://127.0.0.1:3000/login` com `ERR_BLOCKED_BY_CLIENT` antes do carregamento; não havia outro navegador conectado, então testes de apresentação, revisão semântica e build permaneceram como evidência
+
+Limites preservados:
+- nenhuma migration, tabela financeira, política RLS ou persistência real
+- nenhum cadastro, recuperação de senha, OAuth, telefone, OTP ou MFA
+- nenhuma `service_role`, secret key ou autorização por `user_metadata`
+- nenhuma expansão para cartões, parcelas, IA, importação ou Open Finance
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar `dia 5`
+
+### Correção crítica antes do Dia 5 — configuração inválida do Supabase
+
+Incidente reproduzido em 2026-07-13:
+- ao abrir o app, o Proxy tentou criar o client SSR com uma `NEXT_PUBLIC_SUPABASE_URL` presente, porém sem formato HTTP/HTTPS válido
+- `createServerClient` lançou `Invalid supabaseUrl: Must be a valid HTTP or HTTPS URL`
+- a exceção escapou de `updateSupabaseSession` antes da política de rotas e produziu erro global de runtime
+
+Regra ajustada antes da correção:
+- falhas de configuração, inicialização do client ou leitura de claims devem ser tratadas como sessão não autenticada, sem expor valores de ambiente
+- rotas privadas devem redirecionar para `/login`; a própria rota `/login` deve continuar renderizável para permitir recuperação operacional
+- autenticação real permanece indisponível até a URL local ser corrigida para a Project URL HTTPS fornecida pelo Supabase
+
+Estado operacional:
+- `BUG-001` concluído por TDD: dois testes falharam em RED pela exceção não tratada e passaram após o fallback seguro
+- teste direcionado: 1 suíte e 6 testes verdes
+- suíte completa: 32 suítes e 148 testes verdes
+- lint, type-check e build verdes; build declarou `ƒ Proxy (Middleware)`
+- validação HTTP com o `.env.local` malformado: `/` respondeu `307` para `/login` e `/login` respondeu `200`, sem erro 500
+- pendência externa: substituir `NEXT_PUBLIC_SUPABASE_URL` pela Project URL HTTPS real para habilitar login
+- Dia 5 permanece pausado e pode ser retomado por comando explícito do usuário
 
 ## Dia 3 — Implementação Mínima Orientada por Teste da SR-008
 

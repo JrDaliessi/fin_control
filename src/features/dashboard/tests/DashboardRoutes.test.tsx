@@ -1,13 +1,18 @@
 import { describe, expect, it } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
-import DashboardRoutePage from "../../../app/dashboard/page";
-import HomePage from "../../../app/page";
-import TransactionsRoutePage from "../../../app/transactions/page";
+import DashboardRoutePage from "../../../app/(private)/dashboard/page";
+import HomePage from "../../../app/(private)/page";
+import TransactionsRoutePage from "../../../app/(private)/transactions/page";
+import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
 import { TransactionSessionProvider } from "../../transactions/presentation/providers/TransactionSessionProvider";
 
 function renderRoute(route: React.ReactNode) {
   render(
-    <TransactionSessionProvider>{route}</TransactionSessionProvider>
+    <AuthSessionProvider
+      user={{ id: "user-1", email: "usuario@example.com" }}
+    >
+      <TransactionSessionProvider>{route}</TransactionSessionProvider>
+    </AuthSessionProvider>
   );
 }
 

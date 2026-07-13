@@ -223,9 +223,11 @@ Regras:
 - Sessões SSR usarão cookies e PKCE por `@supabase/ssr`.
 - `getClaims()` validará identidade para páginas e dados privados; `getSession()` não será usado como autorização no servidor.
 - `getUser()` ficará restrito a casos que exijam o registro atual do usuário no Auth server.
-- `middleware.ts` será migrado para `proxy.ts`, convenção do Next.js 16, somente após os testes do Dia 2.
+- `middleware.ts` foi migrado para `src/proxy.ts`, no mesmo nível de `src/app`, conforme a convenção do Next.js 16 para projetos que usam o diretório `src`.
 - Proxy executa refresh e redirecionamento otimista, mas não substitui validação de identidade em operações sensíveis.
-- Rotas públicas e privadas serão organizadas por route groups sem mudar URLs.
+- Rotas públicas e privadas estão organizadas por route groups sem mudar URLs; providers financeiros existem somente no layout privado.
+- O layout privado valida a identidade por `GetCurrentUserUseCase` e disponibiliza apenas `{ id, email }` serializável para a apresentação.
+- `src/app` atua como composition root: containers de login/logout montam casos de uso e infraestrutura, enquanto componentes em `presentation` recebem callbacks e não conhecem Supabase.
 - A camada de apresentação dependerá de casos de uso e contratos de `auth`; somente `infrastructure` e `src/lib/supabase` conhecerão Supabase.
 - Dados financeiros e RLS permanecem fora da SR-008.
 - A decisão completa está em `adr/0003-auth-session-boundary.md`.
