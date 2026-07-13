@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: `BUG-001` corrigido; Dia 5 da SR-008 aguarda retomada explícita
+- Fase atual: Dia 5 da SR-008 concluído; aguardando comando explícito `dia 6`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -35,6 +35,7 @@
 - Data da estratégia de testes da SR-008: 2026-07-12
 - Data da implementação mínima da SR-008: 2026-07-12
 - Data da expansão controlada da SR-008: 2026-07-13
+- Data do hardening interno da SR-008: 2026-07-13
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -867,6 +868,7 @@ Regra operacional:
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 - Erro: criar `proxy.ts` na raiz em um projeto cujo App Router está em `src/app`; o build passou, mas não declarou o Proxy. Prevenção: manter `src/proxy.ts` no mesmo nível de `src/app` e exigir `ƒ Proxy (Middleware)` na saída de `next build`; o `middleware-manifest.json` legado pode permanecer vazio no Turbopack.
 - Erro: uma `NEXT_PUBLIC_SUPABASE_URL` malformada fez a criação do client SSR lançar uma exceção no Proxy e derrubou toda a navegação com o overlay `Invalid supabaseUrl`. Prevenção: validar a configuração sem registrar valores sensíveis, cobrir falhas de inicialização e de leitura de claims com testes e fazer a proteção de rotas falhar de forma fechada — rota privada redireciona para `/login` e `/login` permanece acessível.
+- Erro: um exemplo de Project URL com `<project-ref>` foi copiado literalmente para `.env.local`. Prevenção: exemplos devem declarar que marcadores precisam ser substituídos, a documentação deve preferir um hostname ilustrativo sem `<` e `>`, e a validação externa deve conferir o endpoint Auth antes de encerrar a fase.
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-005
 
@@ -1390,6 +1392,53 @@ Estado operacional:
 - validação HTTP com o `.env.local` malformado: `/` respondeu `307` para `/login` e `/login` respondeu `200`, sem erro 500
 - pendência externa: substituir `NEXT_PUBLIC_SUPABASE_URL` pela Project URL HTTPS real para habilitar login
 - Dia 5 permanece pausado e pode ser retomado por comando explícito do usuário
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-008
+
+Auditoria estrutural:
+- `LoginPage.tsx` tem 136 linhas e permanece focado no formulário e seus estados; divisão adicional não reduziria responsabilidade
+- `src/lib/supabase/proxy.ts` concentra cookies, claims e decisão de rota; extração cosmética foi rejeitada
+- a duplicação real estava na resolução divergente de URL e chave pública em browser, server e Proxy
+- o matcher do Proxy não excluía formatos genéricos de imagem
+
+Plano incremental executado:
+1. caracterizar preferência de chave, fallback legado, validação segura de URL e matcher
+2. criar `src/lib/supabase/config.ts`
+3. migrar browser, server e Proxy para o módulo compartilhado
+4. ampliar exclusão de assets sem alterar rotas de aplicação
+
+TDD e melhorias:
+- RED: 2 suítes falharam pelo módulo ausente e matcher antigo
+- GREEN direcionado: 3 suítes e 11 testes
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` passou a ser preferida; `ANON_KEY` permanece fallback temporário
+- valores são normalizados; URL aceita apenas HTTP/HTTPS e erros não revelam o conteúdo
+- imagens SVG, PNG, JPG, JPEG, GIF e WebP não atravessam o Proxy
+- nenhuma regra de negócio, migration, persistência, RLS ou fluxo de autenticação novo foi criado
+
+Integridade, consistência e performance:
+- domínio, aplicação e apresentação não ganharam dependência de Supabase
+- tratamento fail-closed do Proxy foi preservado
+- nenhum estado visual foi alterado; design system existente permaneceu consistente
+- assets estáticos deixam de pagar o custo desnecessário de inicialização do Auth
+
+Quality gates:
+- `npm run test:ci`: 33 suítes e 152 testes verdes
+- `npm run lint`: verde, 0 warnings
+- `npm run type-check`: verde
+- `npm audit --audit-level=high`: 0 vulnerabilidades
+- `npm run build`: verde com `ƒ Proxy (Middleware)`
+- runtime local: `/` retornou `307` para `/login`; `/login` e `/icon.svg` retornaram `200`
+
+Bloqueio de configuração resolvido:
+- `NEXT_PUBLIC_SUPABASE_URL` foi validada como URL HTTPS hospedada no Supabase e sem marcadores de placeholder
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` está presente e foi selecionada pelo contrato preferencial
+- endpoint público `/auth/v1/settings` respondeu `200`, sem registrar URL ou chave
+- runtime local permaneceu correto: `/` retornou `307` para `/login`; `/login` e `/icon.svg` retornaram `200`
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- Dia 5 concluído sem dívida técnica crítica ou alta aberta
+- próximo passo recomendado: executar `dia 6`
 
 ## Dia 3 — Implementação Mínima Orientada por Teste da SR-008
 

@@ -4,6 +4,10 @@ import {
 } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveAuthRoute } from "@/features/auth/application/policies/auth-route-policy";
+import {
+  getSupabasePublicConfig,
+  resolveSupabasePublicConfig
+} from "./config";
 
 type CookieToSet = {
   name: string;
@@ -40,28 +44,6 @@ type UpdateSupabaseSessionDependencies = {
   supabaseKey?: string;
 };
 
-function requirePublicEnv(
-  name:
-    | "NEXT_PUBLIC_SUPABASE_URL"
-    | "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
-    | "NEXT_PUBLIC_SUPABASE_ANON_KEY"
-) {
-  const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-
-  return value;
-}
-
-function resolvePublicKey() {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    requirePublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
-  );
-}
-
 export async function updateSupabaseSession(
   request: NextRequest,
   dependencies: UpdateSupabaseSessionDependencies = {}
@@ -75,9 +57,17 @@ export async function updateSupabaseSession(
   let isAuthenticated = false;
 
   try {
+    const config =
+      dependencies.supabaseUrl !== undefined ||
+      dependencies.supabaseKey !== undefined
+        ? resolveSupabasePublicConfig({
+            publishableKey: dependencies.supabaseKey,
+            url: dependencies.supabaseUrl
+          })
+        : getSupabasePublicConfig();
     const supabase = factory(
-      dependencies.supabaseUrl ?? requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL"),
-      dependencies.supabaseKey ?? resolvePublicKey(),
+      config.url,
+      config.key,
       {
         cookies: {
           getAll() {

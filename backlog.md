@@ -13,14 +13,14 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Crítica
 - Dependências: SR-007 concluída; nenhuma persistência real pode preceder esta SR.
 - Risco: Alto
-- Fase atual: Dia 4 concluído; `BUG-001` corrigido; Dia 5 aguarda retomada.
+- Fase atual: Dia 5 concluído; aguardando Dia 6.
 - Escopo aprovado: login por e-mail/senha de usuário existente, logout, identidade verificada no servidor, refresh por Proxy e proteção das rotas privadas.
 - Fora do escopo: cadastro, recuperação de senha, confirmação de e-mail, OAuth, telefone, MFA, migrations financeiras e RLS.
 - Contratos planejados: `AuthUser`, `AuthGateway`, `SignInUseCase`, `SignOutUseCase`, `GetCurrentUserUseCase` e adapter Supabase.
 - Evidência TDD: 7 suítes e 29 testes criados; etapa vermelha válida por módulos ausentes; rede anterior com 21 suítes e 110 testes verdes.
-- Entrega atual: domínio, casos de uso, gateway Supabase, login/logout acessíveis, identidade verificada no layout privado, route groups e `src/proxy.ts`; 32 suítes e 146 testes verdes.
-- Critério imediato: revisar fronteiras, duplicações, consistência e hardening interno no Dia 5 sem expandir o escopo.
-- Bloqueios: SR-009 continua bloqueada até autenticação funcional e testes essenciais; credenciais reais não devem ser registradas em artefatos.
+- Entrega atual: autenticação, route groups e Proxy; configuração pública centralizada; publishable key preferida; matcher de assets endurecido; 33 suítes e 152 testes verdes.
+- Critério imediato: revisar UX, acessibilidade, responsividade e experiência PWA do fluxo de autenticação no Dia 6.
+- Bloqueios: SR-009 permanece fora do ciclo atual até a conclusão formal da SR-008.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
