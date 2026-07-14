@@ -1,4 +1,4 @@
-# Controle Financeiro IA
+# FinControl
 
 PWA de finanças pessoais que busca explicar o dinheiro do usuário, antecipar riscos e apoiar decisões financeiras. O produto combina lançamentos manuais, visão consolidada e, em ciclos futuros, análises assistidas por IA — sem executar ações financeiras sensíveis sem confirmação explícita.
 
@@ -6,11 +6,11 @@ PWA de finanças pessoais que busca explicar o dinheiro do usuário, antecipar r
 
 ## Estado atual
 
-- Máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Small release ativa: `SR-008 — Autenticação e sessão protegida`
-- Fase concluída: Dia 5 — refatoração, consistência e hardening interno
-- Próximo passo: Dia 6 — experiência, acessibilidade e PWA
-- Persistência financeira, migrations e políticas RLS ainda não fazem parte da entrega atual
+- Máquina de estados: `ARCHITECTURE_READY`
+- Small release ativa: `UI-001 — Sistema visual, marca e temas`
+- Fase concluída: Dia 1 — contexto, discovery e arquitetura
+- Próximo passo: Dia 2 — estratégia de testes e fundação TDD da UI-001
+- A SR-009 continua pronta para release; nenhum deploy público foi executado
 
 O estado detalhado e as decisões vigentes ficam em [`project-context.md`](project-context.md).
 
@@ -19,12 +19,12 @@ O estado detalhado e as decisões vigentes ficam em [`project-context.md`](proje
 - cadastro local de receitas e despesas;
 - resumo mensal básico;
 - dashboard financeiro inicial;
-- cadastro local de contas financeiras;
+- contas financeiras persistidas e isoladas por usuário;
 - login por e-mail/senha, logout local e sessão verificada;
 - rotas financeiras protegidas por Proxy e layout privado;
 - manifest PWA e experiência mobile-first inicial.
 
-Contas e transações ainda são mantidas apenas na sessão da aplicação. A autenticação já protege as rotas atuais, mas a persistência financeira e as políticas RLS serão entregues incrementalmente.
+Contas financeiras usam Supabase Database com RLS; transações ainda permanecem na sessão da aplicação. A UI-001 está somente em arquitetura e não alterou o comportamento disponível.
 
 ## Stack
 

@@ -314,6 +314,59 @@ Regras:
 
 Nenhuma infraestrutura nova nesta SR. Sem repositórios, sem clients, sem Supabase.
 
+## Sistema Visual — UI-001
+
+Este contrato é transversal de apresentação. Ele não pertence ao domínio financeiro e não pode importar Supabase, casos de uso financeiros ou infraestrutura.
+
+### Tema
+
+```ts
+export type ThemePreference = "light" | "dark" | "system";
+
+export type ResolvedTheme = "light" | "dark";
+
+export type ThemeControllerValue = {
+  preference: ThemePreference;
+  resolvedTheme: ResolvedTheme;
+  setPreference: (preference: ThemePreference) => void;
+};
+```
+
+Função pura planejada:
+
+```ts
+export function resolveTheme(
+  preference: ThemePreference,
+  systemPrefersDark: boolean,
+): ResolvedTheme;
+```
+
+Regras:
+
+- `light` e `dark` sempre vencem a preferência do sistema.
+- `system` resolve por `matchMedia('(prefers-color-scheme: dark)')` e acompanha mudanças posteriores.
+- valor ausente ou inválido no armazenamento é tratado como `system`.
+- somente a chave `fincontrol.theme` pode ser usada e somente os três valores da allowlist são aceitos.
+- `resolvedTheme === "dark"` aplica `data-theme="dark"`; o tema claro remove esse seletor.
+- a resolução inicial usa script estático local antes da hidratação; o provider React mantém o estado depois dela.
+- nenhum dado financeiro, identificador de usuário ou sessão é persistido por esse contrato.
+
+### Tokens
+
+- `globals.css` define tokens de light e dark como canais RGB.
+- `tailwind.config.ts` apenas os expõe usando `rgb(var(--token) / <alpha-value>)`.
+- tokens mínimos: background, surface, surface-elevated, foreground, muted-foreground, border, primary, primary-hover, primary-foreground, accent, income, expense, danger-foreground, warning e focus-ring.
+- contraste é validado por combinação de uso, e não apenas pelo valor isolado do token.
+
+### Primitives compartilhadas
+
+- `Button`: variantes visuais essenciais, estado desabilitado e foco visível; não conhece navegação ou regra financeira.
+- `Card`: superfície estrutural sem semântica financeira.
+- `FeedbackMessage`: feedback `status` ou `error` com papel acessível adequado.
+- `ThemeSwitcher`: controla `ThemePreference`, oferece nome acessível e não conhece persistência além do controller.
+
+Inputs, modal, drawer, bottom sheet, badge, tabs, skeleton e cards financeiros não fazem parte da UI-001.
+
 ## AI Insights
 
 Contrato futuro:

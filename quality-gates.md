@@ -519,6 +519,34 @@ Obrigatório para áreas críticas:
 - manifest e ícones planejados ou implementados
 - offline não deve ser prometido sem estratégia real
 
+## Gate FinControl Pulse
+- marca e copy correspondem às capacidades realmente disponíveis
+- nenhuma rota, ação, filtro ou card existe sem fluxo funcional
+- tokens semânticos evitam cores literais dispersas
+- tema claro, escuro e automático passam contraste, foco e redução de movimento
+- desktop, tablet e mobile são validados sem overflow indevido
+- navegação, drawer, modal e bottom sheet funcionam por teclado e leitor de tela
+- alvos interativos têm pelo menos 44 x 44 px
+- receita, despesa, atenção e tendência não dependem somente de cor
+- gráficos têm tabela ou resumo textual equivalente
+- “disponível de verdade”, projeções e insights só usam regras determinísticas e dados suficientes
+- IA, offline, biometria, cadastro e recuperação não são prometidos antes das respectivas features
+- copy segue informar, explicar e sugerir, sem culpa ou promessa enganosa
+- componentes compartilhados permanecem genéricos; semântica financeira fica na feature
+- especificação `docs/product/fincontrol-pulse-interface-copy.md` e backlog são atualizados a cada incremento
+
+### Gate específico da UI-001
+
+- marca `FinControl` consistente entre metadata, manifest e superfícies migradas
+- Geist auto-hospedada pelo build, com variável CSS e fallback
+- tokens light/dark completos e Tailwind sem duplicar valores literais
+- preferência `light | dark | system` com allowlist, fallback seguro e sincronização do sistema
+- somente `fincontrol.theme` pode ser persistido; nenhum dado financeiro ou de identidade no browser storage
+- inicialização anterior à hidratação sem flash relevante
+- `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher` cobertos; primitives adicionais exigem justificativa
+- regressão das rotas atuais, acessibilidade e PWA preservadas
+- shell, dashboard Pulse, drawers, gráficos e Supabase não entram no diff da UI-001
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

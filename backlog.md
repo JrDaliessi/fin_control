@@ -6,9 +6,214 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### UI-001 — Sistema visual, marca e temas
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: padronizar FinControl, Geist, tokens semânticos, tema claro/escuro/automático e primitives essenciais.
+- Objetivo de negócio: criar base visual confiável para todas as telas.
+- Valor esperado: consistência, legibilidade e evolução sem cores/estilos improvisados.
+- Prioridade: Alta
+- Dependências: ADR 0005 e testes de regressão das telas atuais.
+- Risco: Médio por impacto global.
+- Fase atual: Dia 1 concluído; arquitetura pronta e implementação bloqueada até os testes do Dia 2.
+- Critério de pronto: tokens e temas testados; contraste AA, foco, movimento reduzido, sem flash relevante e pipeline verde.
+- Recorte: marca, Geist, tokens, preferência `light | dark | system`, `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`.
+- Fora do recorte: shell, dashboard, drawers, gráficos, novas rotas, regras financeiras e Supabase.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
+
+### EPIC-UI-001 — FinControl Pulse
+- Tipo: Épico
+- Descrição objetiva: consolidar identidade visual, navegação, dashboard, páginas internas e copywriting em uma experiência moderna e coerente.
+- Objetivo de negócio: transformar o FinControl em uma central de decisões financeiras, não apenas um registrador.
+- Valor esperado: maior clareza, confiança, adoção e percepção de qualidade.
+- Prioridade: Alta
+- Dependências: arquitetura atual e execução incremental dos itens `UI-001` a `UI-006` e SRs de domínio relacionadas.
+- Risco: Alto se executado como redesenho único; Médio quando fatiado.
+- Fase recomendada: trilha transversal, uma small release por vez.
+- Critério de pronto: itens filhos concluídos sem rotas vazias, dados fictícios ou quebra arquitetural.
+- Especificação: `docs/product/fincontrol-pulse-interface-copy.md`.
+- Status: DISCOVERY
+
+### UI-002 — Shell e navegação responsiva
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: evoluir `PrivateAppShell` com sidebar, topbar e barra inferior mobile exibindo somente rotas funcionais.
+- Objetivo de negócio: permitir orientação e acesso rápido aos fluxos existentes.
+- Valor esperado: experiência coerente em desktop, tablet e mobile.
+- Prioridade: Alta
+- Dependências: UI-001 e matriz de rotas disponíveis.
+- Risco: Médio por afetar todas as rotas privadas e logout.
+- Fase recomendada: após UI-001.
+- Critério de pronto: navegação ativa, teclado, foco, 44 px, mobile sem overflow, logout preservado e rotas indisponíveis ausentes.
+- Status: DISCOVERY
+
+### UI-003 — Dashboard FinControl Pulse
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
+- Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
+- Valor esperado: visão rápida sem promessas ou indicadores fictícios.
+- Prioridade: Alta
+- Dependências: UI-001, UI-002 e casos de uso/dados disponíveis.
+- Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
+- Fase recomendada: após shell; expansão progressiva com SR-012 a SR-023.
+- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, acessibilidade e pipeline verde.
+- Status: DISCOVERY
+
+### UI-004 — Experiência de contas em cards e drawer
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: tornar a listagem de contas conteúdo principal e abrir cadastro em drawer/modal responsivo.
+- Objetivo de negócio: facilitar leitura e cadastro sem formulário permanente.
+- Valor esperado: uso mais limpo da persistência já entregue na SR-009.
+- Prioridade: Alta
+- Dependências: SR-009 e UI-001; instituição, sincronização e saldo atual continuam fora até contratos próprios.
+- Risco: Médio.
+- Fase recomendada: após UI-001; pode preceder UI-003 se selecionada explicitamente.
+- Critério de pronto: cards usam somente campos reais, drawer acessível, foco restaurado, estados preservados e testes verdes.
+- Status: DISCOVERY
+
+### UI-005 — Experiência de transações orientada à listagem
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: listagem como conteúdo principal, filtros suportados e formulário em drawer/bottom sheet.
+- Objetivo de negócio: reduzir carga visual e facilitar revisão de movimentações.
+- Valor esperado: fluxo escalável para busca, agrupamento e análise.
+- Prioridade: Alta
+- Dependências: SR-010, SR-011 e UI-001.
+- Risco: Alto antes da persistência e dos contratos de status/transferência.
+- Fase recomendada: após SR-011.
+- Critério de pronto: dados persistentes, agrupamento testado, filtros reais, formulário acessível e nenhuma opção sem contrato.
+- Status: DISCOVERY
+
+### UI-006 — Login, microcopy e instalação PWA
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: aplicar marca/copy do FinControl ao login e aos estados globais e oferecer instalação PWA quando suportada.
+- Objetivo de negócio: melhorar confiança, onboarding e clareza de feedback.
+- Valor esperado: comunicação humana sem enfraquecer segurança.
+- Prioridade: Média
+- Dependências: UI-001, SR-008 e suporte real do navegador à instalação.
+- Risco: Médio; copy não pode enumerar usuário, prometer offline ou expor fluxo inexistente.
+- Fase recomendada: após UI-001.
+- Critério de pronto: login acessível, erros genéricos, microcopy testada, instalação progressiva e fallback seguro.
+- Status: DISCOVERY
+
+### FEAT-BUDGET-001 — Orçamentos por categoria
+- Tipo: Feature
+- Descrição objetiva: limites por categoria, progresso e estados saudável/atenção/ultrapassado.
+- Objetivo de negócio: permitir planejamento mensal acionável.
+- Valor esperado: antecipar desvios antes do fim do período.
+- Prioridade: Alta
+- Dependências: SR-010, SR-011 e SR-012.
+- Risco: Alto por regras de período, estorno e categoria.
+- Fase recomendada: após categorias e transações persistidas.
+- Critério de pronto: domínio, migrations/RLS, cálculos testados e barras acessíveis; IA permanece fora.
+- Status: DISCOVERY
+
+### FEAT-COMMITMENTS-001 — Próximos compromissos
+- Tipo: Feature
+- Descrição objetiva: linha do tempo de contas, parcelas, assinaturas, faturas e receitas previstas.
+- Objetivo de negócio: antecipar obrigações e risco de saldo insuficiente.
+- Valor esperado: transformar planejamento em ação preventiva.
+- Prioridade: Alta
+- Dependências: transações persistidas, cartões/faturas/parcelas, recorrência e status.
+- Risco: Alto por datas, timezone e dupla contagem.
+- Fase recomendada: após domínios correspondentes.
+- Critério de pronto: eventos determinísticos, estados testados e alertas sem pânico ou dado inventado.
+- Status: DISCOVERY
+
+### FEAT-REPORTS-001 — Relatórios e comparação de períodos
+- Tipo: Feature
+- Descrição objetiva: relatórios por evolução, categoria, conta, cartão, dia, faixa e recorrência.
+- Objetivo de negócio: permitir análise detalhada e comparação explicável.
+- Valor esperado: decisões baseadas em histórico real.
+- Prioridade: Média
+- Dependências: SR-012 a SR-017 e domínios persistentes aplicáveis.
+- Risco: Alto por privacidade, performance e consistência de agregação.
+- Fase recomendada: após analytics básicos.
+- Critério de pronto: filtros testados, tabela acessível e comparação equivalente; exportações entram em release separada.
+- Status: DISCOVERY
+
+### FEAT-PREFERENCES-001 — Perfil, tema e preferências
+- Tipo: Feature
+- Descrição objetiva: preferências de apresentação e comunicação, sem misturar autorização com perfil editável.
+- Objetivo de negócio: personalizar experiência de forma segura.
+- Valor esperado: tema persistente, saudação consentida e controles claros.
+- Prioridade: Média
+- Dependências: UI-001, contrato de perfil e RLS se houver persistência server-side.
+- Risco: Médio por privacidade e flash de tema.
+- Fase recomendada: após decisão de persistência da UI-001.
+- Critério de pronto: preferências tipadas, acessíveis, isoladas de autorização e sem dados financeiros em browser storage.
+- Status: DISCOVERY
+
+### MKT-001 — Landing page e copy de aquisição
+- Tipo: Feature / UX Improvement
+- Descrição objetiva: apresentar marca, benefícios, segurança e CTA com capacidades realmente lançadas.
+- Objetivo de negócio: explicar valor e apoiar aquisição.
+- Valor esperado: posicionamento consistente como copiloto financeiro.
+- Prioridade: Baixa enquanto não houver autorização de deploy público.
+- Dependências: marca UI-001, capacidades lançadas e hardening de produção.
+- Risco: Médio por promessa excessiva de IA, disponível real ou offline.
+- Fase recomendada: antes do lançamento público, em release própria.
+- Critério de pronto: copy revisada contra features disponíveis, acessibilidade, performance, privacidade e CTA funcional.
+- Status: DISCOVERY
+
+### AUTH-EXT-001 — Cadastro e recuperação de acesso
+- Tipo: Feature / Security Item
+- Descrição objetiva: permitir criar conta e recuperar senha sem enumeração de usuário.
+- Objetivo de negócio: completar onboarding e recuperação de acesso.
+- Valor esperado: reduzir dependência de provisionamento manual.
+- Prioridade: Alta antes de lançamento público.
+- Dependências: SR-008, configuração segura do Supabase Auth, e-mail transacional e threat model atualizado.
+- Risco: Alto por abuso, enumeração, redirects e entrega de e-mail.
+- Fase recomendada: ciclo próprio antes de expor os links no login.
+- Critério de pronto: testes de segurança, rate limit/antiabuso, mensagens genéricas, redirect permitido e pipeline verde.
+- Status: DISCOVERY
+
+### SP-AUTH-002 — Biometria/passkeys
+- Tipo: Spike / Security Item
+- Descrição objetiva: avaliar passkeys/WebAuthn como autenticação futura sem prometer biometria prematuramente.
+- Objetivo de negócio: oferecer acesso resistente a phishing quando estável e adequado.
+- Valor esperado: segurança e conveniência.
+- Prioridade: Baixa
+- Dependências: cadastro estável, domínio HTTPS e suporte oficial maduro.
+- Risco: Alto por compatibilidade, recuperação e mudanças de API.
+- Fase recomendada: investigação futura limitada.
+- Critério de pronto: ADR com suporte, fallback, recuperação, riscos e decisão de adoção; sem código de produção.
+- Status: DISCOVERY
+
+### FEAT-SEARCH-001 — Busca financeira global
+- Tipo: Feature
+- Descrição objetiva: buscar movimentações, contas e entidades suportadas sem atravessar RLS.
+- Objetivo de negócio: localizar informações rapidamente.
+- Valor esperado: navegação eficiente em históricos maiores.
+- Prioridade: Média
+- Dependências: SR-010, SR-011 e contratos de busca por feature.
+- Risco: Alto por privacidade, performance e vazamento entre usuários.
+- Fase recomendada: após persistência e índices adequados.
+- Critério de pronto: contratos paginados, RLS validada, índices/advisors verdes, estados acessíveis e nenhum log de termo sensível.
+- Status: DISCOVERY
+
+### FEAT-NOTIFICATIONS-001 — Alertas e notificações financeiras
+- Tipo: Feature / Security Item
+- Descrição objetiva: comunicar compromissos e mudanças relevantes com opt-in e conteúdo minimizado.
+- Objetivo de negócio: ajudar o usuário a agir antes do problema.
+- Valor esperado: prevenção e retorno útil ao produto.
+- Prioridade: Média
+- Dependências: compromissos determinísticos, preferências e estratégia de canais.
+- Risco: Alto por dado sensível, consentimento e falso alerta.
+- Fase recomendada: após `FEAT-COMMITMENTS-001`.
+- Critério de pronto: opt-in/out, redaction, timezone, deduplicação, testes e nenhuma informação financeira sensível em lock screen por padrão.
+- Status: DISCOVERY
+
+### FEAT-EXPORT-001 — Exportação de relatórios
+- Tipo: Feature / Security Item
+- Descrição objetiva: exportar PDF e planilha a partir de relatório filtrado e autorizado.
+- Objetivo de negócio: permitir arquivo e análise externa consciente.
+- Valor esperado: portabilidade dos próprios dados.
+- Prioridade: Baixa
+- Dependências: `FEAT-REPORTS-001`, autorização server-side e política de retenção.
+- Risco: Alto por geração de artefato financeiro sensível.
+- Fase recomendada: release separada após relatórios.
+- Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
+- Status: DISCOVERY
 
 ### SR-010 - Persistencia e RLS de categorias
 - Tipo: Small Release
@@ -184,7 +389,7 @@ Nenhum item em andamento no momento.
 - Dependências: transações manuais e resumo mensal
 - Risco: Alto
 - Fase recomendada: Dia 1 para discovery, Dia 3+ para implementação futura
-- Critério de pronto: regras de fatura e parcelas testáveis documentadas.
+- Critério de pronto: regras de fatura e parcelas testáveis documentadas; a apresentação posterior cobre card, limite, fatura, fechamento, vencimento, parcelas e comprometimento somente com dados reais.
 - Status: DISCOVERY
 
 ### Importação de extrato CSV/OFX
