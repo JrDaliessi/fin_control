@@ -19,6 +19,12 @@ export type FinancialAccountProps = CreateFinancialAccountInput & {
   updatedAt?: Date;
 };
 
+export type RestoreFinancialAccountInput = CreateFinancialAccountInput & {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 const validAccountTypes: readonly FinancialAccountType[] = [
   "checking",
   "savings",
@@ -82,6 +88,21 @@ export class FinancialAccount {
       userId,
       name,
       currency
+    });
+  }
+
+  static restore(input: RestoreFinancialAccountInput): FinancialAccount {
+    const validatedAccount = FinancialAccount.create(input);
+
+    return new FinancialAccount({
+      id: input.id,
+      userId: validatedAccount.userId,
+      name: validatedAccount.name,
+      type: validatedAccount.type,
+      initialBalanceInCents: validatedAccount.initialBalanceInCents,
+      currency: validatedAccount.currency,
+      createdAt: input.createdAt,
+      updatedAt: input.updatedAt
     });
   }
 }

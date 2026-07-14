@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 2 da SR-009 concluído em `TEST_STRATEGY_READY`; testes de domínio, aplicação, mapper, repository, composição e pgTAP foram criados antes da implementação e observados em RED.
+Estado atual: Dia 3 da SR-009 concluído em `IMPLEMENTATION_IN_PROGRESS`; implementação mínima, migration reproduzível, repository, Server Action e isolamento RLS estão verdes.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -162,7 +162,9 @@ Recorte da SR-007: domínio, contrato e cadastro local de conta financeira, sem 
 
 Recorte da SR-008: login por e-mail/senha, logout, identidade validada no servidor, Proxy do Next.js 16 e proteção de rotas privadas; cadastro, recuperação, OAuth, MFA, banco financeiro e RLS permanecem fora.
 
-Próximo passo: executar, mediante comando explícito, o Dia 3 da SR-009 para implementar o mínimo e aplicar a migration aprovada pelo MCP; constraints e isolamento RLS devem ficar verdes antes de qualquer expansão.
+Evidência da SR-009: migration `20260714053335_create_financial_accounts`, 68 testes pgTAP verdes, 37 suítes/170 testes Jest, lint, type-check, audit e build verdes; tabela permaneceu vazia após rollback das fixtures.
+
+Próximo passo: executar, mediante comando explícito, o Dia 4 da SR-009 para conectar a apresentação à persistência com testes de interface e estados controlados; edição, exclusão, categorias e transações permanecem bloqueadas.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

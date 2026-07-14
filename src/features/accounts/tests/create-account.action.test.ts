@@ -1,6 +1,4 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createAccountAction } from "@/app/(private)/accounts/actions";
 
 jest.mock("@/lib/supabase/server", () => ({
   createSupabaseServerClient: jest.fn()
@@ -9,6 +7,13 @@ jest.mock("@/lib/supabase/server", () => ({
 jest.mock("next/cache", () => ({
   revalidatePath: jest.fn()
 }));
+
+const { createSupabaseServerClient } = jest.requireMock<
+  typeof import("@/lib/supabase/server")
+>("@/lib/supabase/server");
+const { createAccountAction } = jest.requireActual<
+  typeof import("@/app/(private)/accounts/actions")
+>("@/app/(private)/accounts/actions");
 
 const permanentUserId = "09aabfb8-e06e-41e7-b364-12a5dbf27a20";
 const forgedUserId = "b35d36d3-2366-46fa-a0c8-00f037098a87";

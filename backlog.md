@@ -13,13 +13,15 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Crítica
 - Dependências: SR-007 e SR-008 concluídas.
 - Risco: Alto
-- Fase atual: Dia 2 concluído em `TEST_STRATEGY_READY`; aguardando aprovação explícita do Dia 3.
+- Fase atual: Dia 3 concluído em `IMPLEMENTATION_IN_PROGRESS`; aguardando comando explícito do Dia 4.
 - Escopo aprovado: criar e listar contas próprias; reidratar ID e timestamps; repository Supabase server-side; migration, grants mínimos e RLS testados.
 - Fora do escopo: edição, exclusão, arquivamento, instituição, agência, conta principal, saldo atual persistido, categorias e transações persistidas.
 - Segurança aprovada: `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, usuário anônimo do Auth e aplicação com `service_role` permanecem bloqueados.
 - Estratégia de banco: Supabase MCP para migrations, testes transacionais pgTAP, inspeção e advisors; nenhum CLI, Docker ou branch paga.
 - Critério de pronto: migration reproduzível e forward-only, repository `create/listByUser`, RLS por proprietário, testes de isolamento e pipeline verde.
-- Bloqueios: implementação funcional e migration proibidas até o comando explícito `dia 3 da SR-009`; suítes de constraints e RLS já existem, mas só podem ser executadas após a precondição estrutural ficar verde.
+- Resultado do Dia 3: migration `20260714053335_create_financial_accounts`, repository `create/listByUser`, mapper, list use case, Server Action autenticada e 68 testes pgTAP verdes; pipeline local com 37 suítes e 170 testes.
+- Próximo incremento: conectar a apresentação existente à action/listagem persistentes com testes de interface, estados controlados e sem remover ainda o fallback local fora do recorte aprovado.
+- Bloqueios: nenhuma expansão automática; Dia 4 depende de comando e autodeclaração explícitos. Edição, exclusão, arquivamento, categorias, transações e segunda migration permanecem fora do escopo atual.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -253,6 +255,19 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Fase recomendada: hardening de autenticação antes do deploy público.
 - Critério de pronto: proteção ativada no Supabase e advisor de segurança sem o alerta `auth_leaked_password_protection`.
 - Status: READY
+
+### DB-PERF-001 — Investigar advisor `auth_rls_initplan` das contas
+- Tipo: Dívida Técnica / Hardening
+- Descrição: o advisor de performance sinaliza as policies `financial_accounts_select_own` e `financial_accounts_insert_own`, embora `auth.uid()` e a leitura de `auth.jwt()` estejam encapsuladas em subconsultas.
+- Objetivo de negócio: preservar desempenho previsível do isolamento por usuário quando a tabela crescer.
+- Valor esperado: remover reavaliações por linha ou confirmar de forma auditável um falso positivo do advisor.
+- Prioridade: Média
+- Dependências: migration `20260714053335_create_financial_accounts` e testes pgTAP da SR-009.
+- Risco: Baixo no banco vazio; Médio em escala sem investigação.
+- Severidade: MÉDIA
+- Fase recomendada: Dia 5 da SR-009.
+- Critério de pronto: inspecionar a expressão efetiva das policies, validar a orientação atual do Supabase e, se necessário, aplicar migration forward-only usando `(select auth.jwt())` sem alterar autorização; 68 testes pgTAP e advisor devem permanecer verdes.
+- Status: DISCOVERY
 
 ### HARD-OBS-001 — Observabilidade sanitizada antes do deploy público
 - Tipo: Hardening / Dívida Técnica
