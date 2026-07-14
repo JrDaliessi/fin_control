@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-008 concluído; aguardando comando explícito para o próximo ciclo
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SR-009 concluído; aguardando comando explícito `dia 2`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -38,6 +38,7 @@
 - Data do hardening interno da SR-008: 2026-07-13
 - Data da revisão de UX, acessibilidade e PWA da SR-008: 2026-07-14
 - Data da validação final e preparação de release da SR-008: 2026-07-14
+- Data do discovery e arquitetura da SR-009: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -195,7 +196,10 @@ src/
       client.ts
       server.ts
       middleware.ts
-  migrations/
+  supabase/
+    migrations/
+    tests/
+      database/
   tests/
     setupTests.ts
 ```
@@ -1200,7 +1204,8 @@ Estado de saída:
 - Dias 4 e 5 da SR-008 concluídos; apresentação, route groups, Proxy e hardening validados.
 - Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
-- Próximo passo operacional: iniciar, mediante comando explícito, o Dia 1 da SR-009 para discovery de persistência e RLS de contas.
+- Dia 1 da SR-009 concluído; schema, contratos, RLS, threat model e estratégia MCP/pgTAP aprovados.
+- Próximo passo operacional: executar, mediante comando explícito, o Dia 2 da SR-009 para criar os testes essenciais antes da migration.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1332,6 +1337,118 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
+
+Small release: `SR-009 — Persistência e RLS de contas`.
+
+Pré-requisitos confirmados:
+- SR-007 concluiu domínio, caso de uso e UI local de contas
+- SR-008 concluiu autenticação e sessão protegida
+- usuário confirmou login real no Chrome após limpar o cache do navegador
+- projeto Supabase `fin_control` está ativo e saudável
+- inspeção MCP encontrou Postgres 17, uma identidade Auth, nenhuma tabela pública e nenhuma migration
+
+Objetivo refinado:
+- substituir a sessão efêmera de contas por persistência real
+- garantir que cada usuário permanente crie e liste somente suas próprias contas
+- estabelecer a primeira fronteira financeira com grants mínimos, RLS e testes de isolamento
+
+Escopo aprovado:
+- tabela `public.financial_accounts`
+- criação de conta própria
+- listagem determinística de contas próprias
+- reidratação de ID e timestamps
+- repository e mapper Supabase isolados em `accounts/infrastructure`
+- Server Component para leitura e Server Action para criação
+- migration, grants, RLS, índice e testes pgTAP executados pelo Supabase MCP nas fases adequadas
+
+Fora do escopo:
+- edição, exclusão ou arquivamento de conta
+- instituição, agência, conta principal e múltiplas moedas
+- saldo atual persistido
+- persistência de categorias e transações
+- Realtime, triggers e funções privilegiadas
+- idempotência de criação nesta small release
+
+Schema aprovado:
+- `id uuid primary key default gen_random_uuid()`
+- `user_id uuid not null references auth.users(id) on delete cascade`
+- `name text not null`, aparado e entre 1 e 80 caracteres
+- `type text not null` com check para os cinco tipos existentes
+- `initial_balance_in_cents bigint not null` no intervalo seguro do JavaScript
+- `currency text not null default 'BRL'` com check para `BRL`
+- `created_at` e `updated_at` como `timestamptz not null default now()`
+- índice `(user_id, created_at desc, id desc)`
+- nomes duplicados permitidos; `current_balance` não existe
+
+Grants e RLS aprovados:
+- revogar defaults de `anon`, `authenticated` e `service_role` na tabela da feature
+- conceder somente `SELECT` e `INSERT` a `authenticated`
+- habilitar e forçar RLS
+- policy separada de `SELECT` com ownership por `(select auth.uid()) = user_id`
+- policy separada de `INSERT` com o mesmo ownership em `WITH CHECK`
+- bloquear JWT com `is_anonymous = true`
+- não criar grants ou policies de `UPDATE` e `DELETE`
+- tabela, constraints, índice, grants e policies devem compor a mesma migration
+
+Contratos entre camadas:
+- `FinancialAccount.restore()` ou nome equivalente reidrata ID e timestamps por TDD
+- `AccountRepository.create` persiste uma entidade válida
+- `AccountRepository.listByUser` lista as contas do ator
+- `findById` opcional não será antecipado sem consumidor
+- `SupabaseAccountRepository` e mapper ficam em infrastructure
+- composition roots revalidam claims e injetam o ator; UI não define ownership
+- presentation recebe DTOs serializáveis e callbacks, sem importar Supabase
+
+Threat model:
+- BOLA/IDOR: RLS por `auth.uid()` em todas as operações concedidas
+- owner forjado pelo navegador: Server Action revalida claims e `INSERT WITH CHECK` rejeita outro `user_id`
+- acesso anônimo: sem grant para `anon` e bloqueio adicional de `is_anonymous`
+- exposição automática pela Data API: grants explícitos e RLS na mesma migration
+- mass assignment: nenhuma permissão de update; ID, owner, moeda e timestamps não são editáveis
+- bypass privilegiado: aplicação não usa `service_role`
+- vazamento por Realtime: tabela não participa de publication nesta SR
+- exclusão: apagar usuário Auth remove suas contas; futura FK de transações deve restringir exclusão de conta
+
+Estratégia TDD para o Dia 2:
+- testes de reidratação e invariantes do domínio
+- testes de `CreateAccountUseCase` e `ListAccountsUseCase` com ator verificado
+- testes de mapper e repository para `snake_case`, `bigint` e timestamps
+- testes de composição que rejeitam ausência de claims e owner forjado
+- pgTAP transacional para schema, constraints, grants, usuário A, usuário B, `anon`, usuário anônimo, `UPDATE` e `DELETE` negados
+- primeira execução deve falhar porque migration, repository e novos contratos ainda não existem
+
+Estratégia operacional aprovada:
+- Supabase MCP é o único canal de banco desta execução
+- nenhuma instalação de CLI ou Docker e nenhuma branch paga
+- Dia 2 cria os testes; Dia 3 poderá aplicar a migration somente após RED válido e nova aprovação da fase
+- SQL aplicado será espelhado em `supabase/migrations/` com a versão registrada pelo histórico MCP
+- testes de banco ficarão em `supabase/tests/database/`
+- migrations são forward-only; rollback destrutivo exige backup/export e autorização explícita
+
+Auditoria Supabase:
+- changelog de 2026 confirma grants explícitos para exposição pela Data API em novos projetos/configurações
+- pgtap está disponível, mas não instalado
+- advisors de performance não reportaram achados
+- advisor de segurança reportou proteção contra senhas vazadas desativada
+- pendência `SEC-AUTH-001` registrada no backlog
+
+Artefatos atualizados:
+- `adr/0004-financial-accounts-persistence-rls.md`
+- `architecture.md`
+- `database-model.md`
+- `domain-model.md`
+- `module-contracts.md`
+- `backlog.md`
+- `roadmap.md`
+- `quality-gates.md`
+- `project-context.md`
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- nenhuma migration, tabela, policy, teste ou código funcional foi criado
+- próximo passo recomendado: executar `dia 2` da SR-009
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
 

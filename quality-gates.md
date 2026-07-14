@@ -28,6 +28,21 @@
 - ADR `0003-auth-session-boundary.md` criado.
 - Estado de saída validado como `ARCHITECTURE_READY`.
 
+### Resultado observado — SR-009
+- Dependências SR-007 e SR-008 confirmadas como concluídas.
+- Login real validado pelo usuário no Chrome após limpeza de cache.
+- Projeto Supabase `fin_control` inspecionado via MCP: Postgres 17, nenhuma tabela pública e nenhuma migration existente.
+- Escopo limitado a criar e listar contas próprias; edição e exclusão permaneceram fora.
+- Schema `public.financial_accounts`, constraints, índice e FK para `auth.users` definidos.
+- Grants mínimos aprovados: somente `SELECT` e `INSERT` para `authenticated`.
+- RLS por proprietário e bloqueio de usuários anônimos definidos; nenhuma policy `FOR ALL` planejada.
+- Threat model cobre BOLA/IDOR, owner forjado, exposição da Data API, `service_role`, mass assignment e acesso anônimo.
+- Supabase MCP aprovado para migration, pgTAP transacional, inspeção e advisors; nenhum SQL foi aplicado no Dia 1.
+- Advisor de segurança identificou proteção contra senhas vazadas desativada; pendência `SEC-AUTH-001` registrada.
+- ADR `0004-financial-accounts-persistence-rls.md` criado.
+- Implementação funcional, testes e migration permanecem bloqueados até o Dia 2.
+- Estado de saída validado como `ARCHITECTURE_READY`.
+
 ### Resultado observado do Dia 2 — SR-008
 - Matriz de testes documentada em `test-strategy.md`.
 - 7 suítes e 29 cenários criados para domínio, aplicação e infraestrutura crítica.

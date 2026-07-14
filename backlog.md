@@ -6,20 +6,23 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em execução no momento.
+### SR-009 — Persistência e RLS de contas
+- Tipo: Security Item / Small Release
+- Objetivo de negócio: persistir contas financeiras isoladas por usuário.
+- Valor esperado: manter saldo inicial e contas reais após recarregar ou trocar de dispositivo.
+- Prioridade: Crítica
+- Dependências: SR-007 e SR-008 concluídas.
+- Risco: Alto
+- Fase atual: Dia 1 concluído; aguardando Dia 2.
+- Escopo aprovado: criar e listar contas próprias; reidratar ID e timestamps; repository Supabase server-side; migration, grants mínimos e RLS testados.
+- Fora do escopo: edição, exclusão, arquivamento, instituição, agência, conta principal, saldo atual persistido, categorias e transações persistidas.
+- Segurança aprovada: `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, usuário anônimo do Auth e aplicação com `service_role` permanecem bloqueados.
+- Estratégia de banco: Supabase MCP para migrations, testes transacionais pgTAP, inspeção e advisors; nenhum CLI, Docker ou branch paga.
+- Critério de pronto: migration reproduzível e forward-only, repository `create/listByUser`, RLS por proprietário, testes de isolamento e pipeline verde.
+- Bloqueios: implementação funcional e migration proibidas até os testes essenciais do Dia 2.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
-
-### SR-009 - Persistencia e RLS de contas
-- Tipo: Security Item / Small Release
-- Objetivo de negocio: persistir contas isoladas por usuario.
-- Valor esperado: saldo inicial e contas reais.
-- Prioridade: Critica
-- Dependencias: SR-007 e SR-008.
-- Risco: Alto
-- Fase recomendada: ciclo seguinte.
-- Criterio de pronto: migration reversivel, repositorio, RLS e testes de isolamento.
-- Status: DISCOVERY
 
 ### SR-010 - Persistencia e RLS de categorias
 - Tipo: Small Release
@@ -239,6 +242,17 @@ Nenhum item em execução no momento.
 Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial e sem decisão de provedor.
 
 ## DÍVIDA TÉCNICA
+
+### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
+- Tipo: Security Item
+- Objetivo de negócio: impedir uso de credenciais conhecidamente comprometidas.
+- Valor esperado: reduzir risco de account takeover.
+- Prioridade: Alta antes de produção pública
+- Dependências: configuração do Supabase Auth.
+- Risco: Médio no ambiente atual; Alto em produção pública.
+- Fase recomendada: hardening de autenticação antes do deploy público.
+- Critério de pronto: proteção ativada no Supabase e advisor de segurança sem o alerta `auth_leaked_password_protection`.
+- Status: READY
 
 ### HARD-OBS-001 — Observabilidade sanitizada antes do deploy público
 - Tipo: Hardening / Dívida Técnica

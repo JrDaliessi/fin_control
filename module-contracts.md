@@ -152,18 +152,49 @@ Fluxo:
 Contrato aprovado:
 
 ```ts
+export type ListAccountsByUserInput = {
+  userId: string;
+};
+
 export interface AccountRepository {
   create(input: FinancialAccount): Promise<FinancialAccount>;
-  findById?: (input: FindAccountByIdInput) => Promise<FinancialAccount | null>;
+  listByUser(input: ListAccountsByUserInput): Promise<readonly FinancialAccount[]>;
 }
 ```
 
 Decisões:
 - `create` é o único método obrigatório na SR-007
-- `findById` permanece opcional até um caso de uso real exigir consulta
+- `listByUser` passa a ser obrigatório na SR-009 porque existe consumidor real para a lista persistida
+- `findById` permanece fora até existir um caso de uso real; métodos opcionais não serão usados para antecipar escopo
 - a implementação local pode existir na apresentação apenas em ciclo posterior e não substitui infraestrutura
 - repositório Supabase, migrations e RLS pertencem à SR-009
 - componentes React não recebem nem importam clients Supabase
+
+### Contrato Persistente da SR-009
+
+Casos de uso:
+- `CreateAccountUseCase` recebe o ator autenticado pela composition root, não confia em um `userId` livre da UI
+- `ListAccountsUseCase` valida o ator e consulta `AccountRepository.listByUser`
+
+Domínio:
+- `FinancialAccount.create()` continua responsável por nova conta
+- `FinancialAccount.restore()` ou nome equivalente será definido por TDD para reidratar ID e timestamps persistidos
+
+Infrastructure:
+- `SupabaseAccountRepository` implementa `create` e `listByUser`
+- mapper converte `snake_case`, `bigint` seguro e `timestamptz` para o domínio
+- consulta inclui filtro explícito por `user_id` para desempenho, sem substituir RLS
+
+Composition root:
+- Server Component lista contas após revalidar claims
+- Server Action cria conta após revalidar claims e injeta o `userId` verificado
+- presentation recebe DTOs serializáveis e callbacks; não instancia client ou repositório Supabase
+- provider local deixa de atuar como repositório persistente
+
+Banco:
+- migration, grants, RLS e testes pgTAP serão executados pelo Supabase MCP
+- operações permitidas nesta SR: `SELECT` e `INSERT`
+- `UPDATE` e `DELETE` não fazem parte do contrato
 
 ### Presentation
 

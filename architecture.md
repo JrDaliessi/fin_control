@@ -88,7 +88,10 @@ src/
       client.ts
       server.ts
       middleware.ts
-  migrations/
+  supabase/
+    migrations/
+    tests/
+      database/
   tests/
     setupTests.ts
 ```
@@ -235,6 +238,24 @@ Regras:
 - O matcher do Proxy exclui assets de imagem estáticos e o manifest, evitando trabalho de autenticação em recursos que não usam sessão.
 - Dados financeiros e RLS permanecem fora da SR-008.
 - A decisão completa está em `adr/0003-auth-session-boundary.md`.
+
+## Decisões Arquiteturais da SR-009
+
+- A primeira tabela financeira real será `public.financial_accounts`.
+- O recorte funcional cobre somente criação e listagem de contas próprias.
+- A composition root usa Server Component para leitura e Server Action para criação; cada operação revalida a identidade antes de chamar a aplicação.
+- A UI não envia `userId` como autoridade. O ID do ator é obtido das claims verificadas e a RLS permanece a autoridade final contra BOLA/IDOR.
+- `SupabaseAccountRepository` fica em `accounts/infrastructure` e implementa apenas contratos consumidos por casos de uso.
+- O domínio ganhará uma fábrica de reidratação por TDD para preservar ID e timestamps do banco.
+- O provider de apresentação gerencia somente estado e feedback com callbacks injetados; não cria repositório Supabase.
+- `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, usuários anônimos do Auth, `UPDATE`, `DELETE` e uso de `service_role` pela aplicação permanecem bloqueados.
+- Grants explícitos, RLS, policies, constraints e índice nascem na mesma migration.
+- A FK para `auth.users(id)` usa `ON DELETE CASCADE`; exclusão futura de conta referenciada por transações deverá usar `RESTRICT`.
+- Saldo inicial é imutável e `current_balance` não será persistido.
+- Migrations são forward-only: correções usam nova migration; rollback destrutivo não é rotina de produção.
+- Supabase MCP é o caminho oficial para aplicar migration, executar pgTAP transacional, inspecionar schema e rodar advisors.
+- O caminho canônico dos artefatos locais passa a ser `supabase/migrations/` e `supabase/tests/database/`; os diretórios só surgirão quando os testes do Dia 2 exigirem.
+- A decisão completa está em `adr/0004-financial-accounts-persistence-rls.md`.
 
 ## PWA
 O projeto deve ter:
