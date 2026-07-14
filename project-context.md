@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-009 concluído; aguardando comando explícito `dia 4 da SR-009`
+- Fase atual: Dia 4 da SR-009 concluído; aguardando comando explícito `dia 5 da SR-009`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -41,6 +41,7 @@
 - Data do discovery e arquitetura da SR-009: 2026-07-14
 - Data da estratégia de testes da SR-009: 2026-07-14
 - Data da implementação mínima da SR-009: 2026-07-14
+- Data da expansão controlada da SR-009: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -879,6 +880,7 @@ Regra operacional:
 - Erro: um exemplo de Project URL com `<project-ref>` foi copiado literalmente para `.env.local`. Prevenção: exemplos devem declarar que marcadores precisam ser substituídos, a documentação deve preferir um hostname ilustrativo sem `<` e `>`, e a validação externa deve conferir o endpoint Auth antes de encerrar a fase.
 - Erro: mocks Jest sem assinatura explícita foram inferidos como funções sem argumentos e criaram ruído no primeiro type-check do Dia 2 da SR-009. Prevenção: tipar estruturalmente os fakes de infraestrutura para que o RED contenha somente ausências funcionais planejadas.
 - Erro: o teste inicial da Server Action da SR-009 assumiu que `jest.mock()` seria elevado acima de imports estáticos pelo transformador Next/Jest; após a implementação, o módulo real foi carregado e o mock não era uma função Jest. Prevenção: em testes de módulos Next com esse transformador, registrar os mocks antes do carregamento e usar `jest.requireMock()`/`jest.requireActual()` quando a ordem de avaliação fizer parte do isolamento; preservar as mesmas expectativas funcionais e registrar a correção do harness antes de continuar.
+- Erro: mocks de callbacks do Dia 4 da SR-009 foram inicialmente inferidos com assinatura estreita e um destructuring de mock não utilizado gerou ruído no primeiro type-check/lint. Prevenção: tipar callbacks de apresentação pelo contrato real antes do GREEN e remover bindings de teste não consumidos antes dos gates completos.
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-005
 
@@ -1208,8 +1210,8 @@ Estado de saída:
 - Dias 4 e 5 da SR-008 concluídos; apresentação, route groups, Proxy e hardening validados.
 - Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
-- Dia 2 da SR-009 concluído; testes Jest e pgTAP criados antes da implementação, com RED local e remoto válidos.
-- Próximo passo operacional: executar, mediante comando explícito, o Dia 3 da SR-009 para implementar o mínimo e aplicar a migration aprovada pelo MCP.
+- Dias 2, 3 e 4 da SR-009 concluídos; testes nasceram em RED, a persistência/RLS foi implementada pelo MCP e a apresentação passou a usar identidade e dados persistentes verificados no servidor.
+- Próximo passo operacional: executar, mediante comando explícito, o Dia 5 da SR-009 para refatoração e hardening preservando o comportamento validado.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1562,6 +1564,54 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - Dia 3 concluído sem avanço automático
 - próximo passo recomendado: executar `dia 4 da SR-009`
+
+## Dia 4 — Expansão Controlada da SR-009
+
+Small release: `SR-009 — Persistência e RLS de contas`.
+
+Expansão entregue:
+- rota `/accounts` passou a carregar a listagem persistida em Server Component dinâmico
+- `listAccountsAction` e `createAccountAction` validam claims em cada chamada e retornam DTOs sem expor `userId` à apresentação
+- `AccountsPage` inicia com as contas do servidor e atualiza o estado visual apenas com o registro persistido retornado pela action
+- formulário deixou de receber owner controlado pelo cliente; o usuário é derivado exclusivamente da identidade verificada no servidor
+- lista persistente recebeu estados de conteúdo e vazio; cópias de sessão temporária foram removidas
+- arquivos de rota `loading.tsx` e `error.tsx` adicionaram feedback acessível de carregamento, erro sanitizado e nova tentativa
+
+Evidência TDD:
+- RED direcionado: 4 suítes falharam, com 7 testes expondo composição ainda local, retorno ausente da action, listagem ausente e estados de rota ausentes
+- GREEN direcionado: 4 suítes e 16 testes passaram
+- suíte completa: 37 suítes e 174 testes passaram
+- o primeiro type-check/lint encontrou somente ruído de tipos e binding não utilizado no harness; as correções foram registradas na seção de erros recorrentes e os gates foram repetidos
+
+Validação no Chrome autenticado:
+- `/accounts` abriu na sessão real do usuário e exibiu formulário, heading `Suas contas` e empty state persistente
+- cópias antigas de sessão temporária não estavam presentes
+- viewport desktop e mobile `390x844` foram inspecionadas; mobile não apresentou overflow horizontal
+- campos de nome e saldo permaneceram obrigatórios e a submissão vazia foi bloqueada pela validação nativa, sem chamada de gravação
+- console do Chrome não apresentou warnings ou errors
+- nenhuma conta foi criada durante a inspeção; a guia `/accounts` permaneceu aberta como entrega
+
+Supabase MCP somente leitura:
+- `public.financial_accounts` permaneceu com zero registros após toda a validação
+- migrations remotas permaneceram limitadas a `20260714053335_create_financial_accounts`
+- nenhuma migration, policy, grant, schema ou dado foi alterado no Dia 4
+
+Quality gates:
+- `npm run lint`: passou sem warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou com 37 suítes e 174 testes
+- `npm run build`: passou; `/accounts` permaneceu dinâmica e o Proxy ativo
+- `npm audit --omit=dev`: passou com 0 vulnerabilidades
+
+Limites e riscos preservados:
+- edição, exclusão, arquivamento, categorias, transações, idempotência e segunda migration continuaram fora do escopo
+- `AccountSessionProvider` legado permanece composto no layout privado, mas deixou de participar da página persistente; remoção segura foi reservada ao Dia 5
+- `SEC-AUTH-001` e `DB-PERF-001` permanecem rastreados, sem novo risco crítico introduzido
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- Dia 4 concluído sem avanço automático
+- próximo passo recomendado: executar `dia 5 da SR-009`
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
 

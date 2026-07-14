@@ -2,10 +2,20 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type {
-  CreateFinancialAccountInput,
-  FinancialAccount
-} from "../domain/entities/financial-account.entity";
+  CreateAccountRequest,
+  FinancialAccountDto
+} from "../application/dtos/financial-account.dto";
 import { AccountForm } from "../presentation/components/AccountForm";
+
+const persistedAccount: FinancialAccountDto = {
+  id: "6ca6c81f-11a4-4a34-8090-2185bb0e63a8",
+  name: "Conta principal",
+  type: "checking",
+  initialBalanceInCents: 125050,
+  currency: "BRL",
+  createdAt: "2026-07-14T10:00:00.000Z",
+  updatedAt: "2026-07-14T10:00:00.000Z"
+};
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void;
@@ -30,34 +40,33 @@ async function fillValidForm() {
 
 describe("AccountForm", () => {
   it("submits normalized account data and exposes the submitting and success states", async () => {
-    const deferred = createDeferred<FinancialAccount>();
+    const deferred = createDeferred<FinancialAccountDto>();
     const onCreateAccount = jest.fn<
-      (input: CreateFinancialAccountInput) => Promise<FinancialAccount>
+      (input: CreateAccountRequest) => Promise<FinancialAccountDto>
     >(() => deferred.promise);
-    render(<AccountForm onCreateAccount={onCreateAccount} userId="user-1" />);
+    render(<AccountForm onCreateAccount={onCreateAccount} />);
     const user = await fillValidForm();
 
     await user.click(screen.getByRole("button", { name: "Cadastrar conta" }));
 
     expect(screen.getByRole("button", { name: "Salvando..." })).toBeDisabled();
     expect(onCreateAccount).toHaveBeenCalledWith({
-      userId: "user-1",
       name: "Conta principal",
       type: "checking",
       initialBalanceInCents: 125050,
       currency: "BRL"
     });
 
-    await act(async () => deferred.resolve({} as FinancialAccount));
+    await act(async () => deferred.resolve(persistedAccount));
 
     expect(await screen.findByRole("status")).toHaveTextContent(
-      "Conta cadastrada nesta sessão."
+      "Conta cadastrada."
     );
   });
 
   it("shows an accessible error and does not submit an invalid balance", async () => {
-    const onCreateAccount = jest.fn<() => Promise<FinancialAccount>>();
-    render(<AccountForm onCreateAccount={onCreateAccount} userId="user-1" />);
+    const onCreateAccount = jest.fn<() => Promise<FinancialAccountDto>>();
+    render(<AccountForm onCreateAccount={onCreateAccount} />);
     const user = userEvent.setup();
 
     await user.type(screen.getByLabelText("Nome da conta"), "Conta principal");
@@ -78,7 +87,7 @@ describe("AccountForm", () => {
     const onCreateAccount = jest.fn(async () => {
       throw new Error("repository unavailable");
     });
-    render(<AccountForm onCreateAccount={onCreateAccount} userId="user-1" />);
+    render(<AccountForm onCreateAccount={onCreateAccount} />);
     const user = await fillValidForm();
 
     await user.click(screen.getByRole("button", { name: "Cadastrar conta" }));

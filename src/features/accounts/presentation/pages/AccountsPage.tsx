@@ -2,14 +2,37 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
+import { useCallback, useState } from "react";
+import type {
+  CreateAccountRequest,
+  FinancialAccountDto
+} from "../../application/dtos/financial-account.dto";
 import { AccountForm } from "../components/AccountForm";
 import { AccountSessionList } from "../components/AccountSessionList";
-import { useAccountSession } from "../providers/AccountSessionProvider";
 
-export function AccountsPage() {
-  const { user } = useAuthSession();
-  const { accounts, createAccount } = useAccountSession();
+type AccountsPageProps = {
+  initialAccounts: readonly FinancialAccountDto[];
+  onCreateAccount: (
+    input: CreateAccountRequest
+  ) => Promise<FinancialAccountDto>;
+};
+
+export function AccountsPage({
+  initialAccounts,
+  onCreateAccount
+}: AccountsPageProps) {
+  const [accounts, setAccounts] = useState<FinancialAccountDto[]>(() => [
+    ...initialAccounts
+  ]);
+  const createAccount = useCallback(
+    async (input: CreateAccountRequest) => {
+      const account = await onCreateAccount(input);
+
+      setAccounts((currentAccounts) => [account, ...currentAccounts]);
+      return account;
+    },
+    [onCreateAccount]
+  );
 
   return (
     <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
@@ -30,14 +53,11 @@ export function AccountsPage() {
               Cadastrar conta financeira
             </h1>
             <p className="mt-2 text-sm text-slate-600">
-              Os dados permanecem somente nesta sessão e serão perdidos ao recarregar.
+              Cadastre o saldo informado hoje. As movimentações futuras serão calculadas separadamente.
             </p>
           </div>
 
-          <AccountForm
-            onCreateAccount={createAccount}
-            userId={user.id}
-          />
+          <AccountForm onCreateAccount={createAccount} />
         </section>
 
         <div className="grid content-start gap-4">

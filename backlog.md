@@ -13,15 +13,16 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Crítica
 - Dependências: SR-007 e SR-008 concluídas.
 - Risco: Alto
-- Fase atual: Dia 3 concluído em `IMPLEMENTATION_IN_PROGRESS`; aguardando comando explícito do Dia 4.
+- Fase atual: Dia 4 concluído em `IMPLEMENTATION_IN_PROGRESS`; aguardando comando explícito do Dia 5.
 - Escopo aprovado: criar e listar contas próprias; reidratar ID e timestamps; repository Supabase server-side; migration, grants mínimos e RLS testados.
 - Fora do escopo: edição, exclusão, arquivamento, instituição, agência, conta principal, saldo atual persistido, categorias e transações persistidas.
 - Segurança aprovada: `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, usuário anônimo do Auth e aplicação com `service_role` permanecem bloqueados.
 - Estratégia de banco: Supabase MCP para migrations, testes transacionais pgTAP, inspeção e advisors; nenhum CLI, Docker ou branch paga.
 - Critério de pronto: migration reproduzível e forward-only, repository `create/listByUser`, RLS por proprietário, testes de isolamento e pipeline verde.
 - Resultado do Dia 3: migration `20260714053335_create_financial_accounts`, repository `create/listByUser`, mapper, list use case, Server Action autenticada e 68 testes pgTAP verdes; pipeline local com 37 suítes e 170 testes.
-- Próximo incremento: conectar a apresentação existente à action/listagem persistentes com testes de interface, estados controlados e sem remover ainda o fallback local fora do recorte aprovado.
-- Bloqueios: nenhuma expansão automática; Dia 4 depende de comando e autodeclaração explícitos. Edição, exclusão, arquivamento, categorias, transações e segunda migration permanecem fora do escopo atual.
+- Resultado do Dia 4: apresentação conectada à listagem/criação persistentes com identidade derivada no servidor, DTO sem owner, estados de rota acessíveis, validação desktop/mobile no Chrome e pipeline local com 37 suítes e 174 testes; tabela remota permaneceu vazia.
+- Próximo incremento: Dia 5 deve remover ou reduzir o provider local legado de contas, revisar nomes remanescentes de sessão e avaliar `DB-PERF-001` sem misturar novas regras de negócio.
+- Bloqueios: nenhuma expansão automática; Dia 5 depende de comando e autodeclaração explícitos. Edição, exclusão, arquivamento, categorias, transações, idempotência e segunda migration permanecem fora do escopo atual.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

@@ -236,6 +236,20 @@
 - Inspeção visual reexecutada em 2026-07-13: o navegador integrado bloqueou os endereços locais antes do carregamento e não havia navegador alternativo; semântica, estados, responsividade e build permanecem validados por testes e revisão de código.
 - Nenhuma migration, tabela financeira, política RLS, cadastro, recuperação, OAuth ou MFA foi adicionada.
 
+### Resultado observado — SR-009
+- Testes de apresentação, actions e estados de rota foram escritos antes da implementação; RED direcionado registrou 4 suítes falhando e 7 falhas esperadas.
+- `/accounts` passou a listar contas persistentes em Server Component e a criar por Server Action com claims verificadas.
+- DTOs da aplicação removem `userId` da fronteira visual; owner não é recebido nem controlado pelo cliente.
+- Estados de loading, empty e error sanitizado foram implementados; success mantém o registro persistido retornado pela action.
+- UI não importa Supabase e não contém regra financeira pesada.
+- Etapa verde direcionada passou com 4 suítes e 16 testes.
+- Suíte completa passou com 37 suítes e 174 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Chrome autenticado validou desktop e mobile `390x844` sem overflow horizontal, cópias persistentes, campos obrigatórios e console sem warnings/errors.
+- Nenhuma gravação foi feita no navegador; Supabase MCP confirmou zero registros e somente a migration aprovada do Dia 3.
+- Edição, exclusão, arquivamento, categorias, transações, idempotência e segunda migration permaneceram fora do escopo.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate do Dia 5
 - Arquivos inchados identificados.
 - Plano de refatoração incremental documentado.
