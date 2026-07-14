@@ -161,7 +161,7 @@ export function AccountForm({ onCreateAccount }: AccountFormProps) {
         <p
           className={
             status === "error"
-              ? "rounded-md bg-red-50 px-3 py-2 text-sm text-danger"
+              ? "rounded-md bg-red-50 px-3 py-2 text-sm text-red-700"
               : "rounded-md bg-teal-50 px-3 py-2 text-sm text-primary"
           }
           id={messageId}

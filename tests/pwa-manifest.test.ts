@@ -18,6 +18,7 @@ type WebAppManifest = {
   orientation?: string;
   scope?: string;
   shortcuts?: Array<{
+    description?: string;
     name?: string;
     short_name?: string;
     url?: string;
@@ -65,6 +66,7 @@ describe("PWA manifest", () => {
           url: "/transactions"
         }),
         expect.objectContaining({
+          description: "Abrir o fluxo persistente de contas financeiras.",
           name: "Cadastrar conta",
           short_name: "Contas",
           url: "/accounts"

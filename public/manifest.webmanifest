@@ -22,7 +22,7 @@
     {
       "name": "Cadastrar conta",
       "short_name": "Contas",
-      "description": "Abrir o cadastro local de conta financeira.",
+      "description": "Abrir o fluxo persistente de contas financeiras.",
       "url": "/accounts"
     }
   ],

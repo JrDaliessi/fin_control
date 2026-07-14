@@ -19,6 +19,7 @@ export function AccountList({ accounts }: AccountListProps) {
     <section
       aria-label="Suas contas"
       aria-live="polite"
+      aria-relevant="additions text"
       className="rounded-md border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
     >
       <h2 className="text-lg font-semibold text-slate-950">Suas contas</h2>

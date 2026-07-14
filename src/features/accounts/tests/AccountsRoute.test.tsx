@@ -50,6 +50,7 @@ describe("accounts route", () => {
   it("renders an accessible loading state", () => {
     render(<AccountsLoading />);
 
+    expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
     expect(screen.getByRole("status")).toHaveTextContent(
       "Carregando suas contas..."
     );
@@ -61,6 +62,7 @@ describe("accounts route", () => {
 
     render(<AccountsError error={new Error("sensitive provider detail")} reset={reset} />);
 
+    expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Não foi possível carregar suas contas."
     );

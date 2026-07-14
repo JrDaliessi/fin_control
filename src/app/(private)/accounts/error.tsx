@@ -7,7 +7,7 @@ type AccountsErrorProps = {
 
 export default function AccountsError({ reset }: AccountsErrorProps) {
   return (
-    <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
+    <main className="min-h-screen min-h-dvh bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
       <section
         className="mx-auto grid w-full max-w-6xl gap-4 rounded-md border border-red-200 bg-red-50 p-5"
         role="alert"
