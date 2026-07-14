@@ -2,7 +2,7 @@ import type { FinancialAccountDto } from "../../application/dtos/financial-accou
 import type { FinancialAccountType } from "../../domain/entities/financial-account.entity";
 import { formatCents } from "../../../../shared/utils/formatCents";
 
-type AccountSessionListProps = {
+type AccountListProps = {
   accounts: readonly FinancialAccountDto[];
 };
 
@@ -14,16 +14,14 @@ const accountTypeLabels: Record<FinancialAccountType, string> = {
   investment: "Investimento"
 };
 
-export function AccountSessionList({ accounts }: AccountSessionListProps) {
+export function AccountList({ accounts }: AccountListProps) {
   return (
     <section
       aria-label="Suas contas"
       aria-live="polite"
       className="rounded-md border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
     >
-      <h2 className="text-lg font-semibold text-slate-950">
-        Suas contas
-      </h2>
+      <h2 className="text-lg font-semibold text-slate-950">Suas contas</h2>
 
       {accounts.length === 0 ? (
         <p className="mt-3 text-sm text-slate-600" role="status">
