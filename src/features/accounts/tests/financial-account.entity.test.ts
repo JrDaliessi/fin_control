@@ -63,3 +63,40 @@ describe("FinancialAccount", () => {
     );
   });
 });
+
+describe("FinancialAccount.restore", () => {
+  const persistedAccount = {
+    ...baseInput,
+    id: "6ca6c81f-11a4-4a34-8090-2185bb0e63a8",
+    createdAt: new Date("2026-07-14T10:00:00.000Z"),
+    updatedAt: new Date("2026-07-14T10:00:00.000Z")
+  };
+
+  it("rehydrates a persisted account with its database metadata", () => {
+    const account = FinancialAccount.restore(persistedAccount);
+
+    expect(account).toEqual(
+      expect.objectContaining({
+        id: persistedAccount.id,
+        userId: "user-1",
+        name: "Conta principal",
+        type: "checking",
+        initialBalanceInCents: 150000,
+        currency: "BRL",
+        createdAt: persistedAccount.createdAt,
+        updatedAt: persistedAccount.updatedAt
+      })
+    );
+  });
+
+  it("reapplies the existing account invariants when restoring", () => {
+    expect(FinancialAccount.restore).toBeDefined();
+    expect(() =>
+      FinancialAccount.restore({
+        ...persistedAccount,
+        name: " ",
+        initialBalanceInCents: Number.MAX_SAFE_INTEGER + 1
+      })
+    ).toThrow();
+  });
+});

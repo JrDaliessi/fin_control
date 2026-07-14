@@ -69,6 +69,23 @@
 - Audit sem vulnerabilidades conhecidas.
 - Implementação funcional segue bloqueada até Dia 3.
 
+### Resultado observado — SR-009
+- Matriz da persistência de contas documentada em `test-strategy.md`.
+- Testes Jest criados para `FinancialAccount.restore`, `ListAccountsUseCase`, mapper, repository Supabase e Server Action autenticada.
+- A composição testa claims ausentes, inválidas e anônimas, owner forjado e revalidação em cada chamada.
+- Três suítes SQL pgTAP transacionais foram criadas para schema/grants, constraints e isolamento RLS.
+- Planos pgTAP validados mecanicamente: 38 testes de schema, 13 de constraints e 17 de RLS.
+- RED Jest: 5 suítes falharam somente por `restore` e quatro módulos deliberadamente ausentes; os 18 cenários anteriores executáveis permaneceram verdes no recorte.
+- RED do type-check: somente seis ausências planejadas (`restore`, caso de uso, mapper, repository e action).
+- Rede anterior, excluindo somente os testes RED da SR-009: 32 suítes e 135 testes passaram.
+- RED remoto pelo Supabase MCP: pgTAP reportou 34 falhas de 38 porque `public.financial_accounts` ainda não existe.
+- Rollback remoto confirmado: zero tabelas públicas, zero migrations e `pgtap` permaneceu não instalado.
+- `npm run lint` passou sem warnings.
+- `npm audit --omit=dev` passou com 0 vulnerabilidades.
+- Build não foi executado porque o type-check deve permanecer vermelho por design nesta fase.
+- Nenhuma migration, tabela, grant, policy ou implementação funcional foi criada.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+
 ### Resultado observado — SR-006
 - Matriz de testes do dashboard documentada em `test-strategy.md`.
 - Testes de aplicação criados com 8 cenários para `GetDashboardSummaryUseCase`.

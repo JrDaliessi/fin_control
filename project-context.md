@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-009 concluído; aguardando comando explícito `dia 2`
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-009 concluído; aguardando comando explícito `dia 3 da SR-009`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -39,6 +39,7 @@
 - Data da revisão de UX, acessibilidade e PWA da SR-008: 2026-07-14
 - Data da validação final e preparação de release da SR-008: 2026-07-14
 - Data do discovery e arquitetura da SR-009: 2026-07-14
+- Data da estratégia de testes da SR-009: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -875,6 +876,7 @@ Regra operacional:
 - Erro: criar `proxy.ts` na raiz em um projeto cujo App Router está em `src/app`; o build passou, mas não declarou o Proxy. Prevenção: manter `src/proxy.ts` no mesmo nível de `src/app` e exigir `ƒ Proxy (Middleware)` na saída de `next build`; o `middleware-manifest.json` legado pode permanecer vazio no Turbopack.
 - Erro: uma `NEXT_PUBLIC_SUPABASE_URL` malformada fez a criação do client SSR lançar uma exceção no Proxy e derrubou toda a navegação com o overlay `Invalid supabaseUrl`. Prevenção: validar a configuração sem registrar valores sensíveis, cobrir falhas de inicialização e de leitura de claims com testes e fazer a proteção de rotas falhar de forma fechada — rota privada redireciona para `/login` e `/login` permanece acessível.
 - Erro: um exemplo de Project URL com `<project-ref>` foi copiado literalmente para `.env.local`. Prevenção: exemplos devem declarar que marcadores precisam ser substituídos, a documentação deve preferir um hostname ilustrativo sem `<` e `>`, e a validação externa deve conferir o endpoint Auth antes de encerrar a fase.
+- Erro: mocks Jest sem assinatura explícita foram inferidos como funções sem argumentos e criaram ruído no primeiro type-check do Dia 2 da SR-009. Prevenção: tipar estruturalmente os fakes de infraestrutura para que o RED contenha somente ausências funcionais planejadas.
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-005
 
@@ -1204,8 +1206,8 @@ Estado de saída:
 - Dias 4 e 5 da SR-008 concluídos; apresentação, route groups, Proxy e hardening validados.
 - Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
-- Dia 1 da SR-009 concluído; schema, contratos, RLS, threat model e estratégia MCP/pgTAP aprovados.
-- Próximo passo operacional: executar, mediante comando explícito, o Dia 2 da SR-009 para criar os testes essenciais antes da migration.
+- Dia 2 da SR-009 concluído; testes Jest e pgTAP criados antes da implementação, com RED local e remoto válidos.
+- Próximo passo operacional: executar, mediante comando explícito, o Dia 3 da SR-009 para implementar o mínimo e aplicar a migration aprovada pelo MCP.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1449,6 +1451,63 @@ Estado de saída:
 - `ARCHITECTURE_READY`
 - nenhuma migration, tabela, policy, teste ou código funcional foi criado
 - próximo passo recomendado: executar `dia 2` da SR-009
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-009
+
+Small release: `SR-009 — Persistência e RLS de contas`.
+
+Matriz criada:
+- domínio: reidratação de `FinancialAccount` preservando metadados e reaplicando as invariantes existentes
+- aplicação: `ListAccountsUseCase` validando e normalizando o ator antes de `listByUser`
+- infrastructure: mapper `snake_case`, repository `create/listByUser`, ordenação determinística e erros sanitizados
+- composição: Server Action revalida claims, ignora owner forjado e bloqueia claims ausentes, inválidas ou anônimas
+- banco: schema, constraints, grants efetivos, policies e isolamento entre usuário A, usuário B, `anon` e usuário anônimo do Auth
+
+Testes Jest criados ou alterados:
+- `src/features/accounts/tests/financial-account.entity.test.ts`
+- `src/features/accounts/tests/list-accounts.use-case.test.ts`
+- `src/features/accounts/tests/supabase-account.mapper.test.ts`
+- `src/features/accounts/tests/supabase-account.repository.test.ts`
+- `src/features/accounts/tests/create-account.action.test.ts`
+
+Testes de banco criados:
+- `supabase/tests/database/financial_accounts_schema.test.sql` — 38 testes
+- `supabase/tests/database/financial_accounts_constraints.test.sql` — 13 testes
+- `supabase/tests/database/financial_accounts_rls.test.sql` — 17 testes
+
+Etapa vermelha local:
+- cinco suítes direcionadas falharam pela ausência deliberada de `FinancialAccount.restore`, `ListAccountsUseCase`, mapper, repository e Server Action
+- o type-check falhou somente pelas mesmas seis referências ausentes planejadas
+- a rede anterior, excluindo os testes RED da SR-009, passou com 32 suítes e 135 testes
+- `npm run lint` passou sem warnings
+- `npm audit --omit=dev` passou com 0 vulnerabilidades
+- build não foi executado porque o type-check permanece vermelho por desenho TDD
+
+Etapa vermelha no Supabase MCP:
+- somente a suíte estrutural foi executada em transação
+- pgTAP reportou 34 falhas de 38 pela ausência de `public.financial_accounts`
+- as quatro verificações negativas compatíveis com banco vazio passaram sem tornar a suíte verde
+- após `ROLLBACK`, o MCP confirmou zero tabelas públicas, zero migrations e `pgtap` com `installed_version = null`
+- constraints e RLS comportamentais permanecem escritas, mas não foram executadas contra tabela ausente para evitar falha pouco diagnóstica
+
+Implementação bloqueada até o Dia 3:
+- `FinancialAccount.restore`
+- `AccountRepository.listByUser`
+- `ListAccountsUseCase`
+- mapper e `SupabaseAccountRepository`
+- Server Action e composição persistente da rota
+- migration com tabela, constraints, índice, grants e RLS
+
+Limites preservados:
+- nenhuma migration aplicada ou criada
+- nenhuma tabela, policy, grant ou extensão persistente criada
+- nenhuma UI ou regra de negócio nova implementada
+- nenhum Supabase CLI, Docker, branch paga ou `service_role` usado
+- Supabase MCP permaneceu como único canal de banco
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar `dia 3 da SR-009`
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
 
