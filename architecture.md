@@ -266,6 +266,28 @@ O projeto deve ter:
 - instalabilidade
 - estratégia offline definida de forma realista
 
+## Sistema Visual FinControl Pulse
+
+- FinControl Pulse é a direção visual oficial para marca, shell, dashboard, páginas internas e copywriting.
+- A implementação ocorre em small releases `UI-001` a `UI-006`; a especificação não autoriza redesenho one-shot.
+- `src/app/(private)/PrivateAppShell.tsx` é a composition root visual para sidebar, topbar, conteúdo e navegação mobile, sem regras financeiras.
+- Tokens semânticos em `globals.css` são a fonte de verdade de temas; Tailwind apenas os expõe como classes.
+- Primitives genéricas ficam em `src/shared/components/ui`; componentes com semântica financeira permanecem na feature dona do contrato.
+- Rotas, CTAs, indicadores, gráficos e copy só podem aparecer quando o caso de uso correspondente existir.
+- Domínio e aplicação não dependem de tokens, copy, React ou biblioteca visual.
+- Gráficos continuam bloqueados até o `SP-001`, com adapter de presentation e alternativa tabular acessível.
+- Preferência de tema é dado de apresentação; não autoriza persistência de dados financeiros no navegador.
+- A copy segue `informar → explicar → sugerir`, sem culpa, promessa de resultado, IA antecipada ou dado fictício apresentado como real.
+- Na `UI-001`, Geist será entregue por `next/font/google`, com variável CSS e fallback de sistema; não haverá pacote de fonte ou requisição do navegador a um CDN de fontes.
+- Tokens são canais RGB definidos em `globals.css`; Tailwind os mapeia com suporte a alfa e não se torna uma segunda fonte de valores literais.
+- A preferência tipada é `light | dark | system`; a resolução produz `light | dark` e aplica `data-theme="dark"` no elemento raiz.
+- O armazenamento local é permitido somente para a chave de apresentação `fincontrol.theme`, com allowlist e fallback seguro para `system`. Nenhum dado financeiro ou de identidade pode entrar nesse mecanismo.
+- A resolução inicial do tema ocorre antes da hidratação por um script estático local; um provider React sincroniza interação, armazenamento e mudança de preferência do sistema.
+- O conjunto inicial compartilhado fica restrito a `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`. Abstrações adicionais exigem uso real em mais de uma feature.
+- O tema não altera contratos de domain/application/infrastructure e não introduz acesso ao Supabase.
+- Decisão completa: `adr/0005-fincontrol-pulse-design-system.md`.
+- Especificação completa: `docs/product/fincontrol-pulse-interface-copy.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações

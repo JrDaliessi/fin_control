@@ -1,8 +1,8 @@
-# Project Context — Controle Financeiro IA
+# Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-009 concluído; release incremental de código pronta, sem deploy executado
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da UI-001 concluído; implementação bloqueada até a fundação TDD do Dia 2
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -45,10 +45,13 @@
 - Data do hardening interno da SR-009: 2026-07-14
 - Data da revisão de UX, acessibilidade e PWA da SR-009: 2026-07-14
 - Data da validação final e preparação de release da SR-009: 2026-07-14
+- Data de incorporação da proposta FinControl Pulse: 2026-07-14
+- Data do discovery e arquitetura da UI-001: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
+- Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
 ## Visão do Produto
-Controle Financeiro IA é um aplicativo financeiro pessoal brasileiro com IA, focado em explicar o dinheiro do usuário, prever riscos financeiros e orientar decisões antes que problemas aconteçam.
+FinControl é um aplicativo financeiro pessoal brasileiro, planejado para explicar o dinheiro do usuário, prever riscos financeiros e orientar decisões antes que problemas aconteçam. Recursos de IA permanecem futuros até a SR-023.
 
 O produto não deve ser apenas um registrador de gastos. Ele deve responder diariamente:
 - Quanto eu tenho de verdade?
@@ -1215,9 +1218,128 @@ Estado de saída:
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
 - Dias 2 a 6 da SR-009 concluídos; persistência, RLS, apresentação server-side, hardening e UX/PWA foram validados incrementalmente.
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
-- Próximo passo operacional: selecionar explicitamente a próxima small release; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- Próximo passo operacional: executar explicitamente o Dia 2 da UI-001; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
+
+## Mudança de Escopo — FinControl Pulse
+
+Decisão:
+- adotar FinControl Pulse como direção oficial de UI, UX, marca e copywriting
+- padronizar futuramente a marca como `FinControl`, assinatura `Seu copiloto financeiro` e slogan `Entenda seu dinheiro. Antecipe riscos. Decida com clareza.`
+- implementar a proposta em small releases, sem substituir a fundação de dados e sem criar rotas vazias
+
+Impacto arquitetural:
+- novo sistema de tokens semânticos e temas em presentation/shared
+- `PrivateAppShell` evolui para composition root visual responsiva
+- primitives genéricas ficam em `src/shared/components/ui`; cards financeiros permanecem nas features
+- gráficos continuam atrás de adapter e do spike `SP-001`
+- copy contextual permanece próxima da feature e não entra em domain/infrastructure
+
+Mapeamento aprovado:
+- `UI-001`: identidade visual, tipografia, tokens, tema e primitives
+- `UI-002`: sidebar, topbar e navegação mobile
+- `UI-003`: dashboard Pulse com capacidades reais disponíveis
+- `UI-004`: apresentação de contas
+- `UI-005`: apresentação de transações após categorias/transações persistidas
+- `UI-006`: login, estados, microcopy e instalação PWA
+- analytics, metas, gamificação e IA continuam nas SR-012 a SR-023
+- cartões, orçamentos, compromissos, relatórios, importação, configurações e marketing ficam em backlog próprio
+
+Restrições preservadas:
+- “disponível de verdade” só pode ser exibido após regras completas de saldo e compromissos
+- IA não pode ser apresentada como funcional antes da SR-023
+- recuperação, cadastro, biometria e lembrar acesso não podem aparecer sem fluxos reais
+- nenhuma promessa offline sem estratégia de consistência autenticada
+- exemplos de valores nunca podem parecer dados reais do usuário
+
+Artefatos:
+- `docs/product/fincontrol-pulse-interface-copy.md`
+- `adr/0005-fincontrol-pulse-design-system.md`
+- `architecture.md`
+- `roadmap.md`
+- `backlog.md`
+
+Estado:
+- `UI-001` selecionada e movida para `IN_PROGRESS`
+- Dia 1 concluído em `ARCHITECTURE_READY`
+- código da SR-009 continua pronto para release; nenhum deploy foi executado
+
+## Dia 1 — UI-001 Sistema Visual, Marca e Temas
+
+Objetivo fechado:
+- criar a fundação visual transversal do FinControl sem redesenhar shell ou features no mesmo incremento
+- substituir cores e tipografia literais por contratos semânticos testáveis
+- oferecer tema claro, escuro e automático sem persistir dados financeiros no navegador
+
+Auditoria de entrada:
+- `src/shared/components/ui` ainda não existe
+- `globals.css` usa Arial e valores literais apenas para tema claro
+- `tailwind.config.ts` expõe uma paleta curta e literal
+- telas repetem superfícies, bordas, textos e controles sem primitives compartilhadas
+- metadata, Apple title e manifest usam nomes diferentes: `Controle Financeiro IA` e `Finanças IA`
+- `PrivateAppShell` contém somente sessão e logout; navegação estrutural pertence à UI-002
+- testes existentes já protegem alvos de 44 px, semântica de feedback, foco, altura mobile e manifest
+
+Decisões aprovadas:
+- marca: `FinControl`; assinatura institucional: `Seu copiloto financeiro`
+- tipografia: Geist via `next/font/google`, variável CSS e `font-sans`, sem pacote adicional
+- tokens: canais RGB em `globals.css`, mapeados pelo Tailwind com `rgb(var(--token) / <alpha-value>)`
+- tema: `ThemePreference = light | dark | system` e `ResolvedTheme = light | dark`
+- dark mode: seletor `data-theme="dark"` com Tailwind 3.4 em modo `selector`
+- persistência: somente chave não sensível `fincontrol.theme`, com allowlist e fallback para `system`
+- inicialização: script estático local anterior à hidratação; provider React sincroniza DOM, storage e `matchMedia`
+- primitives: somente `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`
+- dependência de classes: usar `clsx` já instalado; não adicionar biblioteca de tema ou kit visual
+
+Estrutura planejada, ainda não criada:
+```text
+src/shared/components/ui/
+  Button.tsx
+  Card.tsx
+  FeedbackMessage.tsx
+  ThemeSwitcher.tsx
+src/shared/theme/
+  theme.types.ts
+  theme.constants.ts
+  resolveTheme.ts
+  ThemeProvider.tsx
+  useTheme.ts
+public/
+  theme-init.js
+```
+
+Limites obrigatórios:
+- sem sidebar, topbar ou navegação mobile da UI-002
+- sem dashboard Pulse da UI-003
+- sem cards/drawers de contas ou transações das UI-004/UI-005
+- sem refinamento completo de login/instalação PWA da UI-006
+- sem gráficos, novas rotas, dados fictícios, regras financeiras, migrations ou Supabase
+- sem criar Input, Modal, Drawer, BottomSheet, Badge, Tabs ou Skeleton sem necessidade real posterior
+
+Contratos e testes preparados para o Dia 2:
+- função pura de resolução de tema
+- allowlist e fallback de preferência persistida
+- inicialização anterior à hidratação e sincronização do provider
+- tokens completos nos dois temas e mapeamento Tailwind
+- primitives acessíveis e regressão das telas existentes
+- metadata, manifest, contraste, foco, redução de movimento e PWA
+
+Riscos:
+- flash de tema se a resolução inicial ocorrer apenas após hidratação
+- regressão global se classes literais forem migradas de uma vez sem testes
+- contraste insuficiente em combinações específicas, ainda a ser comprovado no Dia 2 e no Dia 6
+- inconsistência de marca enquanto a implementação não migrar todas as superfícies
+
+Bloqueios:
+- implementação funcional proibida antes dos testes essenciais do Dia 2
+- nenhuma biblioteca nova aprovada ou necessária
+
+Estado de saída:
+- máquina de estados: `ARCHITECTURE_READY`
+- backlog: `UI-001` em `IN_PROGRESS`
+- próximo comando válido: `dia 2 da UI-001`
 
 ## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
 
