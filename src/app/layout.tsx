@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "Finanças IA"
   },
   icons: {
-    apple: "/icon.svg",
+    apple: "/apple-touch-icon.png",
     icon: "/icon.svg"
   },
   manifest: "/manifest.webmanifest"

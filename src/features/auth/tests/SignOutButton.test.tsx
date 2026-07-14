@@ -18,10 +18,16 @@ describe("SignOutButton", () => {
     await user.click(screen.getByRole("button", { name: "Sair" }));
 
     expect(onSignOut).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("button", { name: "Saindo..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Saindo..." }))
+      .toBeDisabled();
+    expect(screen.getByRole("button", { name: "Saindo..." }))
+      .toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("status")).toHaveTextContent("Saindo...");
 
     resolveSignOut();
     expect(await screen.findByText("Sessão encerrada.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sair" }))
+      .toHaveAttribute("aria-busy", "false");
   });
 
   it("shows a controlled error and allows retry", async () => {
@@ -37,6 +43,9 @@ describe("SignOutButton", () => {
       "Não foi possível encerrar a sessão. Tente novamente."
     );
     expect(screen.queryByText("provider unavailable")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sair" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Sair" }))
+      .toBeEnabled();
+    expect(screen.getByRole("button", { name: "Sair" }))
+      .toHaveAttribute("aria-busy", "false");
   });
 });

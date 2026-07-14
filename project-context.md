@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-008 concluído; aguardando comando explícito `dia 6`
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SR-008 concluído; aguardando comando explícito `dia 7`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -36,6 +36,7 @@
 - Data da implementação mínima da SR-008: 2026-07-12
 - Data da expansão controlada da SR-008: 2026-07-13
 - Data do hardening interno da SR-008: 2026-07-13
+- Data da revisão de UX, acessibilidade e PWA da SR-008: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1195,7 +1196,9 @@ Estado de saída:
 - Dia 1 da SR-008 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0003.
 - Dia 2 da SR-008 concluído; 7 suítes e 29 testes essenciais criados em estado vermelho válido.
 - Dia 3 da SR-008 concluído; implementação mínima passou em 28 suítes e 139 testes.
-- Próximo passo operacional: executar `dia 4` para compor Proxy, rotas públicas/privadas e apresentação de login de forma controlada.
+- Dias 4 e 5 da SR-008 concluídos; apresentação, route groups, Proxy e hardening validados.
+- Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
+- Próximo passo operacional: executar `dia 7` para qualidade final, segurança, observabilidade e preparação da release.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1439,6 +1442,57 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - Dia 5 concluído sem dívida técnica crítica ou alta aberta
 - próximo passo recomendado: executar `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-008
+
+Small release: `SR-008 — Autenticação e sessão protegida`.
+
+Auditoria executada:
+- apresentação, composição, manifest e assets revisados por acessibilidade, UX, arquitetura e PWA
+- arquitetura preservada: `presentation` continua sem acesso direto ao Supabase e `src/app` permanece composition root
+- teclado, labels, autocomplete, zoom móvel, foco visível e alvos mínimos de 44 px já estavam adequados
+- nenhum service worker ou promessa offline foi adicionado enquanto os dados financeiros permanecem efêmeros
+
+TDD e melhorias:
+- RED: testes de `LoginPage` e `SignOutButton` falharam por formulário sem nome, ausência de `aria-busy`, ausência de anúncio de processamento e conteúdo técnico na interface
+- GREEN: 2 suítes e 5 testes direcionados passaram
+- formulário de login recebeu nome acessível por `aria-labelledby` e estado `aria-busy`
+- login e logout anunciam processamento por região `role="status"`
+- instrução deixou de expor o detalhe técnico `Supabase Auth`
+- slogan deixou de criar um `h2` anterior ao `h1`
+- alerta de credenciais passou de `text-danger` sobre `red-50` para `text-red-700`, elevando o contraste acima do limiar AA de texto normal
+- `min-h-dvh` foi adicionado com `min-h-screen` como fallback para viewport móvel dinâmica
+
+PWA:
+- RED: o teste do manifest falhou porque existia somente o SVG declarado como `any maskable`
+- GREEN: manifest e quatro assets rasterizados foram validados
+- adicionados ícones PNG `192x192`, `512x512`, maskable `512x512` e Apple Touch `180x180`
+- SVG comum passou a `purpose: any`; ícone maskable ganhou fundo de sangria completa
+- teste verifica formato PNG real, dimensões, existência e metadados do manifest
+- offline permaneceu fora do escopo por não existir estratégia segura de consistência para dados financeiros
+
+Validação visual no Chrome:
+- cache antigo do Turbopack gerou incompatibilidade de hidratação; o cache `.next` foi preservado em `C:\tmp\controle-financeiro-next-stale-dia6-20260714` e regenerado
+- origem local limpa `127.0.0.1` permitiu validar o bundle atual sem reutilizar assets antigos do `localhost`
+- desktop `1366px`: card limitado a `1024px`, duas colunas, painel institucional visível e sem overflow horizontal
+- mobile `390x844`: uma coluna, painel institucional oculto, margens de `16px`, `min-height` dinâmica e sem overflow horizontal
+- nenhum dado de formulário foi submetido durante a inspeção
+
+Quality gates:
+- `npm run test:ci`: 33 suítes e 153 testes verdes
+- `npm run lint`: verde, 0 warnings
+- `npm run type-check`: verde
+- `npm audit --audit-level=high`: 0 vulnerabilidades
+- `npm run build`: verde com `/login` estática, rotas financeiras dinâmicas e `ƒ Proxy (Middleware)`
+
+Riscos e limites preservados:
+- testes de composição de `AuthLoginContainer`, `PrivateAppShell` e defesa do layout privado continuam recomendados para o Dia 7, sem bloquear esta fase
+- cadastro, recuperação, OAuth, MFA, migrations financeiras, persistência e RLS não foram antecipados
+- nenhuma dívida técnica crítica ou alta foi criada
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- próximo passo recomendado: executar `dia 7`
 
 ## Dia 3 — Implementação Mínima Orientada por Teste da SR-008
 

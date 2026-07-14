@@ -40,7 +40,13 @@ export function SignOutButton({ onSignOut }: SignOutButtonProps) {
           Sessão encerrada.
         </p>
       ) : null}
+      {isLoading ? (
+        <p className="sr-only" role="status">
+          Saindo...
+        </p>
+      ) : null}
       <button
+        aria-busy={isLoading}
         className="inline-flex min-h-11 items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
         disabled={isLoading}
         onClick={handleSignOut}
