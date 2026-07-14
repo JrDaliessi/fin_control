@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-009 concluído; aguardando comando explícito `dia 6 da SR-009`
+- Estado atual da máquina de estados: `BLOCKED`
+- Fase atual: Dia 6 da SR-009 implementado e com gates verdes; conclusão bloqueada pela validação visual obrigatória no Chrome
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -43,6 +43,7 @@
 - Data da implementação mínima da SR-009: 2026-07-14
 - Data da expansão controlada da SR-009: 2026-07-14
 - Data do hardening interno da SR-009: 2026-07-14
+- Data da revisão de UX, acessibilidade e PWA da SR-009: 2026-07-14 (validação visual bloqueada)
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1212,7 +1213,8 @@ Estado de saída:
 - Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
 - Dias 2 a 5 da SR-009 concluídos; persistência, RLS, apresentação server-side e hardening do provider/policies foram validados incrementalmente.
-- Próximo passo operacional: executar, mediante comando explícito, o Dia 6 da SR-009 para UX, acessibilidade e PWA do fluxo persistente.
+- Dia 6 da SR-009 implementado com TDD e pipeline verde; validação visual no Chrome permanece bloqueada pela ausência do registro do host nativo do plugin.
+- Próximo passo operacional: reinstalar o plugin Chrome pela UI do ChatGPT e repetir somente a validação visual desktop/mobile do Dia 6 antes do Dia 7.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1674,6 +1676,54 @@ Estado de saída:
 - retorno a `IMPLEMENTATION_IN_PROGRESS`
 - Dia 5 concluído sem avanço automático
 - próximo passo recomendado: executar `dia 6 da SR-009`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-009
+
+Small release: `SR-009 — Persistência e RLS de contas`.
+
+Auditoria e ajustes aplicados:
+- o fluxo persistente de contas manteve labels, campos obrigatórios nativos, foco visível, estados `loading`, `empty`, `success` e `error` e alvos mínimos existentes
+- o alerta de erro do formulário passou a usar `text-red-700` sobre `bg-red-50`, alinhado ao contraste WCAG AA essencial já adotado no login
+- página, loading e error boundary de `/accounts` passaram a combinar `min-h-screen` com `min-h-dvh`
+- a região viva `Suas contas` passou a declarar `aria-relevant="additions text"` para anunciar inclusões persistidas sem ruído desnecessário
+- o shortcut PWA de contas deixou de descrever o fluxo como local e passou a declarar o fluxo persistente
+- offline e service worker permaneceram fora do escopo porque não existe estratégia aprovada de consistência para dados financeiros autenticados
+
+Ciclo TDD:
+- RED direcionado: 4 suítes falharam, com 5 falhas esperadas e 7 testes da rede anterior passando
+- GREEN direcionado: 4 suítes e 12 testes passaram
+- suíte completa: 36 suítes e 170 testes passaram
+
+Quality gates:
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm run test:ci`: passou, 36 suítes e 170 testes
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou; `/accounts` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo
+- `git diff --check`: passou; alteração gerada de `next-env.d.ts` foi restaurada
+
+Bloqueio duro da validação no Chrome:
+- servidor local respondeu `307` em `/accounts`, confirmando disponibilidade e proteção da rota
+- Chrome está instalado e em execução; a ChatGPT Chrome Extension está instalada e habilitada no perfil selecionado
+- a verificação oficial `check-native-host-manifest.js` encontrou o manifesto em disco, mas confirmou ausência da chave `HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\com.openai.codexextension`
+- a documentação do plugin proíbe instalar ou reparar o host nativo e proíbe contornar a falha com outra automação
+- não houve inspeção autenticada desktop/mobile nem mutação de dados no navegador
+- nova tentativa após a reinstalação da extensão em 2026-07-14: o pacote local do plugin passou a não conter `scripts/browser-client.mjs` nem os scripts oficiais de diagnóstico; a skill determina interrupção imediata quando esse arquivo obrigatório está ausente
+
+Motivo do bloqueio:
+- a validação visual real no Chrome solicitada para a fase não pode ser auditada enquanto o conector não se comunica com o navegador
+
+Impacto:
+- os ajustes e gates automatizados estão verdes, mas o Dia 6 não pode ser declarado concluído nem transicionar para `QUALITY_VALIDATION` sem mascarar a evidência visual ausente
+
+Ação mínima de desbloqueio:
+- reinstalar o **plugin Chrome dentro da UI de plugins do ChatGPT/Codex** — não apenas a extensão da Chrome Web Store — e reabrir o Codex/Chrome se solicitado pela própria UI
+- repetir somente a inspeção de `/accounts` em desktop e `390x844`, confirmar ausência de overflow, alvos de 44 px, estados semânticos, manifesto servido e logs do console
+
+Estado de saída:
+- `BLOCKED`
+- Dia 6 parcialmente concluído, sem avanço automático
+- próximo passo recomendado: desbloquear o plugin Chrome e concluir a validação visual do Dia 6; somente depois executar `dia 7 da SR-009`
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
 

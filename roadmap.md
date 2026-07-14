@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 5 da SR-009 concluído em `IMPLEMENTATION_IN_PROGRESS`; provider local obsoleto removido e hardening RLS validado.
+Estado atual: Dia 6 da SR-009 implementado com pipeline verde, mas o projeto está `BLOCKED` até a validação visual real no Chrome.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -162,9 +162,9 @@ Recorte da SR-007: domínio, contrato e cadastro local de conta financeira, sem 
 
 Recorte da SR-008: login por e-mail/senha, logout, identidade validada no servidor, Proxy do Next.js 16 e proteção de rotas privadas; cadastro, recuperação, OAuth, MFA, banco financeiro e RLS permanecem fora.
 
-Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `20260714061527_optimize_financial_accounts_rls_auth_initplan`, 70 testes pgTAP verdes, Performance Advisor limpo, 36 suítes/170 testes Jest e pipeline verde; tabela permaneceu vazia.
+Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `20260714061527_optimize_financial_accounts_rls_auth_initplan`, 70 testes pgTAP verdes, Performance Advisor limpo, 36 suítes/170 testes Jest e pipeline verde; no Dia 6, contraste, altura dinâmica, anúncio de inclusões e shortcut PWA persistente foram validados por TDD; tabela permaneceu vazia.
 
-Próximo passo: executar, mediante comando explícito, o Dia 6 da SR-009 para UX, acessibilidade, responsividade e PWA do fluxo persistente; edição, exclusão, categorias, transações e idempotência permanecem bloqueadas.
+Próximo passo: reinstalar o plugin Chrome pela UI do ChatGPT/Codex e concluir somente a inspeção autenticada desktop/mobile do Dia 6; o Dia 7 continua bloqueado até a saída `QUALITY_VALIDATION`. Edição, exclusão, categorias, transações e idempotência permanecem bloqueadas.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

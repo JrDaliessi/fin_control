@@ -393,6 +393,19 @@
 - `npm run build`: passou com `/login` estática e `ƒ Proxy (Middleware)`.
 - Estado de saída validado como `QUALITY_VALIDATION`.
 
+### Resultado observado — SR-009
+- Alerta de erro do cadastro usa contraste reforçado; regiões vivas declaram atualização relevante e as superfícies de rota usam altura dinâmica com fallback.
+- Shortcut PWA de contas descreve corretamente o fluxo persistente; offline e service worker não foram prometidos sem estratégia de consistência autenticada.
+- Etapa vermelha direcionada: 4 suítes falharam, com 5 critérios ausentes.
+- Etapa verde direcionada: 4 suítes e 12 testes passaram.
+- `npm run test:ci`: passou, 36 suítes e 170 testes.
+- `npm run type-check`: passou.
+- `npm run lint`: passou, 0 warnings.
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades.
+- `npm run build`: passou com `/accounts` dinâmica e `ƒ Proxy (Middleware)`.
+- Chrome instalado/em execução e extensão instalada/habilitada; inspeção visual bloqueada porque a verificação oficial confirmou ausência do registro do host nativo do plugin.
+- Estado de saída: `BLOCKED`; `QUALITY_VALIDATION` permanece pendente até a inspeção desktop/mobile real no Chrome.
+
 ## Gate do Dia 7
 - Testes validados e documentados.
 - Type-check validado e documentado.

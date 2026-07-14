@@ -41,13 +41,16 @@ describe("AccountsPage", () => {
   it("renders the persistent account flow and its empty state", () => {
     renderAccountsPage();
 
-    expect(screen.getByRole("main")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
     expect(
       screen.getByRole("heading", { name: "Cadastrar conta financeira" })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("region", { name: "Suas contas" })
     ).toHaveAttribute("aria-live", "polite");
+    expect(
+      screen.getByRole("region", { name: "Suas contas" })
+    ).toHaveAttribute("aria-relevant", "additions text");
     expect(
       screen.getByText("Nenhuma conta cadastrada.")
     ).toHaveAttribute("role", "status");
