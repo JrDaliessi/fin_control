@@ -33,6 +33,21 @@ describe("LoginPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("E-mail")).toHaveAttribute("type", "email");
     expect(screen.getByLabelText("Senha")).toHaveAttribute("type", "password");
+    expect(
+      screen.getByRole("form", { name: "Entrar na sua conta" })
+    ).toHaveAttribute("aria-busy", "false");
+    expect(
+      screen.queryByRole("heading", {
+        level: 2,
+        name: "Clareza para decidir antes que o dinheiro vire preocupação."
+      })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Use seu e-mail e sua senha para acessar sua conta.")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Supabase Auth/i)
+    ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeEnabled();
   });
 
@@ -51,6 +66,12 @@ describe("LoginPage", () => {
       password: "senha-segura"
     });
     expect(screen.getByRole("button", { name: "Entrando..." })).toBeDisabled();
+    expect(screen.getByLabelText("E-mail")).toBeDisabled();
+    expect(screen.getByLabelText("Senha")).toBeDisabled();
+    expect(
+      screen.getByRole("form", { name: "Entrar na sua conta" })
+    ).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("status")).toHaveTextContent("Entrando...");
 
     deferred.resolve();
     expect(
@@ -72,5 +93,8 @@ describe("LoginPage", () => {
     );
     expect(screen.queryByText("user does not exist")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeEnabled();
+    expect(
+      screen.getByRole("form", { name: "Entrar na sua conta" })
+    ).toHaveAttribute("aria-busy", "false");
   });
 });

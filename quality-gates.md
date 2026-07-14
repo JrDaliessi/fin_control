@@ -298,6 +298,26 @@
 - `npm run build`: passou com `/`, `/accounts`, `/dashboard` e `/transactions`.
 - Estado de saída validado como `QUALITY_VALIDATION`.
 
+### Resultado observado — SR-008
+- Formulário de login nomeado e com `aria-busy`; login e logout anunciam processamento por `role="status"`.
+- Hierarquia de títulos corrigida e linguagem técnica removida da instrução ao usuário.
+- Contraste do alerta de login elevado para o limiar WCAG AA essencial.
+- Desktop validado em `1366px`, com duas colunas, card de `1024px` e sem overflow horizontal.
+- Mobile validado em `390x844`, com uma coluna, margens de `16px`, `min-height` dinâmica e sem overflow horizontal.
+- Manifest preserva shortcuts protegidos e passou a declarar PNG `192x192`, PNG `512x512` e maskable `512x512`.
+- Apple Touch Icon `180x180` configurado; formato e dimensões dos quatro PNGs validados por teste.
+- Offline e service worker permaneceram fora do escopo por ausência de estratégia segura de consistência.
+- Etapa vermelha de acessibilidade: 2 suítes falharam pelos contratos semânticos ausentes.
+- Etapa verde direcionada: 2 suítes e 5 testes passaram.
+- Etapa vermelha PWA: manifest falhou pela ausência dos assets rasterizados.
+- Etapa verde PWA: 1 suíte e 2 testes passaram.
+- `npm run test:ci`: passou, 33 suítes e 153 testes.
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades.
+- `npm run build`: passou com `/login` estática e `ƒ Proxy (Middleware)`.
+- Estado de saída validado como `QUALITY_VALIDATION`.
+
 ## Gate do Dia 7
 - Testes validados e documentados.
 - Type-check validado e documentado.

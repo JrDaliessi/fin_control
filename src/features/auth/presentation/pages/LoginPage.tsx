@@ -38,16 +38,16 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
   const isLoading = status === "loading";
 
   return (
-    <main className="grid min-h-screen place-items-center bg-background px-4 py-8 text-foreground sm:px-6">
+    <main className="grid min-h-screen min-h-dvh place-items-center bg-background px-4 py-8 text-foreground sm:px-6">
       <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[1.05fr_0.95fr]">
         <section className="hidden bg-slate-950 p-10 text-white lg:grid lg:content-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-teal-300">
               Controle Financeiro IA
             </p>
-            <h2 className="mt-5 max-w-md text-4xl font-semibold leading-tight">
+            <p className="mt-5 max-w-md text-4xl font-semibold leading-tight">
               Clareza para decidir antes que o dinheiro vire preocupação.
-            </h2>
+            </p>
             <p className="mt-5 max-w-md text-base leading-7 text-slate-300">
               Acompanhe contas, lançamentos e seu resumo financeiro em uma experiência simples e segura.
             </p>
@@ -63,14 +63,22 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
           <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
             Acesso seguro
           </p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl">
+          <h1
+            className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl"
+            id="login-heading"
+          >
             Entrar na sua conta
           </h1>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Use o e-mail e a senha de um usuário já cadastrado no Supabase Auth.
+            Use seu e-mail e sua senha para acessar sua conta.
           </p>
 
-          <form className="mt-8 grid gap-5" onSubmit={handleSubmit}>
+          <form
+            aria-busy={isLoading}
+            aria-labelledby="login-heading"
+            className="mt-8 grid gap-5"
+            onSubmit={handleSubmit}
+          >
             <div className="grid gap-2">
               <label className="text-sm font-medium text-slate-800" htmlFor="email">
                 E-mail
@@ -107,10 +115,16 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
 
             {status === "error" ? (
               <p
-                className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-danger"
+                className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
                 role="alert"
               >
                 {genericErrorMessage}
+              </p>
+            ) : null}
+
+            {isLoading ? (
+              <p className="sr-only" role="status">
+                Entrando...
               </p>
             ) : null}
 
