@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { GetCurrentUserUseCase } from "@/features/auth/application/use-cases/get-current-user.use-case";
 import { SupabaseAuthGateway } from "@/features/auth/infrastructure/supabase/supabase-auth.gateway";
 import { AuthSessionProvider } from "@/features/auth/presentation/providers/AuthSessionProvider";
-import { AccountSessionProvider } from "@/features/accounts/presentation/providers/AccountSessionProvider";
 import { TransactionSessionProvider } from "@/features/transactions/presentation/providers/TransactionSessionProvider";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PrivateAppShell } from "./PrivateAppShell";
@@ -26,11 +25,9 @@ export default async function PrivateLayout({ children }: PrivateLayoutProps) {
 
   return (
     <AuthSessionProvider user={{ id: user.id, email: user.email }}>
-      <AccountSessionProvider>
-        <TransactionSessionProvider>
-          <PrivateAppShell email={user.email}>{children}</PrivateAppShell>
-        </TransactionSessionProvider>
-      </AccountSessionProvider>
+      <TransactionSessionProvider>
+        <PrivateAppShell email={user.email}>{children}</PrivateAppShell>
+      </TransactionSessionProvider>
     </AuthSessionProvider>
   );
 }

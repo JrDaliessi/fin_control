@@ -307,6 +307,21 @@
 - Bloqueio resolvido: Project URL HTTPS e publishable key válidas; endpoint público do Supabase Auth respondeu `200` sem exposição dos valores.
 - Estado de saída: retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
 
+### Resultado observado — SR-009
+- Baseline de accounts passou com 10 suítes e 53 testes antes da refatoração.
+- `AccountSessionProvider` e seus 4 testes exclusivos foram removidos porque não possuíam consumidor no fluxo persistente.
+- `AccountSessionList` foi renomeada para `AccountList`; comportamento visual e DTO persistente foram preservados.
+- Nenhum arquivo de produção foi classificado como monólito crítico; `AccountForm.tsx` permaneceu coeso.
+- RED pgTAP de performance falhou 2/2 antes da migration.
+- Migration `20260714061527_optimize_financial_accounts_rls_auth_initplan` passou a envolver diretamente `auth.jwt()` em `select` nas duas policies.
+- pgTAP completo passou com 38 testes de schema/grants, 13 de constraints, 17 de RLS e 2 de performance.
+- Performance Advisor retornou sem alertas; Security Advisor manteve somente `SEC-AUTH-001`.
+- Tabela permaneceu vazia e a extensão pgTAP não persistiu.
+- Suíte Jest completa passou com 36 suítes e 170 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Build preservou `/accounts` dinâmica e `ƒ Proxy (Middleware)`.
+- Estado de saída: retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
+
 ## Gate do Dia 6
 - Layout mobile first revisado.
 - Campos principais têm labels acessíveis.

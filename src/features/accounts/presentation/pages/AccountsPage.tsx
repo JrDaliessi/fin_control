@@ -7,8 +7,8 @@ import type {
   CreateAccountRequest,
   FinancialAccountDto
 } from "../../application/dtos/financial-account.dto";
+import { AccountList } from "../components/AccountList";
 import { AccountForm } from "../components/AccountForm";
-import { AccountSessionList } from "../components/AccountSessionList";
 
 type AccountsPageProps = {
   initialAccounts: readonly FinancialAccountDto[];
@@ -61,7 +61,7 @@ export function AccountsPage({
         </section>
 
         <div className="grid content-start gap-4">
-          <AccountSessionList accounts={accounts} />
+          <AccountList accounts={accounts} />
         </div>
       </div>
     </main>

@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SR-009 concluído; aguardando comando explícito `dia 5 da SR-009`
+- Fase atual: Dia 5 da SR-009 concluído; aguardando comando explícito `dia 6 da SR-009`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -42,6 +42,7 @@
 - Data da estratégia de testes da SR-009: 2026-07-14
 - Data da implementação mínima da SR-009: 2026-07-14
 - Data da expansão controlada da SR-009: 2026-07-14
+- Data do hardening interno da SR-009: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1210,8 +1211,8 @@ Estado de saída:
 - Dias 4 e 5 da SR-008 concluídos; apresentação, route groups, Proxy e hardening validados.
 - Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
-- Dias 2, 3 e 4 da SR-009 concluídos; testes nasceram em RED, a persistência/RLS foi implementada pelo MCP e a apresentação passou a usar identidade e dados persistentes verificados no servidor.
-- Próximo passo operacional: executar, mediante comando explícito, o Dia 5 da SR-009 para refatoração e hardening preservando o comportamento validado.
+- Dias 2 a 5 da SR-009 concluídos; persistência, RLS, apresentação server-side e hardening do provider/policies foram validados incrementalmente.
+- Próximo passo operacional: executar, mediante comando explícito, o Dia 6 da SR-009 para UX, acessibilidade e PWA do fluxo persistente.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1612,6 +1613,67 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - Dia 4 concluído sem avanço automático
 - próximo passo recomendado: executar `dia 5 da SR-009`
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-009
+
+Small release: `SR-009 — Persistência e RLS de contas`.
+
+Diagnóstico estrutural:
+- nenhum arquivo de produção da feature foi classificado como monólito crítico; `AccountForm.tsx`, com 175 linhas, permanece coeso como renderização do formulário
+- `AccountSessionProvider` não possuía consumidor no fluxo persistente e apenas envolvia desnecessariamente todo o layout privado
+- `AccountSessionList` conservava nomenclatura de sessão embora já recebesse exclusivamente DTOs persistidos
+- contratos de criação e listagem continuam segregados porque seus casos de uso têm consumidores distintos; unificá-los criaria acoplamento sem ganho
+- `DB-PERF-001` foi reproduzido pelo advisor nas duas policies devido ao formato da chamada de `auth.jwt()`
+
+Plano incremental executado:
+1. validar a suíte de accounts antes das alterações
+2. remover provider e testes exclusivos do estado local obsoleto
+3. renomear a lista para refletir o contrato persistente
+4. escrever regressão pgTAP de performance antes de alterar policies
+5. aplicar migration forward-only somente após RED comprovado
+6. repetir isolamento, constraints, advisors e pipeline local
+
+Refatoração local:
+- `AccountSessionProvider` foi removido do layout privado e do código da feature
+- a suíte exclusiva do provider local foi removida junto com o comportamento obsoleto
+- `AccountSessionList` foi substituída por `AccountList`, sem alterar estados visuais ou contrato de DTO
+- baseline de accounts passou com 10 suítes e 53 testes; após a remoção do código morto, a feature passou com 9 suítes e 49 testes ativos
+
+Hardening RLS orientado por teste:
+- novo teste `financial_accounts_rls_performance.test.sql` falhou 2/2 contra as policies anteriores
+- documentação atual do Supabase confirmou que cada função Auth deve ser envolvida diretamente por `select` para gerar initPlan por statement
+- migration remota `20260714061527_optimize_financial_accounts_rls_auth_initplan` recriou atomicamente as duas policies usando `(select auth.jwt())`
+- SQL remoto foi espelhado no arquivo local com a mesma versão
+- autorização permaneceu idêntica: owner obrigatório, Auth anônimo bloqueado e somente `SELECT`/`INSERT` concedidos
+
+Validação de banco pelo Supabase MCP:
+- schema e grants: 38/38
+- constraints e defaults: 13/13
+- RLS e isolamento: 17/17
+- performance RLS: 2/2
+- total pgTAP: 70 testes verdes
+- Performance Advisor: nenhum alerta após a migration; `DB-PERF-001` concluído
+- Security Advisor: somente `SEC-AUTH-001` permanece
+- tabela permaneceu com zero registros e `pgtap` permaneceu não instalado após os rollbacks
+
+Quality gates:
+- `npm run type-check`: passou
+- `npm run lint`: passou sem warnings
+- `npm run test:ci`: passou com 36 suítes e 170 testes
+- `npm audit --omit=dev`: passou com 0 vulnerabilidades
+- `npm run build`: passou com `/accounts` dinâmica e Proxy ativo
+
+Limites preservados:
+- nenhuma regra financeira, estado visual ou feature nova foi criada
+- edição, exclusão, arquivamento, categorias, transações e idempotência permaneceram fora do escopo
+- nenhuma abstração genérica ou divisão cosmética do formulário foi criada
+- `SEC-AUTH-001` permanece como hardening externo antes de produção pública
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado
+- retorno a `IMPLEMENTATION_IN_PROGRESS`
+- Dia 5 concluído sem avanço automático
+- próximo passo recomendado: executar `dia 6 da SR-009`
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
 

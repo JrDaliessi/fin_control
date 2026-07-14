@@ -158,13 +158,16 @@ export type ListAccountsByUserInput = {
 
 export interface AccountRepository {
   create(input: FinancialAccount): Promise<FinancialAccount>;
+}
+
+export interface AccountListingRepository {
   listByUser(input: ListAccountsByUserInput): Promise<readonly FinancialAccount[]>;
 }
 ```
 
 Decisões:
 - `create` é o único método obrigatório na SR-007
-- `listByUser` passa a ser obrigatório na SR-009 porque existe consumidor real para a lista persistida
+- `AccountListingRepository.listByUser` existe na SR-009 porque há consumidor real para a lista persistida, sem ampliar o contrato de criação
 - `findById` permanece fora até existir um caso de uso real; métodos opcionais não serão usados para antecipar escopo
 - a implementação local pode existir na apresentação apenas em ciclo posterior e não substitui infraestrutura
 - repositório Supabase, migrations e RLS pertencem à SR-009
@@ -178,7 +181,7 @@ Casos de uso:
 
 Domínio:
 - `FinancialAccount.create()` continua responsável por nova conta
-- `FinancialAccount.restore()` ou nome equivalente será definido por TDD para reidratar ID e timestamps persistidos
+- `FinancialAccount.restore()` reidrata ID e timestamps persistidos reaplicando as invariantes do domínio
 
 Infrastructure:
 - `SupabaseAccountRepository` implementa `create` e `listByUser`
@@ -189,10 +192,10 @@ Composition root:
 - Server Component lista contas após revalidar claims
 - Server Action cria conta após revalidar claims e injeta o `userId` verificado
 - presentation recebe DTOs serializáveis e callbacks; não instancia client ou repositório Supabase
-- provider local deixa de atuar como repositório persistente
+- `AccountsPage` mantém somente o estado visual derivado dos DTOs persistidos e do retorno da Server Action
 
 Banco:
-- migration, grants, RLS e testes pgTAP serão executados pelo Supabase MCP
+- migration, grants, RLS e testes pgTAP são executados exclusivamente pelo Supabase MCP
 - operações permitidas nesta SR: `SELECT` e `INSERT`
 - `UPDATE` e `DELETE` não fazem parte do contrato
 
@@ -202,22 +205,21 @@ Implementada no Dia 4:
 - `AccountForm.tsx`: nome, tipo, saldo inicial e feedback acessível
 - `useAccountForm.ts`: estados `idle`, `submitting`, `success` e `error`
 - `parseAccountBalanceToCents.ts`: conversão de reais para centavos, incluindo saldo negativo
-- `AccountSessionProvider.tsx`: adapter local que executa `CreateAccountUseCase` e mantém contas em memória
-- `AccountSessionList.tsx`: empty state e lista das contas locais
-- `AccountsPage.tsx`: composição da experiência
-- `/accounts`: rota do App Router
+- `AccountList.tsx`: empty state e lista de DTOs persistidos
+- `AccountsPage.tsx`: composição e estado visual alimentado por callbacks persistentes
+- `/accounts`: Server Component dinâmico com loading e error boundary
 
 Regras preservadas:
-- provider local não substitui repositório Supabase
-- recarregar a aplicação reinicia as contas
-- provider armazena cópias congeladas e isoladas das referências de entrada e retorno
+- presentation não recebe `userId` e não acessa Supabase
+- a lista inicial vem do servidor e a criação adiciona somente o DTO retornado após persistência
+- o provider local de contas foi removido no Dia 5 por não possuir consumidor
 - erros de entrada são associados ao campo e anunciados
 - saldo negativo tem explicação explícita na interface
 - dashboard oferece navegação para `/accounts`
 - parsing monetário comum fica em `src/shared/utils/parseCurrencyToCents.ts`; wrappers das features definem se negativos são permitidos
 
-Fora da SR-007:
-- listar, editar ou excluir contas
+Fora da SR-009:
+- editar, excluir ou arquivar contas
 - selecionar instituição e agência
 - calcular saldo atual
 - associar automaticamente transações existentes
