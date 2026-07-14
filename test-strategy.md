@@ -422,3 +422,59 @@ Nenhum formulário, rota, route group, migration ou política RLS pode ser criad
 - Rede completa: 33 suítes e 152 testes.
 - Lint, type-check, audit e build passaram.
 - Validação externa concluída: URL e publishable key válidas; endpoint público do Supabase Auth respondeu `200`.
+
+## Dia 2 — SR-009 Persistência e RLS de Contas
+
+## Objetivo
+Transformar o ADR 0004, os contratos persistentes e o threat model em testes executáveis antes de criar migration, repository ou composição funcional.
+
+## Matriz de Testes da SR-009
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `FinancialAccount.restore` | preservar ID e timestamps; reaplicar invariantes já existentes | 2 testes criados em RED |
+| application | `ListAccountsUseCase` | normalizar ator; lista com dados; lista vazia; ator ausente; falha do repository | 4 testes criados em RED |
+| infrastructure | mapper | row `snake_case` para domínio; entidade nova para payload exato de insert | 2 testes criados em RED |
+| infrastructure | `SupabaseAccountRepository` | create; filtro por owner; ordem `created_at/id desc`; erro sanitizado | 4 testes criados em RED |
+| composition | `createAccountAction` | claims revalidadas; owner forjado ignorado; fail-closed; usuário anônimo bloqueado | 5 cenários criados em RED |
+| database | schema/grants | tabela, colunas, constraints, FK, índice, RLS, policies, privilégios e Realtime | 38 testes pgTAP criados |
+| database | constraints | saldos, nome, tipo, moeda, FK, defaults e nomes duplicados | 13 testes pgTAP criados |
+| database | RLS | usuário A/B, `anon`, usuário anônimo, owner forjado, update/delete negados | 17 testes pgTAP criados |
+
+## Cenário Feliz
+Um usuário permanente com claims verificadas cria uma conta própria. A composição injeta o `sub` verificado, o repository insere somente os campos permitidos, o banco aceita a linha por grant e `WITH CHECK`, e a conta retorna reidratada com ID e timestamps. Na listagem, somente contas do mesmo ator são retornadas em ordem determinística.
+
+## Cenários Alternativos
+- saldo inicial positivo, zero ou negativo dentro do intervalo seguro
+- lista sem contas retorna coleção vazia
+- nomes duplicados são aceitos
+- erros do provedor são convertidos para mensagem estável sem detalhes internos
+
+## Edge Cases Críticos
+- owner forjado no payload do navegador
+- claims ausentes, inválidas ou de usuário anônimo
+- usuário A tentando ler ou criar linha de B
+- papel `anon` tentando selecionar ou inserir
+- `UPDATE` e `DELETE` sem grants
+- nome vazio, não aparado ou acima de 80 caracteres
+- tipo ou moeda inválidos
+- saldo fora do intervalo seguro do JavaScript
+- conta vinculada a usuário Auth inexistente
+- policy permissiva adicional ou publicação Realtime acidental
+
+## Resultado Observado do Dia 2
+- Jest direcionado: 5 suítes em RED; `FinancialAccount.restore` ausente e quatro módulos não encontrados, sem falha funcional inesperada.
+- Type-check: somente seis referências ausentes planejadas.
+- Rede anterior: 32 suítes e 135 testes verdes ao excluir apenas os testes RED da SR-009.
+- Lint: verde, 0 warnings.
+- Audit de produção: 0 vulnerabilidades.
+- Supabase MCP: suíte estrutural executada em `BEGIN/ROLLBACK`; 34 de 38 testes falharam pela ausência da tabela.
+- Pós-rollback: nenhuma tabela pública, migration ou instalação persistente de `pgtap`.
+
+## Implementação Bloqueada até o Dia 3
+- domínio persistente, contrato `listByUser` e caso de uso de listagem
+- mapper e repository Supabase
+- Server Action/composição persistente
+- migration de `financial_accounts`, grants e RLS
+
+Estado de saída: `TEST_STRATEGY_READY`.

@@ -13,13 +13,13 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Crítica
 - Dependências: SR-007 e SR-008 concluídas.
 - Risco: Alto
-- Fase atual: Dia 1 concluído; aguardando Dia 2.
+- Fase atual: Dia 2 concluído em `TEST_STRATEGY_READY`; aguardando aprovação explícita do Dia 3.
 - Escopo aprovado: criar e listar contas próprias; reidratar ID e timestamps; repository Supabase server-side; migration, grants mínimos e RLS testados.
 - Fora do escopo: edição, exclusão, arquivamento, instituição, agência, conta principal, saldo atual persistido, categorias e transações persistidas.
 - Segurança aprovada: `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, usuário anônimo do Auth e aplicação com `service_role` permanecem bloqueados.
 - Estratégia de banco: Supabase MCP para migrations, testes transacionais pgTAP, inspeção e advisors; nenhum CLI, Docker ou branch paga.
 - Critério de pronto: migration reproduzível e forward-only, repository `create/listByUser`, RLS por proprietário, testes de isolamento e pipeline verde.
-- Bloqueios: implementação funcional e migration proibidas até os testes essenciais do Dia 2.
+- Bloqueios: implementação funcional e migration proibidas até o comando explícito `dia 3 da SR-009`; suítes de constraints e RLS já existem, mas só podem ser executadas após a precondição estrutural ficar verde.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
