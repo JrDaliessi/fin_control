@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da UI-001 concluído; implementação bloqueada até a fundação TDD do Dia 2
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da UI-001 concluído; testes essenciais em RED e implementação bloqueada até o Dia 3
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -47,6 +47,7 @@
 - Data da validação final e preparação de release da SR-009: 2026-07-14
 - Data de incorporação da proposta FinControl Pulse: 2026-07-14
 - Data do discovery e arquitetura da UI-001: 2026-07-14
+- Data da estratégia de testes da UI-001: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1218,7 +1219,7 @@ Estado de saída:
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
 - Dias 2 a 6 da SR-009 concluídos; persistência, RLS, apresentação server-side, hardening e UX/PWA foram validados incrementalmente.
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
-- Próximo passo operacional: executar explicitamente o Dia 2 da UI-001; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- Próximo passo operacional: executar explicitamente o Dia 3 da UI-001; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -1340,6 +1341,82 @@ Estado de saída:
 - máquina de estados: `ARCHITECTURE_READY`
 - backlog: `UI-001` em `IN_PROGRESS`
 - próximo comando válido: `dia 2 da UI-001`
+
+## Dia 2 — UI-001 Estratégia de Testes e Fundação TDD
+
+Small release:
+- `UI-001 — Sistema visual, marca e temas`
+
+Aplicabilidade por camada:
+- domain financeiro: não aplicável; nenhum contrato ou cálculo financeiro pertence a esta release
+- application financeira: não aplicável; tema é estado transversal de presentation/shared
+- função pura compartilhada: resolução determinística de `light | dark | system`
+- presentation: provider, hook, switcher e primitives acessíveis
+- contratos estáticos: tokens CSS, Tailwind, metadata, manifest e inicialização anterior à hidratação
+
+Baseline anterior:
+- `npm run test:ci`: passou com 36 suítes e 170 testes antes da criação dos contratos da UI-001
+- após a criação do RED, a rede anterior excluindo apenas os contratos novos e o manifest alterado passou com 35 suítes e 168 testes
+
+Testes criados:
+- `src/shared/theme/tests/resolveTheme.test.ts`
+- `src/shared/theme/tests/ThemeProvider.test.tsx`
+- `src/shared/components/ui/tests/ThemeSwitcher.test.tsx`
+- `src/shared/components/ui/tests/ui-primitives.test.tsx`
+- `tests/design-system-contract.test.ts`
+
+Teste alterado:
+- `tests/pwa-manifest.test.ts`, que agora exige a marca `FinControl` e o fundo claro `#f6f8fc`
+
+Cenários cobertos:
+- preferência explícita clara ou escura vence o sistema
+- preferência `system` resolve para light/dark
+- preferência persistida válida é restaurada
+- valor malformado ou storage indisponível usa fallback seguro
+- mudança de `matchMedia` é observada somente em `system`
+- listener do sistema é removido no unmount
+- seleção manual persiste em `fincontrol.theme`
+- `ThemeSwitcher` expõe grupo acessível com Claro, Escuro e Sistema e alvos mínimos
+- `Button`, `Card` e `FeedbackMessage` preservam contratos genéricos, sem semântica financeira
+- tokens light/dark possuem valores aprovados, contraste mínimo e mapeamento Tailwind com alfa
+- layout usa FinControl, Geist e inicializador local anterior à hidratação
+- initializer usa allowlist e chave não sensível
+- classes literais de paleta são removidas da produção
+- fallback global respeita `prefers-reduced-motion`
+- manifest preserva instalabilidade enquanto adota a marca
+
+Etapa RED observada:
+- comando direcionado executou seis suítes e todas falharam conforme planejado
+- quatro suítes falharam por módulos ausentes: `resolveTheme`, `ThemeProvider`, `useTheme`, `ThemeSwitcher`, `Button`, `Card` e `FeedbackMessage`
+- contrato estático falhou por ausência de tokens, seletor dark, Geist, inicializador, reduced motion e pela presença de classes literais
+- manifest falhou porque ainda declara `Controle Financeiro IA`/`Financas IA`
+- nenhuma falha existente de domínio, aplicação, Auth, contas, transações ou dashboard foi introduzida
+
+Gates aplicáveis:
+- `npm run lint`: passou sem warnings
+- `npm run type-check`: falhou somente com oito `TS2307` para os módulos deliberadamente ausentes
+- build não foi executado porque o type-check deve permanecer vermelho por desenho TDD
+
+Implementação bloqueada até o Dia 3:
+- `src/shared/theme/resolveTheme.ts`
+- `src/shared/theme/ThemeProvider.tsx`
+- `src/shared/theme/useTheme.ts`
+- `src/shared/components/ui/Button.tsx`
+- `src/shared/components/ui/Card.tsx`
+- `src/shared/components/ui/FeedbackMessage.tsx`
+- `src/shared/components/ui/ThemeSwitcher.tsx`
+- tokens, Tailwind, Geist, metadata/manifest, `public/theme-init.js` e migração de classes literais
+
+Limites preservados:
+- nenhum código funcional, token, provider, componente ou initializer foi criado
+- nenhuma dependência foi instalada
+- nenhuma regra financeira, rota, shell, dashboard Pulse, drawer, gráfico ou copy de outra UI foi antecipada
+- nenhuma migration, policy, dado ou configuração Supabase foi alterada
+
+Estado de saída:
+- máquina de estados: `TEST_STRATEGY_READY`
+- backlog: `UI-001` permanece `IN_PROGRESS`
+- próximo comando válido: `dia 3 da UI-001`
 
 ## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
 

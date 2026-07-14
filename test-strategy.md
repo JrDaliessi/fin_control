@@ -492,9 +492,9 @@ Esta matriz orienta os futuros Dias 2 de `UI-001` a `UI-006`. Nenhum teste ou c�
 | UI-005 | transações | agrupamento; filtros suportados; drawer/bottom sheet; validação; persistência; estados e teclado |
 | UI-006 | login/PWA | erro sem enumeração; loading; mostrar senha; install disponível/indisponível; ausência de promessa offline |
 
-### Matriz preliminar do Dia 2 — UI-001
+### Matriz executada no Dia 2 — UI-001
 
-Esta matriz é saída de discovery. Os testes ainda não foram criados; o Dia 2 deve escrevê-los e comprovar o estado RED antes de qualquer código funcional.
+Os testes foram criados antes do código funcional e a etapa RED foi comprovada em 2026-07-14.
 
 | Camada | Contrato a testar | Cenários mínimos |
 | --- | --- | --- |
@@ -513,6 +513,29 @@ Esta matriz é saída de discovery. Os testes ainda não foram criados; o Dia 2 
 | PWA | identidade e cores | manifest atualizado; theme/background coerentes; instalabilidade preservada |
 
 Validações de browser para flash de tema, responsividade visual e preferência do sistema complementam Jest no Dia 6; não substituem os testes determinísticos do Dia 2.
+
+Arquivos criados:
+
+- `src/shared/theme/tests/resolveTheme.test.ts`
+- `src/shared/theme/tests/ThemeProvider.test.tsx`
+- `src/shared/components/ui/tests/ThemeSwitcher.test.tsx`
+- `src/shared/components/ui/tests/ui-primitives.test.tsx`
+- `tests/design-system-contract.test.ts`
+
+Arquivo alterado:
+
+- `tests/pwa-manifest.test.ts`
+
+Evidência:
+
+- baseline anterior: 36 suítes e 170 testes verdes
+- RED direcionado: 6 suítes falharam por módulos e contratos visuais ainda ausentes
+- rede anterior após o RED, excluindo apenas os contratos da UI-001: 35 suítes e 168 testes verdes
+- lint: passou sem warnings
+- type-check: falhou somente com oito `TS2307` planejados
+- build: não executado porque a fase preserva o type-check vermelho
+
+Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada até `dia 3 da UI-001`.
 
 Regras:
 
