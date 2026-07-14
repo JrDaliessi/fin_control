@@ -360,6 +360,23 @@
 - Nenhum risco crítico aberto dentro do escopo local e efêmero da SR-007.
 - Estado final: `READY_FOR_RELEASE`.
 
+### Resultado observado — SR-008
+- `npm ci`: passou, 754 pacotes instalados pelo lockfile e 0 vulnerabilidades.
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou, 33 suítes e 153 testes.
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades.
+- `npm run build`: passou; `/login` permaneceu estática, rotas privadas dinâmicas e `Proxy (Middleware)` ativo.
+- Runtime fixado em Node `>=22 <23` e npm `>=11 <12`; CI instala npm `11.5.2` e exercita a publishable key preferencial.
+- Somente `.env.example` está versionado; o segredo local privilegiado detectado permanece ignorado, não é referenciado pelo código e deve ser removido do ambiente se desnecessário.
+- Autenticação usa claims verificadas, falha fechada e destinos de redirect fixos; UI não importa Supabase e erros públicos não enumeram usuários.
+- Nenhum uso de service role no código, `eval`, `dangerouslySetInnerHTML`, armazenamento persistente no navegador ou segredo versionado foi identificado.
+- Baseline de observabilidade definida sem PII: resultados técnicos enumerados, duração por faixas, release e ambiente; e-mail, senha, JWT, cookies, IDs brutos e replay ficam proibidos.
+- Deploy público permanece condicionado a monitoramento sanitizado, rate limits/antiabuso, headers de segurança e validação do ambiente Supabase.
+- Consulta atual ao changelog/documentação oficial do Supabase excedeu o tempo disponível; versões estão fixadas e nenhuma API, migration ou política RLS foi alterada nesta fase.
+- Nenhum risco crítico aberto no escopo da SR-008.
+- Estado final: `READY_FOR_RELEASE`.
+
 ## Gate de Arquitetura
 - Feature respeita `presentation`, `application`, `domain`, `infrastructure`.
 - UI não acessa Supabase diretamente.
