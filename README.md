@@ -6,10 +6,10 @@ PWA de finanças pessoais que busca explicar o dinheiro do usuário, antecipar r
 
 ## Estado atual
 
-- Máquina de estados: `ARCHITECTURE_READY`
+- Máquina de estados: `TEST_STRATEGY_READY`
 - Small release ativa: `UI-001 — Sistema visual, marca e temas`
-- Fase concluída: Dia 1 — contexto, discovery e arquitetura
-- Próximo passo: Dia 2 — estratégia de testes e fundação TDD da UI-001
+- Fase concluída: Dia 2 — estratégia de testes e fundação TDD
+- Próximo passo: Dia 3 — implementação mínima orientada pelos testes da UI-001
 - A SR-009 continua pronta para release; nenhum deploy público foi executado
 
 O estado detalhado e as decisões vigentes ficam em [`project-context.md`](project-context.md).

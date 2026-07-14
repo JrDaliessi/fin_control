@@ -48,8 +48,8 @@ describe("PWA manifest", () => {
   it("defines installable app metadata and shortcuts for primary flows", () => {
     const manifest = readManifest();
 
-    expect(manifest.name).toBe("Controle Financeiro IA");
-    expect(manifest.short_name).toBe("Financas IA");
+    expect(manifest.name).toBe("FinControl");
+    expect(manifest.short_name).toBe("FinControl");
     expect(manifest.start_url).toBe("/");
     expect(manifest.scope).toBe("/");
     expect(manifest.id).toBe("/");
@@ -57,7 +57,7 @@ describe("PWA manifest", () => {
     expect(manifest.display).toBe("standalone");
     expect(manifest.display_override).toEqual(["standalone", "browser"]);
     expect(manifest.theme_color).toBe("#0f766e");
-    expect(manifest.background_color).toBe("#f8fafc");
+    expect(manifest.background_color).toBe("#f6f8fc");
     expect(manifest.shortcuts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

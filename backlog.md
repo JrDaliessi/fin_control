@@ -14,7 +14,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: ADR 0005 e testes de regressão das telas atuais.
 - Risco: Médio por impacto global.
-- Fase atual: Dia 1 concluído; arquitetura pronta e implementação bloqueada até os testes do Dia 2.
+- Fase atual: Dia 2 concluído; testes essenciais em RED e implementação bloqueada até o Dia 3.
 - Critério de pronto: tokens e temas testados; contraste AA, foco, movimento reduzido, sem flash relevante e pipeline verde.
 - Recorte: marca, Geist, tokens, preferência `light | dark | system`, `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`.
 - Fora do recorte: shell, dashboard, drawers, gráficos, novas rotas, regras financeiras e Supabase.

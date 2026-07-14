@@ -547,6 +547,15 @@ Obrigatório para áreas críticas:
 - regressão das rotas atuais, acessibilidade e PWA preservadas
 - shell, dashboard Pulse, drawers, gráficos e Supabase não entram no diff da UI-001
 
+Evidência do Dia 2:
+
+- baseline anterior: 36 suítes e 170 testes verdes
+- contratos RED: 5 arquivos de teste criados e 1 teste de manifest atualizado
+- rede anterior preservada: 35 suítes e 168 testes verdes ao excluir somente os contratos da UI-001
+- lint verde; type-check vermelho apenas pelos oito módulos planejados ausentes
+- nenhuma implementação funcional ou dependência adicionada
+- estado de saída: `TEST_STRATEGY_READY`
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos
