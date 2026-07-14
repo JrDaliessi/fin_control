@@ -403,8 +403,9 @@
 - `npm run lint`: passou, 0 warnings.
 - `npm audit --omit=dev`: passou, 0 vulnerabilidades.
 - `npm run build`: passou com `/accounts` dinâmica e `ƒ Proxy (Middleware)`.
-- Chrome instalado/em execução e extensão instalada/habilitada; inspeção visual bloqueada porque a verificação oficial confirmou ausência do registro do host nativo do plugin.
-- Estado de saída: `BLOCKED`; `QUALITY_VALIDATION` permanece pendente até a inspeção desktop/mobile real no Chrome.
+- Chrome validou `/accounts` autenticada em desktop `1366x543` e mobile `390x844`: duas colunas/empilhamento corretos, sem overflow horizontal e alvos de interação com 44 px.
+- Manifesto respondeu `200`, declarou modo `standalone`, quatro ícones e shortcut persistente de contas; console permaneceu sem warnings ou errors.
+- Estado de saída validado como `QUALITY_VALIDATION`.
 
 ## Gate do Dia 7
 - Testes validados e documentados.

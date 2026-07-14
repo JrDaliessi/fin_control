@@ -13,7 +13,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Crítica
 - Dependências: SR-007 e SR-008 concluídas.
 - Risco: Alto
-- Fase atual: Dia 6 implementado com gates verdes; validação visual no Chrome bloqueada e estado global `BLOCKED`.
+- Fase atual: Dia 6 concluído em `QUALITY_VALIDATION`; aguardando comando explícito do Dia 7.
 - Escopo aprovado: criar e listar contas próprias; reidratar ID e timestamps; repository Supabase server-side; migration, grants mínimos e RLS testados.
 - Fora do escopo: edição, exclusão, arquivamento, instituição, agência, conta principal, saldo atual persistido, categorias e transações persistidas.
 - Segurança aprovada: `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, usuário anônimo do Auth e aplicação com `service_role` permanecem bloqueados.
@@ -22,9 +22,9 @@ Nenhum item pronto aguardando início no momento.
 - Resultado do Dia 3: migration `20260714053335_create_financial_accounts`, repository `create/listByUser`, mapper, list use case, Server Action autenticada e 68 testes pgTAP verdes; pipeline local com 37 suítes e 170 testes.
 - Resultado do Dia 4: apresentação conectada à listagem/criação persistentes com identidade derivada no servidor, DTO sem owner, estados de rota acessíveis, validação desktop/mobile no Chrome e pipeline local com 37 suítes e 174 testes; tabela remota permaneceu vazia.
 - Resultado do Dia 5: provider local morto removido, lista persistente renomeada, migration `20260714061527_optimize_financial_accounts_rls_auth_initplan` aplicada e 70 testes pgTAP verdes; Performance Advisor sem alertas e pipeline local com 36 suítes/170 testes.
-- Resultado do Dia 6: contraste do alerta, altura dinâmica, anúncio de inclusões e descrição do shortcut PWA corrigidos por TDD; 4 suítes/12 testes direcionados e 36 suítes/170 testes totais verdes; type-check, lint, audit e build passaram.
-- Próximo incremento: concluir somente a inspeção desktop/mobile autenticada no Chrome e, após a saída `QUALITY_VALIDATION`, aguardar comando explícito do Dia 7.
-- Bloqueios: registro do host nativo do plugin Chrome ausente; reinstalação deve ser feita pela UI do ChatGPT/Codex. Edição, exclusão, arquivamento, categorias, transações e idempotência permanecem fora do escopo atual.
+- Resultado do Dia 6: contraste do alerta, altura dinâmica, anúncio de inclusões e descrição do shortcut PWA corrigidos por TDD; 4 suítes/12 testes direcionados e 36 suítes/170 testes totais verdes; type-check, lint, audit e build passaram; Chrome validou desktop `1366x543`, mobile `390x844`, alvos de 44 px, ausência de overflow, manifesto servido e console limpo.
+- Próximo incremento: Dia 7 deve executar qualidade final, segurança, observabilidade e preparação da release após comando explícito.
+- Bloqueios: nenhum bloqueio duro no Dia 6. Edição, exclusão, arquivamento, categorias, transações e idempotência permanecem fora do escopo atual.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -232,18 +232,6 @@ Nenhum item pronto aguardando início no momento.
 
 ## BLOCKED
 
-### ENV-CHROME-001 — Restaurar comunicação do plugin Chrome
-- Tipo: Hardening / Bloqueio operacional
-- Descrição: a extensão está instalada, mas após a reinstalação o pacote local do plugin não contém o arquivo obrigatório `scripts/browser-client.mjs`; anteriormente, a chave do host nativo `com.openai.codexextension` também estava ausente.
-- Objetivo de negócio: permitir a validação visual autenticada e auditável do Dia 6 da SR-009.
-- Valor esperado: confirmar responsividade, acessibilidade e console no navegador real solicitado pelo usuário.
-- Prioridade: Alta
-- Dependências: reinstalação do plugin Chrome pela UI de plugins do ChatGPT/Codex, não somente pela Chrome Web Store.
-- Risco: Médio; não afeta os gates automatizados, mas impede declarar a fase concluída.
-- Fase recomendada: desbloqueio imediato do Dia 6.
-- Critério de pronto: conexão do plugin restabelecida e `/accounts` validada em desktop e `390x844`, sem criar ou alterar dados.
-- Status: BLOCKED
-
 ### Open Finance via Pluggy ou Belvo
 - Tipo: Spike
 - Descrição: Avaliar provedor, custo, compliance, fluxo de consentimento e impacto técnico.
@@ -319,6 +307,12 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### ENV-CHROME-001 — Restaurar comunicação do plugin Chrome
+- Tipo: Hardening / Bloqueio operacional
+- Resultado: plugin reinstalado na versão `26.707.72221`; conector principal restaurado e sessão autenticada controlada com sucesso.
+- Evidência: `/accounts` validada em desktop `1366x543` e mobile `390x844`, sem overflow, com alvos de 44 px, manifesto servido e console limpo; nenhum dado foi modificado.
+- Status: DONE
 
 ### BUG-001 — Proxy quebra o app com URL inválida do Supabase
 - Tipo: Bug / Security Item
