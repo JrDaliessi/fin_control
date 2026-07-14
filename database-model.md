@@ -22,14 +22,22 @@ Este arquivo não é uma migration. Migrations só devem ser criadas quando os t
 - `updated_at`
 
 ### financial_accounts
-- `id`
-- `user_id`
-- `name`
-- `type`
-- `initial_balance_in_cents`
-- `currency`
-- `created_at`
-- `updated_at`
+- `id uuid primary key default gen_random_uuid()`
+- `user_id uuid not null references auth.users(id) on delete cascade`
+- `name text not null`, aparado e entre 1 e 80 caracteres
+- `type text not null`, limitado a `checking`, `savings`, `cash`, `payment` ou `investment`
+- `initial_balance_in_cents bigint not null`, limitado ao intervalo seguro do JavaScript
+- `currency text not null default 'BRL'`, limitada a `BRL`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+
+Decisões da SR-009:
+- nomes duplicados por usuário são permitidos
+- saldo inicial é imutável neste recorte; correções futuras usam movimento de ajuste
+- não existe `current_balance` persistido
+- índice composto planejado: `(user_id, created_at desc, id desc)`
+- exclusão do usuário Auth remove suas contas por cascade; futura exclusão de conta referenciada por transações deverá usar `RESTRICT`
+- nenhuma trigger de `updated_at` enquanto `UPDATE` estiver fora do escopo
 
 ### categories
 - `id`
@@ -146,12 +154,20 @@ Este arquivo não é uma migration. Migrations só devem ser criadas quando os t
 - `budgets.category_id` referencia `categories`.
 
 ## RLS Inicial Planejada
-Todas as políticas devem restringir acesso por `auth.uid() = user_id`.
+Todas as políticas devem restringir acesso por `(select auth.uid()) = user_id`.
+
+Para `financial_accounts` na SR-009:
+- revogar privilégios de `anon`, `authenticated` e `service_role` antes dos grants explícitos
+- conceder somente `SELECT` e `INSERT` a `authenticated`
+- habilitar e forçar RLS
+- criar policy de `SELECT` por proprietário
+- criar policy de `INSERT` com `WITH CHECK` por proprietário
+- bloquear explicitamente JWT com `is_anonymous = true`
+- não criar grants ou policies de `UPDATE` e `DELETE`
+- tratar tabela, constraints, índice, grants e RLS na mesma migration
 
 ## Fora do Dia 1
 - migrations reais
 - seed de produção
 - integração Supabase implementada
-- índices definitivos
 - políticas RLS executadas
-

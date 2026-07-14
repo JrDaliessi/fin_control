@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 7 da SR-008 concluído em `READY_FOR_RELEASE`, com 33 suítes e 153 testes verdes; segurança, observabilidade, reprodutibilidade do runtime e build de produção validados.
+Estado atual: Dia 1 da SR-009 concluído em `ARCHITECTURE_READY`; schema, contratos, grants mínimos, RLS, threat model e estratégia MCP/pgTAP foram aprovados sem aplicar migration.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -162,7 +162,7 @@ Recorte da SR-007: domínio, contrato e cadastro local de conta financeira, sem 
 
 Recorte da SR-008: login por e-mail/senha, logout, identidade validada no servidor, Proxy do Next.js 16 e proteção de rotas privadas; cadastro, recuperação, OAuth, MFA, banco financeiro e RLS permanecem fora.
 
-Próximo passo: iniciar um novo ciclo pelo Dia 1 da SR-009 para discovery de persistência e RLS de contas; migrations e políticas permanecem proibidas até aprovação explícita dessa fase.
+Próximo passo: executar o Dia 2 da SR-009 para criar testes essenciais de domínio, aplicação, repository/mapper, composição e isolamento RLS antes da migration.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

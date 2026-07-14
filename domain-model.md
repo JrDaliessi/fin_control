@@ -66,6 +66,29 @@ Limites da SR-007:
 - sem edição, exclusão, transferência, instituição bancária, cartão ou Open Finance
 - sem integração da conta ao formulário de transações antes dos testes e contratos do ciclo correspondente
 
+### SR-009 — Persistência e RLS de Contas
+
+Escopo aprovado:
+- criar conta do usuário autenticado
+- listar somente contas pertencentes ao usuário autenticado
+- reidratar `FinancialAccount` com `id`, `createdAt` e `updatedAt` atribuídos pela infraestrutura
+- manter o mapper entre `snake_case` e domínio dentro de `infrastructure`
+
+Regras adicionais:
+- o `userId` enviado pelo cliente não é autoridade; a operação sensível revalida a identidade e a RLS aplica ownership no banco
+- saldo inicial permanece imutável após criação nesta SR
+- nomes duplicados são permitidos
+- usuários anônimos do Supabase Auth não podem acessar dados financeiros
+- erro bruto do Supabase não pode chegar à apresentação
+- ordem de listagem é determinística por criação decrescente e ID
+
+Fora da SR-009:
+- editar, excluir ou arquivar contas
+- instituição, agência, conta principal e múltiplas moedas
+- saldo atual persistido
+- idempotência de criação; risco de repetição será tratado em incremento futuro se necessário
+- persistência de categorias e transações
+
 ### Categorias
 Classifica transações e permite orçamento por grupo.
 
@@ -179,4 +202,3 @@ Cenários críticos:
 - importação
 - IA
 - Open Finance
-
