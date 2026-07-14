@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-009 concluído; aguardando comando explícito `dia 3 da SR-009`
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-009 concluído; aguardando comando explícito `dia 4 da SR-009`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -40,6 +40,7 @@
 - Data da validação final e preparação de release da SR-008: 2026-07-14
 - Data do discovery e arquitetura da SR-009: 2026-07-14
 - Data da estratégia de testes da SR-009: 2026-07-14
+- Data da implementação mínima da SR-009: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -877,6 +878,7 @@ Regra operacional:
 - Erro: uma `NEXT_PUBLIC_SUPABASE_URL` malformada fez a criação do client SSR lançar uma exceção no Proxy e derrubou toda a navegação com o overlay `Invalid supabaseUrl`. Prevenção: validar a configuração sem registrar valores sensíveis, cobrir falhas de inicialização e de leitura de claims com testes e fazer a proteção de rotas falhar de forma fechada — rota privada redireciona para `/login` e `/login` permanece acessível.
 - Erro: um exemplo de Project URL com `<project-ref>` foi copiado literalmente para `.env.local`. Prevenção: exemplos devem declarar que marcadores precisam ser substituídos, a documentação deve preferir um hostname ilustrativo sem `<` e `>`, e a validação externa deve conferir o endpoint Auth antes de encerrar a fase.
 - Erro: mocks Jest sem assinatura explícita foram inferidos como funções sem argumentos e criaram ruído no primeiro type-check do Dia 2 da SR-009. Prevenção: tipar estruturalmente os fakes de infraestrutura para que o RED contenha somente ausências funcionais planejadas.
+- Erro: o teste inicial da Server Action da SR-009 assumiu que `jest.mock()` seria elevado acima de imports estáticos pelo transformador Next/Jest; após a implementação, o módulo real foi carregado e o mock não era uma função Jest. Prevenção: em testes de módulos Next com esse transformador, registrar os mocks antes do carregamento e usar `jest.requireMock()`/`jest.requireActual()` quando a ordem de avaliação fizer parte do isolamento; preservar as mesmas expectativas funcionais e registrar a correção do harness antes de continuar.
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-005
 
@@ -1508,6 +1510,58 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3 da SR-009`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-009
+
+Small release: `SR-009 — Persistência e RLS de contas`.
+
+Implementação mínima:
+- `FinancialAccount.restore` reidrata ID e timestamps reaplicando as invariantes existentes
+- `AccountListingRepository` segrega o contrato de leitura sem acoplar o provider local temporário
+- `ListAccountsUseCase` normaliza o ator verificado antes de listar
+- mapper converte explicitamente entre domínio e colunas `snake_case`
+- `SupabaseAccountRepository` implementa `create` e `listByUser`, ordena por `created_at desc, id desc` e sanitiza falhas do provider
+- `createAccountAction` valida claims em cada chamada, rejeita Auth anônimo, ignora owner fornecido pelo cliente e revalida `/accounts`
+- nenhuma UI existente foi conectada à persistência; essa composição visual continua reservada ao Dia 4 e deve nascer com testes de apresentação
+
+Banco aplicado exclusivamente pelo Supabase MCP:
+- migration remota `20260714053335_create_financial_accounts` aplicada uma única vez
+- SQL espelhado em `supabase/migrations/20260714053335_create_financial_accounts.sql`
+- tabela `public.financial_accounts` com oito colunas, FK `auth.users` com cascade, quatro constraints, índice composto, RLS enabled/forced e exatamente duas policies
+- `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, Auth anônimo, `service_role` e `PUBLIC` não recebem acesso de aplicação
+- nenhuma publicação Realtime, trigger, função privilegiada ou extensão de teste persistente
+
+Evidência TDD local:
+- primeiro ciclo após implementação: 4 suítes verdes; a suíte da action expôs ausência de `TextEncoder` ao carregar `next/cache`
+- segundo ciclo: carregamento dinâmico de `next/cache` isolou o runtime, mas revelou que o transformador não elevava o mock estático do client Supabase
+- harness corrigido com `jest.requireMock()`/`jest.requireActual()`, sem alterar as expectativas de segurança
+- testes direcionados: 5 suítes e 35 testes passaram
+- suíte completa: 37 suítes e 170 testes passaram
+
+Evidência pgTAP transacional:
+- schema e grants: 38/38 testes passaram
+- constraints e defaults: 13/13 testes passaram
+- RLS e isolamento: 17/17 testes passaram
+- fixtures de Auth e contas foram revertidas; tabela permaneceu com zero linhas
+- `pgtap` permaneceu com `installed_version = null`
+
+Quality gates:
+- `npm run lint`: passou sem warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou com 37 suítes e 170 testes
+- `npm run build`: passou; `/accounts` permaneceu dinâmica
+- `npm audit --omit=dev`: passou com 0 vulnerabilidades
+
+Advisors e riscos:
+- segurança manteve somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`
+- performance reportou `auth_rls_initplan` nas duas policies mesmo com as funções Auth em subconsultas; nenhuma segunda migration foi criada porque migrations iterativas estavam bloqueadas nesta fase
+- investigação e eventual migration forward-only foram registradas como `DB-PERF-001` para hardening
+- idempotência de submissão e conexão da UI persistente continuam fora deste incremento mínimo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- Dia 3 concluído sem avanço automático
+- próximo passo recomendado: executar `dia 4 da SR-009`
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
 

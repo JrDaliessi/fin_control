@@ -141,6 +141,20 @@
 - Nenhuma UI, rota de login, migration, tabela financeira ou RLS foi antecipada.
 - Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
+### Resultado observado — SR-009
+- `FinancialAccount.restore`, `ListAccountsUseCase`, mapper, repository Supabase e Server Action autenticada implementados no mínimo exigido pelos testes.
+- Contratos de criação e listagem permanecem independentes de React, Next.js e Supabase; integração concreta ficou em `infrastructure` e na composição do App Router.
+- Server Action usa `getClaims()` em cada chamada, ignora owner do payload e falha fechada para claims ausentes, inválidas ou anônimas.
+- Migration remota `20260714053335_create_financial_accounts` aplicada uma única vez pelo Supabase MCP e espelhada localmente.
+- Schema possui FK, constraints, índice composto, RLS enabled/forced, grants mínimos e somente policies de `SELECT`/`INSERT` por proprietário.
+- pgTAP remoto: 38/38 schema, 13/13 constraints e 17/17 RLS passaram; fixtures foram revertidas e `pgtap` não persistiu.
+- Testes direcionados passaram com 5 suítes e 35 testes.
+- Suíte completa passou com 37 suítes e 170 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Advisor de segurança manteve somente `SEC-AUTH-001`; aviso de performance das policies foi registrado como `DB-PERF-001`, sem criar migration iterativa fora do escopo.
+- UI persistente, idempotência, edição, exclusão, categorias e transações não foram antecipadas.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — SR-006
 - `GetDashboardSummaryUseCase` implementado sem acesso direto a repositório.
 - Resumo mensal delegado a `listSessionMonthlySummary`.
