@@ -2,10 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 import type {
-  CreateFinancialAccountInput,
-  FinancialAccount,
-  FinancialAccountType
-} from "../../domain/entities/financial-account.entity";
+  CreateAccountRequest,
+  FinancialAccountDto
+} from "../../application/dtos/financial-account.dto";
+import type { FinancialAccountType } from "../../domain/entities/financial-account.entity";
 import {
   type AccountFormField,
   type AccountFormValues,
@@ -13,10 +13,9 @@ import {
 } from "../hooks/useAccountForm";
 
 type AccountFormProps = {
-  userId: string;
   onCreateAccount: (
-    input: CreateFinancialAccountInput
-  ) => Promise<FinancialAccount>;
+    input: CreateAccountRequest
+  ) => Promise<FinancialAccountDto>;
 };
 
 const fieldClassName =
@@ -36,14 +35,13 @@ const accountTypeOptions: Array<{
   { label: "Investimento", value: "investment" }
 ];
 
-export function AccountForm({ userId, onCreateAccount }: AccountFormProps) {
+export function AccountForm({ onCreateAccount }: AccountFormProps) {
   const [values, setValues] = useState<AccountFormValues>({
     name: "",
     type: "checking",
     initialBalance: ""
   });
   const { fieldError, isSubmitting, message, status, submit } = useAccountForm({
-    userId,
     onCreateAccount
   });
 
@@ -82,7 +80,7 @@ export function AccountForm({ userId, onCreateAccount }: AccountFormProps) {
   return (
     <form
       aria-busy={isSubmitting}
-      aria-label="Cadastro local de conta financeira"
+      aria-label="Cadastro de conta financeira"
       className="grid gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
       onSubmit={handleSubmit}
     >

@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import type {
-  CreateFinancialAccountInput,
-  FinancialAccount,
-  FinancialAccountType
-} from "../../domain/entities/financial-account.entity";
+  CreateAccountRequest,
+  FinancialAccountDto
+} from "../../application/dtos/financial-account.dto";
+import type { FinancialAccountType } from "../../domain/entities/financial-account.entity";
 import { parseAccountBalanceToCents } from "../utils/parseAccountBalanceToCents";
 
 export type AccountFormValues = {
@@ -17,10 +17,9 @@ export type AccountFormValues = {
 export type AccountFormField = keyof AccountFormValues;
 
 type UseAccountFormInput = {
-  userId: string;
   onCreateAccount: (
-    input: CreateFinancialAccountInput
-  ) => Promise<FinancialAccount>;
+    input: CreateAccountRequest
+  ) => Promise<FinancialAccountDto>;
 };
 
 type AccountFormState = {
@@ -31,7 +30,7 @@ type AccountFormState = {
 
 const initialState: AccountFormState = { status: "idle" };
 
-export function useAccountForm({ userId, onCreateAccount }: UseAccountFormInput) {
+export function useAccountForm({ onCreateAccount }: UseAccountFormInput) {
   const [state, setState] = useState<AccountFormState>(initialState);
 
   async function submit(values: AccountFormValues): Promise<{ ok: boolean }> {
@@ -63,14 +62,13 @@ export function useAccountForm({ userId, onCreateAccount }: UseAccountFormInput)
 
     try {
       await onCreateAccount({
-        userId,
         name,
         type: values.type,
         initialBalanceInCents,
         currency: "BRL"
       });
       setState({
-        message: "Conta cadastrada nesta sessão.",
+        message: "Conta cadastrada.",
         status: "success"
       });
       return { ok: true };

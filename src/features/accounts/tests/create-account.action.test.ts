@@ -11,7 +11,7 @@ jest.mock("next/cache", () => ({
 const { createSupabaseServerClient } = jest.requireMock<
   typeof import("@/lib/supabase/server")
 >("@/lib/supabase/server");
-const { createAccountAction } = jest.requireActual<
+const { createAccountAction, listAccountsAction } = jest.requireActual<
   typeof import("@/app/(private)/accounts/actions")
 >("@/app/(private)/accounts/actions");
 
@@ -58,10 +58,25 @@ function createSupabaseClientStub(
     void payload;
     return { select };
   });
-  const from = jest.fn<(table: string) => { insert: typeof insert }>(
+  const orderById = jest.fn(async () => ({ data: [persistedRow], error: null }));
+  const orderByCreatedAt = jest.fn(() => ({ order: orderById }));
+  const eq = jest.fn<
+    (column: string, value: string) => { order: typeof orderByCreatedAt }
+  >((column, value) => {
+    void column;
+    void value;
+    return { order: orderByCreatedAt };
+  });
+  const listSelect = jest.fn(() => ({ eq }));
+  const from = jest.fn<
+    (table: string) => {
+      insert: typeof insert;
+      select: typeof listSelect;
+    }
+  >(
     (table) => {
       void table;
-      return { insert };
+      return { insert, select: listSelect };
     }
   );
 
@@ -69,7 +84,8 @@ function createSupabaseClientStub(
     client: { auth: { getClaims }, from },
     from,
     getClaims,
-    insert
+    insert,
+    eq
   };
 }
 
@@ -84,7 +100,7 @@ describe("createAccountAction", () => {
     const { client, getClaims, insert } = createSupabaseClientStub();
     createServerClientMock.mockResolvedValue(client as never);
 
-    await createAccountAction({
+    const result = await createAccountAction({
       ...actionInput,
       userId: forgedUserId
     } as never);
@@ -96,6 +112,15 @@ describe("createAccountAction", () => {
     expect(insert).not.toHaveBeenCalledWith(
       expect.objectContaining({ user_id: forgedUserId })
     );
+    expect(result).toEqual({
+      id: "6ca6c81f-11a4-4a34-8090-2185bb0e63a8",
+      name: "Conta principal",
+      type: "checking",
+      initialBalanceInCents: 150000,
+      currency: "BRL",
+      createdAt: "2026-07-14T10:00:00.000Z",
+      updatedAt: "2026-07-14T10:00:00.000Z"
+    });
   });
 
   it.each([
@@ -128,5 +153,20 @@ describe("createAccountAction", () => {
     expect(createServerClientMock).toHaveBeenCalledTimes(2);
     expect(first.getClaims).toHaveBeenCalledTimes(1);
     expect(second.getClaims).toHaveBeenCalledTimes(1);
+  });
+
+  it("lists only through the verified actor and returns serializable accounts", async () => {
+    const { client, eq, getClaims } = createSupabaseClientStub();
+    createServerClientMock.mockResolvedValue(client as never);
+
+    await expect(listAccountsAction()).resolves.toEqual([
+      expect.objectContaining({
+        id: "6ca6c81f-11a4-4a34-8090-2185bb0e63a8",
+        name: "Conta principal",
+        createdAt: "2026-07-14T10:00:00.000Z"
+      })
+    ]);
+    expect(getClaims).toHaveBeenCalledTimes(1);
+    expect(eq).toHaveBeenCalledWith("user_id", permanentUserId);
   });
 });
