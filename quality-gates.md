@@ -421,6 +421,23 @@
 - Release incremental preparada.
 - Estado final definido como `READY_FOR_RELEASE`.
 
+### Resultado observado — SR-009
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou, 36 suítes e 170 testes.
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades.
+- `npm run build`: passou; `/accounts` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo.
+- Supabase MCP confirmou duas migrations aplicadas, RLS habilitada/forçada, duas policies e índice de owner/ordenação.
+- Quatro suítes pgTAP transacionais passaram com 70 asserções; rollback preservou as duas contas existentes e não deixou a extensão temporária instalada.
+- Grants mínimos confirmados: `authenticated` somente com `SELECT`/`INSERT`; sem `anon`, `UPDATE` ou `DELETE`.
+- Performance Advisor: sem alertas.
+- Security Advisor: somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001` e obrigatório antes de produção pública.
+- Nenhum segredo real versionado, uso de service role no código, `eval`, `dangerouslySetInnerHTML`, armazenamento persistente no navegador ou `any` TypeScript foi identificado; os matches de `any` pertencem ao valor válido `purpose: "any"` do manifesto.
+- Threat model cobre BOLA/IDOR, owner forjado, acesso anônimo, mass assignment, escalada privilegiada e mutações fora do escopo.
+- Baseline de observabilidade proíbe PII, dados financeiros, JWT, cookies, senha e payloads brutos; captura sanitizada, alertas e teste sintético permanecem em `HARD-OBS-001` antes de deploy público.
+- Nenhum deploy, commit, push, alteração de Auth, migration ou mutação persistente foi executado.
+- Estado final: `READY_FOR_RELEASE` para entrega incremental de código; deploy público permanece condicionado aos itens de hardening documentados.
+
 ### Resultado observado — SR-006
 - `npm run lint`: passou, 0 warnings.
 - `npm run type-check`: passou.

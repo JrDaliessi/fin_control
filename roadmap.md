@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 6 da SR-009 concluído em `QUALITY_VALIDATION`, com pipeline verde e validação autenticada desktop/mobile no Chrome.
+Estado atual: Dia 7 da SR-009 concluído em `READY_FOR_RELEASE`; entrega incremental de código pronta, sem deploy executado.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -162,9 +162,9 @@ Recorte da SR-007: domínio, contrato e cadastro local de conta financeira, sem 
 
 Recorte da SR-008: login por e-mail/senha, logout, identidade validada no servidor, Proxy do Next.js 16 e proteção de rotas privadas; cadastro, recuperação, OAuth, MFA, banco financeiro e RLS permanecem fora.
 
-Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `20260714061527_optimize_financial_accounts_rls_auth_initplan`, 70 testes pgTAP verdes, Performance Advisor limpo, 36 suítes/170 testes Jest e pipeline verde; no Dia 6, contraste, altura dinâmica, anúncio de inclusões e shortcut PWA persistente foram validados por TDD; tabela permaneceu vazia.
+Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `20260714061527_optimize_financial_accounts_rls_auth_initplan`, 70 testes pgTAP verdes, Performance Advisor limpo, 36 suítes/170 testes Jest, audit sem vulnerabilidades e build verde; no Dia 7, os testes SQL transacionais preservaram as duas contas reais existentes, grants/RLS foram confirmados e o threat model e a baseline de observabilidade foram registrados.
 
-Próximo passo: executar, mediante comando explícito, o Dia 7 da SR-009 para qualidade final, segurança, observabilidade e preparação da release. Edição, exclusão, categorias, transações e idempotência permanecem bloqueadas.
+Próximo passo: selecionar explicitamente a próxima small release. A SR-010 permanece em `DISCOVERY`; edição, exclusão, categorias, transações e idempotência não foram antecipadas. Deploy público da SR-009 permanece condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

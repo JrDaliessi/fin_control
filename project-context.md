@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-009 concluído; aguardando comando explícito `dia 7 da SR-009`
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-009 concluído; release incremental de código pronta, sem deploy executado
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -44,6 +44,7 @@
 - Data da expansão controlada da SR-009: 2026-07-14
 - Data do hardening interno da SR-009: 2026-07-14
 - Data da revisão de UX, acessibilidade e PWA da SR-009: 2026-07-14
+- Data da validação final e preparação de release da SR-009: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1212,9 +1213,9 @@ Estado de saída:
 - Dias 4 e 5 da SR-008 concluídos; apresentação, route groups, Proxy e hardening validados.
 - Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
-- Dias 2 a 5 da SR-009 concluídos; persistência, RLS, apresentação server-side e hardening do provider/policies foram validados incrementalmente.
-- Dia 6 da SR-009 concluído com TDD, pipeline verde e validação autenticada desktop/mobile no Chrome.
-- Próximo passo operacional: executar, mediante comando explícito, o Dia 7 da SR-009 para qualidade final, segurança, observabilidade e preparação da release.
+- Dias 2 a 6 da SR-009 concluídos; persistência, RLS, apresentação server-side, hardening e UX/PWA foram validados incrementalmente.
+- Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
+- Próximo passo operacional: selecionar explicitamente a próxima small release; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1717,6 +1718,53 @@ Estado de saída:
 - `QUALITY_VALIDATION`
 - Dia 6 concluído sem avanço automático
 - próximo passo recomendado: executar `dia 7 da SR-009`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-009
+
+Small release: `SR-009 — Persistência e RLS de contas`.
+
+Pipeline local validado:
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 36 suítes e 170 testes
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou; `/accounts` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo
+- `git diff --check`: passou após restaurar a alteração mecânica de `next-env.d.ts`
+
+Validação remota via Supabase MCP:
+- projeto `fin_control` permaneceu `ACTIVE_HEALTHY`, com as migrations `20260714053335_create_financial_accounts` e `20260714061527_optimize_financial_accounts_rls_auth_initplan`
+- quatro suítes pgTAP transacionais passaram: 38 schema + 13 constraints + 17 RLS + 2 performance = 70 asserções
+- rollback preservou as duas contas existentes e removeu a extensão pgTAP temporária; nenhuma alteração persistente de schema ou dados foi realizada
+- RLS permanece habilitada e forçada, com duas policies; índice composto de owner/ordenação presente
+- `authenticated` mantém somente `SELECT` e `INSERT`; `anon`, `UPDATE` e `DELETE` permanecem sem privilégio
+- Performance Advisor retornou sem alertas
+- Security Advisor manteve somente `auth_leaked_password_protection`, já registrado como `SEC-AUTH-001`
+
+Threat model revisado:
+- BOLA/IDOR: owner é derivado da identidade verificada e isolado por RLS
+- owner forjado e mass assignment: DTO público não recebe `user_id`; policy `WITH CHECK` exige o owner autenticado
+- acesso anônimo: bloqueado por grants e por claim `is_anonymous`
+- escalada privilegiada: aplicação não usa `service_role`; UI não acessa Supabase diretamente
+- mutações fora do escopo: ausência deliberada de grants e policies de `UPDATE`/`DELETE`
+- risco residual: proteção contra senhas vazadas, rate limit/antiabuso e headers HTTP devem ser tratados antes do primeiro deploy público
+
+Baseline de observabilidade:
+- CI registra resultado e duração dos gates sem segredos
+- eventos futuros permitidos: `accounts_list_load`, `accounts_list_failure`, `account_create_attempt`, `account_create_success` e `account_create_failure`
+- atributos permitidos: ambiente, release, rota, resultado técnico e classe sanitizada do erro
+- proibido registrar nome/saldo da conta, e-mail, UUID de usuário, JWT, cookies, senha, payload bruto ou mensagem bruta do provedor
+- captura de erros, redaction, teste sintético autenticado e alertas operacionais permanecem em `HARD-OBS-001` antes de deploy público
+
+Release incremental preparada:
+- escopo liberável: criar e listar contas próprias com autenticação, grants mínimos e RLS por proprietário
+- edição, exclusão, arquivamento, categorias, transações persistidas, idempotência e offline permanecem fora do escopo
+- nenhum deploy, commit, push, migration, alteração de configuração Auth ou mutação de dados foi executado no Dia 7
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- nenhum bloqueio crítico para entrega incremental de código
+- deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
+- próxima small release não iniciada; requer seleção e comando explícitos
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
 

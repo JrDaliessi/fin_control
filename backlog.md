@@ -6,26 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-009 — Persistência e RLS de contas
-- Tipo: Security Item / Small Release
-- Objetivo de negócio: persistir contas financeiras isoladas por usuário.
-- Valor esperado: manter saldo inicial e contas reais após recarregar ou trocar de dispositivo.
-- Prioridade: Crítica
-- Dependências: SR-007 e SR-008 concluídas.
-- Risco: Alto
-- Fase atual: Dia 6 concluído em `QUALITY_VALIDATION`; aguardando comando explícito do Dia 7.
-- Escopo aprovado: criar e listar contas próprias; reidratar ID e timestamps; repository Supabase server-side; migration, grants mínimos e RLS testados.
-- Fora do escopo: edição, exclusão, arquivamento, instituição, agência, conta principal, saldo atual persistido, categorias e transações persistidas.
-- Segurança aprovada: `authenticated` recebe somente `SELECT` e `INSERT`; `anon`, usuário anônimo do Auth e aplicação com `service_role` permanecem bloqueados.
-- Estratégia de banco: Supabase MCP para migrations, testes transacionais pgTAP, inspeção e advisors; nenhum CLI, Docker ou branch paga.
-- Critério de pronto: migration reproduzível e forward-only, repository `create/listByUser`, RLS por proprietário, testes de isolamento e pipeline verde.
-- Resultado do Dia 3: migration `20260714053335_create_financial_accounts`, repository `create/listByUser`, mapper, list use case, Server Action autenticada e 68 testes pgTAP verdes; pipeline local com 37 suítes e 170 testes.
-- Resultado do Dia 4: apresentação conectada à listagem/criação persistentes com identidade derivada no servidor, DTO sem owner, estados de rota acessíveis, validação desktop/mobile no Chrome e pipeline local com 37 suítes e 174 testes; tabela remota permaneceu vazia.
-- Resultado do Dia 5: provider local morto removido, lista persistente renomeada, migration `20260714061527_optimize_financial_accounts_rls_auth_initplan` aplicada e 70 testes pgTAP verdes; Performance Advisor sem alertas e pipeline local com 36 suítes/170 testes.
-- Resultado do Dia 6: contraste do alerta, altura dinâmica, anúncio de inclusões e descrição do shortcut PWA corrigidos por TDD; 4 suítes/12 testes direcionados e 36 suítes/170 testes totais verdes; type-check, lint, audit e build passaram; Chrome validou desktop `1366x543`, mobile `390x844`, alvos de 44 px, ausência de overflow, manifesto servido e console limpo.
-- Próximo incremento: Dia 7 deve executar qualidade final, segurança, observabilidade e preparação da release após comando explícito.
-- Bloqueios: nenhum bloqueio duro no Dia 6. Edição, exclusão, arquivamento, categorias, transações e idempotência permanecem fora do escopo atual.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -307,6 +288,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-009 — Persistência e RLS de contas
+- Tipo: Security Item / Small Release
+- Resultado: criação e listagem persistentes de contas próprias entregues com identidade server-side, grants mínimos, RLS forçada e isolamento por proprietário.
+- Escopo concluído: migration reproduzível, repository `create/listByUser`, mapper, caso de uso, Server Action autenticada, estados acessíveis e validação desktop/mobile.
+- Banco: duas migrations aplicadas; 70 asserções pgTAP verdes; Performance Advisor limpo; duas contas existentes preservadas após os testes transacionais do Dia 7.
+- Quality gates: lint, type-check, 36 suítes/170 testes Jest, auditoria sem vulnerabilidades e build de produção verdes.
+- Segurança: `authenticated` somente com `SELECT`/`INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e uso de `service_role` pela aplicação bloqueados.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código.
+- Fora do escopo preservado: edição, exclusão, arquivamento, categorias, transações persistidas, idempotência e offline.
+- Status: DONE
 
 ### ENV-CHROME-001 — Restaurar comunicação do plugin Chrome
 - Tipo: Hardening / Bloqueio operacional
