@@ -1,8 +1,8 @@
 # Project Context — Controle Financeiro IA
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-008 concluído; aguardando comando explícito `dia 7`
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-008 concluído; aguardando comando explícito para o próximo ciclo
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -37,6 +37,7 @@
 - Data da expansão controlada da SR-008: 2026-07-13
 - Data do hardening interno da SR-008: 2026-07-13
 - Data da revisão de UX, acessibilidade e PWA da SR-008: 2026-07-14
+- Data da validação final e preparação de release da SR-008: 2026-07-14
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 
 ## Visão do Produto
@@ -1198,7 +1199,8 @@ Estado de saída:
 - Dia 3 da SR-008 concluído; implementação mínima passou em 28 suítes e 139 testes.
 - Dias 4 e 5 da SR-008 concluídos; apresentação, route groups, Proxy e hardening validados.
 - Dia 6 da SR-008 concluído; acessibilidade assíncrona, responsividade e assets PWA validados em 33 suítes e 153 testes.
-- Próximo passo operacional: executar `dia 7` para qualidade final, segurança, observabilidade e preparação da release.
+- Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
+- Próximo passo operacional: iniciar, mediante comando explícito, o Dia 1 da SR-009 para discovery de persistência e RLS de contas.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
 
@@ -1330,6 +1332,74 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-008
+
+Small release: `SR-008 — Autenticação e sessão protegida`.
+
+Validação executada:
+- `npm ci`: passou, lockfile reproduzido com 754 pacotes e 0 vulnerabilidades
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 33 suítes e 153 testes
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/login` estática, rotas privadas dinâmicas e `Proxy (Middleware)`
+- `git diff --check`: passou antes do registro documental final
+
+Hardening de release aplicado:
+- Node foi limitado a `>=22 <23` e npm a `>=11 <12`; `packageManager` fixa npm `11.5.2`
+- o CI instala npm `11.5.2` antes do `npm ci`
+- o CI passou a exercitar `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, mantendo o fallback legado apenas como compatibilidade testada
+- nenhuma regra de negócio, interface ou contrato de autenticação foi alterado
+
+Revisão de segurança:
+- claims são verificadas no servidor e erros de configuração, client ou sessão falham fechados
+- redirects possuem destinos fixos, sem parâmetro aberto controlado pelo usuário
+- login e logout preservam mensagens públicas genéricas e não enumeram usuários
+- somente `.env.example` está versionado entre arquivos de ambiente
+- não foram encontrados segredos versionados, uso de service role no código, `eval`, `dangerouslySetInnerHTML`, `localStorage` ou `sessionStorage`
+- apresentação não acessa Supabase; integração permanece isolada em infrastructure e `src/lib/supabase`
+
+Threat model e riscos residuais:
+- existe uma service role key não vazia no `.env.local`, mas o arquivo está ignorado, a variável não é referenciada e nenhum valor foi exposto; remover se desnecessária e rotacionar caso já tenha sido compartilhada
+- `getClaims()` valida assinatura e expiração, mas revogação remota imediata deve ser reavaliada antes de operações financeiras sensíveis
+- rate limits, CAPTCHA/MFA e política antiabuso dependem da configuração externa do Supabase e devem ser validados antes de produção pública
+- CSP e demais headers de segurança dependem do ambiente de deploy e ficaram registrados no backlog de hardening
+- testes específicos de composição dos containers e layout privado seguem como melhoria não bloqueante; contratos, políticas, Proxy e fluxos de UI já possuem cobertura essencial
+
+Baseline de observabilidade:
+- a entrega atual usa CI, falhas explícitas de configuração e estados acessíveis de erro como sinais mínimos
+- futura telemetria deve separar `invalid_credentials`, `provider_unavailable`, `invalid_session`, `invalid_config` e `unexpected`
+- propriedades permitidas: resultado enumerado, superfície, faixa de duração, release e ambiente
+- ficam proibidos: e-mail, senha, JWT, cookies, Authorization, user ID bruto, URL/chave Supabase e erro bruto
+- session replay deve permanecer desativado ou integralmente mascarado na área financeira
+- deploy público fica bloqueado até monitoramento sanitizado, redaction validada e teste sintético
+
+Limitação de verificação externa:
+- a consulta ao changelog e à documentação oficial atual do Supabase excedeu o tempo disponível e não entrou em repetição automática
+- as versões `@supabase/ssr@0.12.0` e `@supabase/supabase-js@2.110.1` estão fixadas
+- nenhuma API de runtime, migration, grant ou política RLS foi alterada no Dia 7; a validação local e o checklist de segurança permaneceram suficientes para esta release de código-fonte
+
+Escopo liberável:
+- login por e-mail/senha de usuário existente
+- logout local
+- identidade verificada no browser e no servidor
+- refresh de sessão pelo Proxy
+- proteção das rotas privadas e redirecionamentos fixos
+- experiência acessível, responsiva e instalável da autenticação
+
+Fora da release:
+- cadastro, recuperação de senha, OAuth, telefone, MFA e confirmação de e-mail
+- migrations financeiras, persistência de contas, grants, RLS e isolamento multiusuário no banco
+- deploy público e configuração de monitoramento externo
+
+Decisão final:
+- riscos críticos: nenhum dentro do escopo da SR-008
+- dívidas e hardenings residuais: registrados no `backlog.md`
+- release local/de código-fonte: aprovada
+- release remota: condicionada a push e CI verde
+- deploy público: não autorizado e bloqueado até os gates pré-produção documentados
+- estado final: `READY_FOR_RELEASE`
 
 ## Dia 4 — Expansão Controlada da SR-008
 

@@ -6,22 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-008 — Autenticação e sessão protegida
-- Tipo: Security Item / Small Release
-- Objetivo de negócio: criar a fronteira real de usuário antes da persistência financeira.
-- Valor esperado: identificar o usuário com segurança, proteger rotas privadas e habilitar isolamento futuro dos dados.
-- Prioridade: Crítica
-- Dependências: SR-007 concluída; nenhuma persistência real pode preceder esta SR.
-- Risco: Alto
-- Fase atual: Dia 6 concluído; aguardando Dia 7.
-- Escopo aprovado: login por e-mail/senha de usuário existente, logout, identidade verificada no servidor, refresh por Proxy e proteção das rotas privadas.
-- Fora do escopo: cadastro, recuperação de senha, confirmação de e-mail, OAuth, telefone, MFA, migrations financeiras e RLS.
-- Contratos planejados: `AuthUser`, `AuthGateway`, `SignInUseCase`, `SignOutUseCase`, `GetCurrentUserUseCase` e adapter Supabase.
-- Evidência TDD: 7 suítes e 29 testes criados; etapa vermelha válida por módulos ausentes; rede anterior com 21 suítes e 110 testes verdes.
-- Entrega atual: autenticação, route groups e Proxy; configuração pública centralizada; estados assíncronos acessíveis; layout responsivo validado; ícones PWA raster e maskable; 33 suítes e 153 testes verdes.
-- Critério imediato: executar quality gate final, revisão de segurança e baseline de observabilidade no Dia 7.
-- Bloqueios: SR-009 permanece fora do ciclo atual até a conclusão formal da SR-008.
-- Status: IN_PROGRESS
+Nenhum item em execução no momento.
 
 ## DISCOVERY
 
@@ -255,7 +240,38 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
-Nenhuma dívida técnica aberta no Dia 7.
+### HARD-OBS-001 — Observabilidade sanitizada antes do deploy público
+- Tipo: Hardening / Dívida Técnica
+- Objetivo de negócio: diagnosticar indisponibilidade, falhas de sessão e regressões sem coletar dados financeiros ou credenciais.
+- Valor esperado: operação segura e auditável em produção.
+- Prioridade: Alta antes de deploy público; Média enquanto a entrega permanecer somente como artefato de código.
+- Dependências: decisão de plataforma de deploy e provedor de monitoramento.
+- Risco: Médio agora e Alto em produção sem captura de erros e métricas.
+- Fase recomendada: Dia 7 do ciclo que autorizar o primeiro deploy público.
+- Critério de pronto: taxonomia tipada de erros, métricas por resultado técnico, redaction de PII/segredos, replay desativado ou mascarado e teste sintético validado.
+- Status: DISCOVERY
+
+### SEC-HARD-001 — Hardening do ambiente de autenticação
+- Tipo: Security Item / Dívida Técnica
+- Objetivo de negócio: reduzir abuso de login e fortalecer a borda HTTP antes de tráfego público.
+- Valor esperado: menor risco de credential stuffing, clickjacking e exposição operacional.
+- Prioridade: Média
+- Dependências: ambiente de deploy e configuração do projeto Supabase.
+- Risco: Médio antes de produção pública.
+- Fase recomendada: Dia 7 antes do primeiro deploy público.
+- Critério de pronto: rate limits/CAPTCHA avaliados no Supabase, baseline de headers CSP/frame/referrer/HSTS validada e URL HTTPS confirmada.
+- Status: DISCOVERY
+
+### CI-HARD-001 — Fixar ações do GitHub por SHA
+- Tipo: Dívida Técnica
+- Objetivo de negócio: reduzir risco de supply chain no pipeline.
+- Valor esperado: execução de CI mais determinística.
+- Prioridade: Baixa
+- Dependências: hashes oficiais vigentes das actions utilizadas.
+- Risco: Baixo com permissões atuais somente de leitura.
+- Fase recomendada: próximo hardening de CI.
+- Critério de pronto: `checkout` e `setup-node` fixados por SHA e Dependabot/Renovate configurado para atualização controlada.
+- Status: DISCOVERY
 
 ## DONE
 
@@ -279,3 +295,4 @@ Nenhuma dívida técnica aberta no Dia 7.
 - SR-005 — Resumo mensal básico (Dia 2 ao Dia 7 concluídos, pipeline verde, release incremental pronta).
 - SR-006 — Dashboard financeiro inicial (Dias 1 a 7 concluídos, pipeline verde, CI versionado e release incremental pronta).
 - SR-007 — Cadastro local de conta financeira (Dias 1 a 7 concluídos, 21 suítes e 110 testes verdes, release incremental pronta; persistência permanece bloqueada até autenticação e RLS).
+- SR-008 — Autenticação e sessão protegida (Dias 1 a 7 concluídos, 33 suítes e 153 testes verdes, segurança e observabilidade revisadas, release incremental pronta; deploy público ainda condicionado ao hardening pré-produção).
