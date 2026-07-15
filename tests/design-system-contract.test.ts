@@ -153,6 +153,18 @@ describe("FinControl design-system contract", () => {
     expect(layout).toContain('strategy="beforeInteractive"');
   });
 
+  it("uses the FinControl brand across current production surfaces and the PWA icon", () => {
+    const legacyBrand = "Controle Financeiro IA";
+    const sourceFindings = productionSourceFiles(join(ROOT, "src")).filter((file) =>
+      readFileSync(file, "utf-8").includes(legacyBrand),
+    );
+    const icon = readProjectFile("public", "icon.svg");
+
+    expect(sourceFindings).toEqual([]);
+    expect(icon).toContain('aria-label="FinControl"');
+    expect(icon).not.toContain(legacyBrand);
+  });
+
   it("provides a local initializer with an allowlisted theme preference", () => {
     const initializerPath = join(ROOT, "public", "theme-init.js");
 

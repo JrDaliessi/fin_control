@@ -53,7 +53,7 @@ export function TransactionsPage() {
               Voltar ao dashboard
             </Link>
             <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
-              Controle Financeiro IA
+              FinControl
             </p>
             <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
               Registrar transação manual

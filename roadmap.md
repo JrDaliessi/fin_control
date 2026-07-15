@@ -170,7 +170,7 @@ Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` selecionada e com Dia 3 concluído em 2026-07-14; `UI-002` a `UI-006` permanecem em `DISCOVERY`. O sistema visual mínimo está integrado e validado sem antecipar o shell ou as telas seguintes.
+Status: `UI-001` selecionada e com Dia 4 concluído em 2026-07-15; `UI-002` a `UI-006` permanecem em `DISCOVERY`. Marca e acesso ao tema foram expandidos sem antecipar o shell ou as telas seguintes.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -193,7 +193,7 @@ Saída arquitetural da UI-001:
 - primitives limitadas a `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`;
 - shell, dashboard, drawers, gráficos, regras financeiras e Supabase permanecem fora do item.
 
-Próximo passo obrigatório da trilha: `dia 4 da UI-001`, para expansão controlada dos estados e da composição visual já testada.
+Próximo passo obrigatório da trilha: `dia 5 da UI-001`, para refatoração, consistência e hardening interno do sistema visual.
 
 Integrações posteriores:
 

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { LogIn, ShieldCheck } from "lucide-react";
+import { ThemeSwitcher } from "@/shared/components/ui/ThemeSwitcher";
 import type { SignInWithPasswordInput } from "../../domain/interfaces/auth.gateway";
 
 type LoginPageProps = {
@@ -43,7 +44,7 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
         <section className="hidden bg-navigation p-10 text-navigation-foreground lg:grid lg:content-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-navigation-accent">
-              Controle Financeiro IA
+              FinControl
             </p>
             <p className="mt-5 max-w-md text-4xl font-semibold leading-tight">
               Clareza para decidir antes que o dinheiro vire preocupação.
@@ -60,6 +61,9 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
         </section>
 
         <section className="p-6 sm:p-10 lg:p-12">
+          <div className="mb-6 flex justify-end">
+            <ThemeSwitcher />
+          </div>
           <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
             Acesso seguro
           </p>
