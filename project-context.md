@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UI-001 concluído; expansão controlada, marca e acesso ao tema validados
+- Fase atual: Dia 5 da UI-001 concluído; refatoração incremental e hardening validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -50,6 +50,7 @@
 - Data da estratégia de testes da UI-001: 2026-07-14
 - Data da implementação mínima da UI-001: 2026-07-14
 - Data da expansão controlada da UI-001: 2026-07-15
+- Data do hardening interno da UI-001: 2026-07-15
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1536,6 +1537,57 @@ Estado de saída:
 - máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
 - backlog: `UI-001` permanece `IN_PROGRESS`
 - próximo comando válido: `dia 5 da UI-001`
+
+## Dia 5 — UI-001 Plano de Refatoração e Hardening
+
+Auditoria de entrada:
+- worktree limpo no commit `Dia 4 UI-001`
+- rede de segurança com 41 suítes e 193 testes
+- `TransactionForm` possui 255 linhas, mas permanece coeso ao fluxo específico e não será fragmentado sem necessidade
+- `AccountForm` possui 175 linhas e `LoginPage` 154 linhas; a duplicação relevante está em botões e feedbacks, não em regras de negócio
+- `Button`, `Card` e `FeedbackMessage` estão testados, porém ainda não são adotados pelas superfícies de produção
+
+Plano incremental aprovado:
+1. criar contrato estático RED para adoção das primitives aprovadas nos fluxos atuais
+2. migrar botões nativos duplicados para `Button` sem mudar labels, estados ou eventos
+3. migrar mensagens duplicadas para `FeedbackMessage` preservando `alert` e `status`
+4. usar `Card` somente em contêiner não semântico compatível, sem enfraquecer landmarks
+5. manter inputs, helpers e composição específica dentro das features para evitar abstração prematura
+6. executar testes direcionados, regressão, lint, type-check, audit e build
+
+Itens explicitamente não selecionados:
+- componente genérico de formulário ou field wrapper
+- componente polimórfico complexo para links ou sections
+- divisão artificial do `TransactionForm`
+- mudanças de copy, regra financeira, shell, navegação, Supabase ou dados
+
+Refatoração aplicada:
+- `Button` adotado em cadastro de conta, registro de transação, login e logout
+- `FeedbackMessage` adotado nos formulários, login, logout, resumo mensal e erro do dashboard
+- `Card` adotado no contêiner não semântico do empty state do dashboard
+- labels, eventos, mensagens, `aria-busy`, `alert`, `status` e estados disabled foram preservados
+- nenhum input, regra ou helper específico de feature foi movido para shared
+
+Resultado estrutural:
+- `AccountForm`: 175 para 168 linhas
+- `TransactionForm`: 255 para 248 linhas
+- `LoginPage`: 154 para 149 linhas
+- arquivos maiores foram identificados; não houve fragmentação artificial porque permanecem coesos
+- nenhuma dependência nova, regra financeira, acesso Supabase, migration ou alteração de dados
+
+Evidência:
+- RED: contrato estático falhou pela ausência das primitives nos fluxos auditados
+- GREEN direcionado: 8 suítes e 43 testes
+- regressão completa: 41 suítes e 194 testes
+- lint e type-check passaram
+- `npm audit --omit=dev`: 0 vulnerabilidades
+- build passou preservando `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `Proxy (Middleware)`
+- `git diff --check` sem erros
+
+Estado de saída:
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- backlog: `UI-001` permanece `IN_PROGRESS`
+- próximo comando válido: `dia 6 da UI-001`
 
 ## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
 

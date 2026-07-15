@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Plus, WalletCards } from "lucide-react";
 import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { useTransactionSession } from "../../../transactions/presentation/providers/TransactionSessionProvider";
 import { DashboardSummaryPanel } from "../components/DashboardSummaryPanel";
 import { DashboardEmptyState } from "../components/DashboardEmptyState";
@@ -61,12 +62,9 @@ export function DashboardPage() {
         ) : null}
 
         {dashboardState.status === "error" ? (
-          <p
-            className="rounded-md border border-danger bg-danger-surface p-4 text-sm text-danger-foreground"
-            role="alert"
-          >
+          <FeedbackMessage className="border border-danger p-4" variant="error">
             {dashboardState.errorMessage}
-          </p>
+          </FeedbackMessage>
         ) : null}
 
         {dashboardState.status === "success" && !hasTransactions ? (

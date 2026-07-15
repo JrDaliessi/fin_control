@@ -1,4 +1,5 @@
 import type { MonthlySummary } from "../../application/use-cases/list-monthly-summary.use-case";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { formatCents } from "@/shared/utils/formatCents";
 import { formatMonthRef } from "@/shared/utils/formatMonthRef";
 
@@ -40,9 +41,9 @@ export function MonthlySummaryPanel({
       ) : null}
 
       {status === "error" ? (
-        <p className="rounded-md bg-danger-surface px-3 py-2 text-sm text-danger-foreground" role="alert">
+        <FeedbackMessage variant="error">
           {errorMessage ?? "Não foi possível calcular o resumo mensal."}
-        </p>
+        </FeedbackMessage>
       ) : null}
 
       {status === "success" && summary?.transactionCount === 0 ? (

@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { LogIn, ShieldCheck } from "lucide-react";
+import { Button } from "@/shared/components/ui/Button";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { ThemeSwitcher } from "@/shared/components/ui/ThemeSwitcher";
 import type { SignInWithPasswordInput } from "../../domain/interfaces/auth.gateway";
 
@@ -118,12 +120,9 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
             </div>
 
             {status === "error" ? (
-              <p
-                className="rounded-md border border-danger bg-danger-surface p-3 text-sm text-danger-foreground"
-                role="alert"
-              >
+              <FeedbackMessage className="border border-danger p-3" variant="error">
                 {genericErrorMessage}
-              </p>
+              </FeedbackMessage>
             ) : null}
 
             {isLoading ? (
@@ -133,19 +132,15 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
             ) : null}
 
             {status === "success" ? (
-              <p className="text-sm font-medium text-primary" role="status">
+              <FeedbackMessage className="font-medium" variant="status">
                 Login realizado. Redirecionando...
-              </p>
+              </FeedbackMessage>
             ) : null}
 
-            <button
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
-              disabled={isLoading}
-              type="submit"
-            >
+            <Button disabled={isLoading} type="submit">
               <LogIn aria-hidden="true" size={18} />
               {isLoading ? "Entrando..." : "Entrar"}
-            </button>
+            </Button>
           </form>
         </section>
       </div>

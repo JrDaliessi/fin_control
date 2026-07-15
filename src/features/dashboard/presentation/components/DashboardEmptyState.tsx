@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { Card } from "@/shared/components/ui/Card";
 
 export function DashboardEmptyState() {
   return (
-    <div className="grid gap-3 rounded-md border border-dashed border-border bg-surface-muted p-6 text-center">
+    <Card className="grid gap-3 border-dashed bg-surface-muted p-6 text-center">
       <p className="text-sm text-muted-foreground" role="status">
         Nenhuma transação registrada ainda.
       </p>
@@ -12,6 +13,6 @@ export function DashboardEmptyState() {
       >
         Registrar primeira transação
       </Link>
-    </div>
+    </Card>
   );
 }

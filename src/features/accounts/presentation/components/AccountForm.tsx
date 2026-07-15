@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "@/shared/components/ui/Button";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import type {
   CreateAccountRequest,
   FinancialAccountDto
@@ -149,26 +151,17 @@ export function AccountForm({ onCreateAccount }: AccountFormProps) {
         </p>
       </div>
 
-      <button
-        className="min-h-11 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-disabled"
-        disabled={isSubmitting}
-        type="submit"
-      >
+      <Button disabled={isSubmitting} type="submit">
         {isSubmitting ? "Salvando..." : "Cadastrar conta"}
-      </button>
+      </Button>
 
       {message ? (
-        <p
-          className={
-            status === "error"
-              ? "rounded-md bg-danger-surface px-3 py-2 text-sm text-danger-foreground"
-              : "rounded-md bg-success-surface px-3 py-2 text-sm text-primary"
-          }
+        <FeedbackMessage
           id={messageId}
-          role={status === "error" ? "alert" : "status"}
+          variant={status === "error" ? "error" : "status"}
         >
           {message}
-        </p>
+        </FeedbackMessage>
       ) : null}
     </form>
   );

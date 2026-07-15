@@ -194,6 +194,47 @@ describe("FinControl design-system contract", () => {
     expect(findings).toEqual([]);
   });
 
+  it("adopts the approved primitives in current interactive flows", () => {
+    const expectedImports = new Map<string, readonly string[]>([
+      [
+        "src/features/accounts/presentation/components/AccountForm.tsx",
+        ["Button", "FeedbackMessage"],
+      ],
+      [
+        "src/features/transactions/presentation/components/TransactionForm.tsx",
+        ["Button", "FeedbackMessage"],
+      ],
+      [
+        "src/features/auth/presentation/pages/LoginPage.tsx",
+        ["Button", "FeedbackMessage"],
+      ],
+      [
+        "src/features/auth/presentation/components/SignOutButton.tsx",
+        ["Button", "FeedbackMessage"],
+      ],
+      [
+        "src/features/transactions/presentation/components/MonthlySummaryPanel.tsx",
+        ["FeedbackMessage"],
+      ],
+      [
+        "src/features/dashboard/presentation/pages/DashboardPage.tsx",
+        ["FeedbackMessage"],
+      ],
+      [
+        "src/features/dashboard/presentation/components/DashboardEmptyState.tsx",
+        ["Card"],
+      ],
+    ]);
+
+    for (const [path, primitives] of expectedImports) {
+      const source = readProjectFile(...path.split("/"));
+
+      for (const primitive of primitives) {
+        expect(source).toContain(`import { ${primitive} } from`);
+      }
+    }
+  });
+
   it("provides a global reduced-motion fallback", () => {
     const css = readProjectFile("src", "app", "globals.css");
 

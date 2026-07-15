@@ -559,6 +559,17 @@ Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada a
 - lint, type-check, audit de produção e build verdes
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`
 
+### Refatoração preservada por testes no Dia 5 — UI-001
+
+- contrato estático novo exige `Button`, `FeedbackMessage` e `Card` nos fluxos selecionados
+- RED confirmou que os componentes ainda duplicavam marcação das primitives
+- testes de comportamento existentes preservaram labels, eventos, disabled, loading, success, error, `alert` e `status`
+- GREEN direcionado: 8 suítes e 43 testes
+- regressão completa: 41 suítes e 194 testes
+- lint, type-check, audit de produção e build verdes
+- nenhum teste funcional foi enfraquecido ou removido
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
 Regras:
 
 - RED deve preceder qualquer implementação funcional de cada item.

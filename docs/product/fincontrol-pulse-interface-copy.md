@@ -827,3 +827,11 @@ Dia 4 concluído em 2026-07-15:
 - shell responsivo, dashboard Pulse, drawers e demais itens visuais continuam nas releases próprias;
 - nenhuma promessa de IA, offline, projeção ou capacidade inexistente foi adicionada;
 - inspeção automatizada no Chrome ficou pendente por indisponibilidade do native host da extensão, sem substituir os gates automatizados.
+
+Dia 5 concluído em 2026-07-15:
+
+- botões, feedbacks e o cartão de estado vazio passaram a usar as primitives aprovadas;
+- textos, estados acessíveis e comportamento dos fluxos foram preservados;
+- nenhuma copy nova, promessa de produto ou capacidade funcional foi adicionada;
+- formulários permaneceram específicos das features para evitar abstração prematura;
+- shell, navegação e dashboard Pulse continuam reservados às releases próprias.
