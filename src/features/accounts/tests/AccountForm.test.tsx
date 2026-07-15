@@ -95,6 +95,6 @@ describe("AccountForm", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Não foi possível cadastrar a conta."
     );
-    expect(screen.getByRole("alert")).toHaveClass("text-red-700");
+    expect(screen.getByRole("alert")).toHaveClass("text-danger-foreground");
   });
 });

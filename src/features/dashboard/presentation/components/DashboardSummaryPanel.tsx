@@ -12,16 +12,16 @@ export function DashboardSummaryPanel({
   return (
     <section
       aria-labelledby="dashboard-summary-title"
-      className="grid gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-sm"
+      className="grid gap-4 rounded-md border border-border bg-surface p-4 shadow-sm"
     >
       <div>
         <h2
-          className="text-lg font-semibold text-slate-950"
+          className="text-lg font-semibold text-foreground"
           id="dashboard-summary-title"
         >
           Resumo financeiro do mês
         </h2>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-muted-foreground">
           Competência {formatMonthRef(summary.monthRef)}
         </p>
       </div>
@@ -57,11 +57,11 @@ function SummaryMetric({ label, value }: SummaryMetricProps) {
   return (
     <div
       aria-label={`${label}: ${value}`}
-      className="grid min-h-20 content-between border-l-2 border-primary bg-slate-50 p-3"
+      className="grid min-h-20 content-between border-l-2 border-primary bg-surface-muted p-3"
       role="group"
     >
-      <dt className="text-xs font-medium uppercase text-slate-600">{label}</dt>
-      <dd className="text-base font-semibold text-slate-950">{value}</dd>
+      <dt className="text-xs font-medium uppercase text-muted-foreground">{label}</dt>
+      <dd className="text-base font-semibold text-foreground">{value}</dd>
     </div>
   );
 }

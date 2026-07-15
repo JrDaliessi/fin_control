@@ -28,10 +28,10 @@ export function PrivateAppShell({ children, email }: PrivateAppShellProps) {
 
   return (
     <>
-      <header className="border-b border-slate-200 bg-white px-4 py-3 sm:px-6 lg:px-8">
+      <header className="border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-8">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3">
-          <p className="min-w-0 truncate text-sm text-slate-600">
-            Sessão: <span className="font-medium text-slate-900">{email}</span>
+          <p className="min-w-0 truncate text-sm text-muted-foreground">
+            Sessão: <span className="font-medium text-foreground">{email}</span>
           </p>
           <SignOutButton onSignOut={handleSignOut} />
         </div>

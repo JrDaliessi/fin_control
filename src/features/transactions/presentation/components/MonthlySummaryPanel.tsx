@@ -20,34 +20,34 @@ export function MonthlySummaryPanel({
       aria-busy={status === "loading"}
       aria-labelledby="monthly-summary-title"
       aria-live="polite"
-      className="grid gap-3 rounded-md border border-slate-200 bg-white p-4 shadow-sm"
+      className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-sm"
     >
       <div>
-        <h2 className="text-lg font-semibold text-slate-950" id="monthly-summary-title">
+        <h2 className="text-lg font-semibold text-foreground" id="monthly-summary-title">
           Resumo mensal
         </h2>
         {summary ? (
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted-foreground">
             Competência {formatMonthRef(summary.monthRef)}
           </p>
         ) : null}
       </div>
 
       {status === "loading" ? (
-        <p className="text-sm text-slate-600" role="status">
+        <p className="text-sm text-muted-foreground" role="status">
           Calculando resumo mensal.
         </p>
       ) : null}
 
       {status === "error" ? (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger" role="alert">
+        <p className="rounded-md bg-danger-surface px-3 py-2 text-sm text-danger-foreground" role="alert">
           {errorMessage ?? "Não foi possível calcular o resumo mensal."}
         </p>
       ) : null}
 
       {status === "success" && summary?.transactionCount === 0 ? (
         <p
-          className="rounded-md border border-dashed border-slate-300 bg-slate-50 p-3 text-sm text-slate-600"
+          className="rounded-md border border-dashed border-border bg-surface-muted p-3 text-sm text-muted-foreground"
           role="status"
         >
           Nenhuma transação no mês selecionado.
@@ -87,11 +87,11 @@ function SummaryMetric({ label, value }: SummaryMetricProps) {
   return (
     <div
       aria-label={`${label}: ${value}`}
-      className="grid min-h-20 content-between rounded-md border border-slate-200 bg-slate-50 p-3"
+      className="grid min-h-20 content-between rounded-md border border-border bg-surface-muted p-3"
       role="group"
     >
-      <dt className="text-xs font-medium uppercase text-slate-600">{label}</dt>
-      <dd className="text-base font-semibold text-slate-950">{value}</dd>
+      <dt className="text-xs font-medium uppercase text-muted-foreground">{label}</dt>
+      <dd className="text-base font-semibold text-foreground">{value}</dd>
     </div>
   );
 }

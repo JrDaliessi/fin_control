@@ -46,7 +46,7 @@ export function TransactionsPage() {
         <section className="grid content-start gap-4">
           <div>
             <Link
-              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
               href="/"
             >
               <ArrowLeft aria-hidden="true" size={18} />
@@ -55,7 +55,7 @@ export function TransactionsPage() {
             <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
               Controle Financeiro IA
             </p>
-            <h1 className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl">
+            <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
               Registrar transação manual
             </h1>
           </div>

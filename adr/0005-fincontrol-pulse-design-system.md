@@ -42,7 +42,7 @@ Parte dessa proposta depende de domínios e dados ainda inexistentes. Implement�
 | `surface` | `#FFFFFF` | `#111827` |
 | `surface-elevated` | `#FFFFFF` | `#1E293B` |
 | `foreground` | `#111827` | `#F8FAFC` |
-| `muted-foreground` | `#64748B` | `#94A3B8` |
+| `muted-foreground` | `#5F6F85` | `#94A3B8` |
 | `border` | `#E5E7EB` | `#334155` |
 | `primary` | `#0F766E` | `#2DD4BF` |
 | `primary-hover` | `#115E59` | `#5EEAD4` |
@@ -55,6 +55,8 @@ Parte dessa proposta depende de domínios e dados ainda inexistentes. Implement�
 | `focus-ring` | `#2563EB` | `#7DD3FC` |
 
 Os valores são referências aprovadas para os testes do Dia 2. Cada combinação real de texto, fundo, foco e estado ainda precisa comprovar WCAG AA antes da implementação ser aceita.
+
+Correção orientada por teste em 2026-07-14: `#64748B` produziu contraste de apenas 4,476:1 sobre `#F6F8FC`. O token claro `muted-foreground` foi ajustado para `#5F6F85`, atingindo aproximadamente 4,818:1 sem alterar a hierarquia visual.
 
 ## Alternativas consideradas
 

@@ -19,7 +19,7 @@ type AccountFormProps = {
 };
 
 const fieldClassName =
-  "min-h-11 rounded border border-slate-300 px-3 py-2 text-base text-slate-950 outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 disabled:bg-slate-100 sm:text-sm";
+  "min-h-11 rounded border border-border bg-surface px-3 py-2 text-base text-foreground outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-focus-ring/30 disabled:bg-surface-muted sm:text-sm";
 const fieldErrorClassName =
   "border-danger focus-visible:border-danger focus-visible:ring-danger/30";
 const messageId = "account-form-message";
@@ -81,11 +81,11 @@ export function AccountForm({ onCreateAccount }: AccountFormProps) {
     <form
       aria-busy={isSubmitting}
       aria-label="Cadastro de conta financeira"
-      className="grid gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+      className="grid gap-4 rounded-md border border-border bg-surface p-4 shadow-sm sm:p-5"
       onSubmit={handleSubmit}
     >
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="account-name">
+        <label className="text-sm font-medium text-foreground" htmlFor="account-name">
           Nome da conta
         </label>
         <input
@@ -103,7 +103,7 @@ export function AccountForm({ onCreateAccount }: AccountFormProps) {
       </div>
 
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="account-type">
+        <label className="text-sm font-medium text-foreground" htmlFor="account-type">
           Tipo de conta
         </label>
         <select
@@ -124,7 +124,7 @@ export function AccountForm({ onCreateAccount }: AccountFormProps) {
       </div>
 
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="account-balance">
+        <label className="text-sm font-medium text-foreground" htmlFor="account-balance">
           Saldo inicial
         </label>
         <input
@@ -144,13 +144,13 @@ export function AccountForm({ onCreateAccount }: AccountFormProps) {
           type="text"
           value={values.initialBalance}
         />
-        <p className="text-xs text-slate-600" id="account-balance-help">
+        <p className="text-xs text-muted-foreground" id="account-balance-help">
           Use reais, por exemplo 1.250,50. Valor negativo representa o saldo informado, não um limite de crédito.
         </p>
       </div>
 
       <button
-        className="min-h-11 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
+        className="min-h-11 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-disabled"
         disabled={isSubmitting}
         type="submit"
       >
@@ -161,8 +161,8 @@ export function AccountForm({ onCreateAccount }: AccountFormProps) {
         <p
           className={
             status === "error"
-              ? "rounded-md bg-red-50 px-3 py-2 text-sm text-red-700"
-              : "rounded-md bg-teal-50 px-3 py-2 text-sm text-primary"
+              ? "rounded-md bg-danger-surface px-3 py-2 text-sm text-danger-foreground"
+              : "rounded-md bg-success-surface px-3 py-2 text-sm text-primary"
           }
           id={messageId}
           role={status === "error" ? "alert" : "status"}

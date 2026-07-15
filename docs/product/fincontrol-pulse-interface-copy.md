@@ -743,7 +743,7 @@ Primitives adicionais só podem entrar após evidência de repetição e contrat
 | Cartão | `#FFFFFF` | `#111827` |
 | Superfície elevada | `#FFFFFF` | `#1E293B` |
 | Texto principal | `#111827` | `#F8FAFC` |
-| Texto secundário | `#64748B` | `#94A3B8` |
+| Texto secundário | `#5F6F85` | `#94A3B8` |
 | Borda | `#E5E7EB` | `#334155` |
 | Verde-petróleo principal | `#0F766E` | `#2DD4BF` |
 | Azul de destaque | `#2563EB` | `#60A5FA` |
