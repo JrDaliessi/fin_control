@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UI-001 concluído; UX, acessibilidade, responsividade e PWA validados
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UI-001 concluído; entrega incremental validada, sem commit, push ou deploy executado nesta fase
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -52,6 +52,7 @@
 - Data da expansão controlada da UI-001: 2026-07-15
 - Data do hardening interno da UI-001: 2026-07-15
 - Data da revisão de UX, acessibilidade e PWA da UI-001: 2026-07-15
+- Data da validação final e preparação de release da UI-001: 2026-07-15
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1628,6 +1629,48 @@ Estado de saída:
 - máquina de estados: `QUALITY_VALIDATION`
 - backlog: `UI-001` permanece `IN_PROGRESS` até o gate final
 - próximo comando válido: `dia 7 da UI-001`
+
+## Dia 7 — UI-001 Qualidade Final, Segurança, Observabilidade e Entrega
+
+Escopo validado:
+- o diff completo da UI-001 permanece limitado a marca, Geist, tokens, temas, primitives, ajustes acessíveis e assets PWA já aprovados
+- nenhuma migration, política RLS, regra financeira, rota vazia, dashboard Pulse, drawer, gráfico, service worker ou capacidade de IA entrou na entrega
+- `domain` e `application` não passaram a importar React, Next.js, Supabase ou clients de infraestrutura
+
+Quality gates finais:
+- `npm run lint`: passou sem warnings
+- `npm run type-check`: passou
+- `npm test`: 41 suítes e 194 testes passaram
+- `npm audit --audit-level=high`: 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `Proxy (Middleware)` preservados
+- `git diff --check`: passou
+
+Revisão básica de segurança:
+- nenhum segredo ou arquivo de ambiente sensível está versionado; `SUPABASE_SERVICE_ROLE_KEY` aparece somente como placeholder vazio em `.env.example`
+- dependências Supabase estão fixadas no lockfile; a aplicação usa chave pública no client e não expõe `service_role`
+- o Proxy valida a identidade com `getClaims()`, falha fechado em erro de configuração/autenticação e preserva cookies na resposta
+- o matcher exclui assets públicos, incluindo `theme-init.js`, sem liberar rotas privadas
+- somente a preferência não sensível `fincontrol.theme` é persistida no navegador
+
+Threat model da UI-001:
+- flash ou adulteração local de tema: mitigado por allowlist `light | dark | system`, fallback seguro e inicialização anterior à hidratação
+- vazamento de dados no browser storage: mitigado pela persistência exclusiva da preferência de tema
+- bypass de autenticação por assets ou erro de configuração: mitigado pelo matcher explícito, testes de Proxy e comportamento fail-closed
+- supply chain: mitigada por versões exatas, lockfile, `npm ci` no CI e auditoria sem vulnerabilidades; pinagem por SHA das GitHub Actions permanece hardening não crítico já registrado
+
+Baseline de observabilidade:
+- CI registra lint, type-check, testes, auditoria e build por execução
+- falhas de autenticação/configuração geram mensagens estáveis sem expor segredos
+- regressões de tema, manifesto, Proxy e primitives possuem testes determinísticos
+- telemetria externa, rastreamento de usuário ou analytics não foram adicionados; qualquer coleta futura exige item próprio, minimização e consentimento quando aplicável
+
+Estado de saída:
+- máquina de estados: `READY_FOR_RELEASE`
+- backlog: `UI-001` movida para `DONE`
+- riscos críticos: nenhum para a entrega incremental da UI-001
+- riscos residuais não críticos: hardening de CI por SHA e validação visual contínua em navegadores reais permanecem no backlog existente
+- commit, push e deploy: não executados por não fazerem parte da autorização deste Dia 7
+- próximo passo válido: selecionar explicitamente a próxima small release; `UI-002` e `SR-010` permanecem em `DISCOVERY`
 
 ## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
 

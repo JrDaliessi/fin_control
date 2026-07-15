@@ -603,6 +603,20 @@ Evidência do Dia 6:
 - nenhuma promessa offline, IA antecipada, shell, dashboard Pulse ou alteração de Supabase entrou no diff
 - estado de saída: `QUALITY_VALIDATION`
 
+Evidência do Dia 7:
+
+- escopo Git completo da UI-001 revisado e `git diff --check` verde
+- fronteiras arquiteturais verificadas sem importação de React, Next.js ou Supabase em `domain` e `application`
+- lint e type-check verdes
+- regressão completa: 41 suítes e 194 testes
+- `npm audit --audit-level=high`: 0 vulnerabilidades
+- build de produção verde com todas as rotas existentes e `Proxy (Middleware)` preservados
+- nenhum segredo versionado; chave `service_role` ausente do código e presente somente como placeholder vazio em `.env.example`
+- fluxo SSR usa `getClaims()`, falha fechado e mantém cookies de sessão nas respostas
+- threat model e baseline de observabilidade documentados no `project-context.md`
+- riscos residuais são não críticos e já constam do backlog de hardening
+- estado de saída: `READY_FOR_RELEASE`
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

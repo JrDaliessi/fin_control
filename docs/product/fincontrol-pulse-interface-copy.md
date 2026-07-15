@@ -844,3 +844,11 @@ Dia 6 concluído em 2026-07-15:
 - cores de navegador acompanham a preferência clara ou escura do sistema;
 - o manifest descreve o produto como `Seu copiloto financeiro pessoal.`, sem antecipar IA ou prometer offline;
 - shell, dashboard Pulse, instalação PWA e service worker continuam nas releases próprias.
+
+Dia 7 concluído em 2026-07-15:
+
+- pipeline final verde com lint, type-check, 41 suítes/194 testes, auditoria sem vulnerabilidades e build de produção;
+- segurança revisada sem segredo versionado, dado financeiro em storage ou novo acoplamento com Supabase;
+- threat model cobre preferência de tema, hidratação, storage, autenticação e supply chain;
+- observabilidade permanece baseada nos gates de CI e testes determinísticos, sem adicionar rastreamento ou analytics;
+- `UI-001` está `DONE` e `READY_FOR_RELEASE`; `UI-002` a `UI-006` continuam em `DISCOVERY`.

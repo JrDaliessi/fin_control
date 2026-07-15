@@ -6,19 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### UI-001 — Sistema visual, marca e temas
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: padronizar FinControl, Geist, tokens semânticos, tema claro/escuro/automático e primitives essenciais.
-- Objetivo de negócio: criar base visual confiável para todas as telas.
-- Valor esperado: consistência, legibilidade e evolução sem cores/estilos improvisados.
-- Prioridade: Alta
-- Dependências: ADR 0005 e testes de regressão das telas atuais.
-- Risco: Médio por impacto global.
-- Fase atual: Dia 6 concluído; UX, acessibilidade, responsividade e PWA validados, aguardando quality gate final do Dia 7.
-- Critério de pronto: tokens e temas testados; contraste AA, foco, movimento reduzido, sem flash relevante e pipeline verde.
-- Recorte: marca, Geist, tokens, preferência `light | dark | system`, `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`.
-- Fora do recorte: shell, dashboard, drawers, gráficos, novas rotas, regras financeiras e Supabase.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -493,6 +481,16 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### UI-001 — Sistema visual, marca e temas
+- Tipo: Small Release / UX Improvement
+- Resultado: marca FinControl, Geist, tokens semânticos, temas claro/escuro/automático e primitives essenciais entregues com acessibilidade e responsividade validadas.
+- Escopo concluído: preferência `light | dark | system`, `Button`, `Card`, `FeedbackMessage`, `ThemeSwitcher`, metadata/manifest coerentes e inicialização do tema anterior à hidratação.
+- Quality gates: lint, type-check, 41 suítes/194 testes, auditoria com 0 vulnerabilidades, build de produção e `git diff --check` verdes.
+- Segurança: apenas `fincontrol.theme` é persistido; nenhum segredo, dado financeiro, migration, RLS ou novo acesso Supabase foi introduzido.
+- Fora do escopo preservado: shell, dashboard Pulse, drawers, gráficos, service worker, offline e IA.
+- Riscos residuais não críticos: pinagem das GitHub Actions por SHA e validação visual contínua permanecem no hardening já registrado.
+- Status: DONE
 
 ### SR-009 — Persistência e RLS de contas
 - Tipo: Security Item / Small Release

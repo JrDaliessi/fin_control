@@ -583,6 +583,16 @@ Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada a
 - lint, type-check, audit e build verdes
 - estado de saída: `QUALITY_VALIDATION`
 
+### Gate final do Dia 7 — UI-001
+
+- nenhum teste foi removido, relaxado ou marcado como ignorado
+- regressão completa: 41 suítes e 194 testes verdes
+- lint e type-check verdes
+- audit com 0 vulnerabilidades e build de produção verde
+- contratos de tema, manifest, Proxy, primitives e regressão das rotas permaneceram determinísticos
+- revisão estática confirmou separação entre `domain`/`application` e infraestrutura
+- estado de saída: `READY_FOR_RELEASE`
+
 Regras:
 
 - RED deve preceder qualquer implementação funcional de cada item.
