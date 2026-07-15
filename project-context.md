@@ -1,8 +1,8 @@
-# Project Context — Controle Financeiro IA
+# Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-009 concluído; release incremental de código pronta, sem deploy executado
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 5 da UI-001 concluído; refatoração incremental e hardening validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -45,10 +45,17 @@
 - Data do hardening interno da SR-009: 2026-07-14
 - Data da revisão de UX, acessibilidade e PWA da SR-009: 2026-07-14
 - Data da validação final e preparação de release da SR-009: 2026-07-14
+- Data de incorporação da proposta FinControl Pulse: 2026-07-14
+- Data do discovery e arquitetura da UI-001: 2026-07-14
+- Data da estratégia de testes da UI-001: 2026-07-14
+- Data da implementação mínima da UI-001: 2026-07-14
+- Data da expansão controlada da UI-001: 2026-07-15
+- Data do hardening interno da UI-001: 2026-07-15
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
+- Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
 ## Visão do Produto
-Controle Financeiro IA é um aplicativo financeiro pessoal brasileiro com IA, focado em explicar o dinheiro do usuário, prever riscos financeiros e orientar decisões antes que problemas aconteçam.
+FinControl é um aplicativo financeiro pessoal brasileiro, planejado para explicar o dinheiro do usuário, prever riscos financeiros e orientar decisões antes que problemas aconteçam. Recursos de IA permanecem futuros até a SR-023.
 
 O produto não deve ser apenas um registrador de gastos. Ele deve responder diariamente:
 - Quanto eu tenho de verdade?
@@ -877,6 +884,7 @@ Regra operacional:
 - Erro: acessar Supabase pela camada visual. Prevenção: usar repositórios em `infrastructure`.
 - Erro: expandir escopo por conveniência. Prevenção: registrar item no backlog antes de executar.
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
+- Erro: no Dia 4 da UI-001, o seletor de tema foi inicialmente inserido em `PrivateAppShell`, embora alterações de shell estivessem reservadas à UI-002. Prevenção: conferir também os gates específicos da small release antes de escolher a superfície de integração; a correção deve manter o shell intacto e expor o seletor em uma superfície já pertencente ao recorte visual.
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 - Erro: criar `proxy.ts` na raiz em um projeto cujo App Router está em `src/app`; o build passou, mas não declarou o Proxy. Prevenção: manter `src/proxy.ts` no mesmo nível de `src/app` e exigir `ƒ Proxy (Middleware)` na saída de `next build`; o `middleware-manifest.json` legado pode permanecer vazio no Turbopack.
 - Erro: uma `NEXT_PUBLIC_SUPABASE_URL` malformada fez a criação do client SSR lançar uma exceção no Proxy e derrubou toda a navegação com o overlay `Invalid supabaseUrl`. Prevenção: validar a configuração sem registrar valores sensíveis, cobrir falhas de inicialização e de leitura de claims com testes e fazer a proteção de rotas falhar de forma fechada — rota privada redireciona para `/login` e `/login` permanece acessível.
@@ -884,6 +892,7 @@ Regra operacional:
 - Erro: mocks Jest sem assinatura explícita foram inferidos como funções sem argumentos e criaram ruído no primeiro type-check do Dia 2 da SR-009. Prevenção: tipar estruturalmente os fakes de infraestrutura para que o RED contenha somente ausências funcionais planejadas.
 - Erro: o teste inicial da Server Action da SR-009 assumiu que `jest.mock()` seria elevado acima de imports estáticos pelo transformador Next/Jest; após a implementação, o módulo real foi carregado e o mock não era uma função Jest. Prevenção: em testes de módulos Next com esse transformador, registrar os mocks antes do carregamento e usar `jest.requireMock()`/`jest.requireActual()` quando a ordem de avaliação fizer parte do isolamento; preservar as mesmas expectativas funcionais e registrar a correção do harness antes de continuar.
 - Erro: mocks de callbacks do Dia 4 da SR-009 foram inicialmente inferidos com assinatura estreita e um destructuring de mock não utilizado gerou ruído no primeiro type-check/lint. Prevenção: tipar callbacks de apresentação pelo contrato real antes do GREEN e remover bindings de teste não consumidos antes dos gates completos.
+- Erro: a referência visual inicial aprovou `#64748B` para texto secundário claro, mas o teste de contraste mediu 4,476:1 sobre `#F6F8FC`, abaixo de WCAG AA. Prevenção: tratar valores de paleta como candidatos até o teste da combinação real; o token foi corrigido para `#5F6F85`, com aproximadamente 4,818:1, sem reduzir o gate de 4,5:1.
 
 ## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-005
 
@@ -1215,9 +1224,370 @@ Estado de saída:
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
 - Dias 2 a 6 da SR-009 concluídos; persistência, RLS, apresentação server-side, hardening e UX/PWA foram validados incrementalmente.
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
-- Próximo passo operacional: selecionar explicitamente a próxima small release; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- Próximo passo operacional: executar explicitamente o Dia 4 da UI-001; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
+
+## Mudança de Escopo — FinControl Pulse
+
+Decisão:
+- adotar FinControl Pulse como direção oficial de UI, UX, marca e copywriting
+- padronizar futuramente a marca como `FinControl`, assinatura `Seu copiloto financeiro` e slogan `Entenda seu dinheiro. Antecipe riscos. Decida com clareza.`
+- implementar a proposta em small releases, sem substituir a fundação de dados e sem criar rotas vazias
+
+Impacto arquitetural:
+- novo sistema de tokens semânticos e temas em presentation/shared
+- `PrivateAppShell` evolui para composition root visual responsiva
+- primitives genéricas ficam em `src/shared/components/ui`; cards financeiros permanecem nas features
+- gráficos continuam atrás de adapter e do spike `SP-001`
+- copy contextual permanece próxima da feature e não entra em domain/infrastructure
+
+Mapeamento aprovado:
+- `UI-001`: identidade visual, tipografia, tokens, tema e primitives
+- `UI-002`: sidebar, topbar e navegação mobile
+- `UI-003`: dashboard Pulse com capacidades reais disponíveis
+- `UI-004`: apresentação de contas
+- `UI-005`: apresentação de transações após categorias/transações persistidas
+- `UI-006`: login, estados, microcopy e instalação PWA
+- analytics, metas, gamificação e IA continuam nas SR-012 a SR-023
+- cartões, orçamentos, compromissos, relatórios, importação, configurações e marketing ficam em backlog próprio
+
+Restrições preservadas:
+- “disponível de verdade” só pode ser exibido após regras completas de saldo e compromissos
+- IA não pode ser apresentada como funcional antes da SR-023
+- recuperação, cadastro, biometria e lembrar acesso não podem aparecer sem fluxos reais
+- nenhuma promessa offline sem estratégia de consistência autenticada
+- exemplos de valores nunca podem parecer dados reais do usuário
+
+Artefatos:
+- `docs/product/fincontrol-pulse-interface-copy.md`
+- `adr/0005-fincontrol-pulse-design-system.md`
+- `architecture.md`
+- `roadmap.md`
+- `backlog.md`
+
+Estado:
+- `UI-001` selecionada e movida para `IN_PROGRESS`
+- Dia 1 concluído em `ARCHITECTURE_READY`
+- código da SR-009 continua pronto para release; nenhum deploy foi executado
+
+## Dia 1 — UI-001 Sistema Visual, Marca e Temas
+
+Objetivo fechado:
+- criar a fundação visual transversal do FinControl sem redesenhar shell ou features no mesmo incremento
+- substituir cores e tipografia literais por contratos semânticos testáveis
+- oferecer tema claro, escuro e automático sem persistir dados financeiros no navegador
+
+Auditoria de entrada:
+- `src/shared/components/ui` ainda não existe
+- `globals.css` usa Arial e valores literais apenas para tema claro
+- `tailwind.config.ts` expõe uma paleta curta e literal
+- telas repetem superfícies, bordas, textos e controles sem primitives compartilhadas
+- metadata, Apple title e manifest usam nomes diferentes: `Controle Financeiro IA` e `Finanças IA`
+- `PrivateAppShell` contém somente sessão e logout; navegação estrutural pertence à UI-002
+- testes existentes já protegem alvos de 44 px, semântica de feedback, foco, altura mobile e manifest
+
+Decisões aprovadas:
+- marca: `FinControl`; assinatura institucional: `Seu copiloto financeiro`
+- tipografia: Geist via `next/font/google`, variável CSS e `font-sans`, sem pacote adicional
+- tokens: canais RGB em `globals.css`, mapeados pelo Tailwind com `rgb(var(--token) / <alpha-value>)`
+- tema: `ThemePreference = light | dark | system` e `ResolvedTheme = light | dark`
+- dark mode: seletor `data-theme="dark"` com Tailwind 3.4 em modo `selector`
+- persistência: somente chave não sensível `fincontrol.theme`, com allowlist e fallback para `system`
+- inicialização: script estático local anterior à hidratação; provider React sincroniza DOM, storage e `matchMedia`
+- primitives: somente `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`
+- dependência de classes: usar `clsx` já instalado; não adicionar biblioteca de tema ou kit visual
+
+Estrutura planejada, ainda não criada:
+```text
+src/shared/components/ui/
+  Button.tsx
+  Card.tsx
+  FeedbackMessage.tsx
+  ThemeSwitcher.tsx
+src/shared/theme/
+  theme.types.ts
+  theme.constants.ts
+  resolveTheme.ts
+  ThemeProvider.tsx
+  useTheme.ts
+public/
+  theme-init.js
+```
+
+Limites obrigatórios:
+- sem sidebar, topbar ou navegação mobile da UI-002
+- sem dashboard Pulse da UI-003
+- sem cards/drawers de contas ou transações das UI-004/UI-005
+- sem refinamento completo de login/instalação PWA da UI-006
+- sem gráficos, novas rotas, dados fictícios, regras financeiras, migrations ou Supabase
+- sem criar Input, Modal, Drawer, BottomSheet, Badge, Tabs ou Skeleton sem necessidade real posterior
+
+Contratos e testes preparados para o Dia 2:
+- função pura de resolução de tema
+- allowlist e fallback de preferência persistida
+- inicialização anterior à hidratação e sincronização do provider
+- tokens completos nos dois temas e mapeamento Tailwind
+- primitives acessíveis e regressão das telas existentes
+- metadata, manifest, contraste, foco, redução de movimento e PWA
+
+Riscos:
+- flash de tema se a resolução inicial ocorrer apenas após hidratação
+- regressão global se classes literais forem migradas de uma vez sem testes
+- contraste insuficiente em combinações específicas, ainda a ser comprovado no Dia 2 e no Dia 6
+- inconsistência de marca enquanto a implementação não migrar todas as superfícies
+
+Bloqueios:
+- implementação funcional proibida antes dos testes essenciais do Dia 2
+- nenhuma biblioteca nova aprovada ou necessária
+
+Estado de saída:
+- máquina de estados: `ARCHITECTURE_READY`
+- backlog: `UI-001` em `IN_PROGRESS`
+- próximo comando válido: `dia 2 da UI-001`
+
+## Dia 2 — UI-001 Estratégia de Testes e Fundação TDD
+
+Small release:
+- `UI-001 — Sistema visual, marca e temas`
+
+Aplicabilidade por camada:
+- domain financeiro: não aplicável; nenhum contrato ou cálculo financeiro pertence a esta release
+- application financeira: não aplicável; tema é estado transversal de presentation/shared
+- função pura compartilhada: resolução determinística de `light | dark | system`
+- presentation: provider, hook, switcher e primitives acessíveis
+- contratos estáticos: tokens CSS, Tailwind, metadata, manifest e inicialização anterior à hidratação
+
+Baseline anterior:
+- `npm run test:ci`: passou com 36 suítes e 170 testes antes da criação dos contratos da UI-001
+- após a criação do RED, a rede anterior excluindo apenas os contratos novos e o manifest alterado passou com 35 suítes e 168 testes
+
+Testes criados:
+- `src/shared/theme/tests/resolveTheme.test.ts`
+- `src/shared/theme/tests/ThemeProvider.test.tsx`
+- `src/shared/components/ui/tests/ThemeSwitcher.test.tsx`
+- `src/shared/components/ui/tests/ui-primitives.test.tsx`
+- `tests/design-system-contract.test.ts`
+
+Teste alterado:
+- `tests/pwa-manifest.test.ts`, que agora exige a marca `FinControl` e o fundo claro `#f6f8fc`
+
+Cenários cobertos:
+- preferência explícita clara ou escura vence o sistema
+- preferência `system` resolve para light/dark
+- preferência persistida válida é restaurada
+- valor malformado ou storage indisponível usa fallback seguro
+- mudança de `matchMedia` é observada somente em `system`
+- listener do sistema é removido no unmount
+- seleção manual persiste em `fincontrol.theme`
+- `ThemeSwitcher` expõe grupo acessível com Claro, Escuro e Sistema e alvos mínimos
+- `Button`, `Card` e `FeedbackMessage` preservam contratos genéricos, sem semântica financeira
+- tokens light/dark possuem valores aprovados, contraste mínimo e mapeamento Tailwind com alfa
+- layout usa FinControl, Geist e inicializador local anterior à hidratação
+- initializer usa allowlist e chave não sensível
+- classes literais de paleta são removidas da produção
+- fallback global respeita `prefers-reduced-motion`
+- manifest preserva instalabilidade enquanto adota a marca
+
+Etapa RED observada:
+- comando direcionado executou seis suítes e todas falharam conforme planejado
+- quatro suítes falharam por módulos ausentes: `resolveTheme`, `ThemeProvider`, `useTheme`, `ThemeSwitcher`, `Button`, `Card` e `FeedbackMessage`
+- contrato estático falhou por ausência de tokens, seletor dark, Geist, inicializador, reduced motion e pela presença de classes literais
+- manifest falhou porque ainda declara `Controle Financeiro IA`/`Financas IA`
+- nenhuma falha existente de domínio, aplicação, Auth, contas, transações ou dashboard foi introduzida
+
+Gates aplicáveis:
+- `npm run lint`: passou sem warnings
+- `npm run type-check`: falhou somente com oito `TS2307` para os módulos deliberadamente ausentes
+- build não foi executado porque o type-check deve permanecer vermelho por desenho TDD
+
+Implementação bloqueada até o Dia 3:
+- `src/shared/theme/resolveTheme.ts`
+- `src/shared/theme/ThemeProvider.tsx`
+- `src/shared/theme/useTheme.ts`
+- `src/shared/components/ui/Button.tsx`
+- `src/shared/components/ui/Card.tsx`
+- `src/shared/components/ui/FeedbackMessage.tsx`
+- `src/shared/components/ui/ThemeSwitcher.tsx`
+- tokens, Tailwind, Geist, metadata/manifest, `public/theme-init.js` e migração de classes literais
+
+Limites preservados:
+- nenhum código funcional, token, provider, componente ou initializer foi criado
+- nenhuma dependência foi instalada
+- nenhuma regra financeira, rota, shell, dashboard Pulse, drawer, gráfico ou copy de outra UI foi antecipada
+- nenhuma migration, policy, dado ou configuração Supabase foi alterada
+
+Estado de saída:
+- máquina de estados: `TEST_STRATEGY_READY`
+- backlog: `UI-001` permanece `IN_PROGRESS`
+- próximo comando válido: `dia 3 da UI-001`
+
+## Dia 3 — UI-001 Implementação Mínima Orientada por Teste
+
+Small release:
+- `UI-001 — Sistema visual, marca e temas`
+
+Núcleo de tema implementado:
+- tipos `ThemePreference`, `ResolvedTheme` e `ThemeControllerValue`
+- resolução pura de `light | dark | system`
+- provider e hook isolados em `src/shared/theme`
+- sincronização segura entre DOM, `matchMedia` e `fincontrol.theme`
+- fallback para valor malformado ou storage indisponível
+- listener de preferência do sistema removido no unmount
+- script local `public/theme-init.js` executado antes da hidratação
+
+Primitives implementadas:
+- `Button` com variantes mínimas, tipo seguro, estado disabled e foco visível
+- `Card` como superfície genérica sem semântica financeira
+- `FeedbackMessage` com `status` e `alert`
+- `ThemeSwitcher` acessível com Claro, Escuro e Sistema
+- `clsx` já existente foi reutilizado; nenhuma dependência foi instalada
+
+Integração visual mínima:
+- `ThemeProvider` composto no root layout
+- Geist configurada por `next/font/google` com variável CSS
+- metadata, Apple title e manifest padronizados como `FinControl`
+- tokens light/dark mapeados pelo Tailwind com canais RGB e suporte a alfa
+- dark mode usa `data-theme="dark"`
+- fallback global de `prefers-reduced-motion`
+- classes literais de paleta migradas para tokens semânticos nas telas existentes
+- rotas, conteúdo, regras financeiras e comportamento de autenticação foram preservados
+
+Correção orientada por teste:
+- primeira passagem direcionada passou em 23 de 24 testes
+- `#64748B` sobre `#F6F8FC` mediu 4,476:1, abaixo do AA mínimo
+- `muted-foreground` claro foi corrigido para `#5F6F85`, atingindo aproximadamente 4,818:1
+- ADR, especificação, teste e contexto foram atualizados; o gate de 4,5:1 não foi reduzido
+- uma asserção legada de accounts foi alinhada de `text-red-700` para `text-danger-foreground`, preservando role, mensagem e exigência semântica
+
+Arquivos principais criados:
+- `src/shared/theme/theme.types.ts`
+- `src/shared/theme/theme.constants.ts`
+- `src/shared/theme/resolveTheme.ts`
+- `src/shared/theme/ThemeProvider.tsx`
+- `src/shared/theme/useTheme.ts`
+- `src/shared/components/ui/Button.tsx`
+- `src/shared/components/ui/Card.tsx`
+- `src/shared/components/ui/FeedbackMessage.tsx`
+- `src/shared/components/ui/ThemeSwitcher.tsx`
+- `public/theme-init.js`
+
+Evidência TDD e quality gates:
+- testes direcionados: 6 suítes e 24 testes verdes
+- suíte completa: 41 suítes e 192 testes verdes
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/login` estática, rotas privadas dinâmicas e `ƒ Proxy (Middleware)`
+- busca estática confirmou ausência das classes literais proibidas em produção
+- busca arquitetural confirmou ausência de imports Supabase no novo sistema visual
+- browser storage em produção ficou restrito a `fincontrol.theme`
+
+Limites preservados:
+- sem sidebar, topbar ou navegação da UI-002
+- sem dashboard Pulse, cards/drawers, gráficos, novas rotas ou regras financeiras
+- sem migration, policy, dados ou configuração Supabase
+- sem nova dependência e sem abstrações adicionais às exigidas pelos testes
+- validação visual interativa e exposição do switcher em uma superfície final ficam para expansão/UX das fases seguintes
+
+Estado de saída:
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- backlog: `UI-001` permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5 da UI-001`
+
+## Dia 4 — UI-001 Expansão Controlada
+
+Small release:
+- `UI-001 — Sistema visual, marca e temas`
+
+TDD e escopo:
+- o RED válido confirmou que o seletor de tema ainda não estava exposto em uma superfície final
+- o contrato estático identificou quatro superfícies de produção e o ícone PWA com a marca legada `Controle Financeiro IA`
+- a primeira integração no `PrivateAppShell` violou o limite reservado à UI-002; o desvio foi registrado em erros recorrentes, revertido e testado novamente
+- a integração corrigida expõe `ThemeSwitcher` no login, que já está sob `ThemeProvider`, sem alterar o shell autenticado
+
+Implementação criada ou alterada:
+- `LoginPage` passou a oferecer `light | dark | system` antes da autenticação
+- login, dashboard, contas e transações passaram a exibir a marca `FinControl`
+- o rótulo acessível do ícone PWA passou a usar `FinControl`
+- o contrato do design system impede a reintrodução da marca legada em código de produção
+
+Estados e experiência preservados:
+- loading, success e error do login continuam cobertos
+- empty, loading, success e error das superfícies financeiras continuam cobertos pela regressão existente
+- preferência permanece restrita a `fincontrol.theme`; nenhum dado financeiro ou de identidade foi adicionado ao storage
+- nenhuma sidebar, topbar, navegação mobile, dashboard Pulse, drawer, gráfico ou regra financeira foi antecipada
+
+Evidência:
+- RED corrigido: `LoginPage` falhou somente pela ausência do radiogroup `Tema`
+- GREEN direcionado final: 3 suítes e 12 testes
+- regressão final: 41 suítes e 193 testes
+- lint, type-check e build passaram
+- `npm audit --omit=dev`: 0 vulnerabilidades
+- build preservou `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `Proxy (Middleware)`
+
+Validação visual:
+- o servidor local respondeu em `http://127.0.0.1:3000`
+- a automação do Chrome não pôde inspecionar a página porque o registro do native host da extensão está ausente no Windows
+- nenhuma tentativa de reparar o native host foi feita; a reinstalação do plugin Chrome pela interface do Codex é a recuperação indicada
+- a limitação não substituiu nem enfraqueceu testes, acessibilidade estática ou build
+
+Estado de saída:
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- backlog: `UI-001` permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5 da UI-001`
+
+## Dia 5 — UI-001 Plano de Refatoração e Hardening
+
+Auditoria de entrada:
+- worktree limpo no commit `Dia 4 UI-001`
+- rede de segurança com 41 suítes e 193 testes
+- `TransactionForm` possui 255 linhas, mas permanece coeso ao fluxo específico e não será fragmentado sem necessidade
+- `AccountForm` possui 175 linhas e `LoginPage` 154 linhas; a duplicação relevante está em botões e feedbacks, não em regras de negócio
+- `Button`, `Card` e `FeedbackMessage` estão testados, porém ainda não são adotados pelas superfícies de produção
+
+Plano incremental aprovado:
+1. criar contrato estático RED para adoção das primitives aprovadas nos fluxos atuais
+2. migrar botões nativos duplicados para `Button` sem mudar labels, estados ou eventos
+3. migrar mensagens duplicadas para `FeedbackMessage` preservando `alert` e `status`
+4. usar `Card` somente em contêiner não semântico compatível, sem enfraquecer landmarks
+5. manter inputs, helpers e composição específica dentro das features para evitar abstração prematura
+6. executar testes direcionados, regressão, lint, type-check, audit e build
+
+Itens explicitamente não selecionados:
+- componente genérico de formulário ou field wrapper
+- componente polimórfico complexo para links ou sections
+- divisão artificial do `TransactionForm`
+- mudanças de copy, regra financeira, shell, navegação, Supabase ou dados
+
+Refatoração aplicada:
+- `Button` adotado em cadastro de conta, registro de transação, login e logout
+- `FeedbackMessage` adotado nos formulários, login, logout, resumo mensal e erro do dashboard
+- `Card` adotado no contêiner não semântico do empty state do dashboard
+- labels, eventos, mensagens, `aria-busy`, `alert`, `status` e estados disabled foram preservados
+- nenhum input, regra ou helper específico de feature foi movido para shared
+
+Resultado estrutural:
+- `AccountForm`: 175 para 168 linhas
+- `TransactionForm`: 255 para 248 linhas
+- `LoginPage`: 154 para 149 linhas
+- arquivos maiores foram identificados; não houve fragmentação artificial porque permanecem coesos
+- nenhuma dependência nova, regra financeira, acesso Supabase, migration ou alteração de dados
+
+Evidência:
+- RED: contrato estático falhou pela ausência das primitives nos fluxos auditados
+- GREEN direcionado: 8 suítes e 43 testes
+- regressão completa: 41 suítes e 194 testes
+- lint e type-check passaram
+- `npm audit --omit=dev`: 0 vulnerabilidades
+- build passou preservando `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `Proxy (Middleware)`
+- `git diff --check` sem erros
+
+Estado de saída:
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- backlog: `UI-001` permanece `IN_PROGRESS`
+- próximo comando válido: `dia 6 da UI-001`
 
 ## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
 

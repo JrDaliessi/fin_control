@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
 import type { Viewport } from "next";
+import { Geist } from "next/font/google";
+import Script from "next/script";
+import { ThemeProvider } from "@/shared/theme/ThemeProvider";
 import "./globals.css";
 
+const geist = Geist({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-geist-sans"
+});
+
 export const metadata: Metadata = {
-  title: "Controle Financeiro IA",
-  description: "Copiloto financeiro pessoal com IA.",
-  applicationName: "Controle Financeiro IA",
+  title: "FinControl",
+  description: "Seu copiloto financeiro pessoal.",
+  applicationName: "FinControl",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Finanças IA"
+    title: "FinControl"
   },
   icons: {
     apple: "/apple-touch-icon.png",
@@ -30,8 +39,11 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="pt-BR">
-      <body>{children}</body>
+    <html className={geist.variable} lang="pt-BR" suppressHydrationWarning>
+      <body>
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

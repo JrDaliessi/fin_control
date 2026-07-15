@@ -168,6 +168,48 @@ Próximo passo: selecionar explicitamente a próxima small release. A SR-010 per
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
+## Trilha Transversal — FinControl Pulse
+
+Status: `UI-001` selecionada e com Dia 5 concluído em 2026-07-15; `UI-002` a `UI-006` permanecem em `DISCOVERY`. Primitives foram adotadas nos fluxos atuais sem antecipar o shell ou as telas seguintes.
+
+Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
+
+Ordem visual recomendada:
+
+1. `UI-001` — marca, tipografia, tokens, temas e primitives essenciais;
+2. `UI-002` — sidebar, topbar, shell e navegação mobile apenas para rotas disponíveis;
+3. `UI-003` — dashboard Pulse usando somente indicadores suportados por casos de uso reais;
+4. `UI-004` — apresentação de contas em cards e cadastro em drawer/modal;
+5. `UI-005` — listagem de transações e formulário em drawer/bottom sheet após SR-010/SR-011;
+6. `UI-006` — login, microcopy, estados e instalação PWA sem promessa offline.
+
+Saída arquitetural da UI-001:
+
+- marca padronizada como `FinControl`;
+- Geist por `next/font/google`, sem nova dependência;
+- tokens CSS em canais RGB mapeados pelo Tailwind;
+- preferência `light | dark | system`, persistida apenas em `fincontrol.theme`;
+- seletor de dark mode por `data-theme="dark"` e resolução anterior à hidratação;
+- primitives limitadas a `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`;
+- shell, dashboard, drawers, gráficos, regras financeiras e Supabase permanecem fora do item.
+
+Próximo passo obrigatório da trilha: `dia 6 da UI-001`, para UX, acessibilidade, responsividade e revisão PWA.
+
+Integrações posteriores:
+
+- SR-012 a SR-017 recebem períodos, evolução, linha, variação do saldo/candles e distribuição;
+- SR-018 a SR-022 recebem metas, progresso e gamificação responsável;
+- SR-023 recebe FinControl IA com consentimento e cálculos determinísticos;
+- cartões, orçamentos, compromissos, relatórios, importação, configurações e landing page permanecem em itens próprios.
+
+Governança:
+
+- cada item executa os Dias 1 a 7;
+- nenhuma rota ou ação sem fluxo funcional;
+- nenhuma biblioteca de gráficos antes do `SP-001`;
+- nenhuma promessa de IA ou offline antes de capacidade real;
+- a próxima small release continua dependendo de seleção humana explícita entre os itens `READY`/`DISCOVERY` aplicáveis.
+
 ## Marco 9 - Periodos e Evolucao
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.

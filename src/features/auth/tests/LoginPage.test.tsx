@@ -1,6 +1,7 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ThemeProvider } from "../../../shared/theme/ThemeProvider";
 import type { SignInWithPasswordInput } from "../domain/interfaces/auth.gateway";
 import { LoginPage } from "../presentation/pages/LoginPage";
 
@@ -24,9 +25,34 @@ async function fillCredentials() {
   return user;
 }
 
+function renderLoginPage(onSignIn: (input: SignInWithPasswordInput) => Promise<void>) {
+  render(
+    <ThemeProvider>
+      <LoginPage onSignIn={onSignIn} />
+    </ThemeProvider>,
+  );
+}
+
 describe("LoginPage", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: jest.fn(() => ({
+        addEventListener: jest.fn(),
+        addListener: jest.fn(),
+        dispatchEvent: jest.fn(() => true),
+        matches: false,
+        media: "(prefers-color-scheme: dark)",
+        onchange: null,
+        removeEventListener: jest.fn(),
+        removeListener: jest.fn(),
+      })),
+    });
+  });
+
   it("renders an accessible password login form", () => {
-    render(<LoginPage onSignIn={jest.fn(async () => undefined)} />);
+    renderLoginPage(jest.fn(async () => undefined));
 
     expect(
       screen.getByRole("heading", { name: "Entrar na sua conta" })
@@ -49,6 +75,7 @@ describe("LoginPage", () => {
       screen.queryByText(/Supabase Auth/i)
     ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeEnabled();
+    expect(screen.getByRole("radiogroup", { name: "Tema" })).toBeInTheDocument();
   });
 
   it("shows a loading state and prevents duplicate submissions", async () => {
@@ -56,7 +83,7 @@ describe("LoginPage", () => {
     const onSignIn = jest.fn<
       (input: SignInWithPasswordInput) => Promise<void>
     >(() => deferred.promise);
-    render(<LoginPage onSignIn={onSignIn} />);
+    renderLoginPage(onSignIn);
     const user = await fillCredentials();
 
     await user.click(screen.getByRole("button", { name: "Entrar" }));
@@ -83,7 +110,7 @@ describe("LoginPage", () => {
     const onSignIn = jest.fn(async () => {
       throw new Error("user does not exist");
     });
-    render(<LoginPage onSignIn={onSignIn} />);
+    renderLoginPage(onSignIn);
     const user = await fillCredentials();
 
     await user.click(screen.getByRole("button", { name: "Entrar" }));

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Plus, WalletCards } from "lucide-react";
 import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { useTransactionSession } from "../../../transactions/presentation/providers/TransactionSessionProvider";
 import { DashboardSummaryPanel } from "../components/DashboardSummaryPanel";
 import { DashboardEmptyState } from "../components/DashboardEmptyState";
@@ -23,19 +24,19 @@ export function DashboardPage() {
   return (
     <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto w-full max-w-6xl">
-        <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
           <div>
             <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
-              Controle Financeiro IA
+              FinControl
             </p>
-            <h1 className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl">
+            <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
               Dashboard
             </h1>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <Link
-              className="inline-flex min-h-11 items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
               href="/accounts"
             >
               <WalletCards aria-hidden="true" size={18} />
@@ -44,7 +45,7 @@ export function DashboardPage() {
 
             {dashboardState.status === "success" && hasTransactions ? (
               <Link
-                className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
                 href="/transactions"
               >
                 <Plus aria-hidden="true" size={18} />
@@ -55,18 +56,15 @@ export function DashboardPage() {
         </header>
 
         {dashboardState.status === "loading" ? (
-          <p className="text-sm text-slate-600" role="status">
+          <p className="text-sm text-muted-foreground" role="status">
             Carregando dashboard.
           </p>
         ) : null}
 
         {dashboardState.status === "error" ? (
-          <p
-            className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-danger"
-            role="alert"
-          >
+          <FeedbackMessage className="border border-danger p-4" variant="error">
             {dashboardState.errorMessage}
-          </p>
+          </FeedbackMessage>
         ) : null}
 
         {dashboardState.status === "success" && !hasTransactions ? (

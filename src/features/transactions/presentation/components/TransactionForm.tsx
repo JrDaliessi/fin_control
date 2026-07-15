@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { Button } from "@/shared/components/ui/Button";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
 import {
   type TransactionFormField,
@@ -21,13 +23,13 @@ type TransactionFormProps = {
 };
 
 const fieldClassName =
-  "min-h-11 rounded border border-slate-300 px-3 py-2 text-base text-slate-950 outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 disabled:bg-slate-100 sm:text-sm";
+  "min-h-11 rounded border border-border bg-surface px-3 py-2 text-base text-foreground outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-focus-ring/30 disabled:bg-surface-muted sm:text-sm";
 
 const fieldErrorClassName =
   "border-danger focus-visible:border-danger focus-visible:ring-danger/30";
 
 const typeOptionClassName =
-  "grid min-h-11 cursor-pointer place-items-center rounded px-3 py-2 text-sm font-semibold transition peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40 peer-focus-visible:ring-offset-2";
+  "grid min-h-11 cursor-pointer place-items-center rounded px-3 py-2 text-sm font-semibold transition peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-focus-ring peer-focus-visible:ring-offset-2";
 
 const messageId = "transaction-form-message";
 
@@ -90,11 +92,11 @@ export function TransactionForm({
     <form
       aria-busy={isSubmitting}
       aria-label="Registro manual de transação"
-      className="grid gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+      className="grid gap-4 rounded-md border border-border bg-surface p-4 shadow-sm sm:p-5"
       onSubmit={handleSubmit}
     >
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="transaction-description">
+        <label className="text-sm font-medium text-foreground" htmlFor="transaction-description">
           Descrição
         </label>
         <input
@@ -111,7 +113,7 @@ export function TransactionForm({
       </div>
 
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="transaction-amount">
+        <label className="text-sm font-medium text-foreground" htmlFor="transaction-amount">
           Valor
         </label>
         <input
@@ -126,7 +128,7 @@ export function TransactionForm({
           type="text"
           value={values.amount}
         />
-        <p className="text-xs text-slate-600" id="transaction-amount-help">
+        <p className="text-xs text-muted-foreground" id="transaction-amount-help">
           Use reais com vírgula ou ponto, por exemplo 125,50.
         </p>
       </div>
@@ -137,12 +139,12 @@ export function TransactionForm({
         role="radiogroup"
       >
         <legend
-          className="text-sm font-medium text-slate-800"
+          className="text-sm font-medium text-foreground"
           id="transaction-type-legend"
         >
           Tipo
         </legend>
-        <div className="grid grid-cols-2 rounded-md border border-slate-300 bg-slate-50 p-1">
+        <div className="grid grid-cols-2 rounded-md border border-border bg-surface-muted p-1">
           <label>
             <input
               checked={values.type === "expense"}
@@ -169,7 +171,7 @@ export function TransactionForm({
       </fieldset>
 
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="transaction-account">
+        <label className="text-sm font-medium text-foreground" htmlFor="transaction-account">
           Conta
         </label>
         <select
@@ -191,7 +193,7 @@ export function TransactionForm({
       </div>
 
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="transaction-category">
+        <label className="text-sm font-medium text-foreground" htmlFor="transaction-category">
           Categoria
         </label>
         <select
@@ -213,7 +215,7 @@ export function TransactionForm({
       </div>
 
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-slate-800" htmlFor="transaction-date">
+        <label className="text-sm font-medium text-foreground" htmlFor="transaction-date">
           Data
         </label>
         <input
@@ -229,26 +231,17 @@ export function TransactionForm({
         />
       </div>
 
-      <button
-        className="min-h-11 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
-        disabled={isSubmitting}
-        type="submit"
-      >
+      <Button disabled={isSubmitting} type="submit">
         {isSubmitting ? "Salvando..." : "Registrar transação"}
-      </button>
+      </Button>
 
       {message ? (
-        <p
-          className={
-            status === "error"
-              ? "rounded-md bg-red-50 px-3 py-2 text-sm text-danger"
-              : "rounded-md bg-teal-50 px-3 py-2 text-sm text-primary"
-          }
+        <FeedbackMessage
           id={messageId}
-          role={status === "error" ? "alert" : "status"}
+          variant={status === "error" ? "error" : "status"}
         >
           {message}
-        </p>
+        </FeedbackMessage>
       ) : null}
     </form>
   );

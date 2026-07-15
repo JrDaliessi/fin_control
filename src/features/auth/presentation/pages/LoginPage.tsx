@@ -2,6 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 import { LogIn, ShieldCheck } from "lucide-react";
+import { Button } from "@/shared/components/ui/Button";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
+import { ThemeSwitcher } from "@/shared/components/ui/ThemeSwitcher";
 import type { SignInWithPasswordInput } from "../../domain/interfaces/auth.gateway";
 
 type LoginPageProps = {
@@ -39,37 +42,40 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
 
   return (
     <main className="grid min-h-screen min-h-dvh place-items-center bg-background px-4 py-8 text-foreground sm:px-6">
-      <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="hidden bg-slate-950 p-10 text-white lg:grid lg:content-between">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-surface shadow-sm lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="hidden bg-navigation p-10 text-navigation-foreground lg:grid lg:content-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-teal-300">
-              Controle Financeiro IA
+            <p className="text-sm font-semibold uppercase tracking-wide text-navigation-accent">
+              FinControl
             </p>
             <p className="mt-5 max-w-md text-4xl font-semibold leading-tight">
               Clareza para decidir antes que o dinheiro vire preocupação.
             </p>
-            <p className="mt-5 max-w-md text-base leading-7 text-slate-300">
+            <p className="mt-5 max-w-md text-base leading-7 text-navigation-muted">
               Acompanhe contas, lançamentos e seu resumo financeiro em uma experiência simples e segura.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 text-sm text-slate-300">
-            <ShieldCheck aria-hidden="true" className="text-teal-300" size={22} />
+          <div className="flex items-center gap-3 text-sm text-navigation-muted">
+            <ShieldCheck aria-hidden="true" className="text-navigation-accent" size={22} />
             Sua sessão é verificada antes de acessar dados financeiros.
           </div>
         </section>
 
         <section className="p-6 sm:p-10 lg:p-12">
+          <div className="mb-6 flex justify-end">
+            <ThemeSwitcher />
+          </div>
           <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
             Acesso seguro
           </p>
           <h1
-            className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl"
+            className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl"
             id="login-heading"
           >
             Entrar na sua conta
           </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Use seu e-mail e sua senha para acessar sua conta.
           </p>
 
@@ -80,12 +86,12 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
             onSubmit={handleSubmit}
           >
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-slate-800" htmlFor="email">
+              <label className="text-sm font-medium text-foreground" htmlFor="email">
                 E-mail
               </label>
               <input
                 autoComplete="username"
-                className="min-h-11 rounded-md border border-slate-300 px-3 py-2 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-teal-100 disabled:bg-slate-100"
+                className="min-h-11 rounded-md border border-border bg-surface px-3 py-2 text-base text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-focus-ring/30 disabled:bg-surface-muted"
                 disabled={isLoading}
                 id="email"
                 name="email"
@@ -97,12 +103,12 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
             </div>
 
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-slate-800" htmlFor="password">
+              <label className="text-sm font-medium text-foreground" htmlFor="password">
                 Senha
               </label>
               <input
                 autoComplete="current-password"
-                className="min-h-11 rounded-md border border-slate-300 px-3 py-2 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-teal-100 disabled:bg-slate-100"
+                className="min-h-11 rounded-md border border-border bg-surface px-3 py-2 text-base text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-focus-ring/30 disabled:bg-surface-muted"
                 disabled={isLoading}
                 id="password"
                 name="password"
@@ -114,12 +120,9 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
             </div>
 
             {status === "error" ? (
-              <p
-                className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-                role="alert"
-              >
+              <FeedbackMessage className="border border-danger p-3" variant="error">
                 {genericErrorMessage}
-              </p>
+              </FeedbackMessage>
             ) : null}
 
             {isLoading ? (
@@ -129,19 +132,15 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
             ) : null}
 
             {status === "success" ? (
-              <p className="text-sm font-medium text-primary" role="status">
+              <FeedbackMessage className="font-medium" variant="status">
                 Login realizado. Redirecionando...
-              </p>
+              </FeedbackMessage>
             ) : null}
 
-            <button
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
-              disabled={isLoading}
-              type="submit"
-            >
+            <Button disabled={isLoading} type="submit">
               <LogIn aria-hidden="true" size={18} />
               {isLoading ? "Entrando..." : "Entrar"}
-            </button>
+            </Button>
           </form>
         </section>
       </div>

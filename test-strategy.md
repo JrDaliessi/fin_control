@@ -478,3 +478,102 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 - migration de `financial_accounts`, grants e RLS
 
 Estado de saída: `TEST_STRATEGY_READY`.
+
+## Matriz Planejada — Trilha FinControl Pulse
+
+Esta matriz orienta os futuros Dias 2 de `UI-001` a `UI-006`. Nenhum teste ou código funcional foi antecipado nesta incorporação de escopo.
+
+| Item | Prioridade de teste | Cenários essenciais |
+| --- | --- | --- |
+| UI-001 | tokens/tema/primitives | tema claro, escuro e automático; SSR sem flash relevante; contraste; foco; movimento reduzido |
+| UI-002 | shell/navegação | rota ativa; somente rotas disponíveis; teclado; logout; sidebar/tablet/mobile; 44 px; sem overflow |
+| UI-003 | dashboard | loading, empty, success, error; dados reais; ausência de projeção sem contrato; copy contextual; grid responsivo |
+| UI-004 | contas | cards com campos reais; abrir/fechar drawer; foco contido e restaurado; create/list persistentes; mobile |
+| UI-005 | transações | agrupamento; filtros suportados; drawer/bottom sheet; validação; persistência; estados e teclado |
+| UI-006 | login/PWA | erro sem enumeração; loading; mostrar senha; install disponível/indisponível; ausência de promessa offline |
+
+### Matriz executada no Dia 2 — UI-001
+
+Os testes foram criados antes do código funcional e a etapa RED foi comprovada em 2026-07-14.
+
+| Camada | Contrato a testar | Cenários mínimos |
+| --- | --- | --- |
+| Função pura de tema | `resolveTheme(preference, systemPrefersDark)` | light explícito; dark explícito; system claro; system escuro |
+| Preferência persistida | allowlist `light | dark | system` | ausência; valor válido; valor malformado; escrita após interação |
+| Inicialização | tema resolvido antes da hidratação | atributo dark aplicado; claro sem seletor dark; falha de storage com fallback seguro |
+| Provider | sincronização DOM, storage e sistema | mudança manual; mudança de `matchMedia` em system; listener removido; tema explícito ignora sistema |
+| ThemeSwitcher | controle acessível | nome acessível; três opções; seleção atual; teclado; área de toque mínima |
+| Tokens/Tailwind | contrato semântico | todos os tokens mínimos nos dois temas; mapeamento com alfa; seletor dark correto; ausência de token órfão |
+| Geist/branding | metadata e fonte | `FinControl` em metadata/manifest; variável Geist aplicada; fallback definido; sem pacote adicional |
+| Button | primitive genérica | variantes aprovadas; disabled; foco visível; tipo previsível |
+| Card | superfície genérica | elemento e classes sem semântica financeira embutida |
+| FeedbackMessage | anúncio acessível | status com `role=status`; erro com `role=alert`; conteúdo textual |
+| Regressão | rotas e formulários existentes | login, contas, dashboard, transações, logout e Proxy preservados |
+| Acessibilidade | combinações reais | contraste AA de texto/ação/foco; informação não depende só de cor; redução de movimento |
+| PWA | identidade e cores | manifest atualizado; theme/background coerentes; instalabilidade preservada |
+
+Validações de browser para flash de tema, responsividade visual e preferência do sistema complementam Jest no Dia 6; não substituem os testes determinísticos do Dia 2.
+
+Arquivos criados:
+
+- `src/shared/theme/tests/resolveTheme.test.ts`
+- `src/shared/theme/tests/ThemeProvider.test.tsx`
+- `src/shared/components/ui/tests/ThemeSwitcher.test.tsx`
+- `src/shared/components/ui/tests/ui-primitives.test.tsx`
+- `tests/design-system-contract.test.ts`
+
+Arquivo alterado:
+
+- `tests/pwa-manifest.test.ts`
+
+Evidência:
+
+- baseline anterior: 36 suítes e 170 testes verdes
+- RED direcionado: 6 suítes falharam por módulos e contratos visuais ainda ausentes
+- rede anterior após o RED, excluindo apenas os contratos da UI-001: 35 suítes e 168 testes verdes
+- lint: passou sem warnings
+- type-check: falhou somente com oito `TS2307` planejados
+- build: não executado porque a fase preserva o type-check vermelho
+
+Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada até `dia 3 da UI-001`.
+
+### Resultado GREEN do Dia 3 — UI-001
+
+- primeira passagem: 23 de 24 testes direcionados verdes
+- correção real de contraste: `muted-foreground` claro alterado de `#64748B` para `#5F6F85`
+- resultado direcionado final: 6 suítes e 24 testes verdes
+- regressão completa: 41 suítes e 192 testes verdes
+- type-check, lint, audit de produção e build verdes
+- asserção legada de accounts migrou para `text-danger-foreground` sem remover cobertura
+- nenhuma expectativa funcional foi enfraquecida
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
+### RED/GREEN do Dia 4 — UI-001
+
+- contrato novo: nenhuma superfície de produção ou ícone PWA pode manter `Controle Financeiro IA`
+- cenário de apresentação: o login deve expor o radiogroup acessível `Tema`
+- o primeiro alvo no shell foi descartado por violar a fronteira da UI-002; o erro foi documentado e o RED foi reaplicado na superfície correta
+- RED corrigido: `LoginPage` falhou exclusivamente pela ausência do seletor
+- GREEN direcionado: 3 suítes e 12 testes
+- regressão final: 41 suítes e 193 testes
+- lint, type-check, audit de produção e build verdes
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
+### Refatoração preservada por testes no Dia 5 — UI-001
+
+- contrato estático novo exige `Button`, `FeedbackMessage` e `Card` nos fluxos selecionados
+- RED confirmou que os componentes ainda duplicavam marcação das primitives
+- testes de comportamento existentes preservaram labels, eventos, disabled, loading, success, error, `alert` e `status`
+- GREEN direcionado: 8 suítes e 43 testes
+- regressão completa: 41 suítes e 194 testes
+- lint, type-check, audit de produção e build verdes
+- nenhum teste funcional foi enfraquecido ou removido
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
+Regras:
+
+- RED deve preceder qualquer implementação funcional de cada item.
+- testes de apresentação não substituem domínio/application para cálculos financeiros.
+- snapshot visual isolado não é critério de acessibilidade ou comportamento.
+- gráficos futuros exigem testes do view model, alternativa tabular, teclado, tooltip e dados insuficientes.
+- copy dinâmica precisa de cenários positivo, atenção, crítico, sem dados e erro, quando aplicável.

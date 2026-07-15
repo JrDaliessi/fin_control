@@ -519,6 +519,77 @@ Obrigatório para áreas críticas:
 - manifest e ícones planejados ou implementados
 - offline não deve ser prometido sem estratégia real
 
+## Gate FinControl Pulse
+- marca e copy correspondem às capacidades realmente disponíveis
+- nenhuma rota, ação, filtro ou card existe sem fluxo funcional
+- tokens semânticos evitam cores literais dispersas
+- tema claro, escuro e automático passam contraste, foco e redução de movimento
+- desktop, tablet e mobile são validados sem overflow indevido
+- navegação, drawer, modal e bottom sheet funcionam por teclado e leitor de tela
+- alvos interativos têm pelo menos 44 x 44 px
+- receita, despesa, atenção e tendência não dependem somente de cor
+- gráficos têm tabela ou resumo textual equivalente
+- “disponível de verdade”, projeções e insights só usam regras determinísticas e dados suficientes
+- IA, offline, biometria, cadastro e recuperação não são prometidos antes das respectivas features
+- copy segue informar, explicar e sugerir, sem culpa ou promessa enganosa
+- componentes compartilhados permanecem genéricos; semântica financeira fica na feature
+- especificação `docs/product/fincontrol-pulse-interface-copy.md` e backlog são atualizados a cada incremento
+
+### Gate específico da UI-001
+
+- marca `FinControl` consistente entre metadata, manifest e superfícies migradas
+- Geist auto-hospedada pelo build, com variável CSS e fallback
+- tokens light/dark completos e Tailwind sem duplicar valores literais
+- preferência `light | dark | system` com allowlist, fallback seguro e sincronização do sistema
+- somente `fincontrol.theme` pode ser persistido; nenhum dado financeiro ou de identidade no browser storage
+- inicialização anterior à hidratação sem flash relevante
+- `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher` cobertos; primitives adicionais exigem justificativa
+- regressão das rotas atuais, acessibilidade e PWA preservadas
+- shell, dashboard Pulse, drawers, gráficos e Supabase não entram no diff da UI-001
+
+Evidência do Dia 2:
+
+- baseline anterior: 36 suítes e 170 testes verdes
+- contratos RED: 5 arquivos de teste criados e 1 teste de manifest atualizado
+- rede anterior preservada: 35 suítes e 168 testes verdes ao excluir somente os contratos da UI-001
+- lint verde; type-check vermelho apenas pelos oito módulos planejados ausentes
+- nenhuma implementação funcional ou dependência adicionada
+- estado de saída: `TEST_STRATEGY_READY`
+
+Evidência do Dia 3:
+
+- testes direcionados: 6 suítes e 24 testes verdes
+- regressão completa: 41 suítes e 192 testes verdes
+- type-check, lint, audit de produção e build verdes; Proxy e matriz de rotas preservados
+- contraste secundário claro corrigido de 4,476:1 para aproximadamente 4,818:1 sem reduzir o gate AA
+- classes literais proibidas removidas do código de produção
+- storage restrito a `fincontrol.theme`; nenhum acoplamento novo com Supabase
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
+Evidência do Dia 4:
+
+- RED funcional confirmou seletor ausente e marca legada nas superfícies atuais
+- integração inicial indevida no shell foi revertida e registrada antes da conclusão
+- GREEN direcionado final: 3 suítes e 12 testes
+- regressão completa: 41 suítes e 193 testes
+- lint, type-check, audit de produção e build verdes
+- marca `FinControl` consistente em login, dashboard, contas, transações e ícone PWA
+- `ThemeSwitcher` exposto no login sem alterar `PrivateAppShell`
+- inspeção automatizada no Chrome indisponível por native host não registrado; limitação documentada
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
+Evidência do Dia 5:
+
+- auditoria identificou duplicação real de botões e feedbacks; arquivos maiores permaneceram coesos
+- contrato RED exigiu adoção explícita das primitives aprovadas
+- `Button`, `FeedbackMessage` e `Card` adotados sem criar nova primitive
+- GREEN direcionado: 8 suítes e 43 testes
+- regressão completa: 41 suítes e 194 testes
+- lint, type-check, audit de produção e build verdes
+- nenhum hook, caso de uso, repositório, migration ou dado alterado
+- shell, dashboard Pulse, drawers, gráficos e Supabase permaneceram fora do diff
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos
