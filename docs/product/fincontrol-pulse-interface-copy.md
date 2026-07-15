@@ -816,3 +816,14 @@ Uma entrega visual só fica pronta quando:
 - prometer offline;
 - adicionar animações pesadas;
 - alterar automaticamente a prioridade da próxima small release.
+
+## 25. Estado incremental da UI-001
+
+Dia 4 concluído em 2026-07-15:
+
+- marca `FinControl` aplicada às superfícies atuais e ao rótulo acessível do ícone PWA;
+- preferência `Claro | Escuro | Sistema` disponível no login antes da autenticação;
+- estados existentes de loading, empty, success e error preservados;
+- shell responsivo, dashboard Pulse, drawers e demais itens visuais continuam nas releases próprias;
+- nenhuma promessa de IA, offline, projeção ou capacidade inexistente foi adicionada;
+- inspeção automatizada no Chrome ficou pendente por indisponibilidade do native host da extensão, sem substituir os gates automatizados.

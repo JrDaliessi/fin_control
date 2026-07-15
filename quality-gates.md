@@ -566,6 +566,18 @@ Evidência do Dia 3:
 - storage restrito a `fincontrol.theme`; nenhum acoplamento novo com Supabase
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`
 
+Evidência do Dia 4:
+
+- RED funcional confirmou seletor ausente e marca legada nas superfícies atuais
+- integração inicial indevida no shell foi revertida e registrada antes da conclusão
+- GREEN direcionado final: 3 suítes e 12 testes
+- regressão completa: 41 suítes e 193 testes
+- lint, type-check, audit de produção e build verdes
+- marca `FinControl` consistente em login, dashboard, contas, transações e ícone PWA
+- `ThemeSwitcher` exposto no login sem alterar `PrivateAppShell`
+- inspeção automatizada no Chrome indisponível por native host não registrado; limitação documentada
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

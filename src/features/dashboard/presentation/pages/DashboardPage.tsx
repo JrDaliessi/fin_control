@@ -26,7 +26,7 @@ export function DashboardPage() {
         <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
           <div>
             <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
-              Controle Financeiro IA
+              FinControl
             </p>
             <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
               Dashboard

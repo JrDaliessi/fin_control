@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UI-001 concluído; implementação mínima e integração visual validadas
+- Fase atual: Dia 4 da UI-001 concluído; expansão controlada, marca e acesso ao tema validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -49,6 +49,7 @@
 - Data do discovery e arquitetura da UI-001: 2026-07-14
 - Data da estratégia de testes da UI-001: 2026-07-14
 - Data da implementação mínima da UI-001: 2026-07-14
+- Data da expansão controlada da UI-001: 2026-07-15
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -882,6 +883,7 @@ Regra operacional:
 - Erro: acessar Supabase pela camada visual. Prevenção: usar repositórios em `infrastructure`.
 - Erro: expandir escopo por conveniência. Prevenção: registrar item no backlog antes de executar.
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
+- Erro: no Dia 4 da UI-001, o seletor de tema foi inicialmente inserido em `PrivateAppShell`, embora alterações de shell estivessem reservadas à UI-002. Prevenção: conferir também os gates específicos da small release antes de escolher a superfície de integração; a correção deve manter o shell intacto e expor o seletor em uma superfície já pertencente ao recorte visual.
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 - Erro: criar `proxy.ts` na raiz em um projeto cujo App Router está em `src/app`; o build passou, mas não declarou o Proxy. Prevenção: manter `src/proxy.ts` no mesmo nível de `src/app` e exigir `ƒ Proxy (Middleware)` na saída de `next build`; o `middleware-manifest.json` legado pode permanecer vazio no Turbopack.
 - Erro: uma `NEXT_PUBLIC_SUPABASE_URL` malformada fez a criação do client SSR lançar uma exceção no Proxy e derrubou toda a navegação com o overlay `Invalid supabaseUrl`. Prevenção: validar a configuração sem registrar valores sensíveis, cobrir falhas de inicialização e de leitura de claims com testes e fazer a proteção de rotas falhar de forma fechada — rota privada redireciona para `/login` e `/login` permanece acessível.
@@ -1491,7 +1493,49 @@ Limites preservados:
 Estado de saída:
 - máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
 - backlog: `UI-001` permanece `IN_PROGRESS`
-- próximo comando válido: `dia 4 da UI-001`
+- próximo comando válido: `dia 5 da UI-001`
+
+## Dia 4 — UI-001 Expansão Controlada
+
+Small release:
+- `UI-001 — Sistema visual, marca e temas`
+
+TDD e escopo:
+- o RED válido confirmou que o seletor de tema ainda não estava exposto em uma superfície final
+- o contrato estático identificou quatro superfícies de produção e o ícone PWA com a marca legada `Controle Financeiro IA`
+- a primeira integração no `PrivateAppShell` violou o limite reservado à UI-002; o desvio foi registrado em erros recorrentes, revertido e testado novamente
+- a integração corrigida expõe `ThemeSwitcher` no login, que já está sob `ThemeProvider`, sem alterar o shell autenticado
+
+Implementação criada ou alterada:
+- `LoginPage` passou a oferecer `light | dark | system` antes da autenticação
+- login, dashboard, contas e transações passaram a exibir a marca `FinControl`
+- o rótulo acessível do ícone PWA passou a usar `FinControl`
+- o contrato do design system impede a reintrodução da marca legada em código de produção
+
+Estados e experiência preservados:
+- loading, success e error do login continuam cobertos
+- empty, loading, success e error das superfícies financeiras continuam cobertos pela regressão existente
+- preferência permanece restrita a `fincontrol.theme`; nenhum dado financeiro ou de identidade foi adicionado ao storage
+- nenhuma sidebar, topbar, navegação mobile, dashboard Pulse, drawer, gráfico ou regra financeira foi antecipada
+
+Evidência:
+- RED corrigido: `LoginPage` falhou somente pela ausência do radiogroup `Tema`
+- GREEN direcionado final: 3 suítes e 12 testes
+- regressão final: 41 suítes e 193 testes
+- lint, type-check e build passaram
+- `npm audit --omit=dev`: 0 vulnerabilidades
+- build preservou `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `Proxy (Middleware)`
+
+Validação visual:
+- o servidor local respondeu em `http://127.0.0.1:3000`
+- a automação do Chrome não pôde inspecionar a página porque o registro do native host da extensão está ausente no Windows
+- nenhuma tentativa de reparar o native host foi feita; a reinstalação do plugin Chrome pela interface do Codex é a recuperação indicada
+- a limitação não substituiu nem enfraqueceu testes, acessibilidade estática ou build
+
+Estado de saída:
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- backlog: `UI-001` permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5 da UI-001`
 
 ## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
 

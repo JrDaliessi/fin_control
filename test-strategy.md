@@ -548,6 +548,17 @@ Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada a
 - nenhuma expectativa funcional foi enfraquecida
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`
 
+### RED/GREEN do Dia 4 — UI-001
+
+- contrato novo: nenhuma superfície de produção ou ícone PWA pode manter `Controle Financeiro IA`
+- cenário de apresentação: o login deve expor o radiogroup acessível `Tema`
+- o primeiro alvo no shell foi descartado por violar a fronteira da UI-002; o erro foi documentado e o RED foi reaplicado na superfície correta
+- RED corrigido: `LoginPage` falhou exclusivamente pela ausência do seletor
+- GREEN direcionado: 3 suítes e 12 testes
+- regressão final: 41 suítes e 193 testes
+- lint, type-check, audit de produção e build verdes
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
 Regras:
 
 - RED deve preceder qualquer implementação funcional de cada item.

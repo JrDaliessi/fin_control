@@ -1,6 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Controle Financeiro IA">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FinControl">
   <rect width="512" height="512" rx="96" fill="#0f766e"/>
   <path fill="#ffffff" d="M128 160h256v56H128zM128 244h160v48H128zM128 320h256v48H128z"/>
   <circle cx="352" cy="268" r="36" fill="#bfdbfe"/>
 </svg>
-
