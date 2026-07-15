@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { LogOut } from "lucide-react";
+import { Button } from "@/shared/components/ui/Button";
+import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 
 type SignOutButtonProps = {
   onSignOut(): Promise<void>;
@@ -31,30 +33,30 @@ export function SignOutButton({ onSignOut }: SignOutButtonProps) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       {status === "error" ? (
-        <p className="text-sm text-danger" role="alert">
+        <FeedbackMessage variant="error">
           Não foi possível encerrar a sessão. Tente novamente.
-        </p>
+        </FeedbackMessage>
       ) : null}
       {status === "success" ? (
-        <p className="text-sm text-primary" role="status">
+        <FeedbackMessage variant="status">
           Sessão encerrada.
-        </p>
+        </FeedbackMessage>
       ) : null}
       {isLoading ? (
         <p className="sr-only" role="status">
           Saindo...
         </p>
       ) : null}
-      <button
+      <Button
         aria-busy={isLoading}
-        className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+        className="font-medium"
         disabled={isLoading}
         onClick={handleSignOut}
-        type="button"
+        variant="secondary"
       >
         <LogOut aria-hidden="true" size={18} />
         {isLoading ? "Saindo..." : "Sair"}
-      </button>
+      </Button>
     </div>
   );
 }

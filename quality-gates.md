@@ -578,6 +578,18 @@ Evidência do Dia 4:
 - inspeção automatizada no Chrome indisponível por native host não registrado; limitação documentada
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`
 
+Evidência do Dia 5:
+
+- auditoria identificou duplicação real de botões e feedbacks; arquivos maiores permaneceram coesos
+- contrato RED exigiu adoção explícita das primitives aprovadas
+- `Button`, `FeedbackMessage` e `Card` adotados sem criar nova primitive
+- GREEN direcionado: 8 suítes e 43 testes
+- regressão completa: 41 suítes e 194 testes
+- lint, type-check, audit de produção e build verdes
+- nenhum hook, caso de uso, repositório, migration ou dado alterado
+- shell, dashboard Pulse, drawers, gráficos e Supabase permaneceram fora do diff
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos
