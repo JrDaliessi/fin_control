@@ -46,7 +46,7 @@ export function TransactionsPage() {
         <section className="grid content-start gap-4">
           <div>
             <Link
-              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
               href="/"
             >
               <ArrowLeft aria-hidden="true" size={18} />

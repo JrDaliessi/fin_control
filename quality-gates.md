@@ -590,6 +590,33 @@ Evidência do Dia 5:
 - shell, dashboard Pulse, drawers, gráficos e Supabase permaneceram fora do diff
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`
 
+Evidência do Dia 6:
+
+- contratos RED cobriram alvo de toque, radio compacto, cores de viewport e copy honesta do manifest
+- inspeção no navegador encontrou `theme-init.js` interceptado pelo Proxy; teste de regressão foi criado antes da correção
+- `/theme-init.js` passou a responder `200` com `application/javascript`
+- viewport de 320 x 800 px validado sem overflow horizontal
+- labels do seletor medidos em 44 px e radios em 16 x 16 px
+- tema escuro validado com `data-theme="dark"`, `color-scheme: dark` e fundo `rgb(11, 18, 32)`
+- regressão completa: 41 suítes e 194 testes
+- lint, type-check, audit com 0 vulnerabilidades e build verdes
+- nenhuma promessa offline, IA antecipada, shell, dashboard Pulse ou alteração de Supabase entrou no diff
+- estado de saída: `QUALITY_VALIDATION`
+
+Evidência do Dia 7:
+
+- escopo Git completo da UI-001 revisado e `git diff --check` verde
+- fronteiras arquiteturais verificadas sem importação de React, Next.js ou Supabase em `domain` e `application`
+- lint e type-check verdes
+- regressão completa: 41 suítes e 194 testes
+- `npm audit --audit-level=high`: 0 vulnerabilidades
+- build de produção verde com todas as rotas existentes e `Proxy (Middleware)` preservados
+- nenhum segredo versionado; chave `service_role` ausente do código e presente somente como placeholder vazio em `.env.example`
+- fluxo SSR usa `getClaims()`, falha fechado e mantém cookies de sessão nas respostas
+- threat model e baseline de observabilidade documentados no `project-context.md`
+- riscos residuais são não críticos e já constam do backlog de hardening
+- estado de saída: `READY_FOR_RELEASE`
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

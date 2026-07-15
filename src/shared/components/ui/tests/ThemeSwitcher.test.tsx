@@ -33,8 +33,14 @@ describe("ThemeSwitcher", () => {
     );
 
     expect(screen.getByRole("radiogroup", { name: "Tema" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "Claro" })).toHaveClass("min-h-11");
-    expect(screen.getByRole("radio", { name: "Escuro" })).toHaveClass("min-h-11");
+    expect(screen.getByRole("radio", { name: "Claro" })).toHaveClass("h-4", "w-4");
+    expect(screen.getByRole("radio", { name: "Escuro" })).toHaveClass("h-4", "w-4");
+    expect(screen.getByRole("radio", { name: "Claro" }).closest("label")).toHaveClass(
+      "min-h-11",
+    );
+    expect(screen.getByRole("radio", { name: "Escuro" }).closest("label")).toHaveClass(
+      "min-h-11",
+    );
     expect(screen.getByRole("radio", { name: "Sistema" })).toBeChecked();
 
     await user.click(screen.getByRole("radio", { name: "Escuro" }));

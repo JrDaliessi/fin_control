@@ -835,3 +835,20 @@ Dia 5 concluído em 2026-07-15:
 - nenhuma copy nova, promessa de produto ou capacidade funcional foi adicionada;
 - formulários permaneceram específicos das features para evitar abstração prematura;
 - shell, navegação e dashboard Pulse continuam reservados às releases próprias.
+
+Dia 6 concluído em 2026-07-15:
+
+- alvos interativos auditados garantem 44 px sem tornar o radio visual desproporcional;
+- a tela de login foi validada em 320 px sem overflow horizontal e com alternância real para o tema escuro;
+- o script de inicialização do tema deixou de ser interceptado pelo Proxy;
+- cores de navegador acompanham a preferência clara ou escura do sistema;
+- o manifest descreve o produto como `Seu copiloto financeiro pessoal.`, sem antecipar IA ou prometer offline;
+- shell, dashboard Pulse, instalação PWA e service worker continuam nas releases próprias.
+
+Dia 7 concluído em 2026-07-15:
+
+- pipeline final verde com lint, type-check, 41 suítes/194 testes, auditoria sem vulnerabilidades e build de produção;
+- segurança revisada sem segredo versionado, dado financeiro em storage ou novo acoplamento com Supabase;
+- threat model cobre preferência de tema, hidratação, storage, autenticação e supply chain;
+- observabilidade permanece baseada nos gates de CI e testes determinísticos, sem adicionar rastreamento ou analytics;
+- `UI-001` está `DONE` e `READY_FOR_RELEASE`; `UI-002` a `UI-006` continuam em `DISCOVERY`.

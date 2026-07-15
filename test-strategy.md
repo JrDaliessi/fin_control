@@ -570,6 +570,29 @@ Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada a
 - nenhum teste funcional foi enfraquecido ou removido
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`
 
+### RED/GREEN do Dia 6 — UI-001
+
+- contratos RED exigiram alvo de toque de 44 px no retorno de transações e nos labels do seletor
+- radios permaneceram controles visuais compactos de 16 x 16 px
+- metadata passou a ter cores de tema distintas para sistema claro e escuro
+- manifest deixou de prometer IA antes da SR-023
+- inspeção no navegador revelou HTML servido em `/theme-init.js`; o teste do matcher reproduziu a interceptação antes da correção
+- GREEN direcionado inicial: 4 suítes e 14 testes
+- teste adicional do Proxy passou após excluir JavaScript público do matcher
+- regressão completa: 41 suítes e 194 testes
+- lint, type-check, audit e build verdes
+- estado de saída: `QUALITY_VALIDATION`
+
+### Gate final do Dia 7 — UI-001
+
+- nenhum teste foi removido, relaxado ou marcado como ignorado
+- regressão completa: 41 suítes e 194 testes verdes
+- lint e type-check verdes
+- audit com 0 vulnerabilidades e build de produção verde
+- contratos de tema, manifest, Proxy, primitives e regressão das rotas permaneceram determinísticos
+- revisão estática confirmou separação entre `domain`/`application` e infraestrutura
+- estado de saída: `READY_FOR_RELEASE`
+
 Regras:
 
 - RED deve preceder qualquer implementação funcional de cada item.
