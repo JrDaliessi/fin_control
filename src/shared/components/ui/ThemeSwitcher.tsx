@@ -25,14 +25,14 @@ export function ThemeSwitcher() {
         {THEME_PREFERENCES.map((option) => (
           <label
             className={clsx(
-              "inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-within:ring-2 focus-within:ring-focus-ring focus-within:ring-offset-2",
+              "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-within:ring-2 focus-within:ring-focus-ring focus-within:ring-offset-2",
               preference === option && "border-primary bg-success-surface",
             )}
             key={option}
           >
             <input
               checked={preference === option}
-              className="min-h-11 min-w-11 accent-primary"
+              className="h-4 w-4 shrink-0 accent-primary"
               name="theme-preference"
               onChange={() => setPreference(option)}
               type="radio"

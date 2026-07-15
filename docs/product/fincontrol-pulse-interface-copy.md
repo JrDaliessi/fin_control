@@ -835,3 +835,12 @@ Dia 5 concluído em 2026-07-15:
 - nenhuma copy nova, promessa de produto ou capacidade funcional foi adicionada;
 - formulários permaneceram específicos das features para evitar abstração prematura;
 - shell, navegação e dashboard Pulse continuam reservados às releases próprias.
+
+Dia 6 concluído em 2026-07-15:
+
+- alvos interativos auditados garantem 44 px sem tornar o radio visual desproporcional;
+- a tela de login foi validada em 320 px sem overflow horizontal e com alternância real para o tema escuro;
+- o script de inicialização do tema deixou de ser interceptado pelo Proxy;
+- cores de navegador acompanham a preferência clara ou escura do sistema;
+- o manifest descreve o produto como `Seu copiloto financeiro pessoal.`, sem antecipar IA ou prometer offline;
+- shell, dashboard Pulse, instalação PWA e service worker continuam nas releases próprias.

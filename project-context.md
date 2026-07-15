@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UI-001 concluído; refatoração incremental e hardening validados
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UI-001 concluído; UX, acessibilidade, responsividade e PWA validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -51,6 +51,7 @@
 - Data da implementação mínima da UI-001: 2026-07-14
 - Data da expansão controlada da UI-001: 2026-07-15
 - Data do hardening interno da UI-001: 2026-07-15
+- Data da revisão de UX, acessibilidade e PWA da UI-001: 2026-07-15
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -885,6 +886,7 @@ Regra operacional:
 - Erro: expandir escopo por conveniência. Prevenção: registrar item no backlog antes de executar.
 - Erro: pular workflow de fase. Prevenção: consultar `project-context.md` e `.agents/workflows/dia-X-*.md` antes de executar comandos `dia X`.
 - Erro: no Dia 4 da UI-001, o seletor de tema foi inicialmente inserido em `PrivateAppShell`, embora alterações de shell estivessem reservadas à UI-002. Prevenção: conferir também os gates específicos da small release antes de escolher a superfície de integração; a correção deve manter o shell intacto e expor o seletor em uma superfície já pertencente ao recorte visual.
+- Erro: o matcher do Proxy interceptava `public/theme-init.js`, redirecionava a requisição anônima para `/login` e entregava HTML como JavaScript, impedindo a inicialização do tema. Prevenção: todo asset público executável referenciado antes da hidratação deve ter teste de matcher e verificação HTTP de status e `Content-Type`; o Proxy deve excluir scripts públicos sem ampliar o acesso às rotas privadas.
 - Erro: permitir segredo real em arquivo de exemplo. Prevenção: manter `.env.example` apenas com placeholders, ignorar `.env` reais e rotacionar credenciais se forem expostas.
 - Erro: criar `proxy.ts` na raiz em um projeto cujo App Router está em `src/app`; o build passou, mas não declarou o Proxy. Prevenção: manter `src/proxy.ts` no mesmo nível de `src/app` e exigir `ƒ Proxy (Middleware)` na saída de `next build`; o `middleware-manifest.json` legado pode permanecer vazio no Turbopack.
 - Erro: uma `NEXT_PUBLIC_SUPABASE_URL` malformada fez a criação do client SSR lançar uma exceção no Proxy e derrubou toda a navegação com o overlay `Invalid supabaseUrl`. Prevenção: validar a configuração sem registrar valores sensíveis, cobrir falhas de inicialização e de leitura de claims com testes e fazer a proteção de rotas falhar de forma fechada — rota privada redireciona para `/login` e `/login` permanece acessível.
@@ -1588,6 +1590,44 @@ Estado de saída:
 - máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
 - backlog: `UI-001` permanece `IN_PROGRESS`
 - próximo comando válido: `dia 6 da UI-001`
+
+## Dia 6 — UI-001 UX, Acessibilidade, Responsividade e PWA
+
+Auditoria e RED:
+- o link de retorno de transações possuía alvo de 40 px, abaixo do mínimo de 44 px
+- o radio visual do seletor ocupava 44 px; o alvo amplo deveria pertencer ao label, mantendo o controle visual compacto
+- a cor de tema do viewport não diferenciava preferências clara e escura do sistema
+- o manifest prometia IA antes da SR-023
+- a inspeção no navegador revelou que o Proxy interceptava `theme-init.js`, devolvendo HTML e impedindo a aplicação do tema
+- os cinco contratos foram reproduzidos em testes antes das correções correspondentes
+
+Melhorias aplicadas:
+- link de retorno e labels do seletor passaram a garantir `min-h-11`
+- radios visuais passaram a 16 x 16 px dentro de labels com 44 px
+- metadata de viewport passou a declarar cores distintas para `prefers-color-scheme: light` e `dark`
+- descrição do manifest passou a `Seu copiloto financeiro pessoal.`, sem promessa de IA ou offline
+- matcher do Proxy passou a excluir scripts JavaScript públicos; `/theme-init.js` responde `200` com `application/javascript`
+
+Validação no navegador interno:
+- viewport auditado em 320 x 800 px, sem overflow horizontal
+- labels do tema medidos em 44 px; radios em 16 x 16 px
+- tema escuro aplicou `data-theme="dark"`, `color-scheme: dark` e fundo `rgb(11, 18, 32)`
+- viewport temporário foi restaurado e a aba de teste foi finalizada
+
+Evidência:
+- RED inicial: 4 suítes falharam pelos contratos de toque, viewport e copy do manifest
+- GREEN inicial: 4 suítes e 14 testes
+- RED/GREEN adicional: regressão do matcher de `theme-init.js` falhou e passou após a correção
+- regressão completa: 41 suítes e 194 testes
+- lint e type-check passaram
+- `npm audit --audit-level=high`: 0 vulnerabilidades
+- build passou preservando `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `Proxy (Middleware)`
+- nenhuma promessa offline, service worker, shell, dashboard Pulse, migration, regra financeira ou acesso Supabase foi adicionado
+
+Estado de saída:
+- máquina de estados: `QUALITY_VALIDATION`
+- backlog: `UI-001` permanece `IN_PROGRESS` até o gate final
+- próximo comando válido: `dia 7 da UI-001`
 
 ## Próximo Ciclo Selecionado — SR-007 Cadastro Local de Conta Financeira
 
