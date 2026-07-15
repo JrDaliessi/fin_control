@@ -231,6 +231,30 @@ src/
 - Componentes genéricos ficam em `src/shared/components/ui`
 - Componentes específicos ficam dentro da própria feature
 
+## Convenções Git
+
+### Branches
+- `main` — produção estável, protegida
+- `develop` — integração contínua, recebe squash merges das features
+- `feature/<ID>-<desc>` — criada de `develop`, merge de volta com `--squash`
+- `fix/<ID>-<desc>` — criada de `develop`, merge com `--squash`
+- `hotfix/<ID>-<desc>` — criada de `main`, merge com `--no-ff` para `main` + `develop`
+
+### Commits
+- Formato: `<tipo>(<escopo>): <descrição> | Dia <N> <ID>`
+- Tipos: `feat`, `fix`, `test`, `refactor`, `chore`, `docs`, `style`, `ci`, `perf`, `security`
+- Escopos por domínio: `project`, `auth`, `accounts`, `transactions`, `dashboard`, `ui`, `shell`, `categories`, `analytics`, `goals`, `gamification`
+- Template local configurado em `.gitmessage`
+- Exemplo: `feat(accounts): implementar listagem por usuário | Dia 3 SR-009`
+
+### Merge
+- Feature → develop: `git merge --squash` (1 commit limpo por feature)
+- develop → main: `git merge --no-ff` (merge commit preservando ponto de release)
+- Tags: Semantic Versioning `vMAJOR.MINOR.PATCH`
+
+### Documentação
+- Fluxo completo em `docs/git-workflow.md`
+
 ## Padrão de Testes
 - TDD obrigatório para regras principais.
 - Ordem preferencial: domain, application, infrastructure crítica, presentation importante.
