@@ -537,6 +537,17 @@ Evidência:
 
 Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada até `dia 3 da UI-001`.
 
+### Resultado GREEN do Dia 3 — UI-001
+
+- primeira passagem: 23 de 24 testes direcionados verdes
+- correção real de contraste: `muted-foreground` claro alterado de `#64748B` para `#5F6F85`
+- resultado direcionado final: 6 suítes e 24 testes verdes
+- regressão completa: 41 suítes e 192 testes verdes
+- type-check, lint, audit de produção e build verdes
+- asserção legada de accounts migrou para `text-danger-foreground` sem remover cobertura
+- nenhuma expectativa funcional foi enfraquecida
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
 Regras:
 
 - RED deve preceder qualquer implementação funcional de cada item.

@@ -14,7 +14,7 @@ const expectedTokens = {
     "focus-ring": "37 99 235",
     foreground: "17 24 39",
     income: "21 128 61",
-    "muted-foreground": "100 116 139",
+    "muted-foreground": "95 111 133",
     primary: "15 118 110",
     "primary-foreground": "255 255 255",
     "primary-hover": "17 94 89",

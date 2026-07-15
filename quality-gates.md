@@ -556,6 +556,16 @@ Evidência do Dia 2:
 - nenhuma implementação funcional ou dependência adicionada
 - estado de saída: `TEST_STRATEGY_READY`
 
+Evidência do Dia 3:
+
+- testes direcionados: 6 suítes e 24 testes verdes
+- regressão completa: 41 suítes e 192 testes verdes
+- type-check, lint, audit de produção e build verdes; Proxy e matriz de rotas preservados
+- contraste secundário claro corrigido de 4,476:1 para aproximadamente 4,818:1 sem reduzir o gate AA
+- classes literais proibidas removidas do código de produção
+- storage restrito a `fincontrol.theme`; nenhum acoplamento novo com Supabase
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

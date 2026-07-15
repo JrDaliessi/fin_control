@@ -4,12 +4,72 @@
 
 :root {
   color-scheme: light;
+  --accent: 37 99 235;
+  --background: 246 248 252;
+  --border: 229 231 235;
+  --danger-foreground: 185 28 28;
+  --danger-surface: 254 242 242;
+  --disabled: 148 163 184;
+  --expense: 220 38 38;
+  --focus-ring: 37 99 235;
+  --foreground: 17 24 39;
+  --income: 21 128 61;
+  --muted-foreground: 95 111 133;
+  --navigation: 11 18 32;
+  --navigation-accent: 94 234 212;
+  --navigation-foreground: 248 250 252;
+  --navigation-muted: 203 213 225;
+  --primary: 15 118 110;
+  --primary-foreground: 255 255 255;
+  --primary-hover: 17 94 89;
+  --success-surface: 240 253 250;
+  --surface: 255 255 255;
+  --surface-elevated: 255 255 255;
+  --surface-muted: 248 250 252;
+  --warning: 217 119 6;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --accent: 96 165 250;
+  --background: 11 18 32;
+  --border: 51 65 85;
+  --danger-foreground: 253 164 175;
+  --danger-surface: 76 5 25;
+  --disabled: 71 85 105;
+  --expense: 251 113 133;
+  --focus-ring: 125 211 252;
+  --foreground: 248 250 252;
+  --income: 74 222 128;
+  --muted-foreground: 148 163 184;
+  --navigation: 2 6 23;
+  --navigation-accent: 45 212 191;
+  --navigation-foreground: 248 250 252;
+  --navigation-muted: 148 163 184;
+  --primary: 45 212 191;
+  --primary-foreground: 4 47 46;
+  --primary-hover: 94 234 212;
+  --success-surface: 4 47 46;
+  --surface: 17 24 39;
+  --surface-elevated: 30 41 59;
+  --surface-muted: 30 41 59;
+  --warning: 251 191 36;
 }
 
 body {
   margin: 0;
-  background: #f8fafc;
-  color: #111827;
-  font-family: Arial, Helvetica, sans-serif;
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
