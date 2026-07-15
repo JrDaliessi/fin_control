@@ -1,7 +1,7 @@
 {
   "name": "FinControl",
   "short_name": "FinControl",
-  "description": "Copiloto financeiro pessoal com IA.",
+  "description": "Seu copiloto financeiro pessoal.",
   "id": "/",
   "start_url": "/",
   "scope": "/",

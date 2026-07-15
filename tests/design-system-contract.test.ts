@@ -151,6 +151,10 @@ describe("FinControl design-system contract", () => {
     expect(layout).toContain("suppressHydrationWarning");
     expect(layout).toContain('src="/theme-init.js"');
     expect(layout).toContain('strategy="beforeInteractive"');
+    expect(layout).toContain('media: "(prefers-color-scheme: light)"');
+    expect(layout).toContain('color: "#0f766e"');
+    expect(layout).toContain('media: "(prefers-color-scheme: dark)"');
+    expect(layout).toContain('color: "#0b1220"');
   });
 
   it("uses the FinControl brand across current production surfaces and the PWA icon", () => {

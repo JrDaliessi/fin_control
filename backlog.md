@@ -14,7 +14,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: ADR 0005 e testes de regressão das telas atuais.
 - Risco: Médio por impacto global.
-- Fase atual: Dia 5 concluído; primitives adotadas e hardening validado, aguardando UX, acessibilidade e PWA do Dia 6.
+- Fase atual: Dia 6 concluído; UX, acessibilidade, responsividade e PWA validados, aguardando quality gate final do Dia 7.
 - Critério de pronto: tokens e temas testados; contraste AA, foco, movimento reduzido, sem flash relevante e pipeline verde.
 - Recorte: marca, Geist, tokens, preferência `light | dark | system`, `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`.
 - Fora do recorte: shell, dashboard, drawers, gráficos, novas rotas, regras financeiras e Supabase.

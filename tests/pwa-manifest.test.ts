@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 type WebAppManifest = {
   background_color?: string;
+  description?: string;
   display?: string;
   display_override?: string[];
   icons?: Array<{
@@ -50,6 +51,8 @@ describe("PWA manifest", () => {
 
     expect(manifest.name).toBe("FinControl");
     expect(manifest.short_name).toBe("FinControl");
+    expect(manifest.description).toBe("Seu copiloto financeiro pessoal.");
+    expect(manifest.description).not.toMatch(/\bIA\b/i);
     expect(manifest.start_url).toBe("/");
     expect(manifest.scope).toBe("/");
     expect(manifest.id).toBe("/");
