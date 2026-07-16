@@ -692,3 +692,16 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 - Nenhum teste foi relaxado e nenhum fluxo futuro foi antecipado.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 5 — UI-002
+
+- Auditoria mediu os componentes e não identificou monólito; `PrivateNavigation.tsx` tinha 99 linhas antes do hardening.
+- O novo contrato exige que o item móvel ativo seja distinguido por fundo e peso, além de cor e `aria-current`.
+- RED direcionado: 1 teste falhou e 16 permaneceram verdes.
+- GREEN direcionado: 2 suítes e 17 testes passaram.
+- A rota ativa passou a ser resolvida uma única vez por variante de navegação, preservando alias e correspondência exata.
+- Regressão completa: 43 suítes e 211 testes passaram.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção passaram.
+- Nenhuma cobertura foi relaxada e nenhum destino ou fluxo futuro foi antecipado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

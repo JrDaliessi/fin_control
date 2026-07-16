@@ -24,13 +24,11 @@ type PrivateNavigationProps = {
   pathname: string;
 };
 
-function isActive(item: PrivateNavigationItem, pathname: string): boolean {
-  return getPrivateNavigationItemForPath(pathname)?.href === item.href;
-}
-
 export function DesktopPrivateNavigation({
   pathname,
 }: PrivateNavigationProps) {
+  const activeHref = getPrivateNavigationItemForPath(pathname)?.href;
+
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-20 flex-col border-r border-border bg-navigation text-navigation-foreground md:flex lg:w-64">
       <Link
@@ -46,7 +44,7 @@ export function DesktopPrivateNavigation({
       <nav aria-label="Navegação principal" className="flex flex-1 flex-col gap-2 p-3">
         {PRIVATE_NAVIGATION_ITEMS.map((item) => {
           const Icon = navigationIcons[item.href];
-          const active = isActive(item, pathname);
+          const active = activeHref === item.href;
 
           return (
             <Link
@@ -70,6 +68,8 @@ export function DesktopPrivateNavigation({
 }
 
 export function MobilePrivateNavigation({ pathname }: PrivateNavigationProps) {
+  const activeHref = getPrivateNavigationItemForPath(pathname)?.href;
+
   return (
     <nav
       aria-label="Navegação móvel"
@@ -77,14 +77,16 @@ export function MobilePrivateNavigation({ pathname }: PrivateNavigationProps) {
     >
       {PRIVATE_NAVIGATION_ITEMS.map((item) => {
         const Icon = navigationIcons[item.href];
-        const active = isActive(item, pathname);
+        const active = activeHref === item.href;
 
         return (
           <Link
             aria-current={active ? "page" : undefined}
             className={clsx(
-              "flex min-h-11 min-w-11 flex-col items-center justify-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset",
-              active && "text-primary",
+              "flex min-h-11 min-w-11 flex-col items-center justify-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset",
+              active
+                ? "bg-surface-muted font-semibold text-primary"
+                : "font-medium",
             )}
             href={item.href}
             key={item.href}

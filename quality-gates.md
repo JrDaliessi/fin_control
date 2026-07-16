@@ -313,6 +313,21 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para nova feature de negócio.
 
+### Resultado observado — UI-002
+- Arquivos do shell medidos; o maior tinha 99 linhas e nenhum foi classificado como monólito.
+- Componentes desktop e mobile permaneceram separados por diferenças reais de composição e responsividade.
+- RED direcionado confirmou ausência de forma e peso no estado ativo móvel: 1 falha e 16 testes preservados.
+- GREEN direcionado passou com 2 suítes e 17 testes.
+- Resolução da rota ativa consolidada em uma busca por variante, sem nova abstração.
+- Estado ativo móvel reforçado com fundo, peso, cor e `aria-current`.
+- `npm run test:ci`: 43 suítes e 211 testes passaram.
+- `npm run type-check`: passou.
+- `npm run lint`: passou com 0 warnings.
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades.
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`.
+- Nenhuma rota, dependência, integração, regra de negócio ou capability futura foi adicionada.
+- Hardening encerrado com retorno a `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — SR-006
 - Arquivos de produção do dashboard medidos; nenhum ultrapassava 100 linhas.
 - Resolução duplicada de competência consolidada em utilitário de aplicação.

@@ -135,11 +135,17 @@ describe("PrivateAppShell", () => {
       within(mobileNavigation).getByRole("link", { name: "Contas" }),
     ).toHaveAttribute("aria-current", "page");
     expect(
+      within(mobileNavigation).getByRole("link", { name: "Contas" }),
+    ).toHaveClass("bg-surface-muted", "font-semibold", "text-primary");
+    expect(
       within(primaryNavigation).getByRole("link", { name: "Visão geral" }),
     ).not.toHaveAttribute("aria-current");
     expect(
       within(primaryNavigation).getByRole("link", { name: "Transações" }),
     ).not.toHaveAttribute("aria-current");
+    expect(
+      within(mobileNavigation).getByRole("link", { name: "Transações" }),
+    ).not.toHaveClass("bg-surface-muted", "font-semibold");
   });
 
   it("preserves global session actions and leaves the main landmark to the page", () => {

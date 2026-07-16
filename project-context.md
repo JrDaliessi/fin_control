@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UI-002 concluído; jornada por teclado, topbar persistente e regressões de logout/fallback validadas
+- Fase atual: Dia 5 da UI-002 concluído; navegação endurecida estrutural e visualmente com pipeline verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -57,6 +57,7 @@
 - Data da estratégia de testes da UI-002: 2026-07-16
 - Data da implementação mínima da UI-002: 2026-07-16
 - Data da expansão controlada da UI-002: 2026-07-16
+- Data da refatoração e hardening da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -2067,6 +2068,40 @@ Limites preservados:
 Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 5` da UI-002
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Auditoria estrutural:
+- arquivos de produção do shell medidos; `PrivateNavigation.tsx` era o maior com 99 linhas e nenhum arquivo foi classificado como monólito
+- componentes desktop e mobile permaneceram separados porque possuem composição, breakpoints e rótulos distintos
+- nenhuma primitive ou abstração compartilhada foi criada sem reutilização real
+- a resolução da rota ativa era repetida uma vez para cada item e foi consolidada em uma busca por variante
+
+Hardening guiado por teste:
+- contrato RED exigiu que o destino móvel ativo usasse fundo e peso além de cor e `aria-current`
+- RED direcionado: 1 falha e 16 testes preservados
+- GREEN direcionado: 2 suítes e 17 testes passaram
+- item móvel ativo passou a usar `bg-surface-muted`, `font-semibold` e `text-primary`; itens inativos mantêm `font-medium`
+
+Validação:
+- regressão completa: 43 suítes e 211 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou com 0 warnings
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou para todas as rotas existentes e `ƒ Proxy (Middleware)`
+
+Limites preservados:
+- nenhuma rota, feature, dependência, regra financeira, integração Supabase, autenticação ou PWA foi alterada
+- nenhuma reescrita ampla ou divisão cosmética foi realizada
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado
+- retorno a `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 6` da UI-002
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 
