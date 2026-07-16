@@ -23,18 +23,6 @@ Nenhum item em andamento no momento.
 - Especificação: `docs/product/fincontrol-pulse-interface-copy.md`.
 - Status: DISCOVERY
 
-### UI-002 — Shell e navegação responsiva
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: evoluir `PrivateAppShell` com sidebar, topbar e barra inferior mobile exibindo somente rotas funcionais.
-- Objetivo de negócio: permitir orientação e acesso rápido aos fluxos existentes.
-- Valor esperado: experiência coerente em desktop, tablet e mobile.
-- Prioridade: Alta
-- Dependências: UI-001 e matriz de rotas disponíveis.
-- Risco: Médio por afetar todas as rotas privadas e logout.
-- Fase recomendada: após UI-001.
-- Critério de pronto: navegação ativa, teclado, foco, 44 px, mobile sem overflow, logout preservado e rotas indisponíveis ausentes.
-- Status: DISCOVERY
-
 ### UI-003 — Dashboard FinControl Pulse
 - Tipo: Small Release / UX Improvement
 - Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
@@ -481,6 +469,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### UI-002 — Shell e navegação responsiva
+- Tipo: Small Release / UX Improvement
+- Resultado: sidebar desktop, rail tablet, navegação inferior mobile e topbar entregues somente com destinos funcionais.
+- Escopo concluído: estado ativo por rota/alias, teclado, foco, alvos de 44 px, safe area, movimento reduzido, tema, logout e experiência PWA coerente.
+- Quality gates: lint, type-check, 44 suítes/212 testes, auditoria com 0 vulnerabilidades, build e `git diff --check` verdes.
+- Segurança: logout local com redirect fixo, UI sem acesso direto a Supabase, sem segredo real ou escape de tipagem.
+- Governança: CI validado por teste e executado em pushes/PRs para `develop` e `main`.
+- Riscos residuais não críticos: inspeção visual automatizada indisponível e pinagem das Actions por SHA registrada como dívida baixa.
+- Fora do escopo preservado: rotas futuras, busca, notificações, perfil, configurações, Adicionar, drawers, gráficos, IA e offline.
+- Status: DONE
 
 ### UI-001 — Sistema visual, marca e temas
 - Tipo: Small Release / UX Improvement

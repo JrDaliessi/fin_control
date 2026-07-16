@@ -1,0 +1,37 @@
+# <tipo>(<escopo>): <descrição> | Dia <N> <ID>
+#
+# ─── TIPOS ────────────────────────────────────────────
+# feat      → Nova funcionalidade
+# fix       → Correção de bug
+# test      → Criar/alterar testes (TDD)
+# refactor  → Refatoração sem mudar comportamento
+# chore     → Setup, configs, CI, dependências
+# docs      → Documentação, ADR, contexto
+# style     → UX, acessibilidade, CSS
+# ci        → Pipeline, GitHub Actions
+# perf      → Otimização de performance
+# security  → Hardening, RLS, headers
+#
+# ─── ESCOPOS ──────────────────────────────────────────
+# project       → Setup geral, bootstrap
+# auth          → Autenticação e sessão
+# accounts      → Contas financeiras
+# transactions  → Transações e resumo
+# dashboard     → Dashboard financeiro
+# ui            → Sistema visual e marca
+# shell         → Navegação e layout
+# categories    → Categorias
+# analytics     → Relatórios e análise
+# goals         → Metas financeiras
+# gamification  → Pontos e conquistas
+#
+# ─── EXEMPLO ─────────────────────────────────────────
+# feat(accounts): implementar listagem por usuário | Dia 3 SR-009
+#
+# ─── CORPO (opcional) ────────────────────────────────
+# Detalhes técnicos, decisões, contexto relevante.
+#
+# ─── RODAPÉ (opcional) ───────────────────────────────
+# BREAKING CHANGE: <descrição>
+# Refs: #issue
+# Co-authored-by: Nome <email>

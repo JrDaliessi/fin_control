@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UI-001 concluído; entrega incremental validada, sem commit, push ou deploy executado nesta fase
+- Fase atual: Dia 7 da UI-002 concluído; pipeline, segurança, observabilidade e preparação de release validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -53,6 +53,13 @@
 - Data do hardening interno da UI-001: 2026-07-15
 - Data da revisão de UX, acessibilidade e PWA da UI-001: 2026-07-15
 - Data da validação final e preparação de release da UI-001: 2026-07-15
+- Data do discovery e arquitetura da UI-002: 2026-07-16
+- Data da estratégia de testes da UI-002: 2026-07-16
+- Data da implementação mínima da UI-002: 2026-07-16
+- Data da expansão controlada da UI-002: 2026-07-16
+- Data da refatoração e hardening da UI-002: 2026-07-16
+- Data da revisão de UX, acessibilidade e PWA da UI-002: 2026-07-16
+- Data da validação final e preparação de release da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -230,6 +237,30 @@ src/
 - Testes: `*.spec.ts` ou `*.test.ts`
 - Componentes genéricos ficam em `src/shared/components/ui`
 - Componentes específicos ficam dentro da própria feature
+
+## Convenções Git
+
+### Branches
+- `main` — produção estável, protegida
+- `develop` — integração contínua, recebe squash merges das features
+- `feature/<ID>-<desc>` — criada de `develop`, merge de volta com `--squash`
+- `fix/<ID>-<desc>` — criada de `develop`, merge com `--squash`
+- `hotfix/<ID>-<desc>` — criada de `main`, merge com `--no-ff` para `main` + `develop`
+
+### Commits
+- Formato: `<tipo>(<escopo>): <descrição> | Dia <N> <ID>`
+- Tipos: `feat`, `fix`, `test`, `refactor`, `chore`, `docs`, `style`, `ci`, `perf`, `security`
+- Escopos por domínio: `project`, `auth`, `accounts`, `transactions`, `dashboard`, `ui`, `shell`, `categories`, `analytics`, `goals`, `gamification`
+- Template local configurado em `.gitmessage`
+- Exemplo: `feat(accounts): implementar listagem por usuário | Dia 3 SR-009`
+
+### Merge
+- Feature → develop: `git merge --squash` (1 commit limpo por feature)
+- develop → main: `git merge --no-ff` (merge commit preservando ponto de release)
+- Tags: Semantic Versioning `vMAJOR.MINOR.PATCH`
+
+### Documentação
+- Fluxo completo em `docs/git-workflow.md`
 
 ## Padrão de Testes
 - TDD obrigatório para regras principais.
@@ -882,6 +913,11 @@ Regra operacional:
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
+- Erro: o workflow Git passou a direcionar features para `develop`, mas o CI permaneceu limitado a `main`, permitindo merge de integração sem gates automáticos. Prevenção: toda mudança na estratégia de branches deve atualizar e testar os gatilhos de CI para branches de integração e release na mesma entrega.
+- Erro: o mock de `signOut` adicionado no Dia 4 da UI-002 foi inferido sem parâmetros, gerando `TS2554` quando o teste verificou `{ scope: "local" }`. Prevenção: tipar mocks de integrações pela assinatura real antes do primeiro type-check e incluir explicitamente os argumentos relevantes no fake, mesmo quando o corpo não os utiliza.
+- Erro: passar um route group com parênteses como filtro posicional do Jest resultou em `No tests found`, sem executar os contratos da UI-002. Prevenção: para testes dentro de `src/app/(grupo)`, usar `npx jest --runInBand --runTestsByPath` com caminhos literais e confirmar a lista de suítes executadas.
+- Erro: importar `PrivateAppShell` estaticamente antes do mock de `next/navigation` fez o transformador Next/Jest carregar o hook real e falhar por ausência do App Router. Prevenção: registrar o mock antes do carregamento e obter o módulo com `jest.requireActual()` quando a ordem de avaliação fizer parte do harness.
+- Erro: a seção de pendências manteve o Dia 4 da UI-001 como próximo passo depois de a UI-001 já ter concluído o Dia 7. Prevenção: ao encerrar qualquer fase, validar em conjunto o estado no topo, a seção de pendências, o backlog e o roadmap; nenhuma referência histórica pode permanecer redigida como instrução operacional atual.
 - Erro: colocar regra de negócio em componente React. Prevenção: mover regra para `domain` ou `application`.
 - Erro: acessar Supabase pela camada visual. Prevenção: usar repositórios em `infrastructure`.
 - Erro: expandir escopo por conveniência. Prevenção: registrar item no backlog antes de executar.
@@ -1227,7 +1263,9 @@ Estado de saída:
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
 - Dias 2 a 6 da SR-009 concluídos; persistência, RLS, apresentação server-side, hardening e UX/PWA foram validados incrementalmente.
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
-- Próximo passo operacional: executar explicitamente o Dia 4 da UI-001; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- Dia 7 da UI-001 concluído; pipeline final passou com 41 suítes e 194 testes.
+- Dia 1 da UI-002 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0006.
+- Próximo passo operacional: executar explicitamente o Dia 2 da UI-002; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -1800,6 +1838,356 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Objetivo refinado:
+- transformar o cabeçalho privado mínimo em uma estrutura de orientação consistente entre os fluxos já existentes
+- oferecer acesso previsível em desktop, tablet e mobile sem anunciar capacidades futuras
+- preservar autenticação, tema, logout, acessibilidade e fronteiras arquiteturais validadas na UI-001 e na SR-008
+
+Estado e dependências:
+- UI-001 confirmada como `READY_FOR_RELEASE`
+- branch atual `feature/UI-002-shell-nav`
+- item UI-002 movido de `DISCOVERY` para `IN_PROGRESS`
+- estado de entrada do novo ciclo: `READY_FOR_RELEASE`
+- nenhum bloqueio duro identificado
+
+Auditoria da base:
+- `PrivateAppShell` atual é uma client composition root e concentra e-mail, montagem do logout e redirecionamento fixo para `/login`
+- rotas privadas funcionais confirmadas: `/dashboard`, `/transactions` e `/accounts`
+- `/` renderiza o dashboard e permanece alias funcional
+- `ThemeSwitcher`, `SignOutButton`, tokens semânticos e Lucide já existem; nenhuma dependência adicional é necessária
+- não existem busca, notificações, perfil, configurações, metas, agregador de ações ou menu “Mais” funcionais
+
+Matriz de navegação aprovada:
+
+| Destino | Desktop/tablet | Mobile | Estado ativo adicional |
+| --- | --- | --- | --- |
+| `/dashboard` | Visão geral | Início | `/` |
+| `/transactions` | Transações | Transações | nenhum |
+| `/accounts` | Contas | Contas | nenhum |
+
+Contrato responsivo:
+- desktop a partir de `1024px`: sidebar expandida e topbar
+- tablet entre `768px` e `1023px`: rail compacto persistente com nomes acessíveis, sem depender de hover
+- mobile abaixo de `768px`: topbar compacta e navegação inferior com apenas três destinos
+- conteúdo reserva espaço para a navegação mobile e não pode apresentar overflow horizontal
+- links mantêm foco visível, alvo mínimo de 44 × 44 px e `aria-current="page"` quando ativos
+
+Decisões arquiteturais:
+- `PrivateAppShell` permanece em `src/app/(private)` como composition root visual
+- componentes específicos do shell serão criados em `src/app/(private)/components` e não em `shared` até existir reutilização real
+- configuração de rotas será determinística e baseada somente no pathname; não depende de Supabase ou dados financeiros
+- as páginas continuam proprietárias de seus elementos `main`; o shell fornece contêiner e landmarks, sem `main` duplicado
+- o contrato de logout e seus casos de uso não serão alterados
+- nenhuma nova primitive compartilhada foi aprovada nesta fase
+
+Fora do escopo:
+- busca, notificações, avatar/menu de perfil, configurações e ajuda
+- Cartões, Planejamento, Orçamentos, Metas, Relatórios, Importações e FinControl IA
+- botão central “Adicionar”, drawer, bottom sheet ou menu hambúrguer
+- novas rotas, mudanças nas páginas internas, regras financeiras, Supabase, migrations e offline
+
+Matriz preliminar para o Dia 2:
+- configuração: contém apenas as três rotas aprovadas e resolve `/` como alias do dashboard
+- apresentação: itens corretos por viewport, nomes acessíveis, estado ativo e `aria-current`
+- apresentação: ausência explícita de rotas e ações futuras
+- regressão: e-mail, tema, loading/erro do logout e redirecionamento permanecem funcionais
+- responsividade: alvos de 44 × 44 px, espaço inferior mobile e ausência de overflow
+- arquitetura: nenhum import de Supabase em componentes de navegação e nenhuma regra financeira no shell
+
+Riscos:
+- risco médio de regressão transversal porque o shell envolve todas as rotas privadas
+- risco de dois destinos para o dashboard mitigado por `/dashboard` canônico e `/` tratado apenas como alias ativo
+- risco de abstração prematura mitigado mantendo componentes específicos próximos ao App Router
+- risco de falso affordance mitigado omitindo todas as capacidades não funcionais
+
+Artefatos atualizados:
+- `project-context.md`
+- `architecture.md`
+- `roadmap.md`
+- `backlog.md`
+- `quality-gates.md`
+- `adr/0006-responsive-private-shell.md`
+- `adr/README.md`
+
+Limites preservados:
+- nenhum código funcional ou teste criado
+- nenhuma dependência instalada
+- nenhuma alteração no Supabase, autenticação, domínio financeiro ou PWA
+- arquivo não rastreado `rewrite-msgs.sh` preservado sem alteração
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- próximo passo recomendado: executar explicitamente `dia 2` da UI-002
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Prioridade por camada:
+1. configuração pura de apresentação: matriz de rotas, alias e resolução exata do pathname
+2. composition root: landmarks, estado ativo, ações globais e preservação de um único `main`
+3. responsividade e acessibilidade: variantes desktop/mobile, nomes, foco e alvos mínimos
+4. regressão: contratos existentes de tema, logout, rotas privadas e Proxy
+
+Matriz executável:
+
+| Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- |
+| `PRIVATE_NAVIGATION_ITEMS` | somente dashboard, transações e contas; rótulos específicos por viewport | RED por módulo ausente |
+| `getPrivateNavigationItemForPath` | `/` e `/dashboard`; paths canônicos; paths futuros, aninhados ou desconhecidos | RED por módulo ausente |
+| `PrivateAppShell` | navegações nomeadas, links disponíveis, ausência de falso affordance | RED funcional |
+| estado ativo | `aria-current="page"` somente no destino de `/accounts` nas duas variantes | RED funcional |
+| ações globais | banner, e-mail, tema, logout e um único landmark `main` | RED pela ausência do tema no shell |
+| layout mobile | contêiner com espaço inferior, largura mínima segura e nenhum `main` duplicado | RED por contêiner ausente |
+
+Testes criados:
+- `src/app/(private)/tests/private-navigation.test.ts`
+- `src/app/(private)/tests/PrivateAppShell.test.tsx`
+
+Cenários planejados:
+- 10 cenários puros para matriz, alias, caminhos canônicos e caminhos indisponíveis
+- 4 cenários de composição para navegação, estado ativo, ações globais e layout mobile
+- testes existentes de `SignOutButton` e `ThemeSwitcher` permanecem como regressão específica, sem duplicação
+
+Resultado TDD:
+- primeira tentativa posicional do Jest não encontrou testes por interpretar os parênteses do route group; o comando foi corrigido sem alterar expectativas
+- primeiro harness do shell carregou `useRouter()` real porque o mock não foi elevado; a ordem foi corrigida com `jest.requireActual()` após o mock
+- RED direcionado válido: 2 suítes falharam; 4 testes executáveis do shell falharam pelos contratos ausentes e a suíte pura falhou ao carregar o módulo deliberadamente inexistente
+- `npm run type-check`: falhou somente com um `TS2307` para `../navigation/private-navigation`
+- rede anterior, excluindo somente os dois contratos RED: 41 suítes e 194 testes passaram
+- `npm run lint`: passou com 0 warnings
+- build não executado porque o type-check deve permanecer vermelho nesta fase
+- audit não repetido porque nenhuma dependência ou lockfile foi alterado
+
+Implementação bloqueada até o Dia 3:
+- `src/app/(private)/navigation/private-navigation.ts`
+- componentes específicos de sidebar/rail, topbar e navegação mobile
+- integração responsiva em `PrivateAppShell.tsx`
+- qualquer ajuste de apresentação necessário para satisfazer os contratos sem expandir escopo
+
+Limites preservados:
+- nenhum código funcional criado ou alterado
+- nenhum teste existente removido, relaxado ou ignorado
+- nenhuma dependência instalada
+- nenhuma mudança em Supabase, autenticação, rotas, domínio financeiro ou PWA
+- `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar explicitamente `dia 3` da UI-002
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Implementação mínima:
+- configuração pura e tipada com três destinos canônicos e alias `/` para o dashboard
+- resolução exata de pathname, sem ativar paths futuros ou aninhados desconhecidos
+- sidebar fixa expandida em desktop e compacta como rail em tablet
+- navegação inferior mobile com Início, Transações e Contas
+- topbar com marca, título da rota, identidade disponível, `ThemeSwitcher` e `SignOutButton`
+- composição responsiva em `PrivateAppShell`, preservando o único `main` pertencente à página
+- reserva de espaço inferior mobile para impedir sobreposição pela navegação fixa
+
+Arquivos criados:
+- `src/app/(private)/navigation/private-navigation.ts`
+- `src/app/(private)/components/PrivateNavigation.tsx`
+- `src/app/(private)/components/PrivateTopbar.tsx`
+
+Arquivo funcional alterado:
+- `src/app/(private)/PrivateAppShell.tsx`
+
+Resultado TDD:
+- primeira passagem GREEN: 2 suítes e 14 testes direcionados passaram
+- regressão completa: 43 suítes e 208 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou com 0 warnings
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `ƒ Proxy (Middleware)`
+
+Aderência arquitetural:
+- configuração de navegação não depende de React, Next.js, Supabase ou domínio financeiro
+- componentes específicos permanecem próximos ao App Router e não foram promovidos a primitives compartilhadas
+- nenhum acesso Supabase foi introduzido nos componentes ou na configuração
+- montagem existente de `SignOutUseCase` e `SupabaseAuthGateway` permaneceu na composition root
+- nenhuma regra financeira, rota ou capacidade futura foi adicionada
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+
+Escopo preservado:
+- somente `/dashboard`, `/transactions` e `/accounts` aparecem na navegação
+- `/` ativa o destino canônico do dashboard
+- busca, notificações, perfil, configurações, ajuda, “Adicionar”, Metas, “Mais” e demais rotas futuras permanecem ausentes
+- nenhuma dependência, migration, alteração de autenticação, PWA ou página interna
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 4` da UI-002
+
+## Dia 4 — Expansão Controlada da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Auditoria de jornada:
+- navegações desktop/tablet/mobile e estado ativo já estavam funcionais
+- teclado precisava atravessar sidebar e topbar antes de chegar ao conteúdo em toda mudança de rota
+- topbar desaparecia durante rolagem, afastando tema e logout
+- integração de logout e fallback para path privado desconhecido ainda não tinham cobertura no shell
+
+Contratos adicionados antes da implementação:
+- link “Pular para o conteúdo” aponta para alvo estável
+- alvo do conteúdo é focalizável programaticamente e mantém o único `main` da página
+- topbar permanece sticky no topo
+- logout da topbar chama escopo local, redireciona para `/login` e atualiza o router
+- path desconhecido usa título neutro e não marca item de navegação como atual
+
+Resultado RED/GREEN:
+- RED direcionado: 1 teste falhou e 16 passaram; ausência do skip link foi a única falha funcional nova
+- GREEN direcionado: 2 suítes e 17 testes passaram
+- regressão completa: 43 suítes e 211 testes passaram
+- `npm run type-check`: passou após correção documentada da assinatura do mock de logout
+- `npm run lint`: passou com 0 warnings
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`
+
+Implementação:
+- `PrivateAppShell` ganhou skip link visível ao foco e alvo `#conteudo-principal` com `tabIndex={-1}`
+- `PrivateTopbar` passou a usar `sticky top-0 z-20`
+- nenhum estado artificial de loading, empty, success ou error foi criado; o shell reutiliza os estados reais do logout
+
+Limites preservados:
+- nenhuma rota, ação, primitive ou dependência adicionada
+- nenhuma mudança em Supabase, autenticação, domínio financeiro, páginas internas ou PWA
+- nenhum destino futuro passou a ser exibido
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- inspeção visual aprofundada permanece planejada para o Dia 6
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 5` da UI-002
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Auditoria estrutural:
+- arquivos de produção do shell medidos; `PrivateNavigation.tsx` era o maior com 99 linhas e nenhum arquivo foi classificado como monólito
+- componentes desktop e mobile permaneceram separados porque possuem composição, breakpoints e rótulos distintos
+- nenhuma primitive ou abstração compartilhada foi criada sem reutilização real
+- a resolução da rota ativa era repetida uma vez para cada item e foi consolidada em uma busca por variante
+
+Hardening guiado por teste:
+- contrato RED exigiu que o destino móvel ativo usasse fundo e peso além de cor e `aria-current`
+- RED direcionado: 1 falha e 16 testes preservados
+- GREEN direcionado: 2 suítes e 17 testes passaram
+- item móvel ativo passou a usar `bg-surface-muted`, `font-semibold` e `text-primary`; itens inativos mantêm `font-medium`
+
+Validação:
+- regressão completa: 43 suítes e 211 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou com 0 warnings
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou para todas as rotas existentes e `ƒ Proxy (Middleware)`
+
+Limites preservados:
+- nenhuma rota, feature, dependência, regra financeira, integração Supabase, autenticação ou PWA foi alterada
+- nenhuma reescrita ampla ou divisão cosmética foi realizada
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado
+- retorno a `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 6` da UI-002
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Auditoria executada:
+- jornada do shell revisada por semântica, testes de apresentação, classes responsivas e contratos PWA
+- navegações mantêm landmarks nomeados, `aria-current`, foco visível, alvos mínimos de 44 px e somente destinos funcionais
+- skip link foi validado como primeiro destino do teclado e aponta para conteúdo focalizável sem duplicar `main`
+- desktop, tablet e mobile preservam composições específicas sem acesso direto da UI ao Supabase
+
+Resultado TDD:
+- RED direcionado confirmou duas lacunas: reserva inferior sem somar safe area e links sem tratamento explícito de movimento reduzido
+- RED: 2 falhas e 17 testes preservados
+- GREEN direcionado: 3 suítes e 19 testes passaram
+- conteúdo móvel passou a reservar `5rem + env(safe-area-inset-bottom)`
+- links das navegações passaram a usar `motion-reduce:transition-none`
+
+Experiência PWA:
+- manifest permanece ligado aos metadados, com `display: standalone`, ícones raster/maskable e shortcuts somente para fluxos reais
+- HTTP local confirmou manifest `200 application/manifest+json` e ícone `200 image/png`
+- acesso anônimo a `/dashboard` permaneceu protegido com `307` para `/login`
+- nenhum service worker, Workbox, `next-pwa` ou promessa offline foi introduzido
+
+Validação e limitação:
+- inspeção visual automatizada não pôde iniciar porque o controle do navegador falhou ao preparar seus arquivos locais; o fallback de controle do Windows depende da mesma conexão indisponível
+- limitação classificada como bloqueio leve; revisão semântica, responsiva, HTTP e testes automatizados permaneceram disponíveis
+- regressão completa: 43 suítes e 211 testes passaram
+- `npm run type-check`, `npm run lint`, `npm audit --audit-level=high` e `npm run build` passaram
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- próximo passo recomendado: executar explicitamente `dia 7` da UI-002
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Pipeline final:
+- `npm run lint`: passou com 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou com 44 suítes e 212 testes
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`
+- `git diff --check` passou para o escopo versionado e para as alterações do Dia 7
+
+Correção de gate orientada por teste:
+- auditoria encontrou CI restrito a `main`, embora o fluxo Git direcione features para `develop`
+- erro e prevenção foram registrados em Erros Recorrentes antes da correção
+- RED: `tests/ci-workflow.test.ts` recebeu somente `main`
+- GREEN: pushes e pull requests para `main` e `develop` passaram a acionar o mesmo pipeline
+
+Revisão de segurança e threat model:
+- componentes e configuração de navegação não acessam Supabase diretamente; integração de logout permanece na composition root por gateway e caso de uso
+- logout usa escopo local e destino fixo `/login`; rota desconhecida não ativa destino indevido
+- nenhum `any`, ignore de TypeScript, `eval`, `dangerouslySetInnerHTML`, segredo real ou chave privilegiada foi identificado no shell
+- o único storage usado pela experiência é `fincontrol.theme`; o único match de `service_role` é placeholder vazio/documentação
+- ameaças consideradas: open redirect, exposição de sessão, autorização inferida pela navegação, XSS no shell e sobreposição de conteúdo mobile
+- mitigações: redirects fixos, ausência de logs sensíveis, proteção server-side independente da UI, renderização React, safe area e rotas limitadas a fluxos reais
+
+Baseline de observabilidade:
+- CI registra lint, type-check, testes, audit e build em branches de integração e release
+- loading, erro e sucesso do logout são anunciáveis; fallback de rota privada desconhecida é neutro
+- nenhum evento analítico novo foi criado; instrumentação futura não pode registrar e-mail, cookies, JWT ou dados financeiros
+
+Riscos residuais:
+- inspeção visual automatizada do Dia 6 permaneceu indisponível por falha ambiental; risco não crítico coberto parcialmente por testes semânticos e responsivos
+- pinagem das GitHub Actions por SHA permanece dívida baixa já registrada para hardening de CI
+- nenhum bloqueio crítico ou dívida crítica/alta aberta para a entrega incremental da UI-002
+
+Preparação de release:
+- escopo liberável: sidebar desktop, rail tablet, navegação inferior mobile, topbar, estado ativo, tema, logout, teclado, safe area e experiência PWA coerente
+- fora da release: rotas futuras, busca, notificações, perfil, configurações, botão Adicionar, drawers, gráficos, IA e offline
+- nenhum deploy, push, PR, migration, alteração Supabase ou dado persistente foi executado
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- UI-002 concluída sem avanço automático para outra small release
+- próximo passo recomendado: selecionar explicitamente a próxima small release do backlog
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 

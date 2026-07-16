@@ -16,6 +16,18 @@
 - Backlog fatiado em small releases.
 - Dependências críticas e bloqueios documentados.
 
+### Resultado observado — UI-002
+- UI-001 confirmada como dependência concluída e UI-002 movida para `IN_PROGRESS`.
+- Rotas funcionais auditadas e limitadas a `/dashboard`, `/transactions` e `/accounts`; `/` permanece alias do dashboard.
+- Matriz desktop, tablet e mobile definida sem renderizar rotas ou ações futuras.
+- `PrivateAppShell` preservado como composition root visual, sem regra financeira e sem novo acesso ao Supabase.
+- Componentes específicos planejados próximos ao App Router; nenhuma primitive genérica ou dependência adicional autorizada.
+- Contratos preliminares cobrem estado ativo, `aria-current`, teclado, foco, 44 × 44 px, overflow, tema e logout.
+- Busca, notificações, perfil, configurações, botão “Adicionar”, drawers, bottom sheets e novas rotas permaneceram fora do escopo.
+- ADR `0006-responsive-private-shell.md` criado.
+- Nenhum código funcional ou teste criado no Dia 1.
+- Estado de saída validado como `ARCHITECTURE_READY`.
+
 ### Resultado observado — SR-008
 - Objetivo refinado para criar identidade verificável antes da persistência financeira.
 - Escopo limitado a login por e-mail/senha, logout, sessão SSR, Proxy e proteção de rotas.
@@ -68,6 +80,18 @@
 - Lint passa.
 - Audit sem vulnerabilidades conhecidas.
 - Implementação funcional segue bloqueada até Dia 3.
+
+### Resultado observado — UI-002
+- Matriz documentada em `test-strategy.md` com configuração pura, composition root, acessibilidade, responsividade e regressão.
+- Dois arquivos de teste criados antes da implementação, totalizando 14 cenários planejados.
+- RED direcionado válido: 2 suítes falharam; 4 testes do shell executaram e falharam pelos contratos ausentes, enquanto a suíte de configuração foi bloqueada pelo módulo ainda inexistente.
+- O harness foi corrigido para carregar `PrivateAppShell` depois do mock de `next/navigation`; nenhuma expectativa funcional foi alterada.
+- Type-check falhou somente com um `TS2307` para `navigation/private-navigation`.
+- Rede anterior: 41 suítes e 194 testes passaram ao excluir apenas os dois contratos RED da UI-002.
+- Lint passou com 0 warnings.
+- Build não foi executado porque o type-check vermelho é deliberado; audit não foi repetido porque dependências e lockfile não mudaram.
+- Nenhum código funcional, componente, rota, dependência ou integração foi criado.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
 
 ### Resultado observado — SR-009
 - Matriz da persistência de contas documentada em `test-strategy.md`.
@@ -124,6 +148,19 @@
 - Build passando.
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para módulos fora da small release.
+
+### Resultado observado — UI-002
+- Configuração pura de três rotas e alias `/` implementada sem dependência de framework ou infraestrutura.
+- Sidebar/rail, topbar e navegação mobile criadas próximas ao App Router, sem nova primitive compartilhada.
+- `PrivateAppShell` preserva autenticação, tema, logout e exatamente um `main` pertencente à página.
+- Somente dashboard, transações e contas aparecem; destinos e ações futuras permanecem ausentes.
+- Testes direcionados passaram com 2 suítes e 14 testes.
+- Regressão completa passou com 43 suítes e 208 testes.
+- Type-check e lint passaram; lint registrou 0 warnings.
+- Audit passou com 0 vulnerabilidades.
+- Build passou com todas as rotas existentes e `ƒ Proxy (Middleware)`.
+- Inspeção estática confirmou ausência de Supabase e regras financeiras nos novos componentes e configuração.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
 ### Resultado observado — SR-008
 - `AuthUser` implementado sem dependência de framework.
@@ -191,6 +228,19 @@
 - Build passando.
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para cartão, parcelas, dashboard completo, IA, importação ou Open Finance.
+
+### Resultado observado — UI-002
+- RED direcionado confirmou somente a ausência do atalho de conteúdo; 16 cenários anteriores permaneceram verdes.
+- Skip link e alvo focalizável adicionados sem introduzir um segundo `main`.
+- Topbar passou a permanecer sticky com tema, identidade e logout disponíveis durante rolagem.
+- Testes de integração confirmaram logout local, redirect fixo e refresh do router.
+- Path desconhecido mantém título neutro e nenhum item com `aria-current`.
+- GREEN direcionado: 2 suítes e 17 testes.
+- Regressão completa: 43 suítes e 211 testes.
+- Type-check, lint, audit com 0 vulnerabilidades e build passaram.
+- Assinatura inicialmente estreita do mock de logout foi documentada e corrigida sem alterar código funcional.
+- Nenhuma rota, dependência, integração ou capacidade futura foi adicionada.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
 ### Resultado observado — SR-006
 - Estados loading, empty, success e error implementados no dashboard.
@@ -262,6 +312,21 @@
 - Build passando.
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para nova feature de negócio.
+
+### Resultado observado — UI-002
+- Arquivos do shell medidos; o maior tinha 99 linhas e nenhum foi classificado como monólito.
+- Componentes desktop e mobile permaneceram separados por diferenças reais de composição e responsividade.
+- RED direcionado confirmou ausência de forma e peso no estado ativo móvel: 1 falha e 16 testes preservados.
+- GREEN direcionado passou com 2 suítes e 17 testes.
+- Resolução da rota ativa consolidada em uma busca por variante, sem nova abstração.
+- Estado ativo móvel reforçado com fundo, peso, cor e `aria-current`.
+- `npm run test:ci`: 43 suítes e 211 testes passaram.
+- `npm run type-check`: passou.
+- `npm run lint`: passou com 0 warnings.
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades.
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`.
+- Nenhuma rota, dependência, integração, regra de negócio ou capability futura foi adicionada.
+- Hardening encerrado com retorno a `IMPLEMENTATION_IN_PROGRESS`.
 
 ### Resultado observado — SR-006
 - Arquivos de produção do dashboard medidos; nenhum ultrapassava 100 linhas.
@@ -342,6 +407,23 @@
 - `npm audit` passou com 0 vulnerabilidades.
 - Limitação de verificação visual pelo navegador integrado documentada.
 
+### Resultado observado — UI-002
+- Shell revisado por semântica, testes, classes responsivas e contratos PWA.
+- RED direcionado confirmou reserva inferior sem safe area e ausência de tratamento explícito para movimento reduzido: 2 falhas e 17 testes preservados.
+- GREEN direcionado passou com 3 suítes e 19 testes.
+- Conteúdo móvel passou a reservar `5rem + env(safe-area-inset-bottom)`.
+- Navegações passaram a respeitar `prefers-reduced-motion` sem remover foco ou estado ativo.
+- Skip link validado como primeiro destino do teclado; landmarks, `aria-current` e alvos de 44 px preservados.
+- Manifest servido com `200 application/manifest+json`, ícone PNG com `200` e rota privada anônima com `307` para `/login`.
+- Nenhum service worker, Workbox, `next-pwa` ou promessa offline foi introduzido.
+- Inspeção visual automatizada indisponível por falha ambiental na conexão de controle; bloqueio leve documentado.
+- `npm run test:ci`: 43 suítes e 211 testes passaram.
+- `npm run type-check`: passou.
+- `npm run lint`: passou com 0 warnings.
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades.
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`.
+- Estado de saída validado como `QUALITY_VALIDATION`.
+
 ### Resultado observado — SR-006
 - Dashboard e registro manual inspecionados em 390x844 e 1280x800 sem overflow horizontal.
 - Empty state do dashboard passou a ser anunciado como status.
@@ -420,6 +502,21 @@
 - Riscos residuais documentados.
 - Release incremental preparada.
 - Estado final definido como `READY_FOR_RELEASE`.
+
+### Resultado observado — UI-002
+- `npm run lint`: passou com 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou com 44 suítes e 212 testes.
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades.
+- `npm run build`: passou com todas as rotas e `ƒ Proxy (Middleware)`.
+- `git diff --check` passou para a release e para as alterações do Dia 7.
+- Contrato RED reproduziu CI restrito a `main`; GREEN passou após incluir `develop` em push e pull request.
+- Componentes do shell permanecem sem acesso direto a Supabase, escapes de tipagem ou APIs perigosas.
+- Logout usa escopo local e redirect fixo; nenhum segredo real ou chave privilegiada foi identificado.
+- CI cobre branches de integração e release; estados de logout permanecem observáveis e anunciáveis.
+- Inspeção visual automatizada indisponível permanece risco não crítico; pinagem das Actions por SHA permanece dívida baixa registrada.
+- Nenhum deploy, push, PR, migration ou alteração Supabase foi executado.
+- Estado final: `READY_FOR_RELEASE`.
 
 ### Resultado observado — SR-009
 - `npm run lint`: passou, 0 warnings.
