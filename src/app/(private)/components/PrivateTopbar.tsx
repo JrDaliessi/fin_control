@@ -16,7 +16,7 @@ export function PrivateTopbar({
   const currentItem = getPrivateNavigationItemForPath(pathname);
 
   return (
-    <header className="border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-8">
       <div className="flex min-w-0 flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">

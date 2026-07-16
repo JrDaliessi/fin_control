@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UI-002 concluído; shell responsivo mínimo implementado e pipeline verde
+- Fase atual: Dia 4 da UI-002 concluído; jornada por teclado, topbar persistente e regressões de logout/fallback validadas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -56,6 +56,7 @@
 - Data do discovery e arquitetura da UI-002: 2026-07-16
 - Data da estratégia de testes da UI-002: 2026-07-16
 - Data da implementação mínima da UI-002: 2026-07-16
+- Data da expansão controlada da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -909,6 +910,7 @@ Regra operacional:
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
+- Erro: o mock de `signOut` adicionado no Dia 4 da UI-002 foi inferido sem parâmetros, gerando `TS2554` quando o teste verificou `{ scope: "local" }`. Prevenção: tipar mocks de integrações pela assinatura real antes do primeiro type-check e incluir explicitamente os argumentos relevantes no fake, mesmo quando o corpo não os utiliza.
 - Erro: passar um route group com parênteses como filtro posicional do Jest resultou em `No tests found`, sem executar os contratos da UI-002. Prevenção: para testes dentro de `src/app/(grupo)`, usar `npx jest --runInBand --runTestsByPath` com caminhos literais e confirmar a lista de suítes executadas.
 - Erro: importar `PrivateAppShell` estaticamente antes do mock de `next/navigation` fez o transformador Next/Jest carregar o hook real e falhar por ausência do App Router. Prevenção: registrar o mock antes do carregamento e obter o módulo com `jest.requireActual()` quando a ordem de avaliação fizer parte do harness.
 - Erro: a seção de pendências manteve o Dia 4 da UI-001 como próximo passo depois de a UI-001 já ter concluído o Dia 7. Prevenção: ao encerrar qualquer fase, validar em conjunto o estado no topo, a seção de pendências, o backlog e o roadmap; nenhuma referência histórica pode permanecer redigida como instrução operacional atual.
@@ -2022,6 +2024,49 @@ Escopo preservado:
 Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 4` da UI-002
+
+## Dia 4 — Expansão Controlada da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Auditoria de jornada:
+- navegações desktop/tablet/mobile e estado ativo já estavam funcionais
+- teclado precisava atravessar sidebar e topbar antes de chegar ao conteúdo em toda mudança de rota
+- topbar desaparecia durante rolagem, afastando tema e logout
+- integração de logout e fallback para path privado desconhecido ainda não tinham cobertura no shell
+
+Contratos adicionados antes da implementação:
+- link “Pular para o conteúdo” aponta para alvo estável
+- alvo do conteúdo é focalizável programaticamente e mantém o único `main` da página
+- topbar permanece sticky no topo
+- logout da topbar chama escopo local, redireciona para `/login` e atualiza o router
+- path desconhecido usa título neutro e não marca item de navegação como atual
+
+Resultado RED/GREEN:
+- RED direcionado: 1 teste falhou e 16 passaram; ausência do skip link foi a única falha funcional nova
+- GREEN direcionado: 2 suítes e 17 testes passaram
+- regressão completa: 43 suítes e 211 testes passaram
+- `npm run type-check`: passou após correção documentada da assinatura do mock de logout
+- `npm run lint`: passou com 0 warnings
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`
+
+Implementação:
+- `PrivateAppShell` ganhou skip link visível ao foco e alvo `#conteudo-principal` com `tabIndex={-1}`
+- `PrivateTopbar` passou a usar `sticky top-0 z-20`
+- nenhum estado artificial de loading, empty, success ou error foi criado; o shell reutiliza os estados reais do logout
+
+Limites preservados:
+- nenhuma rota, ação, primitive ou dependência adicionada
+- nenhuma mudança em Supabase, autenticação, domínio financeiro, páginas internas ou PWA
+- nenhum destino futuro passou a ser exibido
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- inspeção visual aprofundada permanece planejada para o Dia 6
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 5` da UI-002
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 

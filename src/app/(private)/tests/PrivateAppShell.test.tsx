@@ -1,10 +1,17 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@/shared/theme/ThemeProvider";
 
 const mockRefresh = jest.fn();
 const mockReplace = jest.fn();
+const mockProviderSignOut = jest.fn(
+  async (options: { scope: "local" }) => {
+    void options;
+    return { error: null };
+  },
+);
 let mockPathname = "/dashboard";
 
 jest.mock("next/navigation", () => ({
@@ -12,6 +19,14 @@ jest.mock("next/navigation", () => ({
   useRouter: () => ({
     refresh: mockRefresh,
     replace: mockReplace,
+  }),
+}));
+
+jest.mock("@/lib/supabase/client", () => ({
+  createSupabaseBrowserClient: () => ({
+    auth: {
+      signOut: mockProviderSignOut,
+    },
   }),
 }));
 
@@ -147,5 +162,47 @@ describe("PrivateAppShell", () => {
       "md:pb-0",
     );
     expect(screen.getAllByRole("main")).toHaveLength(1);
+  });
+
+  it("lets keyboard users bypass the persistent shell and keeps the topbar available", () => {
+    renderShell();
+
+    const skipLink = screen.getByRole("link", {
+      name: "Pular para o conteúdo",
+    });
+    const content = screen.getByTestId("private-shell-content");
+
+    expect(skipLink).toHaveAttribute("href", "#conteudo-principal");
+    expect(skipLink).toHaveClass("sr-only", "focus:not-sr-only");
+    expect(content).toHaveAttribute("id", "conteudo-principal");
+    expect(content).toHaveAttribute("tabindex", "-1");
+    expect(screen.getByRole("banner")).toHaveClass("sticky", "top-0", "z-20");
+  });
+
+  it("keeps the existing sign-out flow connected from the topbar", async () => {
+    const user = userEvent.setup();
+    renderShell();
+
+    await user.click(screen.getByRole("button", { name: "Sair" }));
+
+    await waitFor(() => {
+      expect(mockProviderSignOut).toHaveBeenCalledWith({ scope: "local" });
+      expect(mockReplace).toHaveBeenCalledWith("/login");
+      expect(mockRefresh).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("uses a neutral title and no active item for an unknown private path", () => {
+    mockPathname = "/unknown";
+    renderShell();
+
+    expect(
+      within(screen.getByRole("banner")).getByText("Área financeira"),
+    ).toBeInTheDocument();
+    expect(
+      screen
+        .getAllByRole("link")
+        .filter((link) => link.getAttribute("aria-current") === "page"),
+    ).toHaveLength(0);
   });
 });

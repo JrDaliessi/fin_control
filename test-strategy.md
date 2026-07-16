@@ -676,3 +676,19 @@ Estado de saída: `TEST_STRATEGY_READY`.
 - Nenhuma rota, dependência, integração Supabase ou capacidade futura foi antecipada.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 4 — UI-002
+
+- Novos contratos cobriram skip link, alvo focalizável, topbar sticky, logout integrado e fallback de path desconhecido.
+- RED direcionado: 1 teste falhou pela ausência de “Pular para o conteúdo”; 16 testes permaneceram verdes.
+- GREEN direcionado: 2 suítes e 17 testes verdes.
+- O skip link aponta para `#conteudo-principal`, aparece ao foco e o alvo usa `tabIndex={-1}`.
+- A topbar permanece disponível durante rolagem sem alterar os estados reais do logout.
+- Logout local, redirect para `/login` e refresh do router foram validados na composition root.
+- Path desconhecido usa “Área financeira” e não expõe `aria-current` indevido.
+- Type-check detectou assinatura estreita no mock de `signOut`; o erro foi documentado e o harness alinhado ao contrato real.
+- Regressão completa: 43 suítes e 211 testes verdes.
+- Type-check, lint, audit e build verdes.
+- Nenhum teste foi relaxado e nenhum fluxo futuro foi antecipado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

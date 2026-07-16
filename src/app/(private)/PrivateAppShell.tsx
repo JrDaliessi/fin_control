@@ -33,6 +33,12 @@ export function PrivateAppShell({ children, email }: PrivateAppShellProps) {
 
   return (
     <div className="min-h-dvh bg-background text-foreground md:pl-20 lg:pl-64">
+      <a
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+        href="#conteudo-principal"
+      >
+        Pular para o conteúdo
+      </a>
       <DesktopPrivateNavigation pathname={pathname} />
       <div className="min-w-0">
         <PrivateTopbar
@@ -43,6 +49,8 @@ export function PrivateAppShell({ children, email }: PrivateAppShellProps) {
         <div
           className="min-w-0 pb-20 md:pb-0"
           data-testid="private-shell-content"
+          id="conteudo-principal"
+          tabIndex={-1}
         >
           {children}
         </div>

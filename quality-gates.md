@@ -229,6 +229,19 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para cartão, parcelas, dashboard completo, IA, importação ou Open Finance.
 
+### Resultado observado — UI-002
+- RED direcionado confirmou somente a ausência do atalho de conteúdo; 16 cenários anteriores permaneceram verdes.
+- Skip link e alvo focalizável adicionados sem introduzir um segundo `main`.
+- Topbar passou a permanecer sticky com tema, identidade e logout disponíveis durante rolagem.
+- Testes de integração confirmaram logout local, redirect fixo e refresh do router.
+- Path desconhecido mantém título neutro e nenhum item com `aria-current`.
+- GREEN direcionado: 2 suítes e 17 testes.
+- Regressão completa: 43 suítes e 211 testes.
+- Type-check, lint, audit com 0 vulnerabilidades e build passaram.
+- Assinatura inicialmente estreita do mock de logout foi documentada e corrigida sem alterar código funcional.
+- Nenhuma rota, dependência, integração ou capacidade futura foi adicionada.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — SR-006
 - Estados loading, empty, success e error implementados no dashboard.
 - Provider local mantém transações em memória entre rotas sem acessar infraestrutura.
