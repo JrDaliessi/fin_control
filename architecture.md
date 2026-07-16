@@ -288,6 +288,21 @@ O projeto deve ter:
 - Decisão completa: `adr/0005-fincontrol-pulse-design-system.md`.
 - Especificação completa: `docs/product/fincontrol-pulse-interface-copy.md`.
 
+## Shell e Navegação Responsiva — UI-002
+
+- `src/app/(private)/PrivateAppShell.tsx` permanece a composition root cliente do shell privado e não recebe regras financeiras.
+- A matriz navegável inicial contém somente `/dashboard`, `/transactions` e `/accounts`; `/` permanece alias do dashboard e deve ativar o mesmo item de Visão geral.
+- O estado ativo deriva exclusivamente do pathname conhecido, com correspondência exata para evitar ativação indevida, e expõe `aria-current="page"`.
+- Desktop a partir de `1024px` usa sidebar expandida; tablet entre `768px` e `1023px` usa rail compacto com nomes acessíveis; mobile abaixo de `768px` usa topbar compacta e navegação inferior.
+- O mobile contém apenas Início, Transações e Contas. O botão “Adicionar”, Metas e “Mais” permanecem ausentes porque seus fluxos agregadores ainda não existem.
+- A topbar pode compor marca, título derivado da rota conhecida, `ThemeSwitcher`, identidade disponível e `SignOutButton`; busca, notificações e menu de perfil não são exibidos antes de seus respectivos fluxos.
+- Navegação e topbar são componentes de composição do App Router e ficam em `src/app/(private)/components` enquanto não houver reutilização fora do shell. Isso evita transformar candidatos visuais em primitives genéricas prematuras.
+- O contrato de logout existente permanece inalterado: `SignOutUseCase` e `SupabaseAuthGateway` são montados na composition root, com redirecionamento fixo para `/login`.
+- Conteúdo deve preservar um único `main` pertencente à página. O shell fornece contêiner e landmarks de navegação, sem envolver as páginas em um segundo `main`.
+- Em mobile, o conteúdo deve reservar espaço inferior para que a navegação fixa não cubra controles; todas as ações mantêm alvo mínimo de 44 × 44 px, foco visível e uso completo por teclado.
+- Nenhuma mudança de domain, application, infrastructure, Supabase, migration, PWA offline ou regra financeira pertence à UI-002.
+- Decisão completa: `adr/0006-responsive-private-shell.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações

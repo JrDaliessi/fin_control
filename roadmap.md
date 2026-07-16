@@ -170,7 +170,7 @@ Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` concluída em 2026-07-15 no estado `READY_FOR_RELEASE`; `UI-002` a `UI-006` permanecem em `DISCOVERY`. O pipeline final, a revisão de segurança e a baseline de observabilidade foram concluídos sem antecipar o shell ou as telas seguintes.
+Status: `UI-001` concluída em 2026-07-15 no estado `READY_FOR_RELEASE`; Dia 1 da `UI-002` concluído em 2026-07-16 no estado `ARCHITECTURE_READY`; `UI-003` a `UI-006` permanecem em `DISCOVERY`. O shell foi delimitado às rotas privadas realmente funcionais, sem antecipar telas ou ações futuras.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -193,7 +193,16 @@ Saída arquitetural da UI-001:
 - primitives limitadas a `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`;
 - shell, dashboard, drawers, gráficos, regras financeiras e Supabase permanecem fora do item.
 
-Próximo passo da trilha: selecionar explicitamente a próxima small release. `UI-002` é a sucessora visual recomendada, enquanto `SR-010` continua sendo a próxima fundação de dados; nenhuma delas foi iniciada automaticamente.
+Saída arquitetural da UI-002 no Dia 1:
+
+- rotas navegáveis limitadas a `/dashboard`, `/transactions` e `/accounts`;
+- `/` permanece alias do dashboard e compartilha o estado ativo de Visão geral;
+- sidebar expandida em desktop, rail compacto em tablet e navegação inferior com três destinos em mobile;
+- `PrivateAppShell` permanece composition root visual e conserva autenticação, tema e logout já validados;
+- componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
+- busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
+
+Próximo passo da trilha: executar explicitamente `dia 2` da `UI-002` para criar os contratos de teste antes da implementação. `SR-010` continua em `DISCOVERY` como próxima fundação de dados.
 
 Integrações posteriores:
 

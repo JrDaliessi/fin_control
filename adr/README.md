@@ -16,3 +16,4 @@ Formato recomendado:
 - `0003-auth-session-boundary.md` — autenticação e sessão protegida
 - `0004-financial-accounts-persistence-rls.md` — persistência, grants e RLS de contas
 - `0005-fincontrol-pulse-design-system.md` — direção visual, copy e implementação incremental do FinControl Pulse
+- `0006-responsive-private-shell.md` — matriz de rotas e composição responsiva do shell privado

@@ -16,6 +16,18 @@
 - Backlog fatiado em small releases.
 - Dependências críticas e bloqueios documentados.
 
+### Resultado observado — UI-002
+- UI-001 confirmada como dependência concluída e UI-002 movida para `IN_PROGRESS`.
+- Rotas funcionais auditadas e limitadas a `/dashboard`, `/transactions` e `/accounts`; `/` permanece alias do dashboard.
+- Matriz desktop, tablet e mobile definida sem renderizar rotas ou ações futuras.
+- `PrivateAppShell` preservado como composition root visual, sem regra financeira e sem novo acesso ao Supabase.
+- Componentes específicos planejados próximos ao App Router; nenhuma primitive genérica ou dependência adicional autorizada.
+- Contratos preliminares cobrem estado ativo, `aria-current`, teclado, foco, 44 × 44 px, overflow, tema e logout.
+- Busca, notificações, perfil, configurações, botão “Adicionar”, drawers, bottom sheets e novas rotas permaneceram fora do escopo.
+- ADR `0006-responsive-private-shell.md` criado.
+- Nenhum código funcional ou teste criado no Dia 1.
+- Estado de saída validado como `ARCHITECTURE_READY`.
+
 ### Resultado observado — SR-008
 - Objetivo refinado para criar identidade verificável antes da persistência financeira.
 - Escopo limitado a login por e-mail/senha, logout, sessão SSR, Proxy e proteção de rotas.

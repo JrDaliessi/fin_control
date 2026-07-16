@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UI-001 concluído; entrega incremental validada, sem commit, push ou deploy executado nesta fase
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da UI-002 concluído; shell e navegação responsiva delimitados, sem implementação funcional
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -53,6 +53,7 @@
 - Data do hardening interno da UI-001: 2026-07-15
 - Data da revisão de UX, acessibilidade e PWA da UI-001: 2026-07-15
 - Data da validação final e preparação de release da UI-001: 2026-07-15
+- Data do discovery e arquitetura da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -906,6 +907,7 @@ Regra operacional:
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
+- Erro: a seção de pendências manteve o Dia 4 da UI-001 como próximo passo depois de a UI-001 já ter concluído o Dia 7. Prevenção: ao encerrar qualquer fase, validar em conjunto o estado no topo, a seção de pendências, o backlog e o roadmap; nenhuma referência histórica pode permanecer redigida como instrução operacional atual.
 - Erro: colocar regra de negócio em componente React. Prevenção: mover regra para `domain` ou `application`.
 - Erro: acessar Supabase pela camada visual. Prevenção: usar repositórios em `infrastructure`.
 - Erro: expandir escopo por conveniência. Prevenção: registrar item no backlog antes de executar.
@@ -1251,7 +1253,9 @@ Estado de saída:
 - Dia 7 da SR-008 concluído; pipeline, segurança, observabilidade e release readiness validados em 33 suítes e 153 testes.
 - Dias 2 a 6 da SR-009 concluídos; persistência, RLS, apresentação server-side, hardening e UX/PWA foram validados incrementalmente.
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
-- Próximo passo operacional: executar explicitamente o Dia 4 da UI-001; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- Dia 7 da UI-001 concluído; pipeline final passou com 41 suítes e 194 testes.
+- Dia 1 da UI-002 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0006.
+- Próximo passo operacional: executar explicitamente o Dia 2 da UI-002; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -1824,6 +1828,91 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Objetivo refinado:
+- transformar o cabeçalho privado mínimo em uma estrutura de orientação consistente entre os fluxos já existentes
+- oferecer acesso previsível em desktop, tablet e mobile sem anunciar capacidades futuras
+- preservar autenticação, tema, logout, acessibilidade e fronteiras arquiteturais validadas na UI-001 e na SR-008
+
+Estado e dependências:
+- UI-001 confirmada como `READY_FOR_RELEASE`
+- branch atual `feature/UI-002-shell-nav`
+- item UI-002 movido de `DISCOVERY` para `IN_PROGRESS`
+- estado de entrada do novo ciclo: `READY_FOR_RELEASE`
+- nenhum bloqueio duro identificado
+
+Auditoria da base:
+- `PrivateAppShell` atual é uma client composition root e concentra e-mail, montagem do logout e redirecionamento fixo para `/login`
+- rotas privadas funcionais confirmadas: `/dashboard`, `/transactions` e `/accounts`
+- `/` renderiza o dashboard e permanece alias funcional
+- `ThemeSwitcher`, `SignOutButton`, tokens semânticos e Lucide já existem; nenhuma dependência adicional é necessária
+- não existem busca, notificações, perfil, configurações, metas, agregador de ações ou menu “Mais” funcionais
+
+Matriz de navegação aprovada:
+
+| Destino | Desktop/tablet | Mobile | Estado ativo adicional |
+| --- | --- | --- | --- |
+| `/dashboard` | Visão geral | Início | `/` |
+| `/transactions` | Transações | Transações | nenhum |
+| `/accounts` | Contas | Contas | nenhum |
+
+Contrato responsivo:
+- desktop a partir de `1024px`: sidebar expandida e topbar
+- tablet entre `768px` e `1023px`: rail compacto persistente com nomes acessíveis, sem depender de hover
+- mobile abaixo de `768px`: topbar compacta e navegação inferior com apenas três destinos
+- conteúdo reserva espaço para a navegação mobile e não pode apresentar overflow horizontal
+- links mantêm foco visível, alvo mínimo de 44 × 44 px e `aria-current="page"` quando ativos
+
+Decisões arquiteturais:
+- `PrivateAppShell` permanece em `src/app/(private)` como composition root visual
+- componentes específicos do shell serão criados em `src/app/(private)/components` e não em `shared` até existir reutilização real
+- configuração de rotas será determinística e baseada somente no pathname; não depende de Supabase ou dados financeiros
+- as páginas continuam proprietárias de seus elementos `main`; o shell fornece contêiner e landmarks, sem `main` duplicado
+- o contrato de logout e seus casos de uso não serão alterados
+- nenhuma nova primitive compartilhada foi aprovada nesta fase
+
+Fora do escopo:
+- busca, notificações, avatar/menu de perfil, configurações e ajuda
+- Cartões, Planejamento, Orçamentos, Metas, Relatórios, Importações e FinControl IA
+- botão central “Adicionar”, drawer, bottom sheet ou menu hambúrguer
+- novas rotas, mudanças nas páginas internas, regras financeiras, Supabase, migrations e offline
+
+Matriz preliminar para o Dia 2:
+- configuração: contém apenas as três rotas aprovadas e resolve `/` como alias do dashboard
+- apresentação: itens corretos por viewport, nomes acessíveis, estado ativo e `aria-current`
+- apresentação: ausência explícita de rotas e ações futuras
+- regressão: e-mail, tema, loading/erro do logout e redirecionamento permanecem funcionais
+- responsividade: alvos de 44 × 44 px, espaço inferior mobile e ausência de overflow
+- arquitetura: nenhum import de Supabase em componentes de navegação e nenhuma regra financeira no shell
+
+Riscos:
+- risco médio de regressão transversal porque o shell envolve todas as rotas privadas
+- risco de dois destinos para o dashboard mitigado por `/dashboard` canônico e `/` tratado apenas como alias ativo
+- risco de abstração prematura mitigado mantendo componentes específicos próximos ao App Router
+- risco de falso affordance mitigado omitindo todas as capacidades não funcionais
+
+Artefatos atualizados:
+- `project-context.md`
+- `architecture.md`
+- `roadmap.md`
+- `backlog.md`
+- `quality-gates.md`
+- `adr/0006-responsive-private-shell.md`
+- `adr/README.md`
+
+Limites preservados:
+- nenhum código funcional ou teste criado
+- nenhuma dependência instalada
+- nenhuma alteração no Supabase, autenticação, domínio financeiro ou PWA
+- arquivo não rastreado `rewrite-msgs.sh` preservado sem alteração
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- próximo passo recomendado: executar explicitamente `dia 2` da UI-002
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 

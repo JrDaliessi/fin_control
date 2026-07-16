@@ -6,7 +6,25 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### UI-002 — Shell e navegação responsiva
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: evoluir `PrivateAppShell` com sidebar, topbar e barra inferior mobile exibindo somente rotas funcionais.
+- Objetivo de negócio: permitir orientação e acesso rápido aos fluxos existentes.
+- Valor esperado: experiência coerente em desktop, tablet e mobile.
+- Prioridade: Alta
+- Dependências: UI-001 concluída e matriz atual de rotas privadas (`/dashboard`, `/transactions` e `/accounts`).
+- Risco: Médio por afetar todas as rotas privadas, o estado ativo e o logout.
+- Fase atual: Dia 1 concluído; arquitetura pronta para cenários de teste.
+- Recorte aprovado:
+  - desktop a partir de `1024px`: sidebar expandida com marca, Visão geral, Transações e Contas;
+  - tablet entre `768px` e `1023px`: rail compacto persistente, com nomes acessíveis e sem interação exclusiva por hover;
+  - mobile abaixo de `768px`: topbar compacta e navegação inferior com Início, Transações e Contas;
+  - `/dashboard` é o destino canônico de início; `/` permanece alias e também ativa Visão geral;
+  - item atual expõe `aria-current="page"`, foco visível e alvo mínimo de 44 × 44 px;
+  - e-mail, preferência de tema e logout permanecem disponíveis sem misturar regra financeira no shell.
+- Fora do escopo: busca, notificações, perfil, configurações, ajuda, Cartões, Planejamento, Orçamentos, Metas, Relatórios, Importações, IA, botão central “Adicionar”, drawer, bottom sheet, novas rotas e mudanças no Supabase.
+- Critério de pronto: navegação ativa por rota e alias, teclado, foco, 44 px, mobile sem overflow, logout preservado, temas preservados, rotas indisponíveis ausentes e pipeline verde.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -21,18 +39,6 @@ Nenhum item em andamento no momento.
 - Fase recomendada: trilha transversal, uma small release por vez.
 - Critério de pronto: itens filhos concluídos sem rotas vazias, dados fictícios ou quebra arquitetural.
 - Especificação: `docs/product/fincontrol-pulse-interface-copy.md`.
-- Status: DISCOVERY
-
-### UI-002 — Shell e navegação responsiva
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: evoluir `PrivateAppShell` com sidebar, topbar e barra inferior mobile exibindo somente rotas funcionais.
-- Objetivo de negócio: permitir orientação e acesso rápido aos fluxos existentes.
-- Valor esperado: experiência coerente em desktop, tablet e mobile.
-- Prioridade: Alta
-- Dependências: UI-001 e matriz de rotas disponíveis.
-- Risco: Médio por afetar todas as rotas privadas e logout.
-- Fase recomendada: após UI-001.
-- Critério de pronto: navegação ativa, teclado, foco, 44 px, mobile sem overflow, logout preservado e rotas indisponíveis ausentes.
 - Status: DISCOVERY
 
 ### UI-003 — Dashboard FinControl Pulse
