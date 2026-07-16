@@ -705,3 +705,17 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 - Nenhuma cobertura foi relaxada e nenhum destino ou fluxo futuro foi antecipado.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 6 — UI-002
+
+- Contratos cobriram safe area da navegação inferior e preferência por movimento reduzido.
+- RED direcionado: 2 testes falharam e 17 permaneceram verdes.
+- GREEN direcionado: 3 suítes e 19 testes passaram, incluindo manifest PWA.
+- Conteúdo móvel reserva a altura original mais `env(safe-area-inset-bottom)` e deixa de ser coberto em dispositivos com recorte inferior.
+- Links desktop/tablet/mobile desabilitam transição quando `prefers-reduced-motion` está ativo.
+- Ordem de teclado validada: o skip link é o primeiro destino focalizável do shell.
+- Regressão completa: 43 suítes e 211 testes passaram.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção passaram.
+- Inspeção visual automatizada ficou indisponível por falha ambiental e foi registrada como limitação, sem relaxar contratos automatizados.
+
+Estado de saída: `QUALITY_VALIDATION`.

@@ -14,7 +14,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: UI-001 concluída e matriz atual de rotas privadas (`/dashboard`, `/transactions` e `/accounts`).
 - Risco: Médio por afetar todas as rotas privadas, o estado ativo e o logout.
-- Fase atual: Dia 5 concluído; estado ativo móvel endurecido, resolução de rota consolidada e pipeline verde com 43 suítes e 211 testes.
+- Fase atual: Dia 6 concluído; safe area, movimento reduzido, ordem de foco e experiência PWA validados com 43 suítes e 211 testes verdes; inspeção visual automatizada registrada como limitação leve.
 - Recorte aprovado:
   - desktop a partir de `1024px`: sidebar expandida com marca, Visão geral, Transações e Contas;
   - tablet entre `768px` e `1023px`: rail compacto persistente, com nomes acessíveis e sem interação exclusiva por hover;

@@ -47,7 +47,7 @@ export function PrivateAppShell({ children, email }: PrivateAppShellProps) {
           pathname={pathname}
         />
         <div
-          className="min-w-0 pb-20 md:pb-0"
+          className="min-w-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0"
           data-testid="private-shell-content"
           id="conteudo-principal"
           tabIndex={-1}

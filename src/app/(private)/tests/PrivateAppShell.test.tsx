@@ -92,6 +92,7 @@ describe("PrivateAppShell", () => {
       ...within(mobileNavigation).getAllByRole("link"),
     ]) {
       expect(link).toHaveClass("min-h-11", "min-w-11");
+      expect(link).toHaveClass("motion-reduce:transition-none");
     }
 
     for (const unavailableLabel of [
@@ -164,13 +165,14 @@ describe("PrivateAppShell", () => {
 
     expect(screen.getByTestId("private-shell-content")).toHaveClass(
       "min-w-0",
-      "pb-20",
+      "pb-[calc(5rem+env(safe-area-inset-bottom))]",
       "md:pb-0",
     );
     expect(screen.getAllByRole("main")).toHaveLength(1);
   });
 
-  it("lets keyboard users bypass the persistent shell and keeps the topbar available", () => {
+  it("lets keyboard users bypass the persistent shell and keeps the topbar available", async () => {
+    const user = userEvent.setup();
     renderShell();
 
     const skipLink = screen.getByRole("link", {
@@ -183,6 +185,9 @@ describe("PrivateAppShell", () => {
     expect(content).toHaveAttribute("id", "conteudo-principal");
     expect(content).toHaveAttribute("tabindex", "-1");
     expect(screen.getByRole("banner")).toHaveClass("sticky", "top-0", "z-20");
+
+    await user.tab();
+    expect(skipLink).toHaveFocus();
   });
 
   it("keeps the existing sign-out flow connected from the topbar", async () => {

@@ -50,7 +50,7 @@ export function DesktopPrivateNavigation({
             <Link
               aria-current={active ? "page" : undefined}
               className={clsx(
-                "flex min-h-11 min-w-11 items-center justify-center gap-3 rounded-lg px-3 text-sm font-medium text-navigation-muted transition-colors hover:bg-navigation-foreground/10 hover:text-navigation-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navigation-accent lg:justify-start",
+                "flex min-h-11 min-w-11 items-center justify-center gap-3 rounded-lg px-3 text-sm font-medium text-navigation-muted transition-colors hover:bg-navigation-foreground/10 hover:text-navigation-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navigation-accent motion-reduce:transition-none lg:justify-start",
                 active &&
                   "bg-navigation-foreground/10 text-navigation-foreground ring-1 ring-inset ring-navigation-accent/40",
               )}
@@ -83,7 +83,7 @@ export function MobilePrivateNavigation({ pathname }: PrivateNavigationProps) {
           <Link
             aria-current={active ? "page" : undefined}
             className={clsx(
-              "flex min-h-11 min-w-11 flex-col items-center justify-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset",
+              "flex min-h-11 min-w-11 flex-col items-center justify-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset motion-reduce:transition-none",
               active
                 ? "bg-surface-muted font-semibold text-primary"
                 : "font-medium",

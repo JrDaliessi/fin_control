@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UI-002 concluído; navegação endurecida estrutural e visualmente com pipeline verde
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UI-002 concluído; responsividade, acessibilidade e experiência PWA validadas com limitação visual documentada
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -58,6 +58,7 @@
 - Data da implementação mínima da UI-002: 2026-07-16
 - Data da expansão controlada da UI-002: 2026-07-16
 - Data da refatoração e hardening da UI-002: 2026-07-16
+- Data da revisão de UX, acessibilidade e PWA da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -2102,6 +2103,41 @@ Estado de saída:
 - `REFACTORING_IN_PROGRESS` encerrado
 - retorno a `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 6` da UI-002
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Auditoria executada:
+- jornada do shell revisada por semântica, testes de apresentação, classes responsivas e contratos PWA
+- navegações mantêm landmarks nomeados, `aria-current`, foco visível, alvos mínimos de 44 px e somente destinos funcionais
+- skip link foi validado como primeiro destino do teclado e aponta para conteúdo focalizável sem duplicar `main`
+- desktop, tablet e mobile preservam composições específicas sem acesso direto da UI ao Supabase
+
+Resultado TDD:
+- RED direcionado confirmou duas lacunas: reserva inferior sem somar safe area e links sem tratamento explícito de movimento reduzido
+- RED: 2 falhas e 17 testes preservados
+- GREEN direcionado: 3 suítes e 19 testes passaram
+- conteúdo móvel passou a reservar `5rem + env(safe-area-inset-bottom)`
+- links das navegações passaram a usar `motion-reduce:transition-none`
+
+Experiência PWA:
+- manifest permanece ligado aos metadados, com `display: standalone`, ícones raster/maskable e shortcuts somente para fluxos reais
+- HTTP local confirmou manifest `200 application/manifest+json` e ícone `200 image/png`
+- acesso anônimo a `/dashboard` permaneceu protegido com `307` para `/login`
+- nenhum service worker, Workbox, `next-pwa` ou promessa offline foi introduzido
+
+Validação e limitação:
+- inspeção visual automatizada não pôde iniciar porque o controle do navegador falhou ao preparar seus arquivos locais; o fallback de controle do Windows depende da mesma conexão indisponível
+- limitação classificada como bloqueio leve; revisão semântica, responsiva, HTTP e testes automatizados permaneceram disponíveis
+- regressão completa: 43 suítes e 211 testes passaram
+- `npm run type-check`, `npm run lint`, `npm audit --audit-level=high` e `npm run build` passaram
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- próximo passo recomendado: executar explicitamente `dia 7` da UI-002
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 

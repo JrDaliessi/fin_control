@@ -407,6 +407,23 @@
 - `npm audit` passou com 0 vulnerabilidades.
 - Limitação de verificação visual pelo navegador integrado documentada.
 
+### Resultado observado — UI-002
+- Shell revisado por semântica, testes, classes responsivas e contratos PWA.
+- RED direcionado confirmou reserva inferior sem safe area e ausência de tratamento explícito para movimento reduzido: 2 falhas e 17 testes preservados.
+- GREEN direcionado passou com 3 suítes e 19 testes.
+- Conteúdo móvel passou a reservar `5rem + env(safe-area-inset-bottom)`.
+- Navegações passaram a respeitar `prefers-reduced-motion` sem remover foco ou estado ativo.
+- Skip link validado como primeiro destino do teclado; landmarks, `aria-current` e alvos de 44 px preservados.
+- Manifest servido com `200 application/manifest+json`, ícone PNG com `200` e rota privada anônima com `307` para `/login`.
+- Nenhum service worker, Workbox, `next-pwa` ou promessa offline foi introduzido.
+- Inspeção visual automatizada indisponível por falha ambiental na conexão de controle; bloqueio leve documentado.
+- `npm run test:ci`: 43 suítes e 211 testes passaram.
+- `npm run type-check`: passou.
+- `npm run lint`: passou com 0 warnings.
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades.
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`.
+- Estado de saída validado como `QUALITY_VALIDATION`.
+
 ### Resultado observado — SR-006
 - Dashboard e registro manual inspecionados em 390x844 e 1280x800 sem overflow horizontal.
 - Empty state do dashboard passou a ser anunciado como status.
