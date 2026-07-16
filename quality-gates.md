@@ -81,6 +81,18 @@
 - Audit sem vulnerabilidades conhecidas.
 - Implementação funcional segue bloqueada até Dia 3.
 
+### Resultado observado — UI-002
+- Matriz documentada em `test-strategy.md` com configuração pura, composition root, acessibilidade, responsividade e regressão.
+- Dois arquivos de teste criados antes da implementação, totalizando 14 cenários planejados.
+- RED direcionado válido: 2 suítes falharam; 4 testes do shell executaram e falharam pelos contratos ausentes, enquanto a suíte de configuração foi bloqueada pelo módulo ainda inexistente.
+- O harness foi corrigido para carregar `PrivateAppShell` depois do mock de `next/navigation`; nenhuma expectativa funcional foi alterada.
+- Type-check falhou somente com um `TS2307` para `navigation/private-navigation`.
+- Rede anterior: 41 suítes e 194 testes passaram ao excluir apenas os dois contratos RED da UI-002.
+- Lint passou com 0 warnings.
+- Build não foi executado porque o type-check vermelho é deliberado; audit não foi repetido porque dependências e lockfile não mudaram.
+- Nenhum código funcional, componente, rota, dependência ou integração foi criado.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+
 ### Resultado observado — SR-009
 - Matriz da persistência de contas documentada em `test-strategy.md`.
 - Testes Jest criados para `FinancialAccount.restore`, `ListAccountsUseCase`, mapper, repository Supabase e Server Action autenticada.

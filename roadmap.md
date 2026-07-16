@@ -170,7 +170,7 @@ Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` concluída em 2026-07-15 no estado `READY_FOR_RELEASE`; Dia 1 da `UI-002` concluído em 2026-07-16 no estado `ARCHITECTURE_READY`; `UI-003` a `UI-006` permanecem em `DISCOVERY`. O shell foi delimitado às rotas privadas realmente funcionais, sem antecipar telas ou ações futuras.
+Status: `UI-001` concluída em 2026-07-15 no estado `READY_FOR_RELEASE`; Dia 2 da `UI-002` concluído em 2026-07-16 no estado `TEST_STRATEGY_READY`; `UI-003` a `UI-006` permanecem em `DISCOVERY`. O shell foi delimitado às rotas privadas realmente funcionais e possui contratos RED antes da implementação.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -202,7 +202,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: executar explicitamente `dia 2` da `UI-002` para criar os contratos de teste antes da implementação. `SR-010` continua em `DISCOVERY` como próxima fundação de dados.
+Próximo passo da trilha: executar explicitamente `dia 3` da `UI-002` para implementar o mínimo que satisfaça os contratos existentes. `SR-010` continua em `DISCOVERY` como próxima fundação de dados.
 
 Integrações posteriores:
 

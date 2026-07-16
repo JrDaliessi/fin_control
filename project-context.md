@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da UI-002 concluído; shell e navegação responsiva delimitados, sem implementação funcional
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da UI-002 concluído; contratos de navegação e shell em RED válido, implementação bloqueada até o Dia 3
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -54,6 +54,7 @@
 - Data da revisão de UX, acessibilidade e PWA da UI-001: 2026-07-15
 - Data da validação final e preparação de release da UI-001: 2026-07-15
 - Data do discovery e arquitetura da UI-002: 2026-07-16
+- Data da estratégia de testes da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -907,6 +908,8 @@ Regra operacional:
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
+- Erro: passar um route group com parênteses como filtro posicional do Jest resultou em `No tests found`, sem executar os contratos da UI-002. Prevenção: para testes dentro de `src/app/(grupo)`, usar `npx jest --runInBand --runTestsByPath` com caminhos literais e confirmar a lista de suítes executadas.
+- Erro: importar `PrivateAppShell` estaticamente antes do mock de `next/navigation` fez o transformador Next/Jest carregar o hook real e falhar por ausência do App Router. Prevenção: registrar o mock antes do carregamento e obter o módulo com `jest.requireActual()` quando a ordem de avaliação fizer parte do harness.
 - Erro: a seção de pendências manteve o Dia 4 da UI-001 como próximo passo depois de a UI-001 já ter concluído o Dia 7. Prevenção: ao encerrar qualquer fase, validar em conjunto o estado no topo, a seção de pendências, o backlog e o roadmap; nenhuma referência histórica pode permanecer redigida como instrução operacional atual.
 - Erro: colocar regra de negócio em componente React. Prevenção: mover regra para `domain` ou `application`.
 - Erro: acessar Supabase pela camada visual. Prevenção: usar repositórios em `infrastructure`.
@@ -1913,6 +1916,63 @@ Limites preservados:
 Estado de saída:
 - `ARCHITECTURE_READY`
 - próximo passo recomendado: executar explicitamente `dia 2` da UI-002
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Prioridade por camada:
+1. configuração pura de apresentação: matriz de rotas, alias e resolução exata do pathname
+2. composition root: landmarks, estado ativo, ações globais e preservação de um único `main`
+3. responsividade e acessibilidade: variantes desktop/mobile, nomes, foco e alvos mínimos
+4. regressão: contratos existentes de tema, logout, rotas privadas e Proxy
+
+Matriz executável:
+
+| Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- |
+| `PRIVATE_NAVIGATION_ITEMS` | somente dashboard, transações e contas; rótulos específicos por viewport | RED por módulo ausente |
+| `getPrivateNavigationItemForPath` | `/` e `/dashboard`; paths canônicos; paths futuros, aninhados ou desconhecidos | RED por módulo ausente |
+| `PrivateAppShell` | navegações nomeadas, links disponíveis, ausência de falso affordance | RED funcional |
+| estado ativo | `aria-current="page"` somente no destino de `/accounts` nas duas variantes | RED funcional |
+| ações globais | banner, e-mail, tema, logout e um único landmark `main` | RED pela ausência do tema no shell |
+| layout mobile | contêiner com espaço inferior, largura mínima segura e nenhum `main` duplicado | RED por contêiner ausente |
+
+Testes criados:
+- `src/app/(private)/tests/private-navigation.test.ts`
+- `src/app/(private)/tests/PrivateAppShell.test.tsx`
+
+Cenários planejados:
+- 10 cenários puros para matriz, alias, caminhos canônicos e caminhos indisponíveis
+- 4 cenários de composição para navegação, estado ativo, ações globais e layout mobile
+- testes existentes de `SignOutButton` e `ThemeSwitcher` permanecem como regressão específica, sem duplicação
+
+Resultado TDD:
+- primeira tentativa posicional do Jest não encontrou testes por interpretar os parênteses do route group; o comando foi corrigido sem alterar expectativas
+- primeiro harness do shell carregou `useRouter()` real porque o mock não foi elevado; a ordem foi corrigida com `jest.requireActual()` após o mock
+- RED direcionado válido: 2 suítes falharam; 4 testes executáveis do shell falharam pelos contratos ausentes e a suíte pura falhou ao carregar o módulo deliberadamente inexistente
+- `npm run type-check`: falhou somente com um `TS2307` para `../navigation/private-navigation`
+- rede anterior, excluindo somente os dois contratos RED: 41 suítes e 194 testes passaram
+- `npm run lint`: passou com 0 warnings
+- build não executado porque o type-check deve permanecer vermelho nesta fase
+- audit não repetido porque nenhuma dependência ou lockfile foi alterado
+
+Implementação bloqueada até o Dia 3:
+- `src/app/(private)/navigation/private-navigation.ts`
+- componentes específicos de sidebar/rail, topbar e navegação mobile
+- integração responsiva em `PrivateAppShell.tsx`
+- qualquer ajuste de apresentação necessário para satisfazer os contratos sem expandir escopo
+
+Limites preservados:
+- nenhum código funcional criado ou alterado
+- nenhum teste existente removido, relaxado ou ignorado
+- nenhuma dependência instalada
+- nenhuma mudança em Supabase, autenticação, rotas, domínio financeiro ou PWA
+- `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar explicitamente `dia 3` da UI-002
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 

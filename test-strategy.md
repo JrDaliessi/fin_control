@@ -600,3 +600,63 @@ Regras:
 - snapshot visual isolado não é critério de acessibilidade ou comportamento.
 - gráficos futuros exigem testes do view model, alternativa tabular, teclado, tooltip e dados insuficientes.
 - copy dinâmica precisa de cenários positivo, atenção, crítico, sem dados e erro, quando aplicável.
+
+## Dia 2 — UI-002 Shell e Navegação Responsiva
+
+## Objetivo
+
+Converter o ADR 0006 e a matriz aprovada de rotas privadas em contratos executáveis antes de criar configuração, componentes ou integração funcional do shell.
+
+## Prioridade por Camada
+
+1. configuração pura de presentation: destinos, rótulos, alias e resolução exata do pathname
+2. composition root: navegação, estado ativo, ações globais e landmarks
+3. responsividade e acessibilidade: desktop/tablet/mobile, nomes acessíveis e alvos mínimos
+4. regressão: tema, logout, páginas privadas e Proxy já cobertos pelo baseline
+
+## Matriz de Testes da UI-002
+
+| Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- |
+| `PRIVATE_NAVIGATION_ITEMS` | somente `/dashboard`, `/transactions` e `/accounts`; rótulos desktop/mobile | teste criado em RED |
+| `getPrivateNavigationItemForPath` | alias `/`; três destinos canônicos; futuros e paths aninhados não ativam item | testes criados em RED |
+| `PrivateAppShell` | landmarks nomeados, links aprovados, ausência de destinos futuros | teste criado em RED |
+| estado ativo | `aria-current="page"` apenas no item correspondente nas duas navegações | teste criado em RED |
+| ações globais | e-mail, tema, logout e exatamente um `main` pertencente à página | teste criado em RED |
+| mobile | navegação fixa, espaço inferior e largura mínima segura | teste criado em RED |
+
+## Cenário Feliz
+
+Usuário autenticado abre `/accounts`. Sidebar/rail e navegação mobile mostram apenas Visão geral/Início, Transações e Contas; somente Contas recebe `aria-current="page"`; tema, e-mail e logout permanecem acessíveis; o conteúdo conserva seu único landmark `main`.
+
+## Cenários Alternativos
+
+- `/` e `/dashboard` ativam o mesmo destino canônico de Visão geral/Início
+- desktop/tablet usam rótulo “Visão geral”, enquanto mobile usa “Início”
+- `/transactions` e `/accounts` resolvem somente por correspondência exata
+
+## Edge Cases Críticos
+
+- rota futura como `/cards`, `/goals` ou `/settings`
+- path aninhado inexistente como `/transactions/new`
+- botões ou links “Adicionar”, “Mais”, notificações e configurações aparecendo antes dos fluxos
+- navegação mobile cobrindo o conteúdo
+- shell introduzindo um segundo elemento `main`
+- item inativo expondo `aria-current`
+
+## Testes Criados
+
+- `src/app/(private)/tests/private-navigation.test.ts`
+- `src/app/(private)/tests/PrivateAppShell.test.tsx`
+
+## Resultado Observado do Dia 2
+
+- 14 cenários planejados: 10 de configuração pura e 4 de composição.
+- RED direcionado: 2 suítes falharam; 4 testes executáveis falharam pelos elementos ausentes e a suíte pura falhou pelo módulo não implementado.
+- Type-check: somente um `TS2307` para `../navigation/private-navigation`.
+- Rede anterior: 41 suítes e 194 testes verdes ao excluir somente os dois contratos RED.
+- Lint: verde, 0 warnings.
+- Build não executado por causa do RED deliberado; audit não repetido porque não houve mudança de dependências.
+- Implementação funcional permanece bloqueada até `dia 3 da UI-002`.
+
+Estado de saída: `TEST_STRATEGY_READY`.
