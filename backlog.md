@@ -6,25 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### UI-002 — Shell e navegação responsiva
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: evoluir `PrivateAppShell` com sidebar, topbar e barra inferior mobile exibindo somente rotas funcionais.
-- Objetivo de negócio: permitir orientação e acesso rápido aos fluxos existentes.
-- Valor esperado: experiência coerente em desktop, tablet e mobile.
-- Prioridade: Alta
-- Dependências: UI-001 concluída e matriz atual de rotas privadas (`/dashboard`, `/transactions` e `/accounts`).
-- Risco: Médio por afetar todas as rotas privadas, o estado ativo e o logout.
-- Fase atual: Dia 6 concluído; safe area, movimento reduzido, ordem de foco e experiência PWA validados com 43 suítes e 211 testes verdes; inspeção visual automatizada registrada como limitação leve.
-- Recorte aprovado:
-  - desktop a partir de `1024px`: sidebar expandida com marca, Visão geral, Transações e Contas;
-  - tablet entre `768px` e `1023px`: rail compacto persistente, com nomes acessíveis e sem interação exclusiva por hover;
-  - mobile abaixo de `768px`: topbar compacta e navegação inferior com Início, Transações e Contas;
-  - `/dashboard` é o destino canônico de início; `/` permanece alias e também ativa Visão geral;
-  - item atual expõe `aria-current="page"`, foco visível e alvo mínimo de 44 × 44 px;
-  - e-mail, preferência de tema e logout permanecem disponíveis sem misturar regra financeira no shell.
-- Fora do escopo: busca, notificações, perfil, configurações, ajuda, Cartões, Planejamento, Orçamentos, Metas, Relatórios, Importações, IA, botão central “Adicionar”, drawer, bottom sheet, novas rotas e mudanças no Supabase.
-- Critério de pronto: navegação ativa por rota e alias, teclado, foco, 44 px, mobile sem overflow, logout preservado, temas preservados, rotas indisponíveis ausentes e pipeline verde.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -487,6 +469,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### UI-002 — Shell e navegação responsiva
+- Tipo: Small Release / UX Improvement
+- Resultado: sidebar desktop, rail tablet, navegação inferior mobile e topbar entregues somente com destinos funcionais.
+- Escopo concluído: estado ativo por rota/alias, teclado, foco, alvos de 44 px, safe area, movimento reduzido, tema, logout e experiência PWA coerente.
+- Quality gates: lint, type-check, 44 suítes/212 testes, auditoria com 0 vulnerabilidades, build e `git diff --check` verdes.
+- Segurança: logout local com redirect fixo, UI sem acesso direto a Supabase, sem segredo real ou escape de tipagem.
+- Governança: CI validado por teste e executado em pushes/PRs para `develop` e `main`.
+- Riscos residuais não críticos: inspeção visual automatizada indisponível e pinagem das Actions por SHA registrada como dívida baixa.
+- Fora do escopo preservado: rotas futuras, busca, notificações, perfil, configurações, Adicionar, drawers, gráficos, IA e offline.
+- Status: DONE
 
 ### UI-001 — Sistema visual, marca e temas
 - Tipo: Small Release / UX Improvement

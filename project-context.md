@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UI-002 concluído; responsividade, acessibilidade e experiência PWA validadas com limitação visual documentada
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UI-002 concluído; pipeline, segurança, observabilidade e preparação de release validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -59,6 +59,7 @@
 - Data da expansão controlada da UI-002: 2026-07-16
 - Data da refatoração e hardening da UI-002: 2026-07-16
 - Data da revisão de UX, acessibilidade e PWA da UI-002: 2026-07-16
+- Data da validação final e preparação de release da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -912,6 +913,7 @@ Regra operacional:
 
 ## Erros Recorrentes da IA e Como Evitar
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
+- Erro: o workflow Git passou a direcionar features para `develop`, mas o CI permaneceu limitado a `main`, permitindo merge de integração sem gates automáticos. Prevenção: toda mudança na estratégia de branches deve atualizar e testar os gatilhos de CI para branches de integração e release na mesma entrega.
 - Erro: o mock de `signOut` adicionado no Dia 4 da UI-002 foi inferido sem parâmetros, gerando `TS2554` quando o teste verificou `{ scope: "local" }`. Prevenção: tipar mocks de integrações pela assinatura real antes do primeiro type-check e incluir explicitamente os argumentos relevantes no fake, mesmo quando o corpo não os utiliza.
 - Erro: passar um route group com parênteses como filtro posicional do Jest resultou em `No tests found`, sem executar os contratos da UI-002. Prevenção: para testes dentro de `src/app/(grupo)`, usar `npx jest --runInBand --runTestsByPath` com caminhos literais e confirmar a lista de suítes executadas.
 - Erro: importar `PrivateAppShell` estaticamente antes do mock de `next/navigation` fez o transformador Next/Jest carregar o hook real e falhar por ausência do App Router. Prevenção: registrar o mock antes do carregamento e obter o módulo com `jest.requireActual()` quando a ordem de avaliação fizer parte do harness.
@@ -2138,6 +2140,54 @@ Validação e limitação:
 Estado de saída:
 - `QUALITY_VALIDATION`
 - próximo passo recomendado: executar explicitamente `dia 7` da UI-002
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Pipeline final:
+- `npm run lint`: passou com 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou com 44 suítes e 212 testes
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou com todas as rotas existentes e `ƒ Proxy (Middleware)`
+- `git diff --check` passou para o escopo versionado e para as alterações do Dia 7
+
+Correção de gate orientada por teste:
+- auditoria encontrou CI restrito a `main`, embora o fluxo Git direcione features para `develop`
+- erro e prevenção foram registrados em Erros Recorrentes antes da correção
+- RED: `tests/ci-workflow.test.ts` recebeu somente `main`
+- GREEN: pushes e pull requests para `main` e `develop` passaram a acionar o mesmo pipeline
+
+Revisão de segurança e threat model:
+- componentes e configuração de navegação não acessam Supabase diretamente; integração de logout permanece na composition root por gateway e caso de uso
+- logout usa escopo local e destino fixo `/login`; rota desconhecida não ativa destino indevido
+- nenhum `any`, ignore de TypeScript, `eval`, `dangerouslySetInnerHTML`, segredo real ou chave privilegiada foi identificado no shell
+- o único storage usado pela experiência é `fincontrol.theme`; o único match de `service_role` é placeholder vazio/documentação
+- ameaças consideradas: open redirect, exposição de sessão, autorização inferida pela navegação, XSS no shell e sobreposição de conteúdo mobile
+- mitigações: redirects fixos, ausência de logs sensíveis, proteção server-side independente da UI, renderização React, safe area e rotas limitadas a fluxos reais
+
+Baseline de observabilidade:
+- CI registra lint, type-check, testes, audit e build em branches de integração e release
+- loading, erro e sucesso do logout são anunciáveis; fallback de rota privada desconhecida é neutro
+- nenhum evento analítico novo foi criado; instrumentação futura não pode registrar e-mail, cookies, JWT ou dados financeiros
+
+Riscos residuais:
+- inspeção visual automatizada do Dia 6 permaneceu indisponível por falha ambiental; risco não crítico coberto parcialmente por testes semânticos e responsivos
+- pinagem das GitHub Actions por SHA permanece dívida baixa já registrada para hardening de CI
+- nenhum bloqueio crítico ou dívida crítica/alta aberta para a entrega incremental da UI-002
+
+Preparação de release:
+- escopo liberável: sidebar desktop, rail tablet, navegação inferior mobile, topbar, estado ativo, tema, logout, teclado, safe area e experiência PWA coerente
+- fora da release: rotas futuras, busca, notificações, perfil, configurações, botão Adicionar, drawers, gráficos, IA e offline
+- nenhum deploy, push, PR, migration, alteração Supabase ou dado persistente foi executado
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- UI-002 concluída sem avanço automático para outra small release
+- próximo passo recomendado: selecionar explicitamente a próxima small release do backlog
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 

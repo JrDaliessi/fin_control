@@ -503,6 +503,21 @@
 - Release incremental preparada.
 - Estado final definido como `READY_FOR_RELEASE`.
 
+### Resultado observado — UI-002
+- `npm run lint`: passou com 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou com 44 suítes e 212 testes.
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades.
+- `npm run build`: passou com todas as rotas e `ƒ Proxy (Middleware)`.
+- `git diff --check` passou para a release e para as alterações do Dia 7.
+- Contrato RED reproduziu CI restrito a `main`; GREEN passou após incluir `develop` em push e pull request.
+- Componentes do shell permanecem sem acesso direto a Supabase, escapes de tipagem ou APIs perigosas.
+- Logout usa escopo local e redirect fixo; nenhum segredo real ou chave privilegiada foi identificado.
+- CI cobre branches de integração e release; estados de logout permanecem observáveis e anunciáveis.
+- Inspeção visual automatizada indisponível permanece risco não crítico; pinagem das Actions por SHA permanece dívida baixa registrada.
+- Nenhum deploy, push, PR, migration ou alteração Supabase foi executado.
+- Estado final: `READY_FOR_RELEASE`.
+
 ### Resultado observado — SR-009
 - `npm run lint`: passou, 0 warnings.
 - `npm run type-check`: passou.

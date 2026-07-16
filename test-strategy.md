@@ -719,3 +719,14 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 - Inspeção visual automatizada ficou indisponível por falha ambiental e foi registrada como limitação, sem relaxar contratos automatizados.
 
 Estado de saída: `QUALITY_VALIDATION`.
+
+## Validação final do Dia 7 — UI-002
+
+- Auditoria encontrou divergência entre o fluxo Git para `develop` e o CI limitado a `main`.
+- Novo contrato estático falhou em RED recebendo somente `main` e passou em GREEN após cobrir `main` e `develop` em push e pull request.
+- Suíte direcionada do CI: 1 suíte e 1 teste passaram.
+- Regressão completa: 44 suítes e 212 testes passaram.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção passaram.
+- Nenhum teste foi relaxado, ignorado ou removido.
+
+Estado de saída: `READY_FOR_RELEASE`.
