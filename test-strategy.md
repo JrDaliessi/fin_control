@@ -660,3 +660,19 @@ Usuário autenticado abre `/accounts`. Sidebar/rail e navegação mobile mostram
 - Implementação funcional permanece bloqueada até `dia 3 da UI-002`.
 
 Estado de saída: `TEST_STRATEGY_READY`.
+
+## Resultado GREEN do Dia 3 — UI-002
+
+- `PRIVATE_NAVIGATION_ITEMS` implementa somente `/dashboard`, `/transactions` e `/accounts`.
+- `getPrivateNavigationItemForPath` resolve `/` como alias e usa correspondência exata para os demais paths.
+- `DesktopPrivateNavigation` entrega sidebar expandida em desktop e rail compacto em tablet.
+- `MobilePrivateNavigation` entrega três destinos com estado ativo e espaço seguro no conteúdo.
+- `PrivateTopbar` preserva marca, título, e-mail, tema e logout.
+- `PrivateAppShell` integra as superfícies sem duplicar o landmark `main`.
+- Primeira passagem direcionada: 2 suítes e 14 testes verdes.
+- Regressão completa: 43 suítes e 208 testes verdes.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção verdes.
+- Nenhum teste foi removido, relaxado ou marcado como ignorado.
+- Nenhuma rota, dependência, integração Supabase ou capacidade futura foi antecipada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

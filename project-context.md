@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da UI-002 concluído; contratos de navegação e shell em RED válido, implementação bloqueada até o Dia 3
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da UI-002 concluído; shell responsivo mínimo implementado e pipeline verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -55,6 +55,7 @@
 - Data da validação final e preparação de release da UI-001: 2026-07-15
 - Data do discovery e arquitetura da UI-002: 2026-07-16
 - Data da estratégia de testes da UI-002: 2026-07-16
+- Data da implementação mínima da UI-002: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1973,6 +1974,54 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar explicitamente `dia 3` da UI-002
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UI-002
+
+Small release: `UI-002 — Shell e navegação responsiva`.
+
+Implementação mínima:
+- configuração pura e tipada com três destinos canônicos e alias `/` para o dashboard
+- resolução exata de pathname, sem ativar paths futuros ou aninhados desconhecidos
+- sidebar fixa expandida em desktop e compacta como rail em tablet
+- navegação inferior mobile com Início, Transações e Contas
+- topbar com marca, título da rota, identidade disponível, `ThemeSwitcher` e `SignOutButton`
+- composição responsiva em `PrivateAppShell`, preservando o único `main` pertencente à página
+- reserva de espaço inferior mobile para impedir sobreposição pela navegação fixa
+
+Arquivos criados:
+- `src/app/(private)/navigation/private-navigation.ts`
+- `src/app/(private)/components/PrivateNavigation.tsx`
+- `src/app/(private)/components/PrivateTopbar.tsx`
+
+Arquivo funcional alterado:
+- `src/app/(private)/PrivateAppShell.tsx`
+
+Resultado TDD:
+- primeira passagem GREEN: 2 suítes e 14 testes direcionados passaram
+- regressão completa: 43 suítes e 208 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou com 0 warnings
+- `npm audit --audit-level=high`: passou com 0 vulnerabilidades
+- `npm run build`: passou com `/`, `/accounts`, `/dashboard`, `/login`, `/transactions` e `ƒ Proxy (Middleware)`
+
+Aderência arquitetural:
+- configuração de navegação não depende de React, Next.js, Supabase ou domínio financeiro
+- componentes específicos permanecem próximos ao App Router e não foram promovidos a primitives compartilhadas
+- nenhum acesso Supabase foi introduzido nos componentes ou na configuração
+- montagem existente de `SignOutUseCase` e `SupabaseAuthGateway` permaneceu na composition root
+- nenhuma regra financeira, rota ou capacidade futura foi adicionada
+- alteração automática de `next-env.d.ts` causada pelo build foi removida do diff
+
+Escopo preservado:
+- somente `/dashboard`, `/transactions` e `/accounts` aparecem na navegação
+- `/` ativa o destino canônico do dashboard
+- busca, notificações, perfil, configurações, ajuda, “Adicionar”, Metas, “Mais” e demais rotas futuras permanecem ausentes
+- nenhuma dependência, migration, alteração de autenticação, PWA ou página interna
+- `rewrite-msgs.sh` permaneceu intacto e fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 4` da UI-002
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da SR-009
 

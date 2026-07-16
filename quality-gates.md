@@ -149,6 +149,19 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para módulos fora da small release.
 
+### Resultado observado — UI-002
+- Configuração pura de três rotas e alias `/` implementada sem dependência de framework ou infraestrutura.
+- Sidebar/rail, topbar e navegação mobile criadas próximas ao App Router, sem nova primitive compartilhada.
+- `PrivateAppShell` preserva autenticação, tema, logout e exatamente um `main` pertencente à página.
+- Somente dashboard, transações e contas aparecem; destinos e ações futuras permanecem ausentes.
+- Testes direcionados passaram com 2 suítes e 14 testes.
+- Regressão completa passou com 43 suítes e 208 testes.
+- Type-check e lint passaram; lint registrou 0 warnings.
+- Audit passou com 0 vulnerabilidades.
+- Build passou com todas as rotas existentes e `ƒ Proxy (Middleware)`.
+- Inspeção estática confirmou ausência de Supabase e regras financeiras nos novos componentes e configuração.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — SR-008
 - `AuthUser` implementado sem dependência de framework.
 - `AuthGateway` criado como contrato do domínio.
