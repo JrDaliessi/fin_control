@@ -9,6 +9,10 @@ import { normalizeCategoryName } from "../../domain/entities/category.entity";
 
 export type CategoryFormValues = CreateCategoryRequest;
 export type CategoryFormField = keyof CategoryFormValues;
+export type CategoryFormSubmitResult = {
+  fieldError?: CategoryFormField;
+  ok: boolean;
+};
 
 type UseCategoryFormInput = {
   onCreateCategory: (input: CreateCategoryRequest) => Promise<CategoryDto>;
@@ -25,7 +29,15 @@ const initialState: CategoryFormState = { status: "idle" };
 export function useCategoryForm({ onCreateCategory }: UseCategoryFormInput) {
   const [state, setState] = useState<CategoryFormState>(initialState);
 
-  async function submit(values: CategoryFormValues): Promise<{ ok: boolean }> {
+  function clearFeedback() {
+    setState((currentState) =>
+      currentState.status === "submitting" ? currentState : initialState
+    );
+  }
+
+  async function submit(
+    values: CategoryFormValues
+  ): Promise<CategoryFormSubmitResult> {
     const name = normalizeCategoryName(values.name);
 
     if (!name) {
@@ -34,7 +46,7 @@ export function useCategoryForm({ onCreateCategory }: UseCategoryFormInput) {
         message: "Informe o nome da categoria.",
         status: "error"
       });
-      return { ok: false };
+      return { fieldError: "name", ok: false };
     }
 
     setState({ status: "submitting" });
@@ -53,6 +65,7 @@ export function useCategoryForm({ onCreateCategory }: UseCategoryFormInput) {
   }
 
   return {
+    clearFeedback,
     fieldError: state.fieldError,
     isSubmitting: state.status === "submitting",
     message: state.message,

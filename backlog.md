@@ -14,7 +14,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-008 e SR-009 concluídas.
 - Risco: Alto por ownership, Data API, duplicidade e futura integridade entre transação e categoria.
-- Fase atual: Dia 5 concluído; integridade dos metadados, normalização única e projeção explícita do repository estão verdes, sem mudança remota.
+- Fase atual: Dia 6 concluído; foco, feedback, envio concorrente, responsividade e PWA estão validados, com inspeção visual registrada como limitação leve.
 - Critério de pronto: domínio, casos de uso, migration, repository, grants mínimos, RLS forçada, testes Jest/pgTAP de isolamento, apresentação essencial e pipeline verde.
 - Escopo: criar e listar categorias próprias com `name` e `kind` (`income | expense`).
 - Fora do escopo: edição, exclusão, arquivamento, cor, ícone, seeds, categorias globais, IA e persistência de transações.

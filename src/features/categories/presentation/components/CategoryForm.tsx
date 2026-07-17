@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Button } from "@/shared/components/ui/Button";
 import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import type {
@@ -30,13 +30,13 @@ const categoryKindOptions: Array<{ label: string; value: CategoryKind }> = [
 ];
 
 export function CategoryForm({ onCreateCategory }: CategoryFormProps) {
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [values, setValues] = useState<CategoryFormValues>({
     name: "",
     kind: "expense"
   });
-  const { fieldError, isSubmitting, message, status, submit } = useCategoryForm({
-    onCreateCategory
-  });
+  const { clearFeedback, fieldError, isSubmitting, message, status, submit } =
+    useCategoryForm({ onCreateCategory });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,6 +44,8 @@ export function CategoryForm({ onCreateCategory }: CategoryFormProps) {
 
     if (result.ok) {
       setValues((currentValues) => ({ ...currentValues, name: "" }));
+    } else if (result.fieldError === "name") {
+      nameInputRef.current?.focus();
     }
   }
 
@@ -51,6 +53,7 @@ export function CategoryForm({ onCreateCategory }: CategoryFormProps) {
     key: Key,
     value: CategoryFormValues[Key]
   ) {
+    clearFeedback();
     setValues((currentValues) => ({ ...currentValues, [key]: value }));
   }
 
@@ -75,11 +78,13 @@ export function CategoryForm({ onCreateCategory }: CategoryFormProps) {
           aria-describedby={fieldError === "name" ? messageId : undefined}
           aria-invalid={fieldError === "name"}
           className={getFieldClassName("name")}
+          disabled={isSubmitting}
           id="category-name"
           maxLength={80}
           name="name"
           onChange={(event) => updateValue("name", event.target.value)}
           required
+          ref={nameInputRef}
           type="text"
           value={values.name}
         />
@@ -91,6 +96,7 @@ export function CategoryForm({ onCreateCategory }: CategoryFormProps) {
         </label>
         <select
           className={fieldClassName}
+          disabled={isSubmitting}
           id="category-kind"
           name="kind"
           onChange={(event) =>

@@ -560,6 +560,20 @@
 - Manifesto respondeu `200`, declarou modo `standalone`, quatro ícones e shortcut persistente de contas; console permaneceu sem warnings ou errors.
 - Estado de saída validado como `QUALITY_VALIDATION`.
 
+### Resultado observado — SR-010
+- Jornada de cadastro, lista, estado vazio, loading, erro recuperável e retorno para Transações foi revisada.
+- RED direcionado confirmou três falhas: campos editáveis durante envio, foco no botão após validação e feedback obsoleto após correção.
+- Nome e tipo passaram a ficar desabilitados durante o envio; erro local foca o nome e é limpo ao editar.
+- GREEN direcionado passou com 4 suítes e 13 testes.
+- Contratos confirmam alvos mínimos de 44 px, padding mobile-first, altura dinâmica e quebra de nomes longos sem largura mínima implícita.
+- Manifest preserva modo standalone e não promete offline; `/categories` continua subfluxo e não foi promovida a shortcut PWA.
+- Manifest e ícones 192/512/maskable responderam `200` com MIME correto; `/categories` anônima respondeu `307` para `/login`.
+- Nenhum service worker, cache financeiro, mutation Supabase ou nova dependência foi introduzido.
+- Inspeção visual interativa indisponível porque o módulo obrigatório do plugin de navegador não estava presente; testes, semântica, classes responsivas, HTTP e build foram usados como evidência alternativa.
+- `npm run test:ci`: 53 suítes e 255 testes passaram.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Estado de saída validado como `QUALITY_VALIDATION`.
+
 ## Gate do Dia 7
 - Testes validados e documentados.
 - Type-check validado e documentado.

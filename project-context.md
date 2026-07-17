@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-010 concluído; hardening de integridade, projeção de dados e consistência interna validado
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SR-010 concluído; acessibilidade, responsividade e experiência PWA revisadas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -65,6 +65,7 @@
 - Data da implementação mínima da SR-010: 2026-07-16
 - Data da expansão controlada da SR-010: 2026-07-17
 - Data da refatoração e hardening da SR-010: 2026-07-17
+- Data da revisão de UX, acessibilidade e PWA da SR-010: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -3809,3 +3810,58 @@ Limites e dívida:
 Estado de saída:
 - retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 6` da SR-010
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Jornada e acessibilidade revisadas:
+- formulário, estado vazio, lista, loading, erro recuperável e retorno para Transações foram revisados
+- campos preservam labels explícitas, semântica nativa, `aria-invalid` e mensagem associada
+- quando a validação local falha, o foco retorna ao campo de nome
+- feedback inválido é removido assim que o usuário corrige o campo
+- nome e tipo ficam desabilitados durante o envio, evitando edição concorrente do payload
+- estados de envio, sucesso e erro permanecem anunciáveis
+
+Responsividade e microinterações:
+- contratos confirmam padding mobile-first em `px-4`, evolução em `sm`/`lg` e altura dinâmica `min-h-dvh`
+- link de retorno e controles preservam alvo mínimo de 44 px
+- nomes longos permanecem em contêiner flexível com `min-w-0` e `break-words`
+- grid usa uma coluna por padrão e composição em duas colunas somente no breakpoint `lg`
+- política global de `prefers-reduced-motion` permaneceu válida; nenhuma animação local nova foi adicionada
+
+TDD:
+- baseline direcionada passou com 4 suítes e 11 testes
+- RED direcionado confirmou três falhas: controles editáveis durante envio, foco retido no botão após erro e feedback obsoleto após correção
+- GREEN direcionado passou com 4 suítes e 13 testes
+- contratos PWA passaram a impedir promessa de offline e shortcut indevido para o subfluxo `/categories`
+
+Experiência PWA e runtime local:
+- `manifest.webmanifest` respondeu `200` com `application/manifest+json`
+- ícones PNG 192, 512 e maskable responderam `200` com `image/png`
+- manifest preserva `standalone`, ícones instaláveis e shortcuts somente para fluxos primários
+- `/categories` anônima respondeu `307` para `/login`
+- nenhum service worker, cache financeiro ou promessa offline foi introduzido sem estratégia de consistência autenticada
+- nenhuma mutação Supabase foi realizada
+
+Limitação registrada:
+- a inspeção visual interativa não pôde iniciar porque o pacote instalado do navegador não expôs o módulo de controle exigido pela própria skill
+- conforme a regra da skill, nenhuma automação paralela foi usada como substituta
+- validação continuou por testes, semântica, classes responsivas, respostas HTTP e build; validação visual permanece bloqueio leve, não crítico
+
+Resultado dos gates:
+- `npm run test:ci`: 53 suítes e 255 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/categories` dinâmica e Proxy ativo
+
+Limites preservados:
+- nenhuma nova regra de negócio, rota, dependência, migration ou alteração remota
+- nenhuma edição, exclusão, personalização, persistência de transações ou expansão para UI-003
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- próximo passo recomendado: executar explicitamente `dia 7` da SR-010

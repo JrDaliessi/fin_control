@@ -40,6 +40,7 @@ describe("CategoriesPage", () => {
     renderCategoriesPage();
 
     expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
+    expect(screen.getByRole("main")).toHaveClass("px-4", "sm:px-6", "lg:px-8");
     expect(
       screen.getByRole("heading", { name: "Cadastrar categoria" })
     ).toBeInTheDocument();
@@ -51,10 +52,9 @@ describe("CategoriesPage", () => {
       "role",
       "status"
     );
-    expect(screen.getByRole("link", { name: "Voltar às transações" })).toHaveAttribute(
-      "href",
-      "/transactions"
-    );
+    const backLink = screen.getByRole("link", { name: "Voltar às transações" });
+    expect(backLink).toHaveAttribute("href", "/transactions");
+    expect(backLink).toHaveClass("min-h-11");
   });
 
   it("creates through the injected server flow and lists the result", async () => {
@@ -79,5 +79,12 @@ describe("CategoriesPage", () => {
 
     const region = screen.getByRole("region", { name: "Suas categorias" });
     expect(within(region).getByText("Alimentação")).toBeInTheDocument();
+  });
+
+  it("keeps long category names shrinkable on narrow viewports", () => {
+    const longName = "Categoria com nome longo para uma tela móvel estreita";
+    renderCategoriesPage([{ ...persistedCategory, name: longName }]);
+
+    expect(screen.getByText(longName)).toHaveClass("min-w-0", "break-words");
   });
 });

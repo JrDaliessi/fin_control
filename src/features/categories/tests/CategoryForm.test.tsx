@@ -32,12 +32,16 @@ describe("CategoryForm", () => {
     >(() => deferred.promise);
     const user = userEvent.setup();
     render(<CategoryForm onCreateCategory={onCreateCategory} />);
+    const nameInput = screen.getByLabelText("Nome da categoria");
+    const kindSelect = screen.getByLabelText("Tipo da categoria");
 
-    await user.type(screen.getByLabelText("Nome da categoria"), "  Alimentação  ");
-    await user.selectOptions(screen.getByLabelText("Tipo da categoria"), "expense");
+    await user.type(nameInput, "  Alimentação  ");
+    await user.selectOptions(kindSelect, "expense");
     await user.click(screen.getByRole("button", { name: "Cadastrar categoria" }));
 
     expect(screen.getByRole("button", { name: "Salvando..." })).toBeDisabled();
+    expect(nameInput).toBeDisabled();
+    expect(kindSelect).toBeDisabled();
     expect(onCreateCategory).toHaveBeenCalledWith({
       name: "Alimentação",
       kind: "expense"
@@ -57,18 +61,39 @@ describe("CategoryForm", () => {
     >();
     const user = userEvent.setup();
     render(<CategoryForm onCreateCategory={onCreateCategory} />);
+    const nameInput = screen.getByLabelText("Nome da categoria");
 
-    await user.type(screen.getByLabelText("Nome da categoria"), "   ");
+    await user.type(nameInput, "   ");
     await user.click(screen.getByRole("button", { name: "Cadastrar categoria" }));
 
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Informe o nome da categoria."
     );
-    expect(screen.getByLabelText("Nome da categoria")).toHaveAttribute(
-      "aria-invalid",
-      "true"
-    );
+    expect(nameInput).toHaveAttribute("aria-describedby", "category-form-message");
+    expect(nameInput).toHaveAttribute("aria-invalid", "true");
+    expect(nameInput).toHaveFocus();
     expect(onCreateCategory).not.toHaveBeenCalled();
+  });
+
+  it("clears stale validation feedback when the user corrects the field", async () => {
+    const onCreateCategory = jest.fn<
+      (input: CreateCategoryRequest) => Promise<CategoryDto>
+    >();
+    const user = userEvent.setup();
+    render(<CategoryForm onCreateCategory={onCreateCategory} />);
+    const nameInput = screen.getByLabelText("Nome da categoria");
+
+    await user.type(nameInput, "   ");
+    await user.click(screen.getByRole("button", { name: "Cadastrar categoria" }));
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Informe o nome da categoria."
+    );
+
+    await user.type(nameInput, "Alimentação");
+
+    expect(nameInput).toHaveAttribute("aria-invalid", "false");
+    expect(nameInput).not.toHaveAttribute("aria-describedby");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("sanitizes errors returned by the persistent flow", async () => {
