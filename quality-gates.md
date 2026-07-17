@@ -620,6 +620,23 @@
 - Nenhum deploy, commit, push, alteração de Auth, migration ou mutação persistente foi executado.
 - Estado final: `READY_FOR_RELEASE` para entrega incremental de código; deploy público permanece condicionado aos itens de hardening documentados.
 
+### Resultado observado — SR-010
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou, 53 suítes e 255 testes.
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades.
+- `npm run build`: passou; `/categories` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo.
+- Supabase MCP confirmou a migration `20260717022313_create_categories`, RLS habilitada/forçada, duas policies e índices de ownership, unicidade e ordenação.
+- Quatro suítes pgTAP transacionais passaram com 65 asserções; rollback preservou `public.categories` com zero registros.
+- Grants mínimos confirmados: `authenticated` somente com `SELECT`/`INSERT`; sem `anon`, Auth anônimo, `UPDATE`, `DELETE` ou privilégio de aplicação para `service_role`.
+- Performance Advisor: sem alertas.
+- Security Advisor: somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001` e obrigatório antes de produção pública.
+- Busca em arquivos versionados não identificou segredo real, uso de `service_role` no código, autorização por `user_metadata` ou mensagem bruta de infraestrutura na UI.
+- Threat model cobre BOLA/IDOR, owner forjado, acesso anônimo, mass assignment, escalada privilegiada, enumeração e mutações fora do escopo.
+- Baseline de observabilidade proíbe nome/payload de categoria, PII, dados financeiros, JWT, cookies, senha, segredos e mensagens brutas; captura sanitizada, alertas e teste sintético permanecem em `HARD-OBS-001` antes de deploy público.
+- Nenhum deploy, commit, push, alteração de Auth, migration ou mutação persistente foi executado.
+- Estado final: `READY_FOR_RELEASE` para entrega incremental de código; deploy público permanece condicionado aos itens de hardening documentados.
+
 ### Resultado observado — SR-006
 - `npm run lint`: passou, 0 warnings.
 - `npm run type-check`: passou.

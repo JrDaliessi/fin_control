@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-010 concluído; acessibilidade, responsividade e experiência PWA revisadas
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-010 concluído; qualidade, segurança, observabilidade e entrega incremental validadas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -66,6 +66,7 @@
 - Data da expansão controlada da SR-010: 2026-07-17
 - Data da refatoração e hardening da SR-010: 2026-07-17
 - Data da revisão de UX, acessibilidade e PWA da SR-010: 2026-07-17
+- Data da validação final e preparação de release da SR-010: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -3865,3 +3866,53 @@ Limites preservados:
 Estado de saída:
 - `QUALITY_VALIDATION`
 - próximo passo recomendado: executar explicitamente `dia 7` da SR-010
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Pipeline local validado:
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 53 suítes e 255 testes
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou; `/categories` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo
+
+Validação remota via Supabase MCP:
+- projeto `fin_control` permaneceu `ACTIVE_HEALTHY` em Postgres 17, com as três migrations esperadas
+- quatro suítes pgTAP transacionais passaram: 33 schema + 12 constraints + 17 RLS + 3 performance = 65 asserções
+- rollback removeu todas as fixtures; `public.categories` permaneceu com zero registros
+- RLS permanece habilitada e forçada, com policies separadas de `SELECT` e `INSERT`
+- `authenticated` mantém somente `SELECT` e `INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e privilégios de aplicação para `service_role` permanecem bloqueados
+- índices de ownership, unicidade case-insensitive e ordenação determinística permanecem presentes
+- Performance Advisor retornou sem alertas
+- Security Advisor manteve somente `auth_leaked_password_protection`, já registrado como `SEC-AUTH-001`
+- changelog e documentação atuais confirmaram a exigência de grants explícitos separados de RLS; nenhuma breaking change aplicável à implementação hospedada foi identificada
+
+Threat model revisado:
+- BOLA/IDOR: owner é derivado da identidade verificada no servidor e reforçado por RLS
+- owner forjado e mass assignment: DTO público não recebe `user_id`; policy `WITH CHECK` exige o owner autenticado
+- acesso anônimo: bloqueado por grants e pela claim `is_anonymous`
+- escalada privilegiada: aplicação não usa `service_role`; apresentação não acessa Supabase diretamente
+- enumeração e vazamento de infraestrutura: repository expõe somente erro sanitizado e seleciona apenas as seis colunas aprovadas
+- mutações fora do escopo: ausência deliberada de grants e policies de `UPDATE` e `DELETE`
+- risco residual: proteção contra senhas vazadas, rate limit/antiabuso, headers HTTP e monitoramento externo devem ser tratados antes do primeiro deploy público
+
+Baseline de observabilidade:
+- CI registra resultado e duração dos gates sem segredos
+- eventos futuros permitidos: `categories_list_load`, `categories_list_failure`, `category_create_attempt`, `category_create_success` e `category_create_failure`
+- atributos permitidos: ambiente, release, rota, operação, resultado técnico, faixa de duração e classe sanitizada do erro
+- proibido registrar nome ou payload da categoria, e-mail, UUID de usuário, JWT, cookies, senha, segredo, mensagem bruta do provedor ou conteúdo financeiro
+- captura de erros, redaction, teste sintético autenticado e alertas operacionais permanecem em `HARD-OBS-001` antes de deploy público
+
+Release incremental preparada:
+- escopo liberável: criar e listar categorias próprias com identidade server-side, grants mínimos, RLS por proprietário e apresentação acessível
+- edição, exclusão, arquivamento, personalização, categorias globais, persistência de transações, offline e IA permanecem fora do escopo
+- nenhuma nova dependência, migration, alteração de Auth, mutação persistente, deploy, commit, push ou PR foi executado no Dia 7
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- nenhum bloqueio crítico para entrega incremental do código
+- deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
+- próxima small release não iniciada; requer seleção e comando explícitos

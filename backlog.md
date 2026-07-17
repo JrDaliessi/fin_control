@@ -6,19 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-010 — Persistência e RLS de categorias
-- Tipo: Security Item / Small Release
-- Descrição objetiva: substituir categorias demonstrativas por categorias persistentes, tipadas e isoladas por usuário.
-- Objetivo de negócio: permitir classificação financeira real e preparar transações persistidas.
-- Valor esperado: categorias confiáveis para cadastro de transações, orçamento e análises futuras.
-- Prioridade: Alta
-- Dependências: SR-008 e SR-009 concluídas.
-- Risco: Alto por ownership, Data API, duplicidade e futura integridade entre transação e categoria.
-- Fase atual: Dia 6 concluído; foco, feedback, envio concorrente, responsividade e PWA estão validados, com inspeção visual registrada como limitação leve.
-- Critério de pronto: domínio, casos de uso, migration, repository, grants mínimos, RLS forçada, testes Jest/pgTAP de isolamento, apresentação essencial e pipeline verde.
-- Escopo: criar e listar categorias próprias com `name` e `kind` (`income | expense`).
-- Fora do escopo: edição, exclusão, arquivamento, cor, ícone, seeds, categorias globais, IA e persistência de transações.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -470,6 +458,18 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-010 — Persistência e RLS de categorias
+- Tipo: Security Item / Small Release
+- Resultado: criação e listagem persistentes de categorias próprias entregues com identidade server-side, grants mínimos, RLS forçada e isolamento por proprietário.
+- Escopo concluído: domínio, casos de uso, migration, repository, mapper, Server Actions autenticadas, estados acessíveis e experiência PWA coerente.
+- Banco: migration `20260717022313_create_categories` aplicada; 65 asserções pgTAP verdes; Performance Advisor limpo; tabela permaneceu vazia após os testes transacionais do Dia 7.
+- Quality gates: lint, type-check, 53 suítes/255 testes Jest, auditoria sem vulnerabilidades e build de produção verdes.
+- Segurança: `authenticated` somente com `SELECT`/`INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e uso de `service_role` pela aplicação bloqueados.
+- Observabilidade: eventos e atributos sanitizados definidos; nomes, payloads, PII, credenciais, tokens e conteúdo financeiro são proibidos.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código.
+- Fora do escopo preservado: edição, exclusão, arquivamento, cor, ícone, seeds, categorias globais, persistência de transações, offline e IA.
+- Status: DONE
 
 ### UI-002 — Shell e navegação responsiva
 - Tipo: Small Release / UX Improvement
