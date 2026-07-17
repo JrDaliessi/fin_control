@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 1 da SR-010 concluído em `ARCHITECTURE_READY`; domínio, contratos, schema, grants, RLS e threat model definidos sem migration ou implementação funcional.
+Estado atual: Dia 2 da SR-010 concluído em `TEST_STRATEGY_READY`; 22 cenários Jest e 65 asserções pgTAP foram criados antes da implementação.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -166,7 +166,7 @@ Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `2
 
 Recorte da SR-010: criar e listar categorias próprias com nome normalizado e `kind` `income | expense`; rota `/categories` como subfluxo de transações, grants mínimos `SELECT/INSERT`, RLS por proprietário e futura integridade composta com transações. Edição, exclusão, personalização visual, seeds e transações persistidas permanecem fora.
 
-Próximo passo: executar explicitamente o Dia 2 da SR-010 para criar a matriz e os testes essenciais antes de qualquer implementação ou migration. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Próximo passo: executar explicitamente o Dia 3 da SR-010 para implementar o mínimo que satisfaça os contratos, sem antecipar apresentação. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

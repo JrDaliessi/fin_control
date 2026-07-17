@@ -95,6 +95,21 @@
 - Audit sem vulnerabilidades conhecidas.
 - Implementação funcional segue bloqueada até Dia 3.
 
+### Resultado observado — SR-010
+- Matriz documentada em `test-strategy.md` para domínio, aplicação, infrastructure, banco e apresentação futura.
+- Seis arquivos Jest foram criados, incluindo fixture, com 22 cenários planejados.
+- Quatro suítes pgTAP foram criadas com planos validados de 33, 12, 17 e 3 asserções.
+- Baseline anterior passou com 44 suítes e 212 testes, type-check, lint e audit com 0 vulnerabilidades.
+- RED Jest válido: 5 suítes falharam exclusivamente pelos módulos de produção ausentes.
+- Type-check falhou somente com 11 `TS2307` referentes aos mesmos módulos planejados.
+- Lint passou com 0 warnings.
+- Rede anterior permaneceu verde com 44 suítes e 212 testes ao excluir apenas os contratos RED da SR-010.
+- RED remoto via MCP confirmou 1 falha de 1 pela ausência de `public.categories`.
+- Rollback remoto preservou uma tabela pública, duas migrations e `pgtap` não instalada.
+- Nenhuma implementação, migration, tabela, grant, policy, dado ou configuração Supabase foi criada.
+- Build não foi executado porque o type-check vermelho é deliberado.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+
 ### Resultado observado — UI-002
 - Matriz documentada em `test-strategy.md` com configuração pura, composition root, acessibilidade, responsividade e regressão.
 - Dois arquivos de teste criados antes da implementação, totalizando 14 cenários planejados.

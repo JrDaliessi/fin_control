@@ -730,3 +730,96 @@ Estado de saída: `QUALITY_VALIDATION`.
 - Nenhum teste foi relaxado, ignorado ou removido.
 
 Estado de saída: `READY_FOR_RELEASE`.
+
+## Dia 2 — SR-010 Persistência e RLS de Categorias
+
+## Objetivo
+
+Transformar o domínio, os contratos, o schema planejado e o threat model da SR-010 em testes executáveis antes de criar qualquer implementação funcional ou migration.
+
+## Prioridade por Camada
+
+1. `domain`: validar criação, restauração, normalização e kinds de categoria.
+2. `application`: validar criação e listagem exclusivamente por contratos.
+3. `infrastructure`: validar mapper, repository, schema, constraints, grants e RLS.
+4. `presentation`: documentar cenários para o Dia 4 sem criar UI no Dia 2.
+
+## Matriz de Testes da SR-010
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `Category` | `income`/`expense`; normalização; entradas inválidas; restauração e invariantes | 9 cenários criados |
+| application | `CreateCategoryUseCase` | criação normalizada; entrada inválida; falha do repository | 3 cenários criados |
+| application | `ListCategoriesUseCase` | ator normalizado; lista vazia; ator ausente; falha do repository | 4 cenários criados |
+| infrastructure | mapper | row para domínio; payload mínimo de insert | 2 cenários criados |
+| infrastructure | `SupabaseCategoryRepository` | criar; filtrar/ordenar; sanitizar erros de create/list | 4 cenários criados |
+| database | schema/grants | colunas, constraints, índices, policies, privilégios e ausência de campos futuros | 33 asserções pgTAP |
+| database | constraints | kinds, nome normalizado, FK, unicidade e defaults | 12 asserções pgTAP |
+| database | RLS | owner, não owner, anon, Auth anônimo, owner forjado e operações proibidas | 17 asserções pgTAP |
+| database | performance | initPlan dos helpers Auth e índice de ownership | 3 asserções pgTAP |
+| presentation | `/categories` | loading, empty, success, error, formulário e ausência de `userId` livre | documentado; testes adiados ao Dia 4 |
+
+## Cenário Feliz
+
+Um usuário permanente autenticado cria uma categoria de despesa. O domínio normaliza nome e ator, o caso de uso persiste pelo contrato, o mapper envia apenas `user_id`, `name` e `kind`, e o banco permite que o proprietário liste a categoria.
+
+## Cenários Alternativos
+
+- categoria de receita em vez de despesa
+- lista vazia sem categorias inventadas
+- mesmo nome em kinds diferentes
+- mesmo nome e kind para usuários diferentes
+- falha do repository convertida em erro estável
+
+## Edge Cases Críticos
+
+- usuário ou nome vazio
+- nome acima de 80 caracteres
+- espaços externos ou repetidos
+- kind fora de `income | expense`
+- duplicidade case-insensitive por usuário e kind
+- usuário inexistente na FK de Auth
+- leitura e insert de outro proprietário
+- acesso por `anon` ou usuário anônimo do Supabase Auth
+- tentativa de `UPDATE` ou `DELETE` sem grant
+- policy sem initPlan ou coluna de ownership sem índice
+- `color` e `icon` surgindo prematuramente no schema
+
+## Testes Criados
+
+Jest:
+- `src/features/categories/tests/fixtures/category.fixtures.ts`
+- `src/features/categories/tests/category.entity.test.ts`
+- `src/features/categories/tests/create-category.use-case.test.ts`
+- `src/features/categories/tests/list-categories.use-case.test.ts`
+- `src/features/categories/tests/supabase-category.mapper.test.ts`
+- `src/features/categories/tests/supabase-category.repository.test.ts`
+
+pgTAP:
+- `supabase/tests/database/categories_schema.test.sql`
+- `supabase/tests/database/categories_constraints.test.sql`
+- `supabase/tests/database/categories_rls.test.sql`
+- `supabase/tests/database/categories_rls_performance.test.sql`
+
+## Resultado Observado do Dia 2 — SR-010
+
+- Baseline anterior: 44 suítes e 212 testes verdes; type-check e lint verdes; audit com 0 vulnerabilidades.
+- RED Jest direcionado: 5 suítes falharam por módulos de produção ausentes; nenhum teste funcional executou prematuramente.
+- RED do type-check: 11 erros `TS2307`, todos referentes aos módulos planejados ausentes.
+- Lint permaneceu verde com 0 warnings.
+- Rede anterior, excluindo somente `src/features/categories/tests`: 44 suítes e 212 testes verdes.
+- Planos pgTAP validados mecanicamente: 33 + 12 + 17 + 3 = 65 asserções.
+- RED remoto via MCP: contrato mínimo confirmou 1 falha de 1 porque `public.categories` ainda não existe.
+- Rollback remoto confirmado: somente `financial_accounts`, duas migrations e extensão `pgtap` não instalada.
+- Nenhuma implementation, migration, tabela, grant, policy, dado ou configuração foi criada.
+- Build não foi executado porque o type-check deve permanecer vermelho por design.
+
+## Implementação Bloqueada até o Dia 3
+
+- entidade e contrato de categorias
+- casos de uso de criação e listagem
+- mapper e repository Supabase
+- migration `public.categories`
+- qualquer rota, action ou componente de apresentação
+
+Estado de saída: `TEST_STRATEGY_READY`.

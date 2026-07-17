@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-010 concluído; categorias persistentes, contratos, schema, grants, RLS e threat model definidos
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-010 concluído; contratos Jest e pgTAP criados e etapa RED validada
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -61,6 +61,7 @@
 - Data da revisão de UX, acessibilidade e PWA da UI-002: 2026-07-16
 - Data da validação final e preparação de release da UI-002: 2026-07-16
 - Data do discovery e arquitetura da SR-010: 2026-07-16
+- Data da estratégia de testes da SR-010: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -3576,3 +3577,74 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Matriz criada:
+- domínio: criação/restauração, kinds, normalização e invariantes de `Category`
+- aplicação: criação e listagem exclusivamente pelos contratos
+- infraestrutura: mapper, repository, filtro de owner, ordenação e sanitização de erro
+- banco: schema, constraints, grants, RLS, isolamento e performance das policies
+- apresentação: cenários documentados e adiados até a estabilidade dos casos de uso
+
+Testes e fixture Jest criados:
+- `src/features/categories/tests/fixtures/category.fixtures.ts`
+- `src/features/categories/tests/category.entity.test.ts`
+- `src/features/categories/tests/create-category.use-case.test.ts`
+- `src/features/categories/tests/list-categories.use-case.test.ts`
+- `src/features/categories/tests/supabase-category.mapper.test.ts`
+- `src/features/categories/tests/supabase-category.repository.test.ts`
+
+Testes pgTAP criados:
+- `supabase/tests/database/categories_schema.test.sql` com 33 asserções
+- `supabase/tests/database/categories_constraints.test.sql` com 12 asserções
+- `supabase/tests/database/categories_rls.test.sql` com 17 asserções
+- `supabase/tests/database/categories_rls_performance.test.sql` com 3 asserções
+
+Cenários cobertos:
+- categoria `income` ou `expense`
+- ator e nome normalizados
+- usuário/nome ausente, nome longo e kind inválido
+- criação, listagem vazia, ator ausente e falhas do repository
+- mapper de row e payload mínimo de insert
+- filtro explícito por owner e ordem `kind`, `name`, `id`
+- sanitização de erros Supabase
+- schema sem `color` ou `icon`
+- FK de Auth, unicidade case-insensitive e chave composta futura
+- grants mínimos, RLS forçada e policies separadas de SELECT/INSERT
+- owner, não owner, `anon`, Auth anônimo e owner forjado
+- ausência de UPDATE/DELETE e helpers Auth em initPlan
+
+Resultado TDD:
+- baseline anterior: 44 suítes e 212 testes verdes
+- baseline de type-check e lint verde; audit com 0 vulnerabilidades
+- RED direcionado: 5 suítes Jest falharam somente por módulos deliberadamente ausentes
+- type-check falhou somente com 11 `TS2307` dos mesmos módulos planejados
+- lint permaneceu verde com 0 warnings
+- rede anterior excluindo apenas os testes de categorias: 44 suítes e 212 testes verdes
+- RED remoto transacional via MCP: 1 falha de 1 porque `public.categories` ainda não existe
+- rollback confirmado: banco permaneceu apenas com `financial_accounts`, duas migrations e `pgtap` não instalada
+- build não foi executado porque o type-check vermelho é deliberado
+
+Implementação bloqueada até o Dia 3:
+- `src/features/categories/domain/entities/category.entity.ts`
+- `src/features/categories/domain/interfaces/category.repository.ts`
+- `src/features/categories/application/use-cases/create-category.use-case.ts`
+- `src/features/categories/application/use-cases/list-categories.use-case.ts`
+- `src/features/categories/infrastructure/supabase/category.mapper.ts`
+- `src/features/categories/infrastructure/repositories/supabase-category.repository.ts`
+- migration de `public.categories`
+
+Limites preservados:
+- nenhum código funcional, rota, action ou componente criado
+- nenhuma migration criada ou aplicada
+- nenhuma tabela, grant, policy, dado ou configuração Supabase alterado
+- nenhum teste anterior relaxado, ignorado ou removido
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar explicitamente `dia 3` da SR-010
