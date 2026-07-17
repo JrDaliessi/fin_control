@@ -366,3 +366,40 @@ Evidência:
 Interpretação:
 - duplicação monetária removida sem regressão.
 - sessão local protegida contra referências externas mutáveis.
+
+## Dia 2 — SR-011
+
+### Baseline anterior
+
+- Jest: 53 suítes e 255 testes passaram.
+- type-check: passou.
+- lint: passou, 0 warnings.
+- audit de produção: 0 vulnerabilidades.
+
+### RED direcionado
+
+- 3 suítes falharam.
+- 9 testes falharam e 11 passaram.
+- mapper e repository falharam por módulos deliberadamente ausentes.
+- domínio falhou por `Transaction.restore`, normalização de notas e limites ainda ausentes.
+
+### Type-check RED
+
+- 5 erros planejados.
+- 2 `TS2307`: mapper e repository ausentes.
+- 3 `TS2339`: `Transaction.restore` ausente.
+
+### Rede anterior
+
+- 52 suítes e 244 testes passaram ao excluir somente os três contratos RED.
+- lint permaneceu verde.
+
+### Banco
+
+- 87 asserções pgTAP planejadas e contadas mecanicamente.
+- RED remoto: 1 falha de 1 porque `public.transactions` não existe.
+- rollback confirmado: nenhuma tabela, migration, extensão ou fixture persistida.
+
+Interpretação:
+- estado vermelho válido do TDD confirmado.
+- implementação autorizável somente após comando explícito `dia 3`.

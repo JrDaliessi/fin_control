@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-011 concluído; discovery, arquitetura, integridade tenant-safe e contratos aprovados
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-011 concluído; testes essenciais criados e RED válido confirmado
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -69,6 +69,7 @@
 - Data da validação final e preparação de release da SR-010: 2026-07-17
 - Data de seleção da SR-011 como próximo ciclo: 2026-07-17
 - Data do discovery e arquitetura da SR-011: 2026-07-17
+- Data da estratégia de testes da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1274,7 +1275,7 @@ Estado de saída:
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
 - Dia 7 da UI-001 concluído; pipeline final passou com 41 suítes e 194 testes.
 - Dia 1 da UI-002 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0006.
-- Próximo passo operacional: executar explicitamente `dia 2` da SR-011 para criar os testes essenciais antes da implementação.
+- Próximo passo operacional: executar explicitamente `dia 3` da SR-011 para implementar o mínimo necessário aos testes.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -3973,3 +3974,55 @@ Estado de saída:
 - `ARCHITECTURE_READY`
 - SR-011 movida para `IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Matriz criada:
+- domain: normalização e limites, restauração, data civil e imutabilidade
+- application: criação e resumo mensal existentes preservados como contratos
+- infrastructure: mapper, payload mínimo, consulta mensal e sanitização de erros
+- database: schema, constraints, FKs compostas, grants, RLS e performance
+- presentation: cenários documentados para o Dia 4, sem UI antecipada
+
+Testes Jest criados ou alterados:
+- `src/features/transactions/tests/fixtures/transaction.fixtures.ts`
+- `src/features/transactions/tests/transaction.entity.test.ts`
+- `src/features/transactions/tests/supabase-transaction.mapper.test.ts`
+- `src/features/transactions/tests/supabase-transaction.repository.test.ts`
+
+Testes SQL criados:
+- `supabase/tests/database/transactions_schema.test.sql` — 46 asserções
+- `supabase/tests/database/transactions_constraints.test.sql` — 21 asserções
+- `supabase/tests/database/transactions_rls.test.sql` — 17 asserções
+- `supabase/tests/database/transactions_rls_performance.test.sql` — 3 asserções
+
+Resultado TDD:
+- baseline anterior: 53 suítes e 255 testes verdes
+- baseline de type-check e lint verde; audit com 0 vulnerabilidades
+- RED direcionado: 3 suítes falharam; 9 testes falharam e 11 passaram
+- falhas limitadas a invariantes, `Transaction.restore`, mapper e repository planejados
+- type-check falhou somente com 5 erros dos módulos/método deliberadamente ausentes
+- lint permaneceu verde com 0 warnings
+- rede anterior, excluindo os três contratos RED: 52 suítes e 244 testes verdes
+- planos pgTAP: 87 asserções com contagem validada
+- RED remoto: 1 falha de 1 pela ausência de `public.transactions`
+- rollback confirmado: banco permaneceu com `financial_accounts`, `categories`, três migrations e sem `pgtap` instalada
+
+Implementação bloqueada até o Dia 3:
+- `Transaction.restore` e limites de descrição/notas
+- `transaction.mapper.ts`
+- `supabase-transaction.repository.ts`
+- contrato obrigatório de `findByMonth`
+- migration de `public.transactions` e constraints auxiliares
+
+Limites preservados:
+- nenhuma implementação funcional, migration, tabela, grant ou policy criada
+- nenhuma fixture ou extensão persistida no Supabase
+- nenhuma Server Action, rota, UI, dependência, commit, push, PR ou deploy
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar explicitamente `dia 3`

@@ -13,7 +13,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Critica
 - Dependencias: SR-008 a SR-010 concluídas.
 - Risco: Alto, por manipular dados financeiros e vínculos tenant-safe.
-- Fase atual: Dia 1 concluído; Dia 2 pendente.
+- Fase atual: Dia 2 concluído; testes essenciais em RED válido e Dia 3 pendente.
 - Criterio de pronto: repositório Supabase, criação e consulta mensal, FKs compostas, grants mínimos, RLS, testes de isolamento e pipeline verde.
 - Status: IN_PROGRESS
 
