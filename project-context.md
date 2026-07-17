@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UI-002 concluído; pipeline, segurança, observabilidade e preparação de release validados
+- Fase atual: Dia 7 da SR-010 concluído; qualidade, segurança, observabilidade e entrega incremental validadas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -60,6 +60,13 @@
 - Data da refatoração e hardening da UI-002: 2026-07-16
 - Data da revisão de UX, acessibilidade e PWA da UI-002: 2026-07-16
 - Data da validação final e preparação de release da UI-002: 2026-07-16
+- Data do discovery e arquitetura da SR-010: 2026-07-16
+- Data da estratégia de testes da SR-010: 2026-07-16
+- Data da implementação mínima da SR-010: 2026-07-16
+- Data da expansão controlada da SR-010: 2026-07-17
+- Data da refatoração e hardening da SR-010: 2026-07-17
+- Data da revisão de UX, acessibilidade e PWA da SR-010: 2026-07-17
+- Data da validação final e preparação de release da SR-010: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1839,6 +1846,141 @@ Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
 
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Pré-requisitos confirmados:
+- SR-008 concluiu autenticação e sessão protegida
+- SR-009 concluiu persistência e RLS de contas
+- UI-002 está integrada em `origin/develop`
+- branch `feature/SR-010-categories-rls` criada a partir de `origin/develop`
+- alterações locais preexistentes em `.gitignore` e `rewrite-msgs.sh` foram preservadas e permanecem fora do escopo
+- nenhum bloqueio duro impede o discovery
+
+Objetivo refinado:
+- substituir categorias demonstrativas por categorias reais do usuário autenticado
+- permitir criação e listagem seguras antes de persistir transações
+- preparar integridade tenant-safe para a futura SR-011
+- manter o recorte pequeno, sem antecipar personalização, manutenção completa ou analytics
+
+Escopo aprovado:
+- entidade `Category` com criação e restauração
+- `CategoryKind` limitado a `income | expense`
+- criar categoria própria
+- listar categorias próprias em ordem determinística
+- persistir `id`, `user_id`, `name`, `kind`, `created_at` e `updated_at`
+- rota privada `/categories` como subfluxo de transações
+- substituir opções demonstrativas do formulário local por categorias persistidas quando a apresentação for autorizada
+
+Fora do escopo:
+- editar, excluir, arquivar e ordenar manualmente categorias
+- cor, ícone, categorias globais e seed automático
+- categoria híbrida `both`
+- sugestões ou classificação por IA
+- persistência de transações, orçamento e analytics por categoria
+- novo item na navegação principal da UI-002
+
+Regras de domínio:
+- `userId` é obrigatório, mas a apresentação não o fornece como autoridade
+- nome é obrigatório, normalizado com espaços internos simples e limitado a 80 caracteres
+- nomes duplicados por usuário e `kind` são rejeitados sem diferenciar maiúsculas e minúsculas
+- o mesmo nome pode existir uma vez em `income` e uma vez em `expense`
+- `kind` deve corresponder à polaridade futura da transação
+- categoria sugerida futuramente por IA continua revisável pelo usuário
+
+Contratos entre camadas:
+- `Category.create()` valida nova categoria
+- `Category.restore()` reidrata ID e timestamps reaplicando invariantes
+- `CategoryRepository.create()` persiste uma categoria válida
+- `CategoryRepository.listByUser()` lista categorias próprias
+- `CreateCategoryUseCase` cria e persiste somente após validação
+- `ListCategoriesUseCase` valida o ator e consulta o contrato
+- `SupabaseCategoryRepository` e mapper ficam em `categories/infrastructure`
+- Server Component e Server Action revalidam claims e injetam o `userId`
+- presentation recebe DTOs e callbacks serializáveis, sem importar Supabase
+
+Schema planejado:
+- tabela `public.categories`
+- `id uuid primary key default gen_random_uuid()`
+- `user_id uuid not null references auth.users(id) on delete cascade`
+- `name text not null` com normalização e limite de 80 caracteres
+- `kind text not null check (kind in ('income', 'expense'))`
+- timestamps `created_at` e `updated_at` com `now()`
+- unicidade case-insensitive por `(user_id, kind, lower(name))`
+- unicidade adicional `(user_id, id)` para futura FK composta em `transactions`
+- índice para listagem por usuário, kind, nome normalizado e ID
+- nenhuma trigger de atualização enquanto `UPDATE` estiver fora do escopo
+
+Grants e RLS planejados:
+- revogar privilégios de `public`, `anon`, `authenticated` e `service_role`
+- conceder somente `SELECT` e `INSERT` a `authenticated`
+- habilitar e forçar RLS
+- policy separada de `SELECT` com ownership e bloqueio de usuário anônimo
+- policy separada de `INSERT` com `WITH CHECK`, ownership e bloqueio de usuário anônimo
+- não criar grants ou policies de `UPDATE` e `DELETE`
+- usar `(select auth.uid())` e `(select auth.jwt())` para initPlan por statement
+
+Auditoria Supabase via MCP:
+- projeto `fin_control` ativo e saudável em Postgres 17
+- banco contém somente `public.financial_accounts`, com duas linhas, duas migrations e nenhuma tabela de categorias
+- `financial_accounts` mantém RLS habilitada e forçada
+- `authenticated` possui somente `SELECT` e `INSERT` na tabela existente
+- policies atuais restringem leitura e criação por proprietário e bloqueiam `is_anonymous = true`
+- Performance Advisor retornou sem alertas
+- Security Advisor manteve somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`
+- documentação oficial atual confirma que grants controlam acesso ao objeto e RLS controla as linhas; ambos devem nascer juntos
+- nenhum SQL mutável, migration ou dado foi criado ou alterado
+
+Threat model:
+- BOLA/IDOR: claims revalidadas, filtro explícito e RLS por proprietário
+- owner forjado: `userId` não vem da UI e `WITH CHECK` rejeita divergência
+- usuário anônimo: policy verifica `is_anonymous = false`
+- mass assignment: mapper de insert aceitará somente `user_id`, `name` e `kind`
+- duplicidade: índice único case-insensitive por usuário e kind
+- vínculo futuro cross-tenant: FK de transações deverá usar `(user_id, category_id)` para `(user_id, id)`
+- vazamento de detalhes: erros do Supabase serão traduzidos para mensagens estáveis
+- chave privilegiada: `service_role` permanece ausente do cliente e revogado da tabela
+
+Matriz preliminar para o Dia 2:
+- domínio: criação/restauração, normalização, limite de nome e kinds inválidos
+- aplicação: criação feliz, entrada inválida, chamada única e propagação controlada de erro
+- aplicação: listagem feliz, usuário vazio e ordem recebida do contrato
+- mapper: `snake_case`, timestamps e payload mínimo de insert
+- repository: criação, listagem filtrada/ordenada e erro sanitizado
+- banco/pgTAP: schema, constraints, grants, RLS forçada, owner, não owner, anon, owner forjado e duplicidade
+- apresentação futura: formulário/lista, loading, empty, success, erro e integração sem `userId` livre
+
+Riscos e limites:
+- a unicidade case-insensitive não trata nomes com e sem acento como equivalentes; adicionar `unaccent` sem caso real foi rejeitado
+- sem seed automático, o usuário precisará criar ao menos uma categoria antes de registrar transações futuras
+- a SR-011 continua bloqueada até a SR-010 concluir seus testes e quality gates
+- `SEC-AUTH-001` continua obrigatório antes de produção pública, mas não bloqueia o TDD local desta release
+
+Artefatos atualizados:
+- `project-context.md`
+- `architecture.md`
+- `database-model.md`
+- `domain-model.md`
+- `module-contracts.md`
+- `roadmap.md`
+- `backlog.md`
+- `quality-gates.md`
+- `adr/0007-categories-persistence-rls.md`
+- `adr/README.md`
+
+Limites preservados:
+- nenhum código funcional ou teste criado
+- nenhuma migration criada ou aplicada
+- nenhum dado, grant, policy ou configuração Supabase alterado
+- nenhuma dependência instalada
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-010 movida para `IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 2` da SR-010
+
 ## Dia 1 — Contexto, Discovery e Arquitetura da UI-002
 
 Small release: `UI-002 — Shell e navegação responsiva`.
@@ -3440,3 +3582,337 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Matriz criada:
+- domínio: criação/restauração, kinds, normalização e invariantes de `Category`
+- aplicação: criação e listagem exclusivamente pelos contratos
+- infraestrutura: mapper, repository, filtro de owner, ordenação e sanitização de erro
+- banco: schema, constraints, grants, RLS, isolamento e performance das policies
+- apresentação: cenários documentados e adiados até a estabilidade dos casos de uso
+
+Testes e fixture Jest criados:
+- `src/features/categories/tests/fixtures/category.fixtures.ts`
+- `src/features/categories/tests/category.entity.test.ts`
+- `src/features/categories/tests/create-category.use-case.test.ts`
+- `src/features/categories/tests/list-categories.use-case.test.ts`
+- `src/features/categories/tests/supabase-category.mapper.test.ts`
+- `src/features/categories/tests/supabase-category.repository.test.ts`
+
+Testes pgTAP criados:
+- `supabase/tests/database/categories_schema.test.sql` com 33 asserções
+- `supabase/tests/database/categories_constraints.test.sql` com 12 asserções
+- `supabase/tests/database/categories_rls.test.sql` com 17 asserções
+- `supabase/tests/database/categories_rls_performance.test.sql` com 3 asserções
+
+Cenários cobertos:
+- categoria `income` ou `expense`
+- ator e nome normalizados
+- usuário/nome ausente, nome longo e kind inválido
+- criação, listagem vazia, ator ausente e falhas do repository
+- mapper de row e payload mínimo de insert
+- filtro explícito por owner e ordem `kind`, `name`, `id`
+- sanitização de erros Supabase
+- schema sem `color` ou `icon`
+- FK de Auth, unicidade case-insensitive e chave composta futura
+- grants mínimos, RLS forçada e policies separadas de SELECT/INSERT
+- owner, não owner, `anon`, Auth anônimo e owner forjado
+- ausência de UPDATE/DELETE e helpers Auth em initPlan
+
+Resultado TDD:
+- baseline anterior: 44 suítes e 212 testes verdes
+- baseline de type-check e lint verde; audit com 0 vulnerabilidades
+- RED direcionado: 5 suítes Jest falharam somente por módulos deliberadamente ausentes
+- type-check falhou somente com 11 `TS2307` dos mesmos módulos planejados
+- lint permaneceu verde com 0 warnings
+- rede anterior excluindo apenas os testes de categorias: 44 suítes e 212 testes verdes
+- RED remoto transacional via MCP: 1 falha de 1 porque `public.categories` ainda não existe
+- rollback confirmado: banco permaneceu apenas com `financial_accounts`, duas migrations e `pgtap` não instalada
+- build não foi executado porque o type-check vermelho é deliberado
+
+Implementação bloqueada até o Dia 3:
+- `src/features/categories/domain/entities/category.entity.ts`
+- `src/features/categories/domain/interfaces/category.repository.ts`
+- `src/features/categories/application/use-cases/create-category.use-case.ts`
+- `src/features/categories/application/use-cases/list-categories.use-case.ts`
+- `src/features/categories/infrastructure/supabase/category.mapper.ts`
+- `src/features/categories/infrastructure/repositories/supabase-category.repository.ts`
+- migration de `public.categories`
+
+Limites preservados:
+- nenhum código funcional, rota, action ou componente criado
+- nenhuma migration criada ou aplicada
+- nenhuma tabela, grant, policy, dado ou configuração Supabase alterado
+- nenhum teste anterior relaxado, ignorado ou removido
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar explicitamente `dia 3` da SR-010
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Implementação criada:
+- `src/features/categories/domain/entities/category.entity.ts`
+- `src/features/categories/domain/interfaces/category.repository.ts`
+- `src/features/categories/application/use-cases/create-category.use-case.ts`
+- `src/features/categories/application/use-cases/list-categories.use-case.ts`
+- `src/features/categories/infrastructure/supabase/category.mapper.ts`
+- `src/features/categories/infrastructure/repositories/supabase-category.repository.ts`
+- `supabase/migrations/20260717022313_create_categories.sql`
+
+Escopo entregue:
+- categoria tipada como `income | expense`, com ator e nome normalizados e limite de 80 caracteres
+- criação e listagem exclusivamente pelo contrato `CategoryRepository`
+- mapper restrito aos campos aprovados e repository com erros sanitizados
+- listagem filtrada por `user_id` e ordenada por `kind`, `name` e `id`
+- tabela `public.categories` com seis colunas, FK para Auth, constraints, unicidade case-insensitive e chave composta futura
+- grants mínimos de `SELECT` e `INSERT` somente para `authenticated`
+- RLS habilitada/forçada com policies separadas de ownership e bloqueio de Auth anônimo
+- índices compostos para RLS, unicidade e ordenação determinística
+
+Validação Supabase:
+- documentação e changelog atuais revisados antes da implementação; nenhuma breaking change aplicável ao banco hospedado foi identificada
+- migration aplicada via MCP no projeto `fin_control` e versão local alinhada ao registro remoto `20260717022313`
+- pgTAP remoto: 33/33 schema, 12/12 constraints, 17/17 RLS e 3/3 performance
+- todos os testes SQL usaram transação e rollback; `categories` permaneceu vazia após as fixtures
+- Performance Advisor sem alertas
+- Security Advisor manteve apenas `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001` e não alterado fora do escopo
+
+Resultado dos gates:
+- testes direcionados: 5 suítes e 22 testes passaram
+- `npm run test:ci`: 49 suítes e 234 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com Proxy e rotas existentes
+
+Arquitetura e limites preservados:
+- domain e application não dependem de React, Next.js ou Supabase
+- integração concreta permanece isolada em infrastructure
+- nenhuma UI, rota, action ou acesso direto da apresentação ao Supabase
+- nenhuma edição, exclusão, arquivamento, cor, ícone, seed, categoria global ou persistência de transações
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 4` da SR-010
+
+## Dia 4 — Expansão Controlada da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Implementação criada:
+- DTOs de categoria em `application`, sem `userId` na fronteira visual
+- Server Actions autenticadas para criar e listar categorias
+- hook de apresentação para os estados do formulário
+- formulário, lista e página interna da feature
+- rota privada `/categories` com estados de loading e error
+- acesso contextual `Gerenciar categorias` a partir de `/transactions`
+
+Escopo entregue:
+- criação persistente de categoria própria com `name` e `kind`
+- listagem persistente ordenada pelos contratos do repository
+- estados `idle`, `submitting`, `success`, `error`, `loading` e `empty`
+- validação de nome vazio e normalização de espaços antes da action
+- erro de infraestrutura sanitizado para a interface
+- `/categories` permanece subfluxo de Transações, sem quarto destino na navegação principal
+
+Segurança e arquitetura:
+- cada Server Action cria client Supabase server-side por requisição e valida `auth.getClaims()`
+- owner é injetado a partir do claim verificado; o payload visual não aceita `userId`
+- Auth anônimo, claim ausente e falha de autenticação fecham o fluxo sem consultar ou gravar categorias
+- presentation não importa Supabase; application e domain permanecem independentes de React e Next.js
+- nenhuma migration, policy, grant ou configuração remota foi alterada no Dia 4
+
+Evidência TDD e gates:
+- RED direcionado: quatro suítes bloqueadas por módulos ausentes e teste de transações falhando pelo link ainda inexistente
+- GREEN direcionado: 5 suítes e 16 testes da apresentação/actions; navegação privada com 1 suíte e 11 testes
+- `npm run test:ci`: 53 suítes e 249 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou, incluindo `/categories` e Proxy ativo
+
+Validação autenticada no navegador:
+- login local realizado sem persistir credenciais em arquivos
+- `/categories` exibiu formulário acessível e estado vazio para o usuário autenticado
+- `/transactions` exibiu exatamente um link `Gerenciar categorias`
+- console da rota de categorias não apresentou erros
+- nenhuma categoria foi criada durante a inspeção; o banco não recebeu mutação de validação
+- Chrome externo bloqueou `localhost` pela extensão; a inspeção foi concluída no navegador interno autenticado
+
+Limites preservados:
+- nenhuma edição, exclusão, arquivamento, cor, ícone, seed ou categoria global
+- nenhuma persistência de transações ou expansão para UI-003
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 5` da SR-010
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Auditoria estrutural:
+- arquivos de produção e testes da feature foram medidos; nenhum monólito crítico foi identificado
+- `CategoryForm.tsx` permaneceu coeso como renderização do formulário e não foi dividido por contagem de linhas
+- duplicação real de normalização entre domínio e hook foi identificada
+- acoplamento desnecessário do repository ao `select("*")` foi identificado
+- metadados `Date` restaurados permitiam mutação externa e não validavam ID/datas inválidos
+
+Plano incremental executado:
+1. proteger metadados persistidos da entidade sem alterar a API pública
+2. centralizar a normalização de nome no domínio e reutilizá-la na apresentação
+3. limitar queries do repository às seis colunas aprovadas
+4. preservar policies, grants e índices remotos já corretos
+
+TDD e refatorações:
+- RED direcionado registrou seis falhas: ID/data inválidos, mutação externa e duas projeções ainda usando `*`
+- `Category.restore` passou a validar ID, `createdAt` e `updatedAt`
+- datas persistidas são copiadas na entrada e na leitura, preservando a imutabilidade da entidade
+- `normalizeCategoryName` tornou-se a fonte única da normalização no domínio
+- repository passou a selecionar explicitamente `id,user_id,name,kind,created_at,updated_at`
+- GREEN direcionado passou com 3 suítes e 20 testes
+
+Revisão Supabase via MCP, somente leitura:
+- projeto hospedado permanece em Postgres 17
+- RLS de `public.categories` permanece habilitada e forçada
+- grants permanecem restritos a `SELECT` e `INSERT` para `authenticated`
+- policies de `SELECT`/`INSERT` preservam owner, bloqueio de Auth anônimo e helpers em initPlan
+- índices cobrem ownership, unicidade case-insensitive, chave composta futura e ordenação da listagem
+- Performance Advisor não retornou alertas
+- Security Advisor manteve somente `SEC-AUTH-001` (`auth_leaked_password_protection`), preexistente e fora do escopo
+- nenhuma migration, DDL, policy, grant, configuração ou dado remoto foi alterado
+
+Resultado dos gates:
+- `npm run test:ci`: 53 suítes e 253 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/categories` dinâmica e Proxy ativo
+
+Limites e dívida:
+- nenhuma nova feature, regra de negócio, dependência ou primitive visual
+- nenhuma edição, exclusão, arquivamento, personalização ou persistência de transações
+- nenhuma nova dívida técnica identificada; `SEC-AUTH-001` permanece rastreada separadamente
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 6` da SR-010
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Jornada e acessibilidade revisadas:
+- formulário, estado vazio, lista, loading, erro recuperável e retorno para Transações foram revisados
+- campos preservam labels explícitas, semântica nativa, `aria-invalid` e mensagem associada
+- quando a validação local falha, o foco retorna ao campo de nome
+- feedback inválido é removido assim que o usuário corrige o campo
+- nome e tipo ficam desabilitados durante o envio, evitando edição concorrente do payload
+- estados de envio, sucesso e erro permanecem anunciáveis
+
+Responsividade e microinterações:
+- contratos confirmam padding mobile-first em `px-4`, evolução em `sm`/`lg` e altura dinâmica `min-h-dvh`
+- link de retorno e controles preservam alvo mínimo de 44 px
+- nomes longos permanecem em contêiner flexível com `min-w-0` e `break-words`
+- grid usa uma coluna por padrão e composição em duas colunas somente no breakpoint `lg`
+- política global de `prefers-reduced-motion` permaneceu válida; nenhuma animação local nova foi adicionada
+
+TDD:
+- baseline direcionada passou com 4 suítes e 11 testes
+- RED direcionado confirmou três falhas: controles editáveis durante envio, foco retido no botão após erro e feedback obsoleto após correção
+- GREEN direcionado passou com 4 suítes e 13 testes
+- contratos PWA passaram a impedir promessa de offline e shortcut indevido para o subfluxo `/categories`
+
+Experiência PWA e runtime local:
+- `manifest.webmanifest` respondeu `200` com `application/manifest+json`
+- ícones PNG 192, 512 e maskable responderam `200` com `image/png`
+- manifest preserva `standalone`, ícones instaláveis e shortcuts somente para fluxos primários
+- `/categories` anônima respondeu `307` para `/login`
+- nenhum service worker, cache financeiro ou promessa offline foi introduzido sem estratégia de consistência autenticada
+- nenhuma mutação Supabase foi realizada
+
+Limitação registrada:
+- a inspeção visual interativa não pôde iniciar porque o pacote instalado do navegador não expôs o módulo de controle exigido pela própria skill
+- conforme a regra da skill, nenhuma automação paralela foi usada como substituta
+- validação continuou por testes, semântica, classes responsivas, respostas HTTP e build; validação visual permanece bloqueio leve, não crítico
+
+Resultado dos gates:
+- `npm run test:ci`: 53 suítes e 255 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/categories` dinâmica e Proxy ativo
+
+Limites preservados:
+- nenhuma nova regra de negócio, rota, dependência, migration ou alteração remota
+- nenhuma edição, exclusão, personalização, persistência de transações ou expansão para UI-003
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- próximo passo recomendado: executar explicitamente `dia 7` da SR-010
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Pipeline local validado:
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 53 suítes e 255 testes
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou; `/categories` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo
+
+Validação remota via Supabase MCP:
+- projeto `fin_control` permaneceu `ACTIVE_HEALTHY` em Postgres 17, com as três migrations esperadas
+- quatro suítes pgTAP transacionais passaram: 33 schema + 12 constraints + 17 RLS + 3 performance = 65 asserções
+- rollback removeu todas as fixtures; `public.categories` permaneceu com zero registros
+- RLS permanece habilitada e forçada, com policies separadas de `SELECT` e `INSERT`
+- `authenticated` mantém somente `SELECT` e `INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e privilégios de aplicação para `service_role` permanecem bloqueados
+- índices de ownership, unicidade case-insensitive e ordenação determinística permanecem presentes
+- Performance Advisor retornou sem alertas
+- Security Advisor manteve somente `auth_leaked_password_protection`, já registrado como `SEC-AUTH-001`
+- changelog e documentação atuais confirmaram a exigência de grants explícitos separados de RLS; nenhuma breaking change aplicável à implementação hospedada foi identificada
+
+Threat model revisado:
+- BOLA/IDOR: owner é derivado da identidade verificada no servidor e reforçado por RLS
+- owner forjado e mass assignment: DTO público não recebe `user_id`; policy `WITH CHECK` exige o owner autenticado
+- acesso anônimo: bloqueado por grants e pela claim `is_anonymous`
+- escalada privilegiada: aplicação não usa `service_role`; apresentação não acessa Supabase diretamente
+- enumeração e vazamento de infraestrutura: repository expõe somente erro sanitizado e seleciona apenas as seis colunas aprovadas
+- mutações fora do escopo: ausência deliberada de grants e policies de `UPDATE` e `DELETE`
+- risco residual: proteção contra senhas vazadas, rate limit/antiabuso, headers HTTP e monitoramento externo devem ser tratados antes do primeiro deploy público
+
+Baseline de observabilidade:
+- CI registra resultado e duração dos gates sem segredos
+- eventos futuros permitidos: `categories_list_load`, `categories_list_failure`, `category_create_attempt`, `category_create_success` e `category_create_failure`
+- atributos permitidos: ambiente, release, rota, operação, resultado técnico, faixa de duração e classe sanitizada do erro
+- proibido registrar nome ou payload da categoria, e-mail, UUID de usuário, JWT, cookies, senha, segredo, mensagem bruta do provedor ou conteúdo financeiro
+- captura de erros, redaction, teste sintético autenticado e alertas operacionais permanecem em `HARD-OBS-001` antes de deploy público
+
+Release incremental preparada:
+- escopo liberável: criar e listar categorias próprias com identidade server-side, grants mínimos, RLS por proprietário e apresentação acessível
+- edição, exclusão, arquivamento, personalização, categorias globais, persistência de transações, offline e IA permanecem fora do escopo
+- nenhuma nova dependência, migration, alteração de Auth, mutação persistente, deploy, commit, push ou PR foi executado no Dia 7
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- nenhum bloqueio crítico para entrega incremental do código
+- deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
+- próxima small release não iniciada; requer seleção e comando explícitos

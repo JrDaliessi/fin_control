@@ -226,18 +226,73 @@ Fora da SR-009:
 
 ## Categories
 
-Contrato previsto:
+### Domain
+
+Tipos aprovados para a SR-010:
 
 ```ts
+export type CategoryKind = "income" | "expense";
+
+export type CreateCategoryInput = {
+  userId: string;
+  name: string;
+  kind: CategoryKind;
+};
+
+export type CategoryProps = CreateCategoryInput & {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+```
+
+Invariantes:
+- `userId` obrigatório e normalizado
+- nome obrigatório, espaços normalizados e limite de 80 caracteres
+- `kind` limitado a `income` ou `expense`
+- unicidade case-insensitive por usuário e `kind` reforçada pelo banco
+
+### Application e Repository
+
+Contratos aprovados:
+
+```ts
+export type ListCategoriesByUserInput = {
+  userId: string;
+};
+
 export interface CategoryRepository {
-  findById(input: FindCategoryByIdInput): Promise<Category | null>;
-  listByUser(input: ListCategoriesInput): Promise<Category[]>;
+  create(input: Category): Promise<Category>;
+  listByUser(
+    input: ListCategoriesByUserInput
+  ): Promise<readonly Category[]>;
 }
 ```
 
-Uso inicial:
-- validar categoria de transação
-- alimentar formulário de transação no futuro
+Casos de uso planejados:
+- `CreateCategoryUseCase`: cria a entidade válida e persiste uma única vez
+- `ListCategoriesUseCase`: valida o ator e lista categorias próprias em ordem determinística
+
+Decisões:
+- `findById`, `update` e `delete` não entram sem consumidor real
+- o ator vem da sessão verificada na composition root, não de campo livre da UI
+- duplicidade do banco vira erro estável de aplicação sem expor detalhes do Supabase
+
+### Infrastructure e Composition Root
+
+- `SupabaseCategoryRepository` implementa criação e listagem
+- mapper converte `snake_case` e timestamps para o domínio
+- consulta filtra explicitamente por `user_id` para desempenho sem substituir RLS
+- Server Component de `/categories` lista dados após revalidar claims
+- Server Action cria categoria após revalidar claims e injeta `userId`
+- presentation recebe DTOs serializáveis e callbacks; não instancia client Supabase
+
+### Presentation planejada para o Dia 4
+
+- rota privada `/categories` com formulário pequeno, lista e estados de loading, empty, success e error
+- acesso como subfluxo de `/transactions`, sem novo item na navegação principal
+- categorias persistidas podem substituir opções demonstrativas do formulário local, mas transações continuam efêmeras até a SR-011
+- cor, ícone, edição, exclusão, seeds e IA permanecem fora
 
 ## Dashboard
 

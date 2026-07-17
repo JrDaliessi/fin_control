@@ -28,6 +28,20 @@
 - Nenhum código funcional ou teste criado no Dia 1.
 - Estado de saída validado como `ARCHITECTURE_READY`.
 
+### Resultado observado — SR-010
+- Dependências SR-008 e SR-009 confirmadas como concluídas; branch criada a partir de `origin/develop` com alterações locais alheias preservadas.
+- Projeto Supabase `fin_control` inspecionado via MCP em modo somente leitura: Postgres 17, apenas `public.financial_accounts` e duas migrations aplicadas.
+- Grants atuais confirmados como `SELECT/INSERT` somente para `authenticated`; RLS habilitada/forçada e policies de ownership de contas permanecem coerentes.
+- Performance Advisor retornou sem alertas; Security Advisor manteve somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`.
+- Escopo limitado a criar e listar categorias próprias com nome normalizado e `kind` `income | expense`.
+- Schema `public.categories`, constraints, índices, FK para Auth, chave composta futura, grants mínimos e policies separadas de `SELECT`/`INSERT` foram definidos.
+- Rota `/categories` planejada como subfluxo privado de transações, sem ampliar a navegação principal da UI-002.
+- Threat model cobre BOLA/IDOR, owner forjado, usuário anônimo, mass assignment, duplicidade e vínculo futuro cross-tenant.
+- Supabase MCP aprovado para migration, pgTAP transacional, inspeção e advisors nas fases correspondentes; nenhum SQL mutável foi executado no Dia 1.
+- ADR `0007-categories-persistence-rls.md` criado.
+- Implementação funcional, testes e migration permanecem bloqueados até o Dia 2.
+- Estado de saída validado como `ARCHITECTURE_READY`.
+
 ### Resultado observado — SR-008
 - Objetivo refinado para criar identidade verificável antes da persistência financeira.
 - Escopo limitado a login por e-mail/senha, logout, sessão SSR, Proxy e proteção de rotas.
@@ -80,6 +94,21 @@
 - Lint passa.
 - Audit sem vulnerabilidades conhecidas.
 - Implementação funcional segue bloqueada até Dia 3.
+
+### Resultado observado — SR-010
+- Matriz documentada em `test-strategy.md` para domínio, aplicação, infrastructure, banco e apresentação futura.
+- Seis arquivos Jest foram criados, incluindo fixture, com 22 cenários planejados.
+- Quatro suítes pgTAP foram criadas com planos validados de 33, 12, 17 e 3 asserções.
+- Baseline anterior passou com 44 suítes e 212 testes, type-check, lint e audit com 0 vulnerabilidades.
+- RED Jest válido: 5 suítes falharam exclusivamente pelos módulos de produção ausentes.
+- Type-check falhou somente com 11 `TS2307` referentes aos mesmos módulos planejados.
+- Lint passou com 0 warnings.
+- Rede anterior permaneceu verde com 44 suítes e 212 testes ao excluir apenas os contratos RED da SR-010.
+- RED remoto via MCP confirmou 1 falha de 1 pela ausência de `public.categories`.
+- Rollback remoto preservou uma tabela pública, duas migrations e `pgtap` não instalada.
+- Nenhuma implementação, migration, tabela, grant, policy, dado ou configuração Supabase foi criada.
+- Build não foi executado porque o type-check vermelho é deliberado.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
 
 ### Resultado observado — UI-002
 - Matriz documentada em `test-strategy.md` com configuração pura, composition root, acessibilidade, responsividade e regressão.
@@ -160,6 +189,19 @@
 - Audit passou com 0 vulnerabilidades.
 - Build passou com todas as rotas existentes e `ƒ Proxy (Middleware)`.
 - Inspeção estática confirmou ausência de Supabase e regras financeiras nos novos componentes e configuração.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
+### Resultado observado — SR-010
+- `Category`, `CategoryRepository`, casos de uso de criação/listagem, mapper e repository Supabase foram implementados no mínimo exigido pelos contratos RED.
+- Domínio e aplicação permanecem independentes de React, Next.js e Supabase; a integração concreta está isolada em `infrastructure`.
+- Migration `20260717022313_create_categories` foi aplicada pelo MCP do Supabase e alinhada ao arquivo local sem drift de versão.
+- Schema possui seis colunas aprovadas, FK com cascade, constraints, unicidade case-insensitive, chave composta futura e índices de ownership/ordenação.
+- RLS está habilitada e forçada; somente `authenticated` possui `SELECT`/`INSERT`, com policies separadas por proprietário e bloqueio de Auth anônimo.
+- pgTAP remoto passou com 33/33 schema, 12/12 constraints, 17/17 RLS e 3/3 performance; fixtures e extensão temporária foram revertidas.
+- Testes direcionados passaram com 5 suítes e 22 testes; suíte completa passou com 49 suítes e 234 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Performance Advisor não retornou alertas; Security Advisor manteve somente `SEC-AUTH-001`, aviso preexistente e fora do escopo desta migration.
+- Nenhuma UI, rota, action, edição, exclusão, seed, personalização visual ou persistência de transações foi antecipada.
 - Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
 ### Resultado observado — SR-008
@@ -300,6 +342,20 @@
 - Edição, exclusão, arquivamento, categorias, transações, idempotência e segunda migration permaneceram fora do escopo.
 - Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
+### Resultado observado — SR-010
+- Testes de apresentação, actions, rota e integração com Transações foram escritos antes da implementação; RED direcionado confirmou módulos e link ausentes.
+- `/categories` lista categorias persistentes em Server Component e cria por Server Action com claims verificadas.
+- DTOs removem `userId` da fronteira visual; owner é obtido exclusivamente do claim autenticado.
+- Estados `submitting`, `success`, `error`, `loading` e `empty` foram implementados com mensagens acessíveis e erro sanitizado.
+- UI não importa Supabase e não contém regra de negócio pesada; `/categories` permanece subfluxo de Transações.
+- GREEN direcionado passou com 5 suítes e 16 testes; navegação privada passou com 1 suíte e 11 testes.
+- Suíte completa passou com 53 suítes e 249 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Navegador interno autenticado validou formulário, estado vazio, link contextual único e console sem erros; nenhuma gravação foi realizada.
+- Chrome externo bloqueou `localhost` pela extensão, sem impedir a validação autenticada alternativa.
+- Edição, exclusão, arquivamento, personalização visual, seeds e persistência de transações permaneceram fora do escopo.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate do Dia 5
 - Arquivos inchados identificados.
 - Plano de refatoração incremental documentado.
@@ -385,6 +441,21 @@
 - Suíte Jest completa passou com 36 suítes e 170 testes.
 - `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
 - Build preservou `/accounts` dinâmica e `ƒ Proxy (Middleware)`.
+- Estado de saída: retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
+
+### Resultado observado — SR-010
+- Arquivos da feature foram medidos; nenhum monólito crítico foi identificado e `CategoryForm.tsx` permaneceu coeso.
+- Auditoria encontrou normalização duplicada, projeções `select("*")` e metadados persistidos mutáveis/sem validação própria.
+- RED direcionado confirmou seis falhas antes da correção.
+- `Category.restore` passou a validar ID e datas; cópias defensivas protegem `createdAt` e `updatedAt` na entrada e leitura.
+- Normalização de nome foi centralizada no domínio e reutilizada pelo hook de apresentação.
+- Repository passou a selecionar somente `id,user_id,name,kind,created_at,updated_at`.
+- GREEN direcionado passou com 3 suítes e 20 testes.
+- MCP confirmou RLS habilitada/forçada, grants mínimos, policies com initPlan e índices adequados; nenhuma mudança remota foi necessária.
+- Performance Advisor permaneceu limpo; Security Advisor manteve somente `SEC-AUTH-001` preexistente.
+- `npm run test:ci`: 53 suítes e 253 testes passaram.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Nenhuma migration, feature, regra de negócio, dependência ou capability futura foi adicionada.
 - Estado de saída: retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
 
 ## Gate do Dia 6
@@ -489,6 +560,20 @@
 - Manifesto respondeu `200`, declarou modo `standalone`, quatro ícones e shortcut persistente de contas; console permaneceu sem warnings ou errors.
 - Estado de saída validado como `QUALITY_VALIDATION`.
 
+### Resultado observado — SR-010
+- Jornada de cadastro, lista, estado vazio, loading, erro recuperável e retorno para Transações foi revisada.
+- RED direcionado confirmou três falhas: campos editáveis durante envio, foco no botão após validação e feedback obsoleto após correção.
+- Nome e tipo passaram a ficar desabilitados durante o envio; erro local foca o nome e é limpo ao editar.
+- GREEN direcionado passou com 4 suítes e 13 testes.
+- Contratos confirmam alvos mínimos de 44 px, padding mobile-first, altura dinâmica e quebra de nomes longos sem largura mínima implícita.
+- Manifest preserva modo standalone e não promete offline; `/categories` continua subfluxo e não foi promovida a shortcut PWA.
+- Manifest e ícones 192/512/maskable responderam `200` com MIME correto; `/categories` anônima respondeu `307` para `/login`.
+- Nenhum service worker, cache financeiro, mutation Supabase ou nova dependência foi introduzido.
+- Inspeção visual interativa indisponível porque o módulo obrigatório do plugin de navegador não estava presente; testes, semântica, classes responsivas, HTTP e build foram usados como evidência alternativa.
+- `npm run test:ci`: 53 suítes e 255 testes passaram.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Estado de saída validado como `QUALITY_VALIDATION`.
+
 ## Gate do Dia 7
 - Testes validados e documentados.
 - Type-check validado e documentado.
@@ -532,6 +617,23 @@
 - Nenhum segredo real versionado, uso de service role no código, `eval`, `dangerouslySetInnerHTML`, armazenamento persistente no navegador ou `any` TypeScript foi identificado; os matches de `any` pertencem ao valor válido `purpose: "any"` do manifesto.
 - Threat model cobre BOLA/IDOR, owner forjado, acesso anônimo, mass assignment, escalada privilegiada e mutações fora do escopo.
 - Baseline de observabilidade proíbe PII, dados financeiros, JWT, cookies, senha e payloads brutos; captura sanitizada, alertas e teste sintético permanecem em `HARD-OBS-001` antes de deploy público.
+- Nenhum deploy, commit, push, alteração de Auth, migration ou mutação persistente foi executado.
+- Estado final: `READY_FOR_RELEASE` para entrega incremental de código; deploy público permanece condicionado aos itens de hardening documentados.
+
+### Resultado observado — SR-010
+- `npm run lint`: passou, 0 warnings.
+- `npm run type-check`: passou.
+- `npm run test:ci`: passou, 53 suítes e 255 testes.
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades.
+- `npm run build`: passou; `/categories` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo.
+- Supabase MCP confirmou a migration `20260717022313_create_categories`, RLS habilitada/forçada, duas policies e índices de ownership, unicidade e ordenação.
+- Quatro suítes pgTAP transacionais passaram com 65 asserções; rollback preservou `public.categories` com zero registros.
+- Grants mínimos confirmados: `authenticated` somente com `SELECT`/`INSERT`; sem `anon`, Auth anônimo, `UPDATE`, `DELETE` ou privilégio de aplicação para `service_role`.
+- Performance Advisor: sem alertas.
+- Security Advisor: somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001` e obrigatório antes de produção pública.
+- Busca em arquivos versionados não identificou segredo real, uso de `service_role` no código, autorização por `user_metadata` ou mensagem bruta de infraestrutura na UI.
+- Threat model cobre BOLA/IDOR, owner forjado, acesso anônimo, mass assignment, escalada privilegiada, enumeração e mutações fora do escopo.
+- Baseline de observabilidade proíbe nome/payload de categoria, PII, dados financeiros, JWT, cookies, senha, segredos e mensagens brutas; captura sanitizada, alertas e teste sintético permanecem em `HARD-OBS-001` antes de deploy público.
 - Nenhum deploy, commit, push, alteração de Auth, migration ou mutação persistente foi executado.
 - Estado final: `READY_FOR_RELEASE` para entrega incremental de código; deploy público permanece condicionado aos itens de hardening documentados.
 

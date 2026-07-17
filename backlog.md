@@ -191,17 +191,6 @@ Nenhum item em andamento no momento.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
 - Status: DISCOVERY
 
-### SR-010 - Persistencia e RLS de categorias
-- Tipo: Small Release
-- Objetivo de negocio: substituir categorias demonstrativas.
-- Valor esperado: classificacao real por usuario.
-- Prioridade: Alta
-- Dependencias: SR-008 e SR-009.
-- Risco: Alto
-- Fase recomendada: ciclo seguinte.
-- Criterio de pronto: migration, repositorio, RLS e testes de isolamento.
-- Status: DISCOVERY
-
 ### SR-011 - Persistencia e RLS de transacoes
 - Tipo: Security Item / Small Release
 - Objetivo de negocio: tornar o registro manual utilizavel com dados reais.
@@ -469,6 +458,18 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-010 — Persistência e RLS de categorias
+- Tipo: Security Item / Small Release
+- Resultado: criação e listagem persistentes de categorias próprias entregues com identidade server-side, grants mínimos, RLS forçada e isolamento por proprietário.
+- Escopo concluído: domínio, casos de uso, migration, repository, mapper, Server Actions autenticadas, estados acessíveis e experiência PWA coerente.
+- Banco: migration `20260717022313_create_categories` aplicada; 65 asserções pgTAP verdes; Performance Advisor limpo; tabela permaneceu vazia após os testes transacionais do Dia 7.
+- Quality gates: lint, type-check, 53 suítes/255 testes Jest, auditoria sem vulnerabilidades e build de produção verdes.
+- Segurança: `authenticated` somente com `SELECT`/`INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e uso de `service_role` pela aplicação bloqueados.
+- Observabilidade: eventos e atributos sanitizados definidos; nomes, payloads, PII, credenciais, tokens e conteúdo financeiro são proibidos.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código.
+- Fora do escopo preservado: edição, exclusão, arquivamento, cor, ícone, seeds, categorias globais, persistência de transações, offline e IA.
+- Status: DONE
 
 ### UI-002 — Shell e navegação responsiva
 - Tipo: Small Release / UX Improvement

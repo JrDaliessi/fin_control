@@ -58,6 +58,12 @@ export function TransactionsPage() {
             <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
               Registrar transação manual
             </h1>
+            <Link
+              className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              href="/categories"
+            >
+              Gerenciar categorias
+            </Link>
           </div>
 
           <TransactionForm

@@ -50,6 +50,7 @@ describe("private navigation contract", () => {
 
   it.each([
     ["/transactions", "/transactions"],
+    ["/categories", "/transactions"],
     ["/accounts", "/accounts"],
   ])("resolves %s by exact canonical path", (pathname, expectedHref) => {
     expect(getPrivateNavigationItemForPath(pathname)?.href).toBe(expectedHref);

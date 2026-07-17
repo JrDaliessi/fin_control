@@ -258,6 +258,22 @@ Regras:
 - O caminho canônico dos artefatos locais passa a ser `supabase/migrations/` e `supabase/tests/database/`; os diretórios só surgirão quando os testes do Dia 2 exigirem.
 - A decisão completa está em `adr/0004-financial-accounts-persistence-rls.md`.
 
+## Decisões Arquiteturais da SR-010
+
+- A feature `categories` será criada com separação entre `presentation`, `application`, `domain` e `infrastructure`.
+- O recorte funcional cobre criação e listagem de categorias próprias; edição, exclusão, arquivamento e categorias globais permanecem fora.
+- Cada categoria pertence a um usuário e possui `kind` estritamente `income` ou `expense`; o valor `both` foi rejeitado para preservar filtragem e validação determinísticas por tipo de transação.
+- O nome é normalizado, limitado a 80 caracteres e único por usuário e `kind` em comparação case-insensitive. Cor e ícone permanecem fora até existir personalização real.
+- A rota privada `/categories` será um subfluxo de transações, sem ampliar a navegação principal definida pela UI-002.
+- A composition root usará Server Component para leitura e Server Action para criação; ambas revalidarão claims e nunca aceitarão `userId` da apresentação como autoridade.
+- `CategoryRepository` exporá somente `create` e `listByUser`; `findById` permanece fora até a SR-011 possuir consumidor real.
+- `SupabaseCategoryRepository` e o mapper `snake_case` ficarão em `categories/infrastructure`; erros brutos do Supabase não atravessarão a fronteira.
+- `public.categories` terá FK para `auth.users`, constraints, ordenação determinística e chave composta candidata `(user_id, id)` para a futura FK tenant-safe de transações.
+- `authenticated` receberá somente `SELECT` e `INSERT`; `anon`, usuários anônimos do Auth, `UPDATE`, `DELETE` e uso de `service_role` pela aplicação permanecerão bloqueados.
+- Grants explícitos, RLS forçada, policies por proprietário, constraints e índices nascerão na mesma migration somente após os testes do Dia 2.
+- Supabase MCP será usado para aplicar a migration, executar pgTAP transacional, inspecionar schema e rodar advisors nos dias autorizados; no Dia 1 seu uso é somente leitura.
+- A decisão completa está em `adr/0007-categories-persistence-rls.md`.
+
 ## PWA
 O projeto deve ter:
 - manifest

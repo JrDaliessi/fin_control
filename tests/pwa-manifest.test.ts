@@ -53,6 +53,7 @@ describe("PWA manifest", () => {
     expect(manifest.short_name).toBe("FinControl");
     expect(manifest.description).toBe("Seu copiloto financeiro pessoal.");
     expect(manifest.description).not.toMatch(/\bIA\b/i);
+    expect(manifest.description).not.toMatch(/offline|sem internet/i);
     expect(manifest.start_url).toBe("/");
     expect(manifest.scope).toBe("/");
     expect(manifest.id).toBe("/");
@@ -77,6 +78,9 @@ describe("PWA manifest", () => {
       ])
     );
     expect(manifest.orientation).toBeUndefined();
+    expect(manifest.shortcuts).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ url: "/categories" })])
+    );
   });
 
   it("provides raster and maskable icons for installable surfaces", () => {

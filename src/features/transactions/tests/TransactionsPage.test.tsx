@@ -52,6 +52,9 @@ describe("TransactionsPage", () => {
     expect(
       screen.getByRole("link", { name: "Voltar ao dashboard" })
     ).toHaveClass("min-h-11");
+    expect(
+      screen.getByRole("link", { name: "Gerenciar categorias" })
+    ).toHaveAttribute("href", "/categories");
   });
 
   it("shows monthly income, expenses and net balance from session transactions", async () => {
