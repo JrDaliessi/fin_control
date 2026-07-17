@@ -816,6 +816,23 @@ Evidência do Dia 7:
 - riscos residuais são não críticos e já constam do backlog de hardening
 - estado de saída: `READY_FOR_RELEASE`
 
+## Gate do Dia 4 — SR-011
+
+- RED válido: 6 suítes novas falharam antes da implementação dos contratos persistentes.
+- GREEN direcionado: 8 suítes e 33 testes passaram.
+- regressão completa: 61 suítes e 289 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- auditoria: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e Proxy preservado.
+- arquitetura: presentation sem Supabase e sem `userId` como autoridade; claims revalidadas no servidor.
+- experiência: loading, error, empty, success e configuração ausente cobertos conforme aplicável.
+- navegador: sessão autenticada, estados vazios e CTA de categoria validados; console limpo e nenhuma gravação executada.
+- alterações remotas: nenhuma migration, policy, grant, configuração ou fixture.
+- risco não crítico: criação visual não exercitada por ausência de categoria na sessão; contratos automatizados permanecem verdes.
+- dívida registrada: `TX-PERF-001` para remover leitura mensal duplicada no Dia 5.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

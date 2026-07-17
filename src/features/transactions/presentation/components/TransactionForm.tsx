@@ -3,23 +3,21 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/shared/components/ui/Button";
 import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
-import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
+import type {
+  CreateTransactionRequest,
+  TransactionAccountOptionDto,
+  TransactionCategoryOptionDto
+} from "../../application/dtos/transaction.dto";
 import {
   type TransactionFormField,
   type TransactionFormValues,
   useTransactionForm
 } from "../hooks/useTransactionForm";
 
-type TransactionOption = {
-  id: string;
-  name: string;
-};
-
 type TransactionFormProps = {
-  userId: string;
-  accounts: TransactionOption[];
-  categories: TransactionOption[];
-  onCreateTransaction: (input: CreateTransactionInput) => Promise<void>;
+  accounts: readonly TransactionAccountOptionDto[];
+  categories: readonly TransactionCategoryOptionDto[];
+  onCreateTransaction: (input: CreateTransactionRequest) => Promise<unknown>;
 };
 
 const fieldClassName =
@@ -34,23 +32,24 @@ const typeOptionClassName =
 const messageId = "transaction-form-message";
 
 export function TransactionForm({
-  userId,
   accounts,
   categories,
   onCreateTransaction
 }: TransactionFormProps) {
   const [values, setValues] = useState<TransactionFormValues>({
     accountId: accounts[0]?.id ?? "",
-    categoryId: categories[0]?.id ?? "",
+    categoryId:
+      categories.find((category) => category.kind === "expense")?.id ?? "",
     description: "",
     amount: "",
     type: "expense",
     occurredAt: ""
   });
-  const { fieldError, isSubmitting, message, status, submit } = useTransactionForm({
-    userId,
-    onCreateTransaction
-  });
+  const { fieldError, isSubmitting, message, status, submit } =
+    useTransactionForm({ onCreateTransaction });
+  const compatibleCategories = categories.filter(
+    (category) => category.kind === values.type
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -73,6 +72,15 @@ export function TransactionForm({
     setValues((currentValues) => ({
       ...currentValues,
       [key]: value
+    }));
+  }
+
+  function updateType(type: TransactionFormValues["type"]) {
+    setValues((currentValues) => ({
+      ...currentValues,
+      type,
+      categoryId:
+        categories.find((category) => category.kind === type)?.id ?? ""
     }));
   }
 
@@ -150,7 +158,7 @@ export function TransactionForm({
               checked={values.type === "expense"}
               className="peer sr-only"
               name="type"
-              onChange={() => updateValue("type", "expense")}
+              onChange={() => updateType("expense")}
               type="radio"
               value="expense"
             />
@@ -161,7 +169,7 @@ export function TransactionForm({
               checked={values.type === "income"}
               className="peer sr-only"
               name="type"
-              onChange={() => updateValue("type", "income")}
+              onChange={() => updateType("income")}
               type="radio"
               value="income"
             />
@@ -206,7 +214,7 @@ export function TransactionForm({
           required
           value={values.categoryId}
         >
-          {categories.map((category) => (
+          {compatibleCategories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
             </option>

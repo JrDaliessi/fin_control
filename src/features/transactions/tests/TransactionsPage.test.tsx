@@ -1,25 +1,66 @@
-import { describe, expect, it } from "@jest/globals";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { within } from "@testing-library/react";
-import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
-import { TransactionsPage } from "../presentation/pages/TransactionsPage";
-import { TransactionSessionProvider } from "../presentation/providers/TransactionSessionProvider";
+import { describe, expect, it, jest } from "@jest/globals";
+import { render, screen, within } from "@testing-library/react";
+import type {
+  CreateTransactionRequest,
+  TransactionsPageDataDto
+} from "../application/dtos/transaction.dto";
 
-function renderTransactionsPage() {
-  render(
-    <AuthSessionProvider
-      user={{ id: "user-1", email: "usuario@example.com" }}
-    >
-      <TransactionSessionProvider>
-        <TransactionsPage />
-      </TransactionSessionProvider>
-    </AuthSessionProvider>
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: jest.fn() })
+}));
+
+const { TransactionsPage } = jest.requireActual<
+  typeof import("../presentation/pages/TransactionsPage")
+>("../presentation/pages/TransactionsPage");
+
+const initialData = {
+  monthRef: "2026-07",
+  accounts: [{ id: "account-1", name: "Conta corrente" }],
+  categories: [
+    { id: "expense-1", name: "Mercado", kind: "expense" },
+    { id: "income-1", name: "Salário", kind: "income" }
+  ],
+  transactions: [],
+  summary: {
+    monthRef: "2026-07",
+    incomeTotalInCents: 0,
+    expenseTotalInCents: 0,
+    netBalanceInCents: 0,
+    transactionCount: 0
+  }
+} satisfies TransactionsPageDataDto;
+
+function renderTransactionsPage(data: TransactionsPageDataDto = initialData) {
+  const onCreateTransaction = jest.fn(
+    async (input: CreateTransactionRequest) => {
+      void input;
+      return {
+        id: "transaction-1",
+        accountId: "account-1",
+        categoryId: "expense-1",
+        description: "Mercado",
+        amountInCents: 12550,
+        type: "expense" as const,
+        paymentMethod: "manual" as const,
+        occurredOn: "2026-07-08",
+        createdAt: "2026-07-08T12:00:00.000Z",
+        updatedAt: "2026-07-08T12:00:00.000Z"
+      };
+    }
   );
+
+  render(
+    <TransactionsPage
+      initialData={data}
+      onCreateTransaction={onCreateTransaction}
+    />
+  );
+
+  return { onCreateTransaction };
 }
 
 describe("TransactionsPage", () => {
-  it("renders the manual transaction flow with accessible landmarks", async () => {
+  it("renders the persistent manual transaction flow with accessible landmarks", () => {
     renderTransactionsPage();
 
     expect(screen.getByRole("main")).toBeInTheDocument();
@@ -27,60 +68,44 @@ describe("TransactionsPage", () => {
       screen.getByRole("heading", { name: "Registrar transação manual" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("region", { name: "Lançamentos desta sessão" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("region", { name: "Resumo mensal" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("region", { name: "Lançamentos desta sessão" })
+      screen.getByRole("region", { name: "Transações de julho de 2026" })
     ).toHaveAttribute("aria-live", "polite");
     expect(
       screen.getByRole("region", { name: "Resumo mensal" })
     ).toHaveAttribute("aria-live", "polite");
     expect(
-      screen.getByText("Nenhuma transação registrada nesta sessão.")
-    ).toHaveAttribute("role", "status");
-    expect(
-      await within(
-        screen.getByRole("region", { name: "Resumo mensal" })
-      ).findByText("Nenhuma transação no mês selecionado.")
+      screen.getByText("Nenhuma transação encontrada neste mês.")
     ).toHaveAttribute("role", "status");
     expect(
       screen.getByRole("link", { name: "Voltar ao dashboard" })
     ).toHaveAttribute("href", "/");
     expect(
-      screen.getByRole("link", { name: "Voltar ao dashboard" })
-    ).toHaveClass("min-h-11");
-    expect(
       screen.getByRole("link", { name: "Gerenciar categorias" })
     ).toHaveAttribute("href", "/categories");
   });
 
-  it("shows monthly income, expenses and net balance from session transactions", async () => {
-    const user = userEvent.setup();
-    renderTransactionsPage();
-
-    await user.type(screen.getByLabelText("Descrição"), "Salario");
-    await user.type(screen.getByLabelText("Valor"), "5000");
-    await user.click(screen.getByRole("radio", { name: "Receita" }));
-    await user.type(screen.getByLabelText("Data"), "2026-07-05");
-    await user.click(screen.getByRole("button", { name: "Registrar transação" }));
-
-    await user.type(screen.getByLabelText("Descrição"), "Mercado");
-    await user.type(screen.getByLabelText("Valor"), "125,50");
-    await user.click(screen.getByRole("radio", { name: "Despesa" }));
-    await user.type(screen.getByLabelText("Data"), "2026-07-08");
-    await user.click(screen.getByRole("button", { name: "Registrar transação" }));
+  it("shows the persisted monthly income, expenses and net balance", () => {
+    renderTransactionsPage({
+      ...initialData,
+      summary: {
+        monthRef: "2026-07",
+        incomeTotalInCents: 500000,
+        expenseTotalInCents: 12550,
+        netBalanceInCents: 487450,
+        transactionCount: 2
+      }
+    });
 
     const summaryRegion = screen.getByRole("region", { name: "Resumo mensal" });
 
-    expect(await within(summaryRegion).findByText(/R\$\s*5\.000,00/)).toBeInTheDocument();
+    expect(within(summaryRegion).getByText(/R\$\s*5\.000,00/)).toBeInTheDocument();
     expect(within(summaryRegion).getByText(/R\$\s*125,50/)).toBeInTheDocument();
     expect(within(summaryRegion).getByText(/R\$\s*4\.874,50/)).toBeInTheDocument();
     expect(within(summaryRegion).getByText("2")).toBeInTheDocument();
     expect(
-      within(summaryRegion).getByRole("group", { name: /Receitas: R\$\s*5\.000,00/ })
+      within(summaryRegion).getByRole("group", {
+        name: /Receitas: R\$\s*5\.000,00/
+      })
     ).toBeInTheDocument();
   });
 });

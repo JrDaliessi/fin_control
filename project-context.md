@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-011 concluído; domínio, infraestrutura e persistência tenant-safe implementados
+- Fase atual: Dia 4 da SR-011 concluído; composição autenticada e estados persistentes implementados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -71,6 +71,7 @@
 - Data do discovery e arquitetura da SR-011: 2026-07-17
 - Data da estratégia de testes da SR-011: 2026-07-17
 - Data da implementação mínima da SR-011: 2026-07-17
+- Data da expansão controlada da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -923,6 +924,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no primeiro GREEN do Dia 4 da SR-011, mocks de callbacks foram inferidos sem argumentos e o teste agregado de rotas ainda renderizava o novo Server Component assíncrono como componente cliente. Prevenção: tipar doubles pela assinatura real desde o RED e, quando uma rota passar a carregar dados no servidor, atualizar todos os testes agregados para aguardar a função de rota e registrar mocks com `jest.requireMock()`/`jest.requireActual()` antes dos gates completos.
 - Erro: três cenários pgTAP de negação da SR-011 usaram `INSERT ... SELECT` para buscar fixtures protegidas depois de ativar RLS; a consulta-fonte retornou zero linhas e nenhuma tentativa proibida foi realmente executada. Prevenção: capturar IDs de fixtures antes de trocar o role e usar valores diretos nos testes negativos, confirmando que a operação alcança a policy que se pretende validar.
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
 - Erro: o workflow Git passou a direcionar features para `develop`, mas o CI permaneceu limitado a `main`, permitindo merge de integração sem gates automáticos. Prevenção: toda mudança na estratégia de branches deve atualizar e testar os gatilhos de CI para branches de integração e release na mesma entrega.
@@ -4079,3 +4081,49 @@ Limites preservados:
 Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 4` da SR-011
+
+## Dia 4 — Expansão Controlada da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Implementação criada:
+- DTO serializável de transação sem `userId`, com data civil `occurredOn`
+- `ListTransactionsByMonthUseCase` para orquestrar a consulta mensal sem dependência de framework
+- Server Actions que revalidam `auth.getClaims()`, rejeitam Auth anônimo, injetam o ator no servidor e revalidam `/transactions` após criação
+- Server Component dinâmico que carrega contas, categorias, transações e resumo do mês atual
+- formulário conectado à persistência, com categorias filtradas por `income | expense` e validação estrita de data civil
+- estados acessíveis de loading, erro recuperável, configuração ausente, lista vazia e resumo vazio
+- lista mensal persistente e cópia sem linguagem de sessão local
+
+Evidência TDD:
+- baseline da feature antes do recorte: 11 suítes e 66 testes verdes
+- RED inicial: 6 suítes novas falharam pela ausência dos DTOs, caso de uso, actions, estados de rota e composição persistente
+- GREEN direcionado final: 8 suítes e 33 testes passaram
+- o teste agregado de rotas revelou a transição da rota para Server Component assíncrono; o harness foi corrigido sem alterar o contrato funcional
+
+Resultado dos gates:
+- `npm run test:ci`: 61 suítes e 289 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+
+Validação no navegador:
+- sessão autenticada carregou `/transactions` sem erros ou warnings de console
+- loading transitório foi exibido antes dos dados persistentes
+- como a conta validada não possui categorias, o formulário foi corretamente bloqueado com CTA para `/categories`
+- resumo mensal e lista exibiram seus estados vazios para julho de 2026
+- nenhuma transação, categoria ou outra fixture foi criada durante a inspeção
+
+Limites e riscos preservados:
+- apresentação não importa Supabase e não envia `userId` como autoridade
+- nenhuma migration, policy, grant, dependência, configuração remota ou dado foi alterado no Dia 4
+- nenhuma edição, exclusão, status, transferência, cartão, parcela, recorrência, importação ou dashboard persistente foi adicionada
+- criação real no navegador não foi exercitada porque a sessão inspecionada não possui categoria; os contratos de action, integração e persistência permanecem cobertos por testes automatizados
+- a leitura da página consulta transações separadamente para lista e resumo; otimização foi registrada como dívida `TX-PERF-001` para o Dia 5
+- nenhum commit, push, PR ou deploy foi executado; `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- Dia 4 concluído sem avanço automático
+- próximo passo recomendado: executar explicitamente `dia 5` da SR-011

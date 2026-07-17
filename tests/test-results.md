@@ -441,3 +441,38 @@ Interpretação:
 Interpretação:
 - implementação mínima e persistência tenant-safe concluídas.
 - composição autenticada e apresentação persistente permanecem bloqueadas até `dia 4`.
+
+## Dia 4 — SR-011
+
+### RED direcionado
+
+- baseline da feature: 11 suítes e 66 testes passaram.
+- 6 suítes novas falharam pela ausência dos contratos de DTO, listagem mensal, Server Actions, estados de rota e composição persistente.
+- a apresentação antiga ainda enviava `userId`, usava `Date` e linguagem de sessão local.
+
+### GREEN direcionado
+
+- 8 suítes passaram.
+- 33 testes passaram.
+- DTO sem ownership, data civil, identidade server-side, filtro de categorias, loading, erro, vazio e bloqueio por configuração ausente foram validados.
+
+### Regressão completa
+
+- 61 suítes passaram.
+- 289 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- auditoria passou, 0 vulnerabilidades.
+- build passou com `/transactions` dinâmica e Proxy ativo.
+
+### Navegador
+
+- sessão autenticada carregou `/transactions`.
+- loading transitório e estados persistentes vazios foram observados.
+- formulário bloqueado corretamente por ausência de categoria, com CTA para `/categories`.
+- console sem erros ou warnings; nenhuma fixture foi persistida.
+
+Interpretação:
+- expansão controlada concluída sem regressão e sem expor `userId` na apresentação.
+- criação real no navegador permanece não exercitada pela ausência de categoria na sessão inspecionada, mas está coberta pelos testes de action e infraestrutura.
+- próximo passo válido: `dia 5` da SR-011.

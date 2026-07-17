@@ -284,6 +284,9 @@ Regras:
 - A FK de categoria incluirá `type/kind`, impedindo que uma despesa use categoria de receita ou vice-versa.
 - `financial_accounts` e `categories` receberão somente constraints auxiliares necessárias às FKs compostas; não haverá mudança nas operações liberadas dessas features.
 - A composition root revalidará claims em Server Component e Server Action. A apresentação não enviará `userId` como autoridade e não importará Supabase.
+- O contrato de apresentação usa DTOs serializáveis, mantém `occurredOn` como data civil e omite ownership; somente a Server Action converte a data e injeta o `sub` verificado.
+- A rota `/transactions` é um Server Component dinâmico; a página cliente recebe apenas dados iniciais e a action autorizada, e solicita `router.refresh()` após criação bem-sucedida.
+- Loading e erro pertencem ao App Router; estados empty, configuração ausente e success pertencem à apresentação da feature.
 - `authenticated` receberá somente `SELECT` e `INSERT`; RLS será habilitada e forçada, e usuários Auth anônimos serão bloqueados explicitamente.
 - Não haverá `UPDATE`, `DELETE`, status, transferência, cartão, recorrência, importação, trigger de saldo ou dashboard persistente nesta release.
 - Migrations e testes pgTAP permanecem bloqueados até o RED do Dia 2; alteração remota só pode ocorrer no Dia 3.

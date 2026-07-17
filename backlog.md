@@ -13,7 +13,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Critica
 - Dependencias: SR-008 a SR-010 concluídas.
 - Risco: Alto, por manipular dados financeiros e vínculos tenant-safe.
-- Fase atual: Dia 3 concluído; persistência, integridade tenant-safe e RLS implementadas; composição autenticada do Dia 4 pendente.
+- Fase atual: Dia 4 concluído; composição autenticada, criação server-side, consulta mensal e estados persistentes implementados; hardening do Dia 5 pendente.
 - Criterio de pronto: repositório Supabase, criação e consulta mensal, FKs compostas, grants mínimos, RLS, testes de isolamento e pipeline verde.
 - Status: IN_PROGRESS
 
@@ -396,6 +396,19 @@ Nenhum item pronto aguardando início no momento.
 Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial e sem decisão de provedor.
 
 ## DÍVIDA TÉCNICA
+
+### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
+- Tipo: Dívida Técnica / Hardening
+- Descrição: a carga de `/transactions` consulta o mesmo mês uma vez para a lista e outra vez para o resumo mensal.
+- Objetivo de negócio: manter a página previsível quando o histórico crescer sem alterar resultados financeiros.
+- Valor esperado: reduzir round-trips e trabalho duplicado no banco.
+- Prioridade: Média
+- Dependências: composição autenticada do Dia 4 da SR-011 e testes existentes de lista/resumo.
+- Risco: Baixo com tabela vazia; Médio em escala.
+- Severidade: MÉDIA
+- Fase recomendada: Dia 5 da SR-011.
+- Critério de pronto: calcular lista e resumo com uma única leitura mensal, preservar os contratos de application e manter todos os gates verdes.
+- Status: READY
 
 ### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
 - Tipo: Security Item
