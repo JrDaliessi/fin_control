@@ -661,6 +661,128 @@ Usuário autenticado abre `/accounts`. Sidebar/rail e navegação mobile mostram
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Dia 2 — SR-011 Persistência e RLS de Transações
+
+## Objetivo
+
+Transformar o ADR 0008 em contratos executáveis antes de criar `Transaction.restore`, mapper, repository ou migration.
+
+## Prioridade por Camada
+
+1. `domain`: limites, normalização, data civil, restauração e imutabilidade.
+2. `application`: preservar criação e resumo mensal exclusivamente por contrato.
+3. `infrastructure`: validar mapper, payload, consulta mensal, schema, integridade e RLS.
+4. `presentation`: documentar a composição persistente de `/transactions` para o Dia 4, sem criar UI agora.
+
+## Matriz de Testes da SR-011
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `Transaction.create` | notas normalizadas; descrição até 160; notas até 1000 | 3 cenários RED adicionados |
+| domain | `Transaction.restore` | reidratação; ID/datas inválidos; proteção contra mutação | 6 cenários RED adicionados |
+| application | criação e resumo mensal | cenário feliz, inválidos, falha do repository, mês vazio e fora do período | 7 cenários existentes preservados |
+| infrastructure | mapper | row `date` para UTC; payload mínimo; bigint inseguro | 3 cenários RED criados |
+| infrastructure | repository | insert; owner/período semiaberto; ordem estável; erro sanitizado | 4 cenários RED criados |
+| database | schema/grants | 12 colunas, constraints, FKs, índices, policies, privilégios e ausência de status | 46 asserções pgTAP |
+| database | constraints | valores, defaults, vínculos tenant-safe, `type/kind` e deletes restritos | 21 asserções pgTAP |
+| database | RLS | owner, não owner, anon, Auth anônimo, owner forjado e mutações proibidas | 17 asserções pgTAP |
+| database | performance | initPlan dos helpers Auth e índice mensal por owner | 3 asserções pgTAP |
+| presentation | `/transactions` | dados persistidos, loading, empty, success, error e ausência de `userId` livre | documentado; testes adiados ao Dia 4 |
+
+## Cenário Feliz
+
+Um usuário permanente autenticado registra uma despesa manual usando conta e categoria próprias. O domínio normaliza os dados, o caso de uso persiste por contrato, o mapper envia somente campos aprovados e o repository retorna a linha reidratada. A consulta do mês usa intervalo semiaberto e retorna somente linhas do proprietário em ordem estável.
+
+## Cenários Alternativos
+
+- receita com categoria `income`
+- método `pix`, `cash` ou `debit` em vez do default `manual`
+- notas ausentes
+- mês sem transações
+- mudança de dezembro para janeiro no limite superior da consulta
+- erro do provider convertido em mensagem estável
+
+## Edge Cases Críticos
+
+- descrição vazia, não aparada ou acima de 160 caracteres
+- valor zero, negativo, decimal ou acima do inteiro seguro do JavaScript
+- notas não aparadas ou acima de 1000 caracteres
+- data, ID ou timestamps persistidos inválidos
+- bigint inseguro retornado pelo provider
+- conta ou categoria inexistente
+- conta ou categoria pertencente a outro usuário
+- categoria `income` em despesa ou categoria `expense` em receita
+- owner forjado, `anon` ou usuário anônimo do Supabase Auth
+- tentativa de `UPDATE` ou `DELETE`
+- policy sem initPlan, owner sem índice ou tabela exposta sem grant explícito
+
+## Testes Criados ou Alterados
+
+Jest:
+- `src/features/transactions/tests/fixtures/transaction.fixtures.ts`
+- `src/features/transactions/tests/transaction.entity.test.ts`
+- `src/features/transactions/tests/supabase-transaction.mapper.test.ts`
+- `src/features/transactions/tests/supabase-transaction.repository.test.ts`
+
+pgTAP:
+- `supabase/tests/database/transactions_schema.test.sql`
+- `supabase/tests/database/transactions_constraints.test.sql`
+- `supabase/tests/database/transactions_rls.test.sql`
+- `supabase/tests/database/transactions_rls_performance.test.sql`
+
+## Implementação Bloqueada até o Dia 3
+
+- `Transaction.restore` e novos limites do domínio
+- `transaction.mapper.ts`
+- `supabase-transaction.repository.ts`
+- obrigatoriedade de `TransactionRepository.findByMonth`
+- migration de `public.transactions` e constraints auxiliares
+- qualquer Server Action, rota ou mudança de apresentação
+
+## Resultado Observado do Dia 2 — SR-011
+
+- baseline anterior: 53 suítes e 255 testes verdes
+- type-check e lint da baseline: verdes
+- audit de produção: 0 vulnerabilidades
+- RED direcionado: 3 suítes falharam; 9 testes falharam e 11 testes anteriores permaneceram verdes
+- falhas deliberadas: `Transaction.restore`, normalização/limites, mapper e repository ainda ausentes
+- type-check RED: 5 erros, exclusivamente `TS2307` dos dois módulos ausentes e `TS2339` de `Transaction.restore`
+- lint dos contratos: verde, 0 warnings
+- rede anterior excluindo somente os três contratos RED: 52 suítes e 244 testes verdes
+- planos pgTAP validados mecanicamente: 46 + 21 + 17 + 3 = 87 asserções
+- RED remoto transacional: 1 falha de 1 porque `public.transactions` ainda não existe
+- rollback remoto confirmado: duas tabelas, três migrations e `pgtap` não instalada
+- nenhuma implementação, migration, tabela, grant, policy, fixture persistente ou configuração foi criada
+- build não executado porque o type-check vermelho é deliberado
+
+Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada até `dia 3` da SR-011.
+
+## Resultado GREEN do Dia 3 — SR-011
+
+- RED inicial reproduzido: 3 suítes falharam, 9 testes falharam, 11 passaram e type-check teve 5 erros planejados.
+- GREEN direcionado: 5 suítes e 34 testes passaram.
+- `Transaction.restore`, normalização, limites e proteção de datas satisfizeram os contratos do domínio.
+- mapper e repository satisfizeram payload mínimo, data civil, bigint seguro, owner, período, ordenação e sanitização.
+- pgTAP: 46 schema + 21 constraints + 17 RLS + 5 performance = 89 asserções verdes.
+- três cenários RLS falsamente negativos foram corrigidos após registro no contexto; os testes agora alcançam diretamente as policies negadas.
+- duas asserções de índices nasceram em RED após o advisor identificar FKs descobertas e passaram após migration incremental.
+- regressão completa: 55 suítes e 271 testes verdes.
+- type-check, lint, audit com 0 vulnerabilidades e build de produção verdes.
+- nenhuma cobertura foi relaxada, removida ou ignorada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 6 — SR-011
+
+- contratos do formulário passaram a exigir bloqueio de todos os controles durante o envio, foco no primeiro erro local e limpeza do feedback ao corrigir a entrada
+- RED direcionado: 2 testes falharam e 11 passaram
+- GREEN direcionado: 1 suíte e 13 testes passaram
+- regressão completa: 61 suítes e 292 testes passaram
+- browser complementou Jest em desktop, `390 x 844` e `320 x 800`, sem overflow e sem persistir fixtures
+- manifest, idioma, viewport e `theme-color` foram confirmados; nenhuma promessa offline foi adicionada
+- lint, type-check, audit e build permaneceram verdes
+- estado de saída: `QUALITY_VALIDATION`
+
 ## Resultado GREEN do Dia 3 — UI-002
 
 - `PRIVATE_NAVIGATION_ITEMS` implementa somente `/dashboard`, `/transactions` e `/accounts`.

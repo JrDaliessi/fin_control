@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type {
-  CreateTransactionInput,
-  TransactionType
-} from "../../domain/entities/transaction.entity";
+import type { CreateTransactionRequest } from "../../application/dtos/transaction.dto";
+import type { TransactionType } from "../../domain/entities/transaction.entity";
 import { parseTransactionAmountToCents } from "../utils/parseTransactionAmountToCents";
 
 export type TransactionFormStatus = "idle" | "loading" | "success" | "error";
@@ -26,16 +24,14 @@ export type TransactionFormValues = {
 };
 
 type UseTransactionFormParams = {
-  userId: string;
-  onCreateTransaction: (input: CreateTransactionInput) => Promise<void>;
+  onCreateTransaction: (input: CreateTransactionRequest) => Promise<unknown>;
 };
 
-type SubmitResult = {
-  ok: boolean;
-};
+type SubmitResult =
+  | { ok: true }
+  | { field?: TransactionFormField; ok: false };
 
 export function useTransactionForm({
-  userId,
   onCreateTransaction
 }: UseTransactionFormParams) {
   const [status, setStatus] = useState<TransactionFormStatus>("idle");
@@ -49,37 +45,35 @@ export function useTransactionForm({
       setStatus("error");
       setFieldError("amount");
       setMessage("Informe um valor maior que zero.");
-      return { ok: false };
+      return { field: "amount", ok: false };
     }
 
     if (!values.description.trim()) {
       setStatus("error");
       setFieldError("description");
       setMessage("Informe uma descrição.");
-      return { ok: false };
+      return { field: "description", ok: false };
     }
 
     if (!values.accountId) {
       setStatus("error");
       setFieldError("accountId");
       setMessage("Selecione uma conta.");
-      return { ok: false };
+      return { field: "accountId", ok: false };
     }
 
     if (!values.categoryId) {
       setStatus("error");
       setFieldError("categoryId");
       setMessage("Selecione uma categoria.");
-      return { ok: false };
+      return { field: "categoryId", ok: false };
     }
 
-    const occurredAt = new Date(`${values.occurredAt}T00:00:00.000Z`);
-
-    if (Number.isNaN(occurredAt.getTime())) {
+    if (!isValidCivilDate(values.occurredAt)) {
       setStatus("error");
       setFieldError("occurredAt");
       setMessage("Informe uma data válida.");
-      return { ok: false };
+      return { field: "occurredAt", ok: false };
     }
 
     setStatus("loading");
@@ -88,13 +82,12 @@ export function useTransactionForm({
 
     try {
       await onCreateTransaction({
-        userId,
         accountId: values.accountId,
         categoryId: values.categoryId,
         description: values.description.trim(),
         amountInCents,
         type: values.type,
-        occurredAt
+        occurredOn: values.occurredAt
       });
 
       setStatus("success");
@@ -111,11 +104,32 @@ export function useTransactionForm({
     }
   }
 
+  function clearFeedback() {
+    if (status === "loading") {
+      return;
+    }
+
+    setStatus("idle");
+    setFieldError(null);
+    setMessage(null);
+  }
+
   return {
+    clearFeedback,
     fieldError,
     isSubmitting: status === "loading",
     message,
     status,
     submit
   };
+}
+
+function isValidCivilDate(value: string): boolean {
+  if (!/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(value)) {
+    return false;
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }

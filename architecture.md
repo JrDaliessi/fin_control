@@ -274,6 +274,26 @@ Regras:
 - Supabase MCP será usado para aplicar a migration, executar pgTAP transacional, inspecionar schema e rodar advisors nos dias autorizados; no Dia 1 seu uso é somente leitura.
 - A decisão completa está em `adr/0007-categories-persistence-rls.md`.
 
+## Decisões Arquiteturais da SR-011
+
+- O recorte cobre criação persistente e consulta mensal de transações manuais próprias.
+- `Transaction` e os casos de uso existentes continuam independentes de React, Next.js e Supabase; restauração persistente será adicionada ao domínio sob TDD.
+- `TransactionRepository.findByMonth` torna-se obrigatório; a implementação concreta e o mapper ficam em `transactions/infrastructure`.
+- A data manual será persistida como `occurred_on date`, pois a UI captura uma data civil sem horário. O mapper usa meia-noite UTC para manter compatibilidade com o domínio atual.
+- A tabela terá ownership direto por `user_id` e vínculos compostos tenant-safe com contas e categorias.
+- A FK de categoria incluirá `type/kind`, impedindo que uma despesa use categoria de receita ou vice-versa.
+- `financial_accounts` e `categories` receberão somente constraints auxiliares necessárias às FKs compostas; não haverá mudança nas operações liberadas dessas features.
+- A composition root revalidará claims em Server Component e Server Action. A apresentação não enviará `userId` como autoridade e não importará Supabase.
+- O contrato de apresentação usa DTOs serializáveis, mantém `occurredOn` como data civil e omite ownership; somente a Server Action converte a data e injeta o `sub` verificado.
+- A rota `/transactions` é um Server Component dinâmico; a página cliente recebe apenas dados iniciais e a action autorizada, e solicita `router.refresh()` após criação bem-sucedida.
+- Loading e erro pertencem ao App Router; estados empty, configuração ausente e success pertencem à apresentação da feature.
+- A composition root executa uma única consulta mensal e deriva lista e resumo do mesmo conjunto; o caso de uso público de resumo continua disponível para consumidores independentes.
+- DTOs de opções exigem IDs persistidos em runtime, evitando casts que poderiam propagar entidades incompletas à apresentação.
+- `authenticated` receberá somente `SELECT` e `INSERT`; RLS será habilitada e forçada, e usuários Auth anônimos serão bloqueados explicitamente.
+- Não haverá `UPDATE`, `DELETE`, status, transferência, cartão, recorrência, importação, trigger de saldo ou dashboard persistente nesta release.
+- Migrations e testes pgTAP permanecem bloqueados até o RED do Dia 2; alteração remota só pode ocorrer no Dia 3.
+- A decisão completa está em `adr/0008-transactions-persistence-rls.md`.
+
 ## PWA
 O projeto deve ter:
 - manifest

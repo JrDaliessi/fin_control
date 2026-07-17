@@ -816,6 +816,82 @@ Evidência do Dia 7:
 - riscos residuais são não críticos e já constam do backlog de hardening
 - estado de saída: `READY_FOR_RELEASE`
 
+## Gate do Dia 4 — SR-011
+
+- RED válido: 6 suítes novas falharam antes da implementação dos contratos persistentes.
+- GREEN direcionado: 8 suítes e 33 testes passaram.
+- regressão completa: 61 suítes e 289 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- auditoria: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e Proxy preservado.
+- arquitetura: presentation sem Supabase e sem `userId` como autoridade; claims revalidadas no servidor.
+- experiência: loading, error, empty, success e configuração ausente cobertos conforme aplicável.
+- navegador: sessão autenticada, estados vazios e CTA de categoria validados; console limpo e nenhuma gravação executada.
+- alterações remotas: nenhuma migration, policy, grant, configuração ou fixture.
+- risco não crítico: criação visual não exercitada por ausência de categoria na sessão; contratos automatizados permanecem verdes.
+- dívida registrada: `TX-PERF-001` para remover leitura mensal duplicada no Dia 5.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 5 — SR-011
+
+- baseline da feature: 17 suítes e 84 testes verdes.
+- auditoria: `TX-PERF-001` e casts de IDs confirmados; arquivos maiores permaneceram coesos.
+- RED válido: 3 suítes falharam, 4 testes falharam e 10 passaram.
+- GREEN direcionado: 3 suítes e 14 testes passaram.
+- regressão completa: 61 suítes e 292 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- auditoria npm: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e Proxy preservado.
+- performance: uma única consulta mensal alimenta lista e resumo.
+- integridade: DTOs rejeitam opções sem ID persistido e nenhum `as string` permanece na composition root.
+- Supabase remoto: nenhuma alteração ou fixture executada.
+- escopo: nenhuma feature, mudança visual, dependência, migration, policy ou grant adicionados.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 6 — SR-011
+
+- baseline da feature: 17 suítes e 87 testes verdes.
+- RED válido: 2 testes falharam e 11 passaram no formulário.
+- GREEN direcionado: 1 suíte e 13 testes passaram.
+- regressão completa: 61 suítes e 292 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- auditoria npm: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e Proxy preservado.
+- acessibilidade: envio bloqueia todos os controles; erro local recebe foco; feedback obsoleto é removido na correção; semântica existente preservada.
+- responsividade: desktop, `390 x 844` e `320 x 800` sem overflow; alvos visíveis de pelo menos 44 px.
+- PWA: manifest, `theme-color`, viewport e idioma validados; nenhuma promessa offline ou cache financeiro adicionado.
+- Supabase remoto: nenhuma alteração, consulta administrativa ou fixture executada.
+- escopo: domínio, banco, regras financeiras, dependências e capabilities futuras permaneceram inalterados.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- estado de saída: `QUALITY_VALIDATION`.
+
+## Gate do Dia 7 — SR-011
+
+- auditoria de segurança encontrou divergência crítica de Anonymous Sign-In entre Proxy, Actions e RLS.
+- erro documentado antes da correção; RED isolado: 1 teste falhou e 6 passaram.
+- Proxy passou a exigir `sub` não vazio e `is_anonymous !== true`; GREEN isolado: 1 suíte e 8 testes.
+- regressão completa: 61 suítes e 294 testes passaram.
+- lint: verde, 0 warnings.
+- type-check: verde.
+- auditoria npm: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e `ƒ Proxy (Middleware)` preservados.
+- arquitetura: domínio/aplicação sem React, Next.js ou Supabase; apresentação sem acesso direto ao banco.
+- segredos: nenhum `any`, segredo real ou `service_role` de aplicação encontrado em `src`; somente placeholder vazio em `.env.example`.
+- migrations: cinco versões locais/remotas alinhadas.
+- pgTAP remoto: 46 schema + 21 constraints + 17 RLS + 5 performance = 89 asserções verdes.
+- rollback: a 1 transação preexistente foi preservada e `pgtap` permaneceu ausente.
+- grants/RLS: `authenticated` somente com `SELECT`/`INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e `service_role` de aplicação bloqueados.
+- Performance Advisor: sem alertas após a validação.
+- Security Advisor: somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001`.
+- threat model cobre BOLA/IDOR, Auth anônimo, owner forjado, mass assignment, relações cross-tenant, escalada privilegiada, integridade e vazamento de infraestrutura.
+- observabilidade proíbe PII, UUIDs, conteúdo financeiro, JWT, cookies, credenciais e payloads brutos; implementação externa permanece em `HARD-OBS-001`.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- nenhum deploy, commit, push, PR, migration, policy, grant, configuração ou fixture foi executado.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código; deploy público permanece condicionado aos hardenings documentados.
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

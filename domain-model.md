@@ -153,6 +153,31 @@ Regras:
 - transação deve referenciar conta e categoria válidas
 - transferência, cartão e recorrência ficam fora da primeira small release
 
+### SR-011 — Persistência e RLS de Transações
+
+Escopo aprovado:
+- criar transação manual efetiva do usuário autenticado
+- consultar transações próprias por mês
+- reidratar `Transaction` com `id`, `createdAt` e `updatedAt` do banco
+- usar conta e categoria persistidas pertencentes ao mesmo usuário
+- exigir que `Transaction.type` corresponda a `Category.kind`
+
+Regras adicionais:
+- a data informada é uma data civil e será persistida como `date`; o mapper a converte para meia-noite UTC no domínio
+- descrição é aparada e limitada a 160 caracteres
+- notas são opcionais; quando presentes, são aparadas e limitadas a 1000 caracteres
+- valores permanecem positivos em centavos; o tipo determina receita ou despesa
+- `paymentMethod` permanece limitado a `manual`, `pix`, `cash` ou `debit`
+- não existe status persistido nesta SR; toda transação manual criada é efetiva
+- o `userId` da apresentação não é autoridade; a composition root injeta a identidade verificada e a RLS reforça ownership
+- erros de integridade ou Supabase não podem expor detalhes brutos à apresentação
+
+Fora da SR-011:
+- editar, excluir, cancelar ou conciliar transações
+- transferências, cartão, parcelas, recorrências e importação
+- saldo atual persistido ou trigger de saldo
+- integração persistente do dashboard e analytics avançados
+
 ### Cartões de Crédito
 Representa compromissos futuros, faturas e limite.
 

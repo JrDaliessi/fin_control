@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-010 concluído; qualidade, segurança, observabilidade e entrega incremental validadas
+- Fase atual: Dia 7 da SR-011 concluído; pipeline, segurança, Supabase, observabilidade e release incremental validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -67,6 +67,14 @@
 - Data da refatoração e hardening da SR-010: 2026-07-17
 - Data da revisão de UX, acessibilidade e PWA da SR-010: 2026-07-17
 - Data da validação final e preparação de release da SR-010: 2026-07-17
+- Data de seleção da SR-011 como próximo ciclo: 2026-07-17
+- Data do discovery e arquitetura da SR-011: 2026-07-17
+- Data da estratégia de testes da SR-011: 2026-07-17
+- Data da implementação mínima da SR-011: 2026-07-17
+- Data da expansão controlada da SR-011: 2026-07-17
+- Data da refatoração e hardening da SR-011: 2026-07-17
+- Data da revisão de UX, acessibilidade e PWA da SR-011: 2026-07-17
+- Data da validação final e preparação de release da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -919,6 +927,10 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: a primeira orquestração pgTAP do Dia 7 da SR-011 presumiu que `shell_command` retornaria um objeto com `output`; o retorno era uma string envelopada e quatro chamadas vazias foram rejeitadas antes do SQL. Na tentativa seguinte, o envelope ainda foi enviado e o Postgres rejeitou a palavra `Exit` antes de iniciar transação. Prevenção: inspecionar o tipo de retorno uma vez, extrair o conteúdo após o marcador literal `Output:\n`, validar SQL não vazio e interromper após no máximo duas falhas equivalentes antes de tentar outra abordagem.
+- Erro: o Proxy global tratava qualquer claim com `sub` como sessão permanente, enquanto Server Actions e RLS já bloqueavam usuários do Supabase Anonymous Sign-In por `is_anonymous=true`. Prevenção: todo ponto de entrada autenticado deve aplicar o mesmo contrato fail-closed (`sub` válido e `is_anonymous !== true`) e possuir teste de regressão alinhado às policies antes de qualquer release.
+- Erro: no primeiro GREEN do Dia 4 da SR-011, mocks de callbacks foram inferidos sem argumentos e o teste agregado de rotas ainda renderizava o novo Server Component assíncrono como componente cliente. Prevenção: tipar doubles pela assinatura real desde o RED e, quando uma rota passar a carregar dados no servidor, atualizar todos os testes agregados para aguardar a função de rota e registrar mocks com `jest.requireMock()`/`jest.requireActual()` antes dos gates completos.
+- Erro: três cenários pgTAP de negação da SR-011 usaram `INSERT ... SELECT` para buscar fixtures protegidas depois de ativar RLS; a consulta-fonte retornou zero linhas e nenhuma tentativa proibida foi realmente executada. Prevenção: capturar IDs de fixtures antes de trocar o role e usar valores diretos nos testes negativos, confirmando que a operação alcança a policy que se pretende validar.
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
 - Erro: o workflow Git passou a direcionar features para `develop`, mas o CI permaneceu limitado a `main`, permitindo merge de integração sem gates automáticos. Prevenção: toda mudança na estratégia de branches deve atualizar e testar os gatilhos de CI para branches de integração e release na mesma entrega.
 - Erro: o mock de `signOut` adicionado no Dia 4 da UI-002 foi inferido sem parâmetros, gerando `TS2554` quando o teste verificou `{ scope: "local" }`. Prevenção: tipar mocks de integrações pela assinatura real antes do primeiro type-check e incluir explicitamente os argumentos relevantes no fake, mesmo quando o corpo não os utiliza.
@@ -1272,7 +1284,7 @@ Estado de saída:
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
 - Dia 7 da UI-001 concluído; pipeline final passou com 41 suítes e 194 testes.
 - Dia 1 da UI-002 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0006.
-- Próximo passo operacional: executar explicitamente o Dia 2 da UI-002; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- Próximo passo operacional: selecionar explicitamente a próxima small release; nenhuma nova fase foi iniciada automaticamente.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -3916,3 +3928,359 @@ Estado de saída:
 - nenhum bloqueio crítico para entrega incremental do código
 - deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
 - próxima small release não iniciada; requer seleção e comando explícitos
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Objetivo validado:
+- tornar o registro manual persistente e consultável por mês
+- preservar isolamento por usuário em toda fronteira
+- garantir no banco que conta, categoria e transação pertencem ao mesmo usuário
+- impedir categoria incompatível com o tipo da transação
+
+Escopo aprovado:
+- criação de transação manual `income | expense`
+- consulta de transações próprias por mês
+- conta e categoria persistidas obrigatórias
+- `paymentMethod` limitado a `manual | pix | cash | debit`
+- data civil persistida como `occurred_on date`
+- grants mínimos `SELECT/INSERT` e RLS por proprietário
+
+Decisões arquiteturais:
+- `TransactionRepository.findByMonth` passará a ser obrigatório
+- `SupabaseTransactionRepository` e mapper ficarão em `transactions/infrastructure`
+- Server Component e Server Action revalidarão claims e injetarão o ator
+- `(user_id, account_id)` referenciará a conta pelo mesmo owner
+- `(user_id, category_id, type)` referenciará categoria e `kind` pelo mesmo owner
+- contas e categorias receberão apenas as unicidades auxiliares necessárias
+- exclusão de conta/categoria referenciada será restrita
+- não haverá coluna de status; transação manual criada é efetiva
+- nenhuma trigger ou saldo atual persistido será criado
+- ADR registrado em `adr/0008-transactions-persistence-rls.md`
+
+Fora do escopo:
+- `UPDATE`, `DELETE`, cancelamento ou conciliação
+- transferência, cartão, parcelas, recorrência e importação
+- dashboard persistente, analytics avançados e IA
+- migration, teste ou implementação funcional no Dia 1
+
+Validação somente leitura:
+- projeto Supabase `fin_control` em estado saudável e Postgres 17
+- tabelas existentes: `financial_accounts` e `categories`, ambas com RLS
+- migrations remotas alinhadas às três migrations locais existentes
+- Performance Advisor sem alertas
+- Security Advisor com apenas `SEC-AUTH-001`, já rastreada
+- documentação oficial atual de RLS, grants e migrations consultada pela skill Supabase
+- breaking change de exposição automática de novas tabelas identificado; grants explícitos já fazem parte do desenho e evitam dependência desse default
+
+Riscos e bloqueios:
+- risco alto por tratar dados financeiros; mitigação planejada por TDD, FKs compostas, grants mínimos, RLS e pgTAP transacional
+- nenhum bloqueio duro impede o Dia 2
+- deploy público permanece bloqueado pelas dívidas de hardening já registradas, sem bloquear o ciclo local
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-011 movida para `IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Matriz criada:
+- domain: normalização e limites, restauração, data civil e imutabilidade
+- application: criação e resumo mensal existentes preservados como contratos
+- infrastructure: mapper, payload mínimo, consulta mensal e sanitização de erros
+- database: schema, constraints, FKs compostas, grants, RLS e performance
+- presentation: cenários documentados para o Dia 4, sem UI antecipada
+
+Testes Jest criados ou alterados:
+- `src/features/transactions/tests/fixtures/transaction.fixtures.ts`
+- `src/features/transactions/tests/transaction.entity.test.ts`
+- `src/features/transactions/tests/supabase-transaction.mapper.test.ts`
+- `src/features/transactions/tests/supabase-transaction.repository.test.ts`
+
+Testes SQL criados:
+- `supabase/tests/database/transactions_schema.test.sql` — 46 asserções
+- `supabase/tests/database/transactions_constraints.test.sql` — 21 asserções
+- `supabase/tests/database/transactions_rls.test.sql` — 17 asserções
+- `supabase/tests/database/transactions_rls_performance.test.sql` — 3 asserções
+
+Resultado TDD:
+- baseline anterior: 53 suítes e 255 testes verdes
+- baseline de type-check e lint verde; audit com 0 vulnerabilidades
+- RED direcionado: 3 suítes falharam; 9 testes falharam e 11 passaram
+- falhas limitadas a invariantes, `Transaction.restore`, mapper e repository planejados
+- type-check falhou somente com 5 erros dos módulos/método deliberadamente ausentes
+- lint permaneceu verde com 0 warnings
+- rede anterior, excluindo os três contratos RED: 52 suítes e 244 testes verdes
+- planos pgTAP: 87 asserções com contagem validada
+- RED remoto: 1 falha de 1 pela ausência de `public.transactions`
+- rollback confirmado: banco permaneceu com `financial_accounts`, `categories`, três migrations e sem `pgtap` instalada
+
+Implementação bloqueada até o Dia 3:
+- `Transaction.restore` e limites de descrição/notas
+- `transaction.mapper.ts`
+- `supabase-transaction.repository.ts`
+- contrato obrigatório de `findByMonth`
+- migration de `public.transactions` e constraints auxiliares
+
+Limites preservados:
+- nenhuma implementação funcional, migration, tabela, grant ou policy criada
+- nenhuma fixture ou extensão persistida no Supabase
+- nenhuma Server Action, rota, UI, dependência, commit, push, PR ou deploy
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- próximo passo recomendado: executar explicitamente `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Implementação criada:
+- `Transaction.restore`, normalização e limites de descrição/notas
+- datas defensivamente copiadas sem quebrar a forma estrutural da entidade
+- `TransactionRepository.findByMonth` obrigatório
+- mapper Supabase com data civil em UTC e rejeição de bigint inseguro
+- `SupabaseTransactionRepository` com payload mínimo, filtro por owner, intervalo mensal semiaberto, ordenação estável e erros sanitizados
+- migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes`
+
+Schema e segurança:
+- `public.transactions` criada com 12 colunas aprovadas, sem `status`
+- FKs compostas garantem owner da conta e owner/kind da categoria
+- exclusão de conta ou categoria referenciada permanece restrita
+- `authenticated` possui somente `SELECT` e `INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE` e privilégios explícitos de aplicação para `service_role` permanecem bloqueados
+- RLS habilitada e forçada com policies separadas por operação e ownership via Auth
+- três índices cobrem consulta mensal e as duas FKs compostas
+
+Evidência TDD e correções:
+- RED inicial reproduzido: 3 suítes falharam, 9 testes falharam, 11 passaram e type-check apresentou 5 erros planejados
+- GREEN direcionado: 5 suítes e 34 testes passaram
+- falha estrutural dos doubles causada por datas privadas foi corrigida com armazenamento externo e propriedades públicas imutáveis
+- a suíte RLS revelou três falsos negativos por `INSERT ... SELECT` filtrado pela própria RLS; o erro foi registrado em Erros Recorrentes e o harness passou a usar IDs capturados antes da troca de role
+- o Performance Advisor revelou duas FKs sem índice; duas asserções foram adicionadas em RED e passaram após migration incremental
+
+Validação remota Supabase:
+- 89 asserções pgTAP passaram: 46 schema + 21 constraints + 17 RLS + 5 performance
+- todas as suítes SQL usaram transação e rollback; `public.transactions` permaneceu com zero registros e `pgtap` não ficou instalada
+- migrations locais e remotas permanecem alinhadas nas cinco versões esperadas
+- Security Advisor manteve somente `SEC-AUTH-001`, preexistente
+- avisos de FK sem índice foram eliminados; o Performance Advisor reportou somente os dois índices recém-criados como ainda não usados, esperado com tabela vazia
+
+Resultado dos gates:
+- `npm run test:ci`: 55 suítes e 271 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+
+Limites preservados:
+- nenhuma Server Action, rota ou UI persistente criada; composição autenticada permanece para o Dia 4
+- nenhuma edição, exclusão, status, transferência, cartão, parcela, recorrência, importação ou dashboard persistente
+- nenhuma nova dependência, fixture persistente, commit, push, PR ou deploy
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 4` da SR-011
+
+## Dia 4 — Expansão Controlada da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Implementação criada:
+- DTO serializável de transação sem `userId`, com data civil `occurredOn`
+- `ListTransactionsByMonthUseCase` para orquestrar a consulta mensal sem dependência de framework
+- Server Actions que revalidam `auth.getClaims()`, rejeitam Auth anônimo, injetam o ator no servidor e revalidam `/transactions` após criação
+- Server Component dinâmico que carrega contas, categorias, transações e resumo do mês atual
+- formulário conectado à persistência, com categorias filtradas por `income | expense` e validação estrita de data civil
+- estados acessíveis de loading, erro recuperável, configuração ausente, lista vazia e resumo vazio
+- lista mensal persistente e cópia sem linguagem de sessão local
+
+Evidência TDD:
+- baseline da feature antes do recorte: 11 suítes e 66 testes verdes
+- RED inicial: 6 suítes novas falharam pela ausência dos DTOs, caso de uso, actions, estados de rota e composição persistente
+- GREEN direcionado final: 8 suítes e 33 testes passaram
+- o teste agregado de rotas revelou a transição da rota para Server Component assíncrono; o harness foi corrigido sem alterar o contrato funcional
+
+Resultado dos gates:
+- `npm run test:ci`: 61 suítes e 289 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+
+Validação no navegador:
+- sessão autenticada carregou `/transactions` sem erros ou warnings de console
+- loading transitório foi exibido antes dos dados persistentes
+- como a conta validada não possui categorias, o formulário foi corretamente bloqueado com CTA para `/categories`
+- resumo mensal e lista exibiram seus estados vazios para julho de 2026
+- nenhuma transação, categoria ou outra fixture foi criada durante a inspeção
+
+Limites e riscos preservados:
+- apresentação não importa Supabase e não envia `userId` como autoridade
+- nenhuma migration, policy, grant, dependência, configuração remota ou dado foi alterado no Dia 4
+- nenhuma edição, exclusão, status, transferência, cartão, parcela, recorrência, importação ou dashboard persistente foi adicionada
+- criação real no navegador não foi exercitada porque a sessão inspecionada não possui categoria; os contratos de action, integração e persistência permanecem cobertos por testes automatizados
+- a leitura da página consulta transações separadamente para lista e resumo; otimização foi registrada como dívida `TX-PERF-001` para o Dia 5
+- nenhum commit, push, PR ou deploy foi executado; `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- Dia 4 concluído sem avanço automático
+- próximo passo recomendado: executar explicitamente `dia 5` da SR-011
+
+## Dia 5 — Refatoração e Hardening Interno da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Auditoria estrutural:
+- baseline da feature: 17 suítes e 84 testes verdes
+- `TransactionForm.tsx` foi o maior arquivo produtivo com 256 linhas, mas permaneceu coeso e não justificou divisão artificial
+- provider e fluxo de sessão local ainda possuem consumidores reais no dashboard; remoção foi rejeitada por quebrar outra feature
+- `TX-PERF-001` foi confirmado: a composition root consultava o mesmo mês separadamente para lista e resumo
+- casts `as string` mascaravam a possibilidade estrutural de conta ou categoria sem ID persistido
+
+TDD e refatoração:
+- RED direcionado: 3 suítes falharam, 4 testes falharam e 10 passaram
+- a action comprovou duas chamadas de consulta mensal
+- cálculo reutilizável e mapeadores persistidos falharam por ainda não existirem
+- type-check vermelho ficou limitado a três exports planejados ausentes
+- `calculateMonthlySummary` passou a calcular o resumo a partir de transações já carregadas
+- `ListMonthlySummaryUseCase.execute` preservou seu contrato e delega à mesma regra pura
+- a action passou a fazer uma única leitura mensal e derivar lista e resumo do mesmo conjunto
+- mapeadores de conta e categoria normalizam o ID e falham explicitamente quando a entidade não está persistida
+- nenhuma divisão de arquivo, abstraction layer genérica ou remoção de código com consumidor real foi executada
+
+Resultado dos gates:
+- GREEN direcionado: 3 suítes e 14 testes passaram
+- `npm run test:ci`: 61 suítes e 292 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+- `git diff --check`: passou
+
+Supabase e limites:
+- changelog oficial atual revisado; nenhuma breaking change aplicável ao hardening local foi identificada
+- `getClaims()`, repository, mapper, migrations, grants, RLS e schema permaneceram inalterados
+- nenhuma query remota, migration, policy, configuração ou fixture foi executada
+- nenhuma nova feature, dependência, mudança visual, commit, push, PR ou deploy
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` somente durante a execução
+- retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
+- Dia 5 concluído sem avanço automático
+- próximo passo recomendado: executar explicitamente `dia 6` da SR-011
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Auditoria e TDD:
+- baseline da feature: 17 suítes e 87 testes verdes
+- o formulário permitia editar campos enquanto a criação estava pendente, mantinha feedback local obsoleto após a correção e deixava o foco no botão depois de uma validação inválida
+- RED direcionado: 2 testes falharam e 11 passaram
+- todos os campos editáveis passaram a ficar desabilitados durante o envio, preservando `aria-busy` e o rótulo `Salvando...`
+- falhas locais retornam o campo inválido ao componente, que move o foco para o controle correspondente
+- qualquer nova edição limpa mensagem e `aria-invalid` anteriores sem apagar o feedback de sucesso produzido após o reset do formulário
+
+Validação responsiva e acessível no navegador:
+- sessão autenticada inspecionada em desktop padrão, `390 x 844` e `320 x 800`, sem overflow horizontal
+- shell, heading, CTA de categoria, resumo, lista e navegação móvel permaneceram legíveis e semanticamente expostos
+- controles interativos visíveis mantiveram alvos de pelo menos 44 px; a navegação inferior mediu 63 px em `390 x 844`
+- `lang="pt-BR"`, viewport, `theme-color` e vínculo com `/manifest.webmanifest` foram confirmados
+- a ausência de categoria bloqueou corretamente o formulário na sessão real; foco, bloqueio pendente e correção de erro foram validados de forma determinística por Jest
+- nenhuma fixture ou mudança remota foi executada durante a inspeção
+
+PWA e limites:
+- manifest existente preserva identidade FinControl, instalação `standalone`, ícones reais e atalhos apenas para rotas funcionais
+- nenhuma promessa de offline, service worker ou cache de dados financeiros foi adicionada sem estratégia de consistência
+- domínio, application, repository, mapper, migrations, grants, RLS e configuração Supabase permaneceram inalterados
+- nenhuma edição, exclusão, cartão, parcela, recorrência, importação, dependência, commit, push, PR ou deploy foi executado
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Resultado dos gates:
+- GREEN direcionado: 1 suíte e 13 testes passaram
+- `npm run test:ci`: 61 suítes e 292 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+- `git diff --check`: passou; somente avisos esperados de normalização LF/CRLF
+
+Revisão periódica de contexto:
+- não foi identificado drift entre o recorte da SR-011 e a implementação dos Dias 3 a 6
+- backlog, roadmap, estratégia e evidências foram atualizados para refletir a entrada em validação final
+- riscos pré-produção `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam explícitos e serão tratados ou reafirmados no Dia 7
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- Dia 6 concluído sem avanço automático
+- próximo passo recomendado: executar explicitamente `dia 7` da SR-011
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Correção crítica orientada por teste:
+- a auditoria detectou divergência entre o Proxy global e as fronteiras já seguras da SR-011: um usuário do Supabase Anonymous Sign-In possuía `sub` e atravessava a proteção de rota
+- o erro foi registrado no contexto antes da implementação
+- RED isolado: 1 teste falhou e 6 passaram; o usuário Auth anônimo recebeu acesso à rota privada em vez de redirect
+- o Proxy passou a exigir `sub` textual não vazio e `is_anonymous !== true`, alinhado às Server Actions e às policies RLS
+- GREEN isolado: 1 suíte e 8 testes passaram, incluindo subject vazio e Anonymous Sign-In
+
+Pipeline final:
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 61 suítes e 294 testes
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou; `/transactions` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo
+- `git diff --check`: passou; somente avisos esperados de normalização LF/CRLF
+- nenhuma ocorrência de `any`, chave privilegiada ou `service_role` de aplicação foi encontrada em `src`; `.env.example` contém apenas o placeholder vazio esperado
+
+Validação Supabase:
+- projeto `fin_control` permaneceu `ACTIVE_HEALTHY` em Postgres 17
+- as cinco migrations locais e remotas permaneceram alinhadas
+- changelog e documentação oficiais atuais foram revisados; a mudança de exposição automática de tabelas não afeta a SR-011 porque grants são explícitos
+- 89 asserções pgTAP passaram: 46 schema + 21 constraints + 17 RLS + 5 performance
+- rollback preservou a 1 transação preexistente e a extensão `pgtap` permaneceu ausente
+- `authenticated` mantém somente `SELECT` e `INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e privilégio explícito de aplicação para `service_role` permanecem bloqueados
+- Performance Advisor terminou sem alertas
+- Security Advisor manteve somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001`
+- nenhuma migration, policy, grant, configuração Auth, extensão ou fixture foi persistida
+
+Threat model revisado:
+- BOLA/IDOR: owner é derivado de claims verificadas no servidor, filtrado no repository e reforçado por RLS
+- Anonymous Sign-In: Proxy, Server Actions e RLS agora aplicam o mesmo bloqueio por `is_anonymous`
+- owner forjado e mass assignment: DTO público não aceita `userId`; a Action injeta o ator verificado
+- troca cross-tenant de conta/categoria: FKs compostas exigem o mesmo owner e compatibilidade entre `type` e `kind`
+- excesso de privilégio: ausência deliberada de grants e policies para `UPDATE` e `DELETE`; aplicação não usa `service_role`
+- integridade financeira: centavos seguros, data civil, limites e enums são validados no domínio, mapper e banco
+- enumeração e vazamento de infraestrutura: repository usa erro estável e projeção explícita de colunas
+- riscos residuais pré-produção: proteção contra senhas vazadas, rate limit/CAPTCHA, headers HTTP e monitoramento externo permanecem no backlog
+
+Baseline de observabilidade:
+- eventos futuros permitidos: `transactions_page_load`, `transactions_page_failure`, `transaction_create_attempt`, `transaction_create_success` e `transaction_create_failure`
+- atributos permitidos: ambiente, release, rota, operação, resultado técnico, faixa de duração e classe sanitizada do erro
+- proibido registrar descrição, valor, data, notes, conta, categoria, e-mail, UUID de usuário, JWT, cookies, senha, segredo, payload bruto ou mensagem bruta do provedor
+- métricas recomendadas: latência e falha por operação, rejeições de autenticação, indisponibilidade do repository e taxa de erro por release
+- captura de erros com redaction, alertas e teste sintético permanecem em `HARD-OBS-001` antes do deploy público
+- nenhum evento analítico ou provedor de observabilidade foi adicionado nesta fase
+
+Release incremental preparada:
+- escopo liberável: criar e consultar por mês transações manuais próprias, com conta/categoria tenant-safe, grants mínimos, RLS e experiência acessível
+- edição, exclusão, status, transferência, cartão, parcelas, recorrência, importação, analytics avançado, offline financeiro e IA permanecem fora do escopo
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código
+- nenhum deploy, commit, push, PR, merge ou tag foi executado
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- nenhum bloqueio crítico para entrega incremental do código
+- Dia 7 concluído sem iniciar outra small release
+- próximo passo recomendado: selecionar explicitamente a próxima small release ou autorizar a publicação do código em fluxo separado

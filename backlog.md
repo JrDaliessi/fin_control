@@ -191,17 +191,6 @@ Nenhum item em andamento no momento.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
 - Status: DISCOVERY
 
-### SR-011 - Persistencia e RLS de transacoes
-- Tipo: Security Item / Small Release
-- Objetivo de negocio: tornar o registro manual utilizavel com dados reais.
-- Valor esperado: historico financeiro persistente.
-- Prioridade: Critica
-- Dependencias: SR-008 a SR-010.
-- Risco: Alto
-- Fase recomendada: ciclo seguinte.
-- Criterio de pronto: repositorio Supabase, RLS, status definido e testes de isolamento.
-- Status: DISCOVERY
-
 ### SR-012 - Periodos financeiros
 - Tipo: Small Release
 - Objetivo de negocio: analisar antes do fechamento mensal.
@@ -399,6 +388,20 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
+### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
+- Tipo: Dívida Técnica / Hardening
+- Descrição: a carga de `/transactions` consulta o mesmo mês uma vez para a lista e outra vez para o resumo mensal.
+- Objetivo de negócio: manter a página previsível quando o histórico crescer sem alterar resultados financeiros.
+- Valor esperado: reduzir round-trips e trabalho duplicado no banco.
+- Prioridade: Média
+- Dependências: composição autenticada do Dia 4 da SR-011 e testes existentes de lista/resumo.
+- Risco: Baixo com tabela vazia; Médio em escala.
+- Severidade: MÉDIA
+- Fase recomendada: Dia 5 da SR-011.
+- Critério de pronto: calcular lista e resumo com uma única leitura mensal, preservar os contratos de application e manter todos os gates verdes.
+- Resultado: a composition root passou a consultar transações uma vez e `calculateMonthlySummary` deriva o resumo do conjunto já carregado; 61 suítes e 292 testes permaneceram verdes.
+- Status: DONE
+
 ### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
 - Tipo: Security Item
 - Objetivo de negócio: impedir uso de credenciais conhecidamente comprometidas.
@@ -458,6 +461,25 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-011 — Persistência e RLS de transações
+- Tipo: Security Item / Small Release
+- Resultado: criação e consulta mensal de transações próprias entregues com identidade server-side, vínculos tenant-safe, grants mínimos, RLS e apresentação acessível.
+- Escopo concluído: domínio, casos de uso, mapper, repository, migrations, Server Actions, lista/resumo persistentes, UX responsiva e hardening interno.
+- Banco: migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes` alinhadas; 89 asserções pgTAP verdes; rollback preservou a 1 transação preexistente e não deixou `pgtap` instalada.
+- Quality gates: lint, type-check, 61 suítes/294 testes Jest, auditoria com 0 vulnerabilidades, build e `git diff --check` verdes.
+- Segurança: Proxy, Actions e RLS bloqueiam Auth anônimo; ownership é injetado no servidor; FKs compostas impedem conta/categoria cross-tenant; somente `SELECT`/`INSERT` estão liberados.
+- Observabilidade: eventos e atributos sanitizados definidos; conteúdo financeiro, PII, UUIDs, tokens, cookies, credenciais e payloads brutos são proibidos.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código.
+- Fora do escopo preservado: edição, exclusão, status, transferência, cartão, parcelas, recorrência, importação, analytics avançado, offline e IA.
+- Status: DONE
+
+### BUG-AUTH-ANON-001 — Proxy aceitava Supabase Anonymous Sign-In como sessão permanente
+- Tipo: Bug / Security Item
+- Resultado: o Proxy agora exige subject válido e rejeita `is_anonymous=true`, alinhado às Server Actions e policies financeiras.
+- Evidência TDD: RED com 1 falha e 6 testes verdes; GREEN com 1 suíte e 8 testes verdes; regressão completa com 61 suítes e 294 testes.
+- Risco resolvido: usuário Auth anônimo não atravessa mais a proteção de rotas privadas.
+- Status: DONE
 
 ### SR-010 — Persistência e RLS de categorias
 - Tipo: Security Item / Small Release

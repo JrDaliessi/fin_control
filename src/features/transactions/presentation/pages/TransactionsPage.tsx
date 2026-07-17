@@ -1,44 +1,48 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
-import type { CreateTransactionInput } from "../../domain/entities/transaction.entity";
+import type {
+  CreateTransactionRequest,
+  TransactionDto,
+  TransactionsPageDataDto
+} from "../../application/dtos/transaction.dto";
 import { MonthlySummaryPanel } from "../components/MonthlySummaryPanel";
 import { TransactionForm } from "../components/TransactionForm";
-import { TransactionSessionList } from "../components/TransactionSessionList";
-import { useSessionMonthlySummary } from "../hooks/useSessionMonthlySummary";
-import { useTransactionSession } from "../providers/TransactionSessionProvider";
+import { TransactionList } from "../components/TransactionSessionList";
 
-const demoAccounts = [
-  {
-    id: "account-1",
-    name: "Conta corrente"
+type TransactionsPageProps = {
+  initialData: TransactionsPageDataDto;
+  onCreateTransaction: (
+    input: CreateTransactionRequest
+  ) => Promise<TransactionDto>;
+};
+
+export function TransactionsPage({
+  initialData,
+  onCreateTransaction
+}: TransactionsPageProps) {
+  const router = useRouter();
+
+  async function handleCreateTransaction(input: CreateTransactionRequest) {
+    await onCreateTransaction(input);
+    router.refresh();
   }
-];
 
-const demoCategories = [
-  {
-    id: "category-1",
-    name: "Mercado"
-  },
-  {
-    id: "category-2",
-    name: "Salário"
-  }
-];
-
-export function TransactionsPage() {
-  const { user } = useAuthSession();
-  const { addTransaction, transactions } = useTransactionSession();
-  const monthlySummaryState = useSessionMonthlySummary({
-    transactions,
-    userId: user.id
-  });
-
-  async function handleCreateTransaction(input: CreateTransactionInput) {
-    await addTransaction(input);
-  }
+  const missingSetup = initialData.accounts.length === 0
+    ? {
+        message: "Cadastre uma conta antes de registrar transações.",
+        href: "/accounts",
+        label: "Cadastrar conta"
+      }
+    : initialData.categories.length === 0
+      ? {
+          message: "Cadastre uma categoria antes de registrar transações.",
+          href: "/categories",
+          label: "Cadastrar categoria"
+        }
+      : null;
 
   return (
     <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
@@ -66,22 +70,38 @@ export function TransactionsPage() {
             </Link>
           </div>
 
-          <TransactionForm
-            accounts={demoAccounts}
-            categories={demoCategories}
-            onCreateTransaction={handleCreateTransaction}
-            userId={user.id}
-          />
+          {missingSetup ? (
+            <div className="grid gap-3 rounded-md border border-dashed border-border bg-surface p-4">
+              <p className="text-sm text-muted-foreground" role="status">
+                {missingSetup.message}
+              </p>
+              <Link
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+                href={missingSetup.href}
+              >
+                {missingSetup.label}
+              </Link>
+            </div>
+          ) : (
+            <TransactionForm
+              accounts={initialData.accounts}
+              categories={initialData.categories}
+              onCreateTransaction={handleCreateTransaction}
+            />
+          )}
         </section>
 
         <div className="grid content-start gap-4">
           <MonthlySummaryPanel
-            errorMessage={monthlySummaryState.errorMessage}
-            status={monthlySummaryState.status}
-            summary={monthlySummaryState.summary}
+            errorMessage={undefined}
+            status="success"
+            summary={initialData.summary}
           />
 
-          <TransactionSessionList transactions={transactions} />
+          <TransactionList
+            monthRef={initialData.monthRef}
+            transactions={initialData.transactions}
+          />
         </div>
       </div>
     </main>

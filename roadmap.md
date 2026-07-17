@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 7 da SR-010 concluído em `READY_FOR_RELEASE`; pipeline, segurança, RLS, threat model e baseline de observabilidade estão validados.
+Estado atual: Dia 7 da SR-011 concluído em `READY_FOR_RELEASE`; a fundação de dados reais de contas, categorias e transações está validada para entrega incremental de código.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -168,7 +168,19 @@ Recorte da SR-010: criar e listar categorias próprias com nome normalizado e `k
 
 Evidência da SR-010: migration `20260717022313_create_categories`, 65 testes pgTAP verdes, Performance Advisor limpo, 53 suítes/255 testes Jest, audit sem vulnerabilidades e build verde; no Dia 7, grants/RLS, threat model e baseline de observabilidade foram confirmados sem persistir fixtures.
 
-Próximo passo: selecionar explicitamente a próxima small release. A sequência de fundação recomenda a SR-011 para persistência de transações; deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Recorte da SR-011: criar e consultar por mês transações manuais próprias, com data civil, FKs compostas para conta/categoria, compatibilidade `type/kind`, grants mínimos `SELECT/INSERT` e RLS por proprietário. Edição, exclusão, status, transferência, cartão, recorrência, importação e dashboard persistente permanecem fora.
+
+Evidência do Dia 3 da SR-011: migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes`, 89 asserções pgTAP verdes, 55 suítes/271 testes Jest, type-check/lint/audit/build verdes e nenhuma fixture persistida. O Security Advisor manteve somente `SEC-AUTH-001`; os únicos avisos de performance são índices recém-criados ainda sem uso porque a tabela está vazia.
+
+Evidência do Dia 4 da SR-011: DTO sem ownership, Server Actions com claims revalidadas, criação e leitura mensal persistentes, estados loading/error/empty/configuração ausente, 61 suítes/289 testes Jest e lint/type-check/audit/build verdes. A rota autenticada foi inspecionada sem erros de console e sem persistir fixtures.
+
+Evidência do Dia 5 da SR-011: `TX-PERF-001` encerrada com uma única leitura mensal, resumo puro reutilizável e mapeadores de IDs persistidos; 61 suítes/292 testes Jest e lint/type-check/audit/build verdes, sem alteração remota.
+
+Evidência do Dia 6 da SR-011: formulário bloqueia todos os campos durante o envio, move foco para erro local e limpa feedback obsoleto; desktop, `390 x 844` e `320 x 800` foram validados sem overflow, manifesto honesto preservado e 61 suítes/292 testes permaneceram verdes.
+
+Evidência do Dia 7 da SR-011: divergência de Anonymous Sign-In no Proxy corrigida em TDD; 61 suítes/294 testes, lint, type-check, audit e build verdes; 89 asserções pgTAP com rollback, migrations alinhadas, Performance Advisor limpo e threat model/observabilidade documentados.
+
+Próximo passo: selecionar explicitamente a próxima small release. Deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`; nenhuma nova fase foi iniciada automaticamente.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
@@ -206,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada, mas aguarda a fundação de dados; `SR-010` está em `QUALITY_VALIDATION` e deve seguir para o Dia 7.
+Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada e agora pode ser refinada sobre a fundação de dados concluída; a seleção continua dependente de comando humano explícito.
 
 Integrações posteriores:
 
