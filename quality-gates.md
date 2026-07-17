@@ -191,6 +191,19 @@
 - Inspeção estática confirmou ausência de Supabase e regras financeiras nos novos componentes e configuração.
 - Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
+### Resultado observado — SR-010
+- `Category`, `CategoryRepository`, casos de uso de criação/listagem, mapper e repository Supabase foram implementados no mínimo exigido pelos contratos RED.
+- Domínio e aplicação permanecem independentes de React, Next.js e Supabase; a integração concreta está isolada em `infrastructure`.
+- Migration `20260717022313_create_categories` foi aplicada pelo MCP do Supabase e alinhada ao arquivo local sem drift de versão.
+- Schema possui seis colunas aprovadas, FK com cascade, constraints, unicidade case-insensitive, chave composta futura e índices de ownership/ordenação.
+- RLS está habilitada e forçada; somente `authenticated` possui `SELECT`/`INSERT`, com policies separadas por proprietário e bloqueio de Auth anônimo.
+- pgTAP remoto passou com 33/33 schema, 12/12 constraints, 17/17 RLS e 3/3 performance; fixtures e extensão temporária foram revertidas.
+- Testes direcionados passaram com 5 suítes e 22 testes; suíte completa passou com 49 suítes e 234 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Performance Advisor não retornou alertas; Security Advisor manteve somente `SEC-AUTH-001`, aviso preexistente e fora do escopo desta migration.
+- Nenhuma UI, rota, action, edição, exclusão, seed, personalização visual ou persistência de transações foi antecipada.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — SR-008
 - `AuthUser` implementado sem dependência de framework.
 - `AuthGateway` criado como contrato do domínio.

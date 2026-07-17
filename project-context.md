@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-010 concluído; contratos Jest e pgTAP criados e etapa RED validada
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-010 concluído; implementação mínima, migration e RLS de categorias validadas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -62,6 +62,7 @@
 - Data da validação final e preparação de release da UI-002: 2026-07-16
 - Data do discovery e arquitetura da SR-010: 2026-07-16
 - Data da estratégia de testes da SR-010: 2026-07-16
+- Data da implementação mínima da SR-010: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -3648,3 +3649,54 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar explicitamente `dia 3` da SR-010
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Implementação criada:
+- `src/features/categories/domain/entities/category.entity.ts`
+- `src/features/categories/domain/interfaces/category.repository.ts`
+- `src/features/categories/application/use-cases/create-category.use-case.ts`
+- `src/features/categories/application/use-cases/list-categories.use-case.ts`
+- `src/features/categories/infrastructure/supabase/category.mapper.ts`
+- `src/features/categories/infrastructure/repositories/supabase-category.repository.ts`
+- `supabase/migrations/20260717022313_create_categories.sql`
+
+Escopo entregue:
+- categoria tipada como `income | expense`, com ator e nome normalizados e limite de 80 caracteres
+- criação e listagem exclusivamente pelo contrato `CategoryRepository`
+- mapper restrito aos campos aprovados e repository com erros sanitizados
+- listagem filtrada por `user_id` e ordenada por `kind`, `name` e `id`
+- tabela `public.categories` com seis colunas, FK para Auth, constraints, unicidade case-insensitive e chave composta futura
+- grants mínimos de `SELECT` e `INSERT` somente para `authenticated`
+- RLS habilitada/forçada com policies separadas de ownership e bloqueio de Auth anônimo
+- índices compostos para RLS, unicidade e ordenação determinística
+
+Validação Supabase:
+- documentação e changelog atuais revisados antes da implementação; nenhuma breaking change aplicável ao banco hospedado foi identificada
+- migration aplicada via MCP no projeto `fin_control` e versão local alinhada ao registro remoto `20260717022313`
+- pgTAP remoto: 33/33 schema, 12/12 constraints, 17/17 RLS e 3/3 performance
+- todos os testes SQL usaram transação e rollback; `categories` permaneceu vazia após as fixtures
+- Performance Advisor sem alertas
+- Security Advisor manteve apenas `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001` e não alterado fora do escopo
+
+Resultado dos gates:
+- testes direcionados: 5 suítes e 22 testes passaram
+- `npm run test:ci`: 49 suítes e 234 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com Proxy e rotas existentes
+
+Arquitetura e limites preservados:
+- domain e application não dependem de React, Next.js ou Supabase
+- integração concreta permanece isolada em infrastructure
+- nenhuma UI, rota, action ou acesso direto da apresentação ao Supabase
+- nenhuma edição, exclusão, arquivamento, cor, ícone, seed, categoria global ou persistência de transações
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 4` da SR-010
