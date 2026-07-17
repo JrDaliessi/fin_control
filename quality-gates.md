@@ -833,6 +833,23 @@ Evidência do Dia 7:
 - dívida registrada: `TX-PERF-001` para remover leitura mensal duplicada no Dia 5.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## Gate do Dia 5 — SR-011
+
+- baseline da feature: 17 suítes e 84 testes verdes.
+- auditoria: `TX-PERF-001` e casts de IDs confirmados; arquivos maiores permaneceram coesos.
+- RED válido: 3 suítes falharam, 4 testes falharam e 10 passaram.
+- GREEN direcionado: 3 suítes e 14 testes passaram.
+- regressão completa: 61 suítes e 292 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- auditoria npm: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e Proxy preservado.
+- performance: uma única consulta mensal alimenta lista e resumo.
+- integridade: DTOs rejeitam opções sem ID persistido e nenhum `as string` permanece na composition root.
+- Supabase remoto: nenhuma alteração ou fixture executada.
+- escopo: nenhuma feature, mudança visual, dependência, migration, policy ou grant adicionados.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

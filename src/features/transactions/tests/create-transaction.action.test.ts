@@ -123,7 +123,8 @@ function createSupabaseClientStub(
     getClaims,
     transactionEq,
     transactionGte,
-    transactionInsert
+    transactionInsert,
+    transactionSelect
   };
 }
 
@@ -180,13 +181,20 @@ describe("transaction actions", () => {
   });
 
   it("loads only the verified actor and selected month", async () => {
-    const { client, getClaims, transactionEq, transactionGte } =
+    const {
+      client,
+      getClaims,
+      transactionEq,
+      transactionGte,
+      transactionSelect
+    } =
       createSupabaseClientStub();
     createServerClientMock.mockResolvedValue(client as never);
 
     const result = await loadTransactionsPageAction({ monthRef: "2026-07" });
 
     expect(getClaims).toHaveBeenCalledTimes(1);
+    expect(transactionSelect).toHaveBeenCalledTimes(1);
     expect(transactionEq).toHaveBeenCalledWith("user_id", permanentUserId);
     expect(transactionGte).toHaveBeenCalledWith("occurred_on", "2026-07-01");
     expect(result.accounts).toEqual([

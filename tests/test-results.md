@@ -476,3 +476,35 @@ Interpretação:
 - expansão controlada concluída sem regressão e sem expor `userId` na apresentação.
 - criação real no navegador permanece não exercitada pela ausência de categoria na sessão inspecionada, mas está coberta pelos testes de action e infraestrutura.
 - próximo passo válido: `dia 5` da SR-011.
+
+## Dia 5 — SR-011
+
+### Baseline e auditoria
+
+- 17 suítes e 84 testes da feature passaram antes da refatoração.
+- consulta mensal duplicada confirmada na composition root.
+- casts de IDs persistidos confirmados no mapeamento para DTO.
+- arquivos maiores revisados; nenhuma divisão artificial foi necessária.
+
+### RED direcionado
+
+- 3 suítes falharam.
+- 4 testes falharam e 10 passaram.
+- a action realizou duas consultas mensais em vez de uma.
+- cálculo reutilizável e mapeadores persistidos ainda não existiam.
+- type-check falhou somente pelos três exports planejados ausentes.
+
+### GREEN e regressão
+
+- GREEN direcionado: 3 suítes e 14 testes passaram.
+- regressão completa: 61 suítes e 292 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- auditoria passou, 0 vulnerabilidades.
+- build passou com `/transactions` dinâmica e Proxy ativo.
+
+Interpretação:
+- `TX-PERF-001` concluída sem alterar resultados financeiros.
+- lista e resumo agora compartilham uma única leitura mensal.
+- DTOs rejeitam conta ou categoria sem ID persistido.
+- próximo passo válido: `dia 6` da SR-011.

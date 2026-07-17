@@ -44,6 +44,47 @@ export type TransactionsPageDataDto = {
   summary: MonthlySummary;
 };
 
+type TransactionAccountOptionSource = {
+  readonly id?: string;
+  readonly name: string;
+};
+
+type TransactionCategoryOptionSource = TransactionAccountOptionSource & {
+  readonly kind: Transaction["type"];
+};
+
+function requirePersistedId(
+  id: string | undefined,
+  resource: "account" | "category"
+): string {
+  const normalizedId = id?.trim();
+
+  if (!normalizedId) {
+    throw new Error(`persisted ${resource} id is required`);
+  }
+
+  return normalizedId;
+}
+
+export function toTransactionAccountOptionDto(
+  account: TransactionAccountOptionSource
+): TransactionAccountOptionDto {
+  return {
+    id: requirePersistedId(account.id, "account"),
+    name: account.name
+  };
+}
+
+export function toTransactionCategoryOptionDto(
+  category: TransactionCategoryOptionSource
+): TransactionCategoryOptionDto {
+  return {
+    id: requirePersistedId(category.id, "category"),
+    name: category.name,
+    kind: category.kind
+  };
+}
+
 export function toTransactionDto(transaction: Transaction): TransactionDto {
   if (!transaction.id || !transaction.createdAt || !transaction.updatedAt) {
     throw new Error("persisted transaction metadata is required");

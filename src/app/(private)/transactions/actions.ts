@@ -5,13 +5,15 @@ import { SupabaseAccountRepository } from "@/features/accounts/infrastructure/re
 import { ListCategoriesUseCase } from "@/features/categories/application/use-cases/list-categories.use-case";
 import { SupabaseCategoryRepository } from "@/features/categories/infrastructure/repositories/supabase-category.repository";
 import {
+  toTransactionAccountOptionDto,
+  toTransactionCategoryOptionDto,
   toTransactionDto,
   type CreateTransactionRequest,
   type TransactionDto,
   type TransactionsPageDataDto
 } from "@/features/transactions/application/dtos/transaction.dto";
 import { CreateTransactionUseCase } from "@/features/transactions/application/use-cases/create-transaction.use-case";
-import { ListMonthlySummaryUseCase } from "@/features/transactions/application/use-cases/list-monthly-summary.use-case";
+import { calculateMonthlySummary } from "@/features/transactions/application/use-cases/list-monthly-summary.use-case";
 import { ListTransactionsByMonthUseCase } from "@/features/transactions/application/use-cases/list-transactions-by-month.use-case";
 import { SupabaseTransactionRepository } from "@/features/transactions/infrastructure/repositories/supabase-transaction.repository";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -57,28 +59,21 @@ export async function loadTransactionsPageAction(input: {
   const listTransactions = new ListTransactionsByMonthUseCase({
     transactionRepository
   });
-  const listMonthlySummary = new ListMonthlySummaryUseCase({
-    transactionRepository
-  });
 
-  const [accounts, categories, transactions, summary] = await Promise.all([
+  const [accounts, categories, transactions] = await Promise.all([
     listAccounts.execute({ userId }),
     listCategories.execute({ userId }),
-    listTransactions.execute({ userId, monthRef: input.monthRef }),
-    listMonthlySummary.execute({ userId, monthRef: input.monthRef })
+    listTransactions.execute({ userId, monthRef: input.monthRef })
   ]);
+  const summary = calculateMonthlySummary({
+    monthRef: input.monthRef,
+    transactions
+  });
 
   return {
     monthRef: summary.monthRef,
-    accounts: accounts.map((account) => ({
-      id: account.id as string,
-      name: account.name
-    })),
-    categories: categories.map((category) => ({
-      id: category.id as string,
-      name: category.name,
-      kind: category.kind
-    })),
+    accounts: accounts.map(toTransactionAccountOptionDto),
+    categories: categories.map(toTransactionCategoryOptionDto),
     transactions: transactions.map(toTransactionDto),
     summary
   };

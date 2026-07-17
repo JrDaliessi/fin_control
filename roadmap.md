@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 4 da SR-011 concluído em `IMPLEMENTATION_IN_PROGRESS`; persistência tenant-safe, composição autenticada e estados mensais estão implementados com pipeline verde.
+Estado atual: Dia 5 da SR-011 concluído em `IMPLEMENTATION_IN_PROGRESS`; persistência tenant-safe, composição autenticada e hardening estrutural estão implementados com pipeline verde.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -174,7 +174,9 @@ Evidência do Dia 3 da SR-011: migrations `20260717070131_create_transactions` e
 
 Evidência do Dia 4 da SR-011: DTO sem ownership, Server Actions com claims revalidadas, criação e leitura mensal persistentes, estados loading/error/empty/configuração ausente, 61 suítes/289 testes Jest e lint/type-check/audit/build verdes. A rota autenticada foi inspecionada sem erros de console e sem persistir fixtures.
 
-Próximo passo: executar explicitamente `dia 5` da SR-011 para hardening estrutural, incluindo `TX-PERF-001`. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Evidência do Dia 5 da SR-011: `TX-PERF-001` encerrada com uma única leitura mensal, resumo puro reutilizável e mapeadores de IDs persistidos; 61 suítes/292 testes Jest e lint/type-check/audit/build verdes, sem alteração remota.
+
+Próximo passo: executar explicitamente `dia 6` da SR-011 para revisar UX, acessibilidade, responsividade e PWA sem ampliar o domínio. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

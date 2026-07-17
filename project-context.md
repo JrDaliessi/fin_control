@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SR-011 concluído; composição autenticada e estados persistentes implementados
+- Fase atual: Dia 5 da SR-011 concluído; composição mensal otimizada e integridade dos DTOs fortalecida
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -72,6 +72,7 @@
 - Data da estratégia de testes da SR-011: 2026-07-17
 - Data da implementação mínima da SR-011: 2026-07-17
 - Data da expansão controlada da SR-011: 2026-07-17
+- Data da refatoração e hardening da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4127,3 +4128,47 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - Dia 4 concluído sem avanço automático
 - próximo passo recomendado: executar explicitamente `dia 5` da SR-011
+
+## Dia 5 — Refatoração e Hardening Interno da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Auditoria estrutural:
+- baseline da feature: 17 suítes e 84 testes verdes
+- `TransactionForm.tsx` foi o maior arquivo produtivo com 256 linhas, mas permaneceu coeso e não justificou divisão artificial
+- provider e fluxo de sessão local ainda possuem consumidores reais no dashboard; remoção foi rejeitada por quebrar outra feature
+- `TX-PERF-001` foi confirmado: a composition root consultava o mesmo mês separadamente para lista e resumo
+- casts `as string` mascaravam a possibilidade estrutural de conta ou categoria sem ID persistido
+
+TDD e refatoração:
+- RED direcionado: 3 suítes falharam, 4 testes falharam e 10 passaram
+- a action comprovou duas chamadas de consulta mensal
+- cálculo reutilizável e mapeadores persistidos falharam por ainda não existirem
+- type-check vermelho ficou limitado a três exports planejados ausentes
+- `calculateMonthlySummary` passou a calcular o resumo a partir de transações já carregadas
+- `ListMonthlySummaryUseCase.execute` preservou seu contrato e delega à mesma regra pura
+- a action passou a fazer uma única leitura mensal e derivar lista e resumo do mesmo conjunto
+- mapeadores de conta e categoria normalizam o ID e falham explicitamente quando a entidade não está persistida
+- nenhuma divisão de arquivo, abstraction layer genérica ou remoção de código com consumidor real foi executada
+
+Resultado dos gates:
+- GREEN direcionado: 3 suítes e 14 testes passaram
+- `npm run test:ci`: 61 suítes e 292 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+- `git diff --check`: passou
+
+Supabase e limites:
+- changelog oficial atual revisado; nenhuma breaking change aplicável ao hardening local foi identificada
+- `getClaims()`, repository, mapper, migrations, grants, RLS e schema permaneceram inalterados
+- nenhuma query remota, migration, policy, configuração ou fixture foi executada
+- nenhuma nova feature, dependência, mudança visual, commit, push, PR ou deploy
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` somente durante a execução
+- retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
+- Dia 5 concluído sem avanço automático
+- próximo passo recomendado: executar explicitamente `dia 6` da SR-011

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "@jest/globals";
 import { Transaction } from "../domain/entities/transaction.entity";
-import { toTransactionDto } from "../application/dtos/transaction.dto";
+import {
+  toTransactionAccountOptionDto,
+  toTransactionCategoryOptionDto,
+  toTransactionDto
+} from "../application/dtos/transaction.dto";
 import { persistedTransactionRow, validTransactionInput } from "./fixtures/transaction.fixtures";
 
 describe("transaction DTO", () => {
@@ -26,5 +30,27 @@ describe("transaction DTO", () => {
       updatedAt: persistedTransactionRow.updated_at
     });
     expect(toTransactionDto(transaction)).not.toHaveProperty("userId");
+  });
+
+  it("maps persisted account and category options without type assertions", () => {
+    expect(
+      toTransactionAccountOptionDto({ id: " account-1 ", name: "Conta" })
+    ).toEqual({ id: "account-1", name: "Conta" });
+    expect(
+      toTransactionCategoryOptionDto({
+        id: " category-1 ",
+        name: "Mercado",
+        kind: "expense"
+      })
+    ).toEqual({ id: "category-1", name: "Mercado", kind: "expense" });
+  });
+
+  it("rejects non-persisted account and category options", () => {
+    expect(() =>
+      toTransactionAccountOptionDto({ name: "Conta" })
+    ).toThrow("persisted account");
+    expect(() =>
+      toTransactionCategoryOptionDto({ name: "Mercado", kind: "expense" })
+    ).toThrow("persisted category");
   });
 });

@@ -13,7 +13,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Critica
 - Dependencias: SR-008 a SR-010 concluídas.
 - Risco: Alto, por manipular dados financeiros e vínculos tenant-safe.
-- Fase atual: Dia 4 concluído; composição autenticada, criação server-side, consulta mensal e estados persistentes implementados; hardening do Dia 5 pendente.
+- Fase atual: Dia 5 concluído; composição mensal otimizada, DTOs endurecidos e pipeline verde; revisão de UX/PWA do Dia 6 pendente.
 - Criterio de pronto: repositório Supabase, criação e consulta mensal, FKs compostas, grants mínimos, RLS, testes de isolamento e pipeline verde.
 - Status: IN_PROGRESS
 
@@ -408,7 +408,8 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Severidade: MÉDIA
 - Fase recomendada: Dia 5 da SR-011.
 - Critério de pronto: calcular lista e resumo com uma única leitura mensal, preservar os contratos de application e manter todos os gates verdes.
-- Status: READY
+- Resultado: a composition root passou a consultar transações uma vez e `calculateMonthlySummary` deriva o resumo do conjunto já carregado; 61 suítes e 292 testes permaneceram verdes.
+- Status: DONE
 
 ### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
 - Tipo: Security Item

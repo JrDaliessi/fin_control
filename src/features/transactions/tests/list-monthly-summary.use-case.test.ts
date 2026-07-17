@@ -1,5 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { ListMonthlySummaryUseCase } from "../application/use-cases/list-monthly-summary.use-case";
+import {
+  calculateMonthlySummary,
+  ListMonthlySummaryUseCase
+} from "../application/use-cases/list-monthly-summary.use-case";
 import {
   Transaction,
   type CreateTransactionInput
@@ -38,6 +41,40 @@ class TransactionRepositoryStub implements TransactionRepository {
 }
 
 describe("ListMonthlySummaryUseCase", () => {
+  it("calculates a summary from transactions already loaded by the composition root", () => {
+    const output = calculateMonthlySummary({
+      monthRef: "2026-07",
+      transactions: [
+        makeTransaction({
+          description: "Salario",
+          amountInCents: 500000,
+          type: "income",
+          occurredAt: new Date("2026-07-05T12:00:00.000Z")
+        }),
+        makeTransaction({
+          description: "Mercado",
+          amountInCents: 12550,
+          type: "expense",
+          occurredAt: new Date("2026-07-08T12:00:00.000Z")
+        }),
+        makeTransaction({
+          description: "Conta futura",
+          amountInCents: 9000,
+          type: "expense",
+          occurredAt: new Date("2026-08-01T12:00:00.000Z")
+        })
+      ]
+    });
+
+    expect(output).toEqual({
+      monthRef: "2026-07",
+      incomeTotalInCents: 500000,
+      expenseTotalInCents: 12550,
+      netBalanceInCents: 487450,
+      transactionCount: 2
+    });
+  });
+
   it("calculates income, expenses, net balance and count for the selected month", async () => {
     const transactionRepository = new TransactionRepositoryStub();
     transactionRepository.findByMonth.mockResolvedValueOnce([
