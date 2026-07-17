@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 7 da SR-009 concluído em `READY_FOR_RELEASE`; entrega incremental de código pronta, sem deploy executado.
+Estado atual: Dia 1 da SR-010 concluído em `ARCHITECTURE_READY`; domínio, contratos, schema, grants, RLS e threat model definidos sem migration ou implementação funcional.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -164,7 +164,9 @@ Recorte da SR-008: login por e-mail/senha, logout, identidade validada no servid
 
 Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `20260714061527_optimize_financial_accounts_rls_auth_initplan`, 70 testes pgTAP verdes, Performance Advisor limpo, 36 suítes/170 testes Jest, audit sem vulnerabilidades e build verde; no Dia 7, os testes SQL transacionais preservaram as duas contas reais existentes, grants/RLS foram confirmados e o threat model e a baseline de observabilidade foram registrados.
 
-Próximo passo: selecionar explicitamente a próxima small release. A SR-010 permanece em `DISCOVERY`; edição, exclusão, categorias, transações e idempotência não foram antecipadas. Deploy público da SR-009 permanece condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Recorte da SR-010: criar e listar categorias próprias com nome normalizado e `kind` `income | expense`; rota `/categories` como subfluxo de transações, grants mínimos `SELECT/INSERT`, RLS por proprietário e futura integridade composta com transações. Edição, exclusão, personalização visual, seeds e transações persistidas permanecem fora.
+
+Próximo passo: executar explicitamente o Dia 2 da SR-010 para criar a matriz e os testes essenciais antes de qualquer implementação ou migration. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
@@ -202,7 +204,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: selecionar explicitamente a próxima small release; `UI-003` permanece na sequência visual recomendada e `SR-010` continua em `DISCOVERY` como próxima fundação de dados.
+Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada, mas aguarda a fundação de dados; `SR-010` está em `IN_PROGRESS` e deve seguir para o Dia 2.
 
 Integrações posteriores:
 

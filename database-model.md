@@ -40,14 +40,22 @@ Decisões da SR-009:
 - nenhuma trigger de `updated_at` enquanto `UPDATE` estiver fora do escopo
 
 ### categories
-- `id`
-- `user_id`
-- `name`
-- `kind`
-- `color`
-- `icon`
-- `created_at`
-- `updated_at`
+- `id uuid primary key default gen_random_uuid()`
+- `user_id uuid not null references auth.users(id) on delete cascade`
+- `name text not null`, normalizado e entre 1 e 80 caracteres
+- `kind text not null`, limitado a `income` ou `expense`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+
+Decisões da SR-010:
+- o recorte permite somente criar e listar categorias próprias
+- nome é único por usuário e `kind` em comparação case-insensitive
+- nomes iguais podem existir para o mesmo usuário quando pertencem a kinds diferentes
+- `color`, `icon`, categoria global, seed automático, edição, exclusão e arquivamento ficam fora
+- listagem é determinística por `kind`, nome normalizado e ID
+- uma restrição única `(user_id, id)` prepara a futura FK composta de transações e impede vínculo cross-tenant no banco
+- exclusão do usuário Auth remove suas categorias por cascade; a futura FK de transações deverá usar `RESTRICT`
+- nenhuma trigger de `updated_at` enquanto `UPDATE` estiver fora do escopo
 
 ### transactions
 - `id`
@@ -165,6 +173,16 @@ Para `financial_accounts` na SR-009:
 - bloquear explicitamente JWT com `is_anonymous = true`
 - não criar grants ou policies de `UPDATE` e `DELETE`
 - tratar tabela, constraints, índice, grants e RLS na mesma migration
+
+Para `categories` na SR-010:
+- revogar privilégios de `public`, `anon`, `authenticated` e `service_role` antes dos grants explícitos
+- conceder somente `SELECT` e `INSERT` a `authenticated`
+- habilitar e forçar RLS
+- criar policy de `SELECT` por proprietário
+- criar policy de `INSERT` com `WITH CHECK` por proprietário
+- bloquear JWT com `is_anonymous = true`
+- não criar grants ou policies de `UPDATE` e `DELETE`
+- tratar tabela, constraints, índices, grants e RLS na mesma migration
 
 ## Fora do Dia 1
 - migrations reais

@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UI-002 concluído; pipeline, segurança, observabilidade e preparação de release validados
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SR-010 concluído; categorias persistentes, contratos, schema, grants, RLS e threat model definidos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -60,6 +60,7 @@
 - Data da refatoração e hardening da UI-002: 2026-07-16
 - Data da revisão de UX, acessibilidade e PWA da UI-002: 2026-07-16
 - Data da validação final e preparação de release da UI-002: 2026-07-16
+- Data do discovery e arquitetura da SR-010: 2026-07-16
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1838,6 +1839,141 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar `dia 3`
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Pré-requisitos confirmados:
+- SR-008 concluiu autenticação e sessão protegida
+- SR-009 concluiu persistência e RLS de contas
+- UI-002 está integrada em `origin/develop`
+- branch `feature/SR-010-categories-rls` criada a partir de `origin/develop`
+- alterações locais preexistentes em `.gitignore` e `rewrite-msgs.sh` foram preservadas e permanecem fora do escopo
+- nenhum bloqueio duro impede o discovery
+
+Objetivo refinado:
+- substituir categorias demonstrativas por categorias reais do usuário autenticado
+- permitir criação e listagem seguras antes de persistir transações
+- preparar integridade tenant-safe para a futura SR-011
+- manter o recorte pequeno, sem antecipar personalização, manutenção completa ou analytics
+
+Escopo aprovado:
+- entidade `Category` com criação e restauração
+- `CategoryKind` limitado a `income | expense`
+- criar categoria própria
+- listar categorias próprias em ordem determinística
+- persistir `id`, `user_id`, `name`, `kind`, `created_at` e `updated_at`
+- rota privada `/categories` como subfluxo de transações
+- substituir opções demonstrativas do formulário local por categorias persistidas quando a apresentação for autorizada
+
+Fora do escopo:
+- editar, excluir, arquivar e ordenar manualmente categorias
+- cor, ícone, categorias globais e seed automático
+- categoria híbrida `both`
+- sugestões ou classificação por IA
+- persistência de transações, orçamento e analytics por categoria
+- novo item na navegação principal da UI-002
+
+Regras de domínio:
+- `userId` é obrigatório, mas a apresentação não o fornece como autoridade
+- nome é obrigatório, normalizado com espaços internos simples e limitado a 80 caracteres
+- nomes duplicados por usuário e `kind` são rejeitados sem diferenciar maiúsculas e minúsculas
+- o mesmo nome pode existir uma vez em `income` e uma vez em `expense`
+- `kind` deve corresponder à polaridade futura da transação
+- categoria sugerida futuramente por IA continua revisável pelo usuário
+
+Contratos entre camadas:
+- `Category.create()` valida nova categoria
+- `Category.restore()` reidrata ID e timestamps reaplicando invariantes
+- `CategoryRepository.create()` persiste uma categoria válida
+- `CategoryRepository.listByUser()` lista categorias próprias
+- `CreateCategoryUseCase` cria e persiste somente após validação
+- `ListCategoriesUseCase` valida o ator e consulta o contrato
+- `SupabaseCategoryRepository` e mapper ficam em `categories/infrastructure`
+- Server Component e Server Action revalidam claims e injetam o `userId`
+- presentation recebe DTOs e callbacks serializáveis, sem importar Supabase
+
+Schema planejado:
+- tabela `public.categories`
+- `id uuid primary key default gen_random_uuid()`
+- `user_id uuid not null references auth.users(id) on delete cascade`
+- `name text not null` com normalização e limite de 80 caracteres
+- `kind text not null check (kind in ('income', 'expense'))`
+- timestamps `created_at` e `updated_at` com `now()`
+- unicidade case-insensitive por `(user_id, kind, lower(name))`
+- unicidade adicional `(user_id, id)` para futura FK composta em `transactions`
+- índice para listagem por usuário, kind, nome normalizado e ID
+- nenhuma trigger de atualização enquanto `UPDATE` estiver fora do escopo
+
+Grants e RLS planejados:
+- revogar privilégios de `public`, `anon`, `authenticated` e `service_role`
+- conceder somente `SELECT` e `INSERT` a `authenticated`
+- habilitar e forçar RLS
+- policy separada de `SELECT` com ownership e bloqueio de usuário anônimo
+- policy separada de `INSERT` com `WITH CHECK`, ownership e bloqueio de usuário anônimo
+- não criar grants ou policies de `UPDATE` e `DELETE`
+- usar `(select auth.uid())` e `(select auth.jwt())` para initPlan por statement
+
+Auditoria Supabase via MCP:
+- projeto `fin_control` ativo e saudável em Postgres 17
+- banco contém somente `public.financial_accounts`, com duas linhas, duas migrations e nenhuma tabela de categorias
+- `financial_accounts` mantém RLS habilitada e forçada
+- `authenticated` possui somente `SELECT` e `INSERT` na tabela existente
+- policies atuais restringem leitura e criação por proprietário e bloqueiam `is_anonymous = true`
+- Performance Advisor retornou sem alertas
+- Security Advisor manteve somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`
+- documentação oficial atual confirma que grants controlam acesso ao objeto e RLS controla as linhas; ambos devem nascer juntos
+- nenhum SQL mutável, migration ou dado foi criado ou alterado
+
+Threat model:
+- BOLA/IDOR: claims revalidadas, filtro explícito e RLS por proprietário
+- owner forjado: `userId` não vem da UI e `WITH CHECK` rejeita divergência
+- usuário anônimo: policy verifica `is_anonymous = false`
+- mass assignment: mapper de insert aceitará somente `user_id`, `name` e `kind`
+- duplicidade: índice único case-insensitive por usuário e kind
+- vínculo futuro cross-tenant: FK de transações deverá usar `(user_id, category_id)` para `(user_id, id)`
+- vazamento de detalhes: erros do Supabase serão traduzidos para mensagens estáveis
+- chave privilegiada: `service_role` permanece ausente do cliente e revogado da tabela
+
+Matriz preliminar para o Dia 2:
+- domínio: criação/restauração, normalização, limite de nome e kinds inválidos
+- aplicação: criação feliz, entrada inválida, chamada única e propagação controlada de erro
+- aplicação: listagem feliz, usuário vazio e ordem recebida do contrato
+- mapper: `snake_case`, timestamps e payload mínimo de insert
+- repository: criação, listagem filtrada/ordenada e erro sanitizado
+- banco/pgTAP: schema, constraints, grants, RLS forçada, owner, não owner, anon, owner forjado e duplicidade
+- apresentação futura: formulário/lista, loading, empty, success, erro e integração sem `userId` livre
+
+Riscos e limites:
+- a unicidade case-insensitive não trata nomes com e sem acento como equivalentes; adicionar `unaccent` sem caso real foi rejeitado
+- sem seed automático, o usuário precisará criar ao menos uma categoria antes de registrar transações futuras
+- a SR-011 continua bloqueada até a SR-010 concluir seus testes e quality gates
+- `SEC-AUTH-001` continua obrigatório antes de produção pública, mas não bloqueia o TDD local desta release
+
+Artefatos atualizados:
+- `project-context.md`
+- `architecture.md`
+- `database-model.md`
+- `domain-model.md`
+- `module-contracts.md`
+- `roadmap.md`
+- `backlog.md`
+- `quality-gates.md`
+- `adr/0007-categories-persistence-rls.md`
+- `adr/README.md`
+
+Limites preservados:
+- nenhum código funcional ou teste criado
+- nenhuma migration criada ou aplicada
+- nenhum dado, grant, policy ou configuração Supabase alterado
+- nenhuma dependência instalada
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-010 movida para `IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 2` da SR-010
 
 ## Dia 1 — Contexto, Discovery e Arquitetura da UI-002
 

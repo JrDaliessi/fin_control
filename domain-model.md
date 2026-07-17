@@ -96,8 +96,34 @@ Entidades:
 - `Category`
 
 Regras:
-- categoria pode ser de receita, despesa ou ambas conforme decisão futura
+- toda categoria pertence a um usuário autenticado
+- `kind` aceita somente `income` ou `expense`; categoria híbrida fica fora para evitar ambiguidade na seleção e nos relatórios
+- nome é obrigatório, normalizado com espaços internos simples e limitado a 80 caracteres
+- nomes duplicados para o mesmo usuário e `kind` são rejeitados sem diferenciar maiúsculas e minúsculas
+- o mesmo nome pode existir em `income` e `expense`
 - categoria sugerida por IA deve ser revisável pelo usuário
+
+### SR-010 — Persistência e RLS de Categorias
+
+Escopo aprovado:
+- criar categoria do usuário autenticado
+- listar somente categorias pertencentes ao usuário autenticado
+- reidratar `Category` com `id`, `createdAt` e `updatedAt` atribuídos pela infraestrutura
+- ordenar categorias por `kind`, nome normalizado e ID
+- disponibilizar `/categories` como subfluxo privado de transações sem ampliar a navegação principal
+
+Regras adicionais:
+- o `userId` enviado pelo cliente não é autoridade; a composition root injeta a identidade verificada e a RLS aplica ownership no banco
+- usuários anônimos do Supabase Auth não podem acessar categorias
+- a persistência deve impedir duplicidade de nome por usuário e `kind`
+- a futura SR-011 deve validar que transação e categoria compartilham o mesmo `user_id` por FK composta, além da RLS
+- erro bruto do Supabase não pode chegar à apresentação
+
+Fora da SR-010:
+- editar, excluir, arquivar ou reordenar manualmente categorias
+- cor, ícone, categoria global, seed automático e sugestões por IA
+- persistência de transações, filtros analíticos e orçamento por categoria
+- integração completa da categoria com transações persistidas, reservada à SR-011
 
 ### Transações
 Núcleo inicial do MVP.

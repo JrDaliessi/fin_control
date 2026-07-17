@@ -28,6 +28,20 @@
 - Nenhum código funcional ou teste criado no Dia 1.
 - Estado de saída validado como `ARCHITECTURE_READY`.
 
+### Resultado observado — SR-010
+- Dependências SR-008 e SR-009 confirmadas como concluídas; branch criada a partir de `origin/develop` com alterações locais alheias preservadas.
+- Projeto Supabase `fin_control` inspecionado via MCP em modo somente leitura: Postgres 17, apenas `public.financial_accounts` e duas migrations aplicadas.
+- Grants atuais confirmados como `SELECT/INSERT` somente para `authenticated`; RLS habilitada/forçada e policies de ownership de contas permanecem coerentes.
+- Performance Advisor retornou sem alertas; Security Advisor manteve somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`.
+- Escopo limitado a criar e listar categorias próprias com nome normalizado e `kind` `income | expense`.
+- Schema `public.categories`, constraints, índices, FK para Auth, chave composta futura, grants mínimos e policies separadas de `SELECT`/`INSERT` foram definidos.
+- Rota `/categories` planejada como subfluxo privado de transações, sem ampliar a navegação principal da UI-002.
+- Threat model cobre BOLA/IDOR, owner forjado, usuário anônimo, mass assignment, duplicidade e vínculo futuro cross-tenant.
+- Supabase MCP aprovado para migration, pgTAP transacional, inspeção e advisors nas fases correspondentes; nenhum SQL mutável foi executado no Dia 1.
+- ADR `0007-categories-persistence-rls.md` criado.
+- Implementação funcional, testes e migration permanecem bloqueados até o Dia 2.
+- Estado de saída validado como `ARCHITECTURE_READY`.
+
 ### Resultado observado — SR-008
 - Objetivo refinado para criar identidade verificável antes da persistência financeira.
 - Escopo limitado a login por e-mail/senha, logout, sessão SSR, Proxy e proteção de rotas.

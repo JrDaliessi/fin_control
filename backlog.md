@@ -6,7 +6,19 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SR-010 — Persistência e RLS de categorias
+- Tipo: Security Item / Small Release
+- Descrição objetiva: substituir categorias demonstrativas por categorias persistentes, tipadas e isoladas por usuário.
+- Objetivo de negócio: permitir classificação financeira real e preparar transações persistidas.
+- Valor esperado: categorias confiáveis para cadastro de transações, orçamento e análises futuras.
+- Prioridade: Alta
+- Dependências: SR-008 e SR-009 concluídas.
+- Risco: Alto por ownership, Data API, duplicidade e futura integridade entre transação e categoria.
+- Fase atual: Dia 1 concluído; arquitetura pronta para TDD.
+- Critério de pronto: domínio, casos de uso, migration, repository, grants mínimos, RLS forçada, testes Jest/pgTAP de isolamento, apresentação essencial e pipeline verde.
+- Escopo: criar e listar categorias próprias com `name` e `kind` (`income | expense`).
+- Fora do escopo: edição, exclusão, arquivamento, cor, ícone, seeds, categorias globais, IA e persistência de transações.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -189,17 +201,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SR-010 - Persistencia e RLS de categorias
-- Tipo: Small Release
-- Objetivo de negocio: substituir categorias demonstrativas.
-- Valor esperado: classificacao real por usuario.
-- Prioridade: Alta
-- Dependencias: SR-008 e SR-009.
-- Risco: Alto
-- Fase recomendada: ciclo seguinte.
-- Criterio de pronto: migration, repositorio, RLS e testes de isolamento.
 - Status: DISCOVERY
 
 ### SR-011 - Persistencia e RLS de transacoes
