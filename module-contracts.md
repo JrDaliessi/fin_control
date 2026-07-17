@@ -32,7 +32,7 @@ Contrato previsto:
 
 ```ts
 export interface TransactionRepository {
-  create(input: CreateTransactionRepositoryInput): Promise<Transaction>;
+  create(input: Transaction): Promise<Transaction>;
   findByMonth(input: FindTransactionsByMonthInput): Promise<Transaction[]>;
 }
 ```
@@ -75,13 +75,39 @@ Resolução de competência da sessão:
 - sessão vazia usa uma data de fallback
 - hooks de dashboard e transações reutilizam o mesmo contrato
 
+### Contrato Persistente da SR-011
+
+Domínio:
+- `Transaction.create()` valida novas transações manuais
+- `Transaction.restore()` reidrata ID, data civil e timestamps persistidos reaplicando invariantes
+- `TransactionRepository.findByMonth` deixa de ser opcional porque passa a ter consumidor persistente real
+
+Infrastructure planejada:
+- `SupabaseTransactionRepository` implementa `create` e `findByMonth`
+- mapper converte `snake_case`, `date`, `bigint` seguro e timestamps para o domínio
+- criação envia somente as colunas aprovadas; ID e timestamps são responsabilidade do banco
+- consulta filtra explicitamente por `user_id` e intervalo mensal semiaberto, com ordem determinística
+- erros de FK, RLS ou provider são sanitizados antes de cruzar a fronteira
+
+Composition root planejada:
+- Server Component de `/transactions` revalida claims e carrega contas, categorias e transações do período
+- Server Action revalida claims, injeta `userId` e chama `CreateTransactionUseCase`
+- apresentação recebe DTOs serializáveis e callbacks; não instancia client Supabase
+
+Banco planejado:
+- `SELECT` e `INSERT` são as únicas operações concedidas a `authenticated`
+- RLS habilitada e forçada, com owner e bloqueio de Auth anônimo
+- FKs compostas impedem conta/categoria cross-tenant e categoria incompatível com o tipo
+- `UPDATE` e `DELETE` permanecem sem grants, policies ou casos de uso
+- migration e testes pgTAP só podem nascer após o RED do Dia 2
+
 ### Infrastructure
-Implementações futuras:
+Implementações planejadas para os Dias 2 e 3:
 - `supabase-transaction.repository.ts`
-- `in-memory-transaction.repository.ts` apenas para testes quando fizer sentido
+- `transaction.mapper.ts`
 
 ### Presentation
-Componentes futuros:
+Componentes existentes ou planejados:
 - `TransactionForm.tsx`
 - `TransactionList.tsx`
 - `MonthlySummaryPanel.tsx`

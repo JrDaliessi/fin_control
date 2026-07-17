@@ -58,18 +58,29 @@ Decisões da SR-010:
 - nenhuma trigger de `updated_at` enquanto `UPDATE` estiver fora do escopo
 
 ### transactions
-- `id`
-- `user_id`
-- `account_id`
-- `category_id`
-- `description`
-- `amount_in_cents`
-- `type`
-- `payment_method`
-- `occurred_at`
-- `notes`
-- `created_at`
-- `updated_at`
+- `id uuid primary key default gen_random_uuid()`
+- `user_id uuid not null references auth.users(id) on delete cascade`
+- `account_id uuid not null`
+- `category_id uuid not null`
+- `description text not null`, aparada e entre 1 e 160 caracteres
+- `amount_in_cents bigint not null`, positivo e limitado ao intervalo seguro do JavaScript
+- `type text not null`, limitado a `income` ou `expense`
+- `payment_method text not null default 'manual'`, limitado a `manual`, `pix`, `cash` ou `debit`
+- `occurred_on date not null`, data civil sem horário ou deslocamento de fuso
+- `notes text null`, quando presente aparada e entre 1 e 1000 caracteres
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+
+Decisões da SR-011:
+- o recorte permite somente criar e consultar transações próprias por mês
+- `(user_id, account_id)` referencia `(user_id, id)` de `financial_accounts`
+- `(user_id, category_id, type)` referencia `(user_id, id, kind)` de `categories`, garantindo ownership e compatibilidade entre categoria e tipo
+- as FKs de conta e categoria usam `ON DELETE RESTRICT` para preservar histórico
+- `financial_accounts` recebe unicidade auxiliar `(user_id, id)` e `categories` recebe unicidade auxiliar `(user_id, id, kind)`
+- índice de consulta planejado: `(user_id, occurred_on desc, created_at desc, id desc)`
+- não existe coluna `status`: toda transação manual persistida é efetiva; estados futuros exigem caso de uso próprio
+- não existe saldo atual persistido nem trigger financeira
+- `UPDATE`, `DELETE`, cartão, transferência, recorrência e importação ficam fora
 
 ### credit_cards
 - `id`
@@ -183,6 +194,17 @@ Para `categories` na SR-010:
 - bloquear JWT com `is_anonymous = true`
 - não criar grants ou policies de `UPDATE` e `DELETE`
 - tratar tabela, constraints, índices, grants e RLS na mesma migration
+
+Para `transactions` na SR-011:
+- revogar privilégios de `public`, `anon`, `authenticated` e `service_role` antes dos grants explícitos
+- conceder somente `SELECT` e `INSERT` a `authenticated`
+- habilitar e forçar RLS
+- criar policy de `SELECT` por proprietário
+- criar policy de `INSERT` com `WITH CHECK` por proprietário
+- bloquear JWT com `is_anonymous = true`
+- exigir vínculos compostos tenant-safe com conta e categoria
+- não criar grants ou policies de `UPDATE` e `DELETE`
+- tratar constraints auxiliares, tabela, índices, grants e RLS na mesma migration forward-only
 
 ## Fora do Dia 1
 - migrations reais

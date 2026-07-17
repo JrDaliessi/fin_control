@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-010 concluído; qualidade, segurança, observabilidade e entrega incremental validadas
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SR-011 concluído; discovery, arquitetura, integridade tenant-safe e contratos aprovados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -67,6 +67,8 @@
 - Data da refatoração e hardening da SR-010: 2026-07-17
 - Data da revisão de UX, acessibilidade e PWA da SR-010: 2026-07-17
 - Data da validação final e preparação de release da SR-010: 2026-07-17
+- Data de seleção da SR-011 como próximo ciclo: 2026-07-17
+- Data do discovery e arquitetura da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1272,7 +1274,7 @@ Estado de saída:
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
 - Dia 7 da UI-001 concluído; pipeline final passou com 41 suítes e 194 testes.
 - Dia 1 da UI-002 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0006.
-- Próximo passo operacional: executar explicitamente o Dia 2 da UI-002; a SR-010 permanece em `DISCOVERY` e não foi iniciada.
+- Próximo passo operacional: executar explicitamente `dia 2` da SR-011 para criar os testes essenciais antes da implementação.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -3916,3 +3918,58 @@ Estado de saída:
 - nenhum bloqueio crítico para entrega incremental do código
 - deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
 - próxima small release não iniciada; requer seleção e comando explícitos
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Objetivo validado:
+- tornar o registro manual persistente e consultável por mês
+- preservar isolamento por usuário em toda fronteira
+- garantir no banco que conta, categoria e transação pertencem ao mesmo usuário
+- impedir categoria incompatível com o tipo da transação
+
+Escopo aprovado:
+- criação de transação manual `income | expense`
+- consulta de transações próprias por mês
+- conta e categoria persistidas obrigatórias
+- `paymentMethod` limitado a `manual | pix | cash | debit`
+- data civil persistida como `occurred_on date`
+- grants mínimos `SELECT/INSERT` e RLS por proprietário
+
+Decisões arquiteturais:
+- `TransactionRepository.findByMonth` passará a ser obrigatório
+- `SupabaseTransactionRepository` e mapper ficarão em `transactions/infrastructure`
+- Server Component e Server Action revalidarão claims e injetarão o ator
+- `(user_id, account_id)` referenciará a conta pelo mesmo owner
+- `(user_id, category_id, type)` referenciará categoria e `kind` pelo mesmo owner
+- contas e categorias receberão apenas as unicidades auxiliares necessárias
+- exclusão de conta/categoria referenciada será restrita
+- não haverá coluna de status; transação manual criada é efetiva
+- nenhuma trigger ou saldo atual persistido será criado
+- ADR registrado em `adr/0008-transactions-persistence-rls.md`
+
+Fora do escopo:
+- `UPDATE`, `DELETE`, cancelamento ou conciliação
+- transferência, cartão, parcelas, recorrência e importação
+- dashboard persistente, analytics avançados e IA
+- migration, teste ou implementação funcional no Dia 1
+
+Validação somente leitura:
+- projeto Supabase `fin_control` em estado saudável e Postgres 17
+- tabelas existentes: `financial_accounts` e `categories`, ambas com RLS
+- migrations remotas alinhadas às três migrations locais existentes
+- Performance Advisor sem alertas
+- Security Advisor com apenas `SEC-AUTH-001`, já rastreada
+- documentação oficial atual de RLS, grants e migrations consultada pela skill Supabase
+- breaking change de exposição automática de novas tabelas identificado; grants explícitos já fazem parte do desenho e evitam dependência desse default
+
+Riscos e bloqueios:
+- risco alto por tratar dados financeiros; mitigação planejada por TDD, FKs compostas, grants mínimos, RLS e pgTAP transacional
+- nenhum bloqueio duro impede o Dia 2
+- deploy público permanece bloqueado pelas dívidas de hardening já registradas, sem bloquear o ciclo local
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-011 movida para `IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 2`

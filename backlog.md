@@ -6,7 +6,16 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SR-011 - Persistencia e RLS de transacoes
+- Tipo: Security Item / Small Release
+- Objetivo de negocio: tornar o registro manual utilizavel com dados reais.
+- Valor esperado: historico financeiro persistente e isolado por usuário.
+- Prioridade: Critica
+- Dependencias: SR-008 a SR-010 concluídas.
+- Risco: Alto, por manipular dados financeiros e vínculos tenant-safe.
+- Fase atual: Dia 1 concluído; Dia 2 pendente.
+- Criterio de pronto: repositório Supabase, criação e consulta mensal, FKs compostas, grants mínimos, RLS, testes de isolamento e pipeline verde.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -189,17 +198,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SR-011 - Persistencia e RLS de transacoes
-- Tipo: Security Item / Small Release
-- Objetivo de negocio: tornar o registro manual utilizavel com dados reais.
-- Valor esperado: historico financeiro persistente.
-- Prioridade: Critica
-- Dependencias: SR-008 a SR-010.
-- Risco: Alto
-- Fase recomendada: ciclo seguinte.
-- Criterio de pronto: repositorio Supabase, RLS, status definido e testes de isolamento.
 - Status: DISCOVERY
 
 ### SR-012 - Periodos financeiros

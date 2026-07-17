@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 7 da SR-010 concluído em `READY_FOR_RELEASE`; pipeline, segurança, RLS, threat model e baseline de observabilidade estão validados.
+Estado atual: Dia 1 da SR-011 concluído em `ARCHITECTURE_READY`; escopo, domínio, schema tenant-safe, RLS e contratos foram definidos sem implementação funcional.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -168,7 +168,9 @@ Recorte da SR-010: criar e listar categorias próprias com nome normalizado e `k
 
 Evidência da SR-010: migration `20260717022313_create_categories`, 65 testes pgTAP verdes, Performance Advisor limpo, 53 suítes/255 testes Jest, audit sem vulnerabilidades e build verde; no Dia 7, grants/RLS, threat model e baseline de observabilidade foram confirmados sem persistir fixtures.
 
-Próximo passo: selecionar explicitamente a próxima small release. A sequência de fundação recomenda a SR-011 para persistência de transações; deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Recorte da SR-011: criar e consultar por mês transações manuais próprias, com data civil, FKs compostas para conta/categoria, compatibilidade `type/kind`, grants mínimos `SELECT/INSERT` e RLS por proprietário. Edição, exclusão, status, transferência, cartão, recorrência, importação e dashboard persistente permanecem fora.
+
+Próximo passo: executar explicitamente `dia 2` da SR-011 para criar primeiro os testes de domínio, aplicação, mapper/repository, schema, integridade e RLS. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
