@@ -850,6 +850,24 @@ Evidência do Dia 7:
 - escopo: nenhuma feature, mudança visual, dependência, migration, policy ou grant adicionados.
 - estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`.
 
+## Gate do Dia 6 — SR-011
+
+- baseline da feature: 17 suítes e 87 testes verdes.
+- RED válido: 2 testes falharam e 11 passaram no formulário.
+- GREEN direcionado: 1 suíte e 13 testes passaram.
+- regressão completa: 61 suítes e 292 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- auditoria npm: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e Proxy preservado.
+- acessibilidade: envio bloqueia todos os controles; erro local recebe foco; feedback obsoleto é removido na correção; semântica existente preservada.
+- responsividade: desktop, `390 x 844` e `320 x 800` sem overflow; alvos visíveis de pelo menos 44 px.
+- PWA: manifest, `theme-color`, viewport e idioma validados; nenhuma promessa offline ou cache financeiro adicionado.
+- Supabase remoto: nenhuma alteração, consulta administrativa ou fixture executada.
+- escopo: domínio, banco, regras financeiras, dependências e capabilities futuras permaneceram inalterados.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- estado de saída: `QUALITY_VALIDATION`.
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

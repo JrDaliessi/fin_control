@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { Button } from "@/shared/components/ui/Button";
 import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import type {
@@ -27,7 +27,7 @@ const fieldErrorClassName =
   "border-danger focus-visible:border-danger focus-visible:ring-danger/30";
 
 const typeOptionClassName =
-  "grid min-h-11 cursor-pointer place-items-center rounded px-3 py-2 text-sm font-semibold transition peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-focus-ring peer-focus-visible:ring-offset-2";
+  "grid min-h-11 cursor-pointer place-items-center rounded px-3 py-2 text-sm font-semibold transition peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-focus-ring peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
 
 const messageId = "transaction-form-message";
 
@@ -36,6 +36,7 @@ export function TransactionForm({
   categories,
   onCreateTransaction
 }: TransactionFormProps) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [values, setValues] = useState<TransactionFormValues>({
     accountId: accounts[0]?.id ?? "",
     categoryId:
@@ -45,7 +46,7 @@ export function TransactionForm({
     type: "expense",
     occurredAt: ""
   });
-  const { fieldError, isSubmitting, message, status, submit } =
+  const { clearFeedback, fieldError, isSubmitting, message, status, submit } =
     useTransactionForm({ onCreateTransaction });
   const compatibleCategories = categories.filter(
     (category) => category.kind === values.type
@@ -55,20 +56,29 @@ export function TransactionForm({
     event.preventDefault();
     const result = await submit(values);
 
-    if (result.ok) {
-      setValues((currentValues) => ({
-        ...currentValues,
-        description: "",
-        amount: "",
-        occurredAt: ""
-      }));
+    if (!result.ok) {
+      if (result.field) {
+        formRef.current
+          ?.querySelector<HTMLElement>(`[name="${result.field}"]`)
+          ?.focus();
+      }
+
+      return;
     }
+
+    setValues((currentValues) => ({
+      ...currentValues,
+      description: "",
+      amount: "",
+      occurredAt: ""
+    }));
   }
 
   function updateValue<Key extends keyof TransactionFormValues>(
     key: Key,
     value: TransactionFormValues[Key]
   ) {
+    clearFeedback();
     setValues((currentValues) => ({
       ...currentValues,
       [key]: value
@@ -76,6 +86,7 @@ export function TransactionForm({
   }
 
   function updateType(type: TransactionFormValues["type"]) {
+    clearFeedback();
     setValues((currentValues) => ({
       ...currentValues,
       type,
@@ -102,6 +113,7 @@ export function TransactionForm({
       aria-label="Registro manual de transação"
       className="grid gap-4 rounded-md border border-border bg-surface p-4 shadow-sm sm:p-5"
       onSubmit={handleSubmit}
+      ref={formRef}
     >
       <div className="grid gap-1.5">
         <label className="text-sm font-medium text-foreground" htmlFor="transaction-description">
@@ -111,6 +123,7 @@ export function TransactionForm({
           aria-describedby={getDescribedBy("description") || undefined}
           aria-invalid={fieldError === "description"}
           className={getFieldClassName("description")}
+          disabled={isSubmitting}
           id="transaction-description"
           name="description"
           onChange={(event) => updateValue("description", event.target.value)}
@@ -128,6 +141,7 @@ export function TransactionForm({
           aria-describedby={getDescribedBy("amount", "transaction-amount-help")}
           aria-invalid={fieldError === "amount"}
           className={getFieldClassName("amount")}
+          disabled={isSubmitting}
           id="transaction-amount"
           inputMode="decimal"
           name="amount"
@@ -157,6 +171,7 @@ export function TransactionForm({
             <input
               checked={values.type === "expense"}
               className="peer sr-only"
+              disabled={isSubmitting}
               name="type"
               onChange={() => updateType("expense")}
               type="radio"
@@ -168,6 +183,7 @@ export function TransactionForm({
             <input
               checked={values.type === "income"}
               className="peer sr-only"
+              disabled={isSubmitting}
               name="type"
               onChange={() => updateType("income")}
               type="radio"
@@ -186,6 +202,7 @@ export function TransactionForm({
           aria-describedby={getDescribedBy("accountId") || undefined}
           aria-invalid={fieldError === "accountId"}
           className={getFieldClassName("accountId")}
+          disabled={isSubmitting}
           id="transaction-account"
           name="accountId"
           onChange={(event) => updateValue("accountId", event.target.value)}
@@ -208,6 +225,7 @@ export function TransactionForm({
           aria-describedby={getDescribedBy("categoryId") || undefined}
           aria-invalid={fieldError === "categoryId"}
           className={getFieldClassName("categoryId")}
+          disabled={isSubmitting}
           id="transaction-category"
           name="categoryId"
           onChange={(event) => updateValue("categoryId", event.target.value)}
@@ -230,6 +248,7 @@ export function TransactionForm({
           aria-describedby={getDescribedBy("occurredAt") || undefined}
           aria-invalid={fieldError === "occurredAt"}
           className={getFieldClassName("occurredAt")}
+          disabled={isSubmitting}
           id="transaction-date"
           name="occurredAt"
           onChange={(event) => updateValue("occurredAt", event.target.value)}

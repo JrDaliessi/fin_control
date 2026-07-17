@@ -772,6 +772,17 @@ Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada a
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## RED/GREEN do Dia 6 — SR-011
+
+- contratos do formulário passaram a exigir bloqueio de todos os controles durante o envio, foco no primeiro erro local e limpeza do feedback ao corrigir a entrada
+- RED direcionado: 2 testes falharam e 11 passaram
+- GREEN direcionado: 1 suíte e 13 testes passaram
+- regressão completa: 61 suítes e 292 testes passaram
+- browser complementou Jest em desktop, `390 x 844` e `320 x 800`, sem overflow e sem persistir fixtures
+- manifest, idioma, viewport e `theme-color` foram confirmados; nenhuma promessa offline foi adicionada
+- lint, type-check, audit e build permaneceram verdes
+- estado de saída: `QUALITY_VALIDATION`
+
 ## Resultado GREEN do Dia 3 — UI-002
 
 - `PRIVATE_NAVIGATION_ITEMS` implementa somente `/dashboard`, `/transactions` e `/accounts`.

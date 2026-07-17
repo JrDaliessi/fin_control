@@ -13,7 +13,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Critica
 - Dependencias: SR-008 a SR-010 concluídas.
 - Risco: Alto, por manipular dados financeiros e vínculos tenant-safe.
-- Fase atual: Dia 5 concluído; composição mensal otimizada, DTOs endurecidos e pipeline verde; revisão de UX/PWA do Dia 6 pendente.
+- Fase atual: Dia 6 concluído; envio concorrente bloqueado, foco/feedback de validação acessíveis, responsividade e PWA validadas; Dia 7 pendente.
 - Criterio de pronto: repositório Supabase, criação e consulta mensal, FKs compostas, grants mínimos, RLS, testes de isolamento e pipeline verde.
 - Status: IN_PROGRESS
 

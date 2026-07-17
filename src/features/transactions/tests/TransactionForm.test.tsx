@@ -109,7 +109,14 @@ describe("TransactionForm", () => {
     await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
     const submitButton = screen.getByRole("button", { name: "Salvando..." });
-    expect((submitButton as HTMLButtonElement).disabled).toBe(true);
+    expect(submitButton).toBeDisabled();
+    expect(screen.getByLabelText("Descrição")).toBeDisabled();
+    expect(screen.getByLabelText("Valor")).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "Despesa" })).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "Receita" })).toBeDisabled();
+    expect(screen.getByLabelText("Conta")).toBeDisabled();
+    expect(screen.getByLabelText("Categoria")).toBeDisabled();
+    expect(screen.getByLabelText("Data")).toBeDisabled();
     expect(screen.getByRole("form", { name: "Registro manual de transação" })).toHaveAttribute(
       "aria-busy",
       "true"
@@ -152,7 +159,14 @@ describe("TransactionForm", () => {
 
     expect(await screen.findByText("Informe um valor maior que zero.")).not.toBeNull();
     expect(amountInput).toHaveAttribute("aria-invalid", "true");
+    expect(amountInput).toHaveFocus();
     expect(submitCount).toBe(0);
+
+    await user.clear(amountInput);
+    await user.type(amountInput, "125,50");
+
+    expect(screen.queryByText("Informe um valor maior que zero.")).not.toBeInTheDocument();
+    expect(amountInput).toHaveAttribute("aria-invalid", "false");
   });
 
   it("exposes required fields and helper text to assistive technology", () => {

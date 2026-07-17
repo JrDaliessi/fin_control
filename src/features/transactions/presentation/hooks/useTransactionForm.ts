@@ -27,9 +27,9 @@ type UseTransactionFormParams = {
   onCreateTransaction: (input: CreateTransactionRequest) => Promise<unknown>;
 };
 
-type SubmitResult = {
-  ok: boolean;
-};
+type SubmitResult =
+  | { ok: true }
+  | { field?: TransactionFormField; ok: false };
 
 export function useTransactionForm({
   onCreateTransaction
@@ -45,35 +45,35 @@ export function useTransactionForm({
       setStatus("error");
       setFieldError("amount");
       setMessage("Informe um valor maior que zero.");
-      return { ok: false };
+      return { field: "amount", ok: false };
     }
 
     if (!values.description.trim()) {
       setStatus("error");
       setFieldError("description");
       setMessage("Informe uma descrição.");
-      return { ok: false };
+      return { field: "description", ok: false };
     }
 
     if (!values.accountId) {
       setStatus("error");
       setFieldError("accountId");
       setMessage("Selecione uma conta.");
-      return { ok: false };
+      return { field: "accountId", ok: false };
     }
 
     if (!values.categoryId) {
       setStatus("error");
       setFieldError("categoryId");
       setMessage("Selecione uma categoria.");
-      return { ok: false };
+      return { field: "categoryId", ok: false };
     }
 
     if (!isValidCivilDate(values.occurredAt)) {
       setStatus("error");
       setFieldError("occurredAt");
       setMessage("Informe uma data válida.");
-      return { ok: false };
+      return { field: "occurredAt", ok: false };
     }
 
     setStatus("loading");
@@ -104,7 +104,18 @@ export function useTransactionForm({
     }
   }
 
+  function clearFeedback() {
+    if (status === "loading") {
+      return;
+    }
+
+    setStatus("idle");
+    setFieldError(null);
+    setMessage(null);
+  }
+
   return {
+    clearFeedback,
     fieldError,
     isSubmitting: status === "loading",
     message,

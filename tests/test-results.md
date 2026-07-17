@@ -508,3 +508,34 @@ Interpretação:
 - lista e resumo agora compartilham uma única leitura mensal.
 - DTOs rejeitam conta ou categoria sem ID persistido.
 - próximo passo válido: `dia 6` da SR-011.
+
+## Dia 6 — SR-011
+
+### Baseline e inspeção
+
+- 17 suítes e 87 testes da feature passaram antes da mudança.
+- desktop padrão, `390 x 844` e `320 x 800` foram inspecionados sem overflow horizontal.
+- alvos visíveis mantiveram pelo menos 44 px; `lang`, viewport, `theme-color` e manifest foram confirmados.
+- a sessão real não possui categoria, portanto o formulário permaneceu corretamente bloqueado e nenhuma fixture foi criada.
+
+### RED direcionado
+
+- 1 suíte executada, com 2 testes falhando e 11 passando.
+- descrição e demais campos permaneciam editáveis durante uma requisição pendente.
+- o foco permanecia no botão após erro local de valor.
+- o feedback inválido ainda não era limpo ao corrigir o campo.
+
+### GREEN e regressão
+
+- GREEN direcionado: 1 suíte e 13 testes passaram.
+- regressão completa: 61 suítes e 292 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- auditoria passou, 0 vulnerabilidades.
+- build passou com `/transactions` dinâmica e Proxy ativo.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+
+Interpretação:
+- o formulário impede mutações concorrentes, direciona o foco ao campo inválido e remove feedback obsoleto durante a correção.
+- responsividade e base PWA permaneceram coerentes sem antecipar offline ou cache financeiro.
+- próximo passo válido: `dia 7` da SR-011.

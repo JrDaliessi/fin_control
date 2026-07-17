@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-011 concluído; composição mensal otimizada e integridade dos DTOs fortalecida
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SR-011 concluído; experiência do formulário, acessibilidade, responsividade e PWA validadas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -73,6 +73,7 @@
 - Data da implementação mínima da SR-011: 2026-07-17
 - Data da expansão controlada da SR-011: 2026-07-17
 - Data da refatoração e hardening da SR-011: 2026-07-17
+- Data da revisão de UX, acessibilidade e PWA da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1280,7 +1281,7 @@ Estado de saída:
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
 - Dia 7 da UI-001 concluído; pipeline final passou com 41 suítes e 194 testes.
 - Dia 1 da UI-002 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0006.
-- Próximo passo operacional: executar explicitamente `dia 3` da SR-011 para implementar o mínimo necessário aos testes.
+- Próximo passo operacional: executar explicitamente `dia 7` da SR-011 para qualidade final, segurança, observabilidade e entrega incremental.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -4172,3 +4173,49 @@ Estado de saída:
 - retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
 - Dia 5 concluído sem avanço automático
 - próximo passo recomendado: executar explicitamente `dia 6` da SR-011
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Auditoria e TDD:
+- baseline da feature: 17 suítes e 87 testes verdes
+- o formulário permitia editar campos enquanto a criação estava pendente, mantinha feedback local obsoleto após a correção e deixava o foco no botão depois de uma validação inválida
+- RED direcionado: 2 testes falharam e 11 passaram
+- todos os campos editáveis passaram a ficar desabilitados durante o envio, preservando `aria-busy` e o rótulo `Salvando...`
+- falhas locais retornam o campo inválido ao componente, que move o foco para o controle correspondente
+- qualquer nova edição limpa mensagem e `aria-invalid` anteriores sem apagar o feedback de sucesso produzido após o reset do formulário
+
+Validação responsiva e acessível no navegador:
+- sessão autenticada inspecionada em desktop padrão, `390 x 844` e `320 x 800`, sem overflow horizontal
+- shell, heading, CTA de categoria, resumo, lista e navegação móvel permaneceram legíveis e semanticamente expostos
+- controles interativos visíveis mantiveram alvos de pelo menos 44 px; a navegação inferior mediu 63 px em `390 x 844`
+- `lang="pt-BR"`, viewport, `theme-color` e vínculo com `/manifest.webmanifest` foram confirmados
+- a ausência de categoria bloqueou corretamente o formulário na sessão real; foco, bloqueio pendente e correção de erro foram validados de forma determinística por Jest
+- nenhuma fixture ou mudança remota foi executada durante a inspeção
+
+PWA e limites:
+- manifest existente preserva identidade FinControl, instalação `standalone`, ícones reais e atalhos apenas para rotas funcionais
+- nenhuma promessa de offline, service worker ou cache de dados financeiros foi adicionada sem estratégia de consistência
+- domínio, application, repository, mapper, migrations, grants, RLS e configuração Supabase permaneceram inalterados
+- nenhuma edição, exclusão, cartão, parcela, recorrência, importação, dependência, commit, push, PR ou deploy foi executado
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Resultado dos gates:
+- GREEN direcionado: 1 suíte e 13 testes passaram
+- `npm run test:ci`: 61 suítes e 292 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+- `git diff --check`: passou; somente avisos esperados de normalização LF/CRLF
+
+Revisão periódica de contexto:
+- não foi identificado drift entre o recorte da SR-011 e a implementação dos Dias 3 a 6
+- backlog, roadmap, estratégia e evidências foram atualizados para refletir a entrada em validação final
+- riscos pré-produção `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam explícitos e serão tratados ou reafirmados no Dia 7
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- Dia 6 concluído sem avanço automático
+- próximo passo recomendado: executar explicitamente `dia 7` da SR-011
