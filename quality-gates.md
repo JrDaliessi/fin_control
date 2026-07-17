@@ -868,6 +868,30 @@ Evidência do Dia 7:
 - `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
 - estado de saída: `QUALITY_VALIDATION`.
 
+## Gate do Dia 7 — SR-011
+
+- auditoria de segurança encontrou divergência crítica de Anonymous Sign-In entre Proxy, Actions e RLS.
+- erro documentado antes da correção; RED isolado: 1 teste falhou e 6 passaram.
+- Proxy passou a exigir `sub` não vazio e `is_anonymous !== true`; GREEN isolado: 1 suíte e 8 testes.
+- regressão completa: 61 suítes e 294 testes passaram.
+- lint: verde, 0 warnings.
+- type-check: verde.
+- auditoria npm: verde, 0 vulnerabilidades em nível alto.
+- build: verde; `/transactions` dinâmica e `ƒ Proxy (Middleware)` preservados.
+- arquitetura: domínio/aplicação sem React, Next.js ou Supabase; apresentação sem acesso direto ao banco.
+- segredos: nenhum `any`, segredo real ou `service_role` de aplicação encontrado em `src`; somente placeholder vazio em `.env.example`.
+- migrations: cinco versões locais/remotas alinhadas.
+- pgTAP remoto: 46 schema + 21 constraints + 17 RLS + 5 performance = 89 asserções verdes.
+- rollback: a 1 transação preexistente foi preservada e `pgtap` permaneceu ausente.
+- grants/RLS: `authenticated` somente com `SELECT`/`INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e `service_role` de aplicação bloqueados.
+- Performance Advisor: sem alertas após a validação.
+- Security Advisor: somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001`.
+- threat model cobre BOLA/IDOR, Auth anônimo, owner forjado, mass assignment, relações cross-tenant, escalada privilegiada, integridade e vazamento de infraestrutura.
+- observabilidade proíbe PII, UUIDs, conteúdo financeiro, JWT, cookies, credenciais e payloads brutos; implementação externa permanece em `HARD-OBS-001`.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- nenhum deploy, commit, push, PR, migration, policy, grant, configuração ou fixture foi executado.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código; deploy público permanece condicionado aos hardenings documentados.
+
 ## Gate de Release
 Uma release incremental só pode ser considerada pronta quando:
 - critérios de pronto da fase foram satisfeitos

@@ -21,7 +21,9 @@ type ClientOptions = {
 };
 
 type ClaimsResult = {
-  data: { claims: { email?: string; sub?: string } | null } | null;
+  data: {
+    claims: { email?: string; is_anonymous?: boolean; sub?: string } | null;
+  } | null;
   error: Error | null;
 };
 
@@ -73,7 +75,15 @@ describe("updateSupabaseSession", () => {
 
   it.each([
     ["missing claims", { data: { claims: null }, error: null }],
-    ["expired claims", { data: null, error: new Error("expired jwt") }]
+    ["blank subject", { data: { claims: { sub: " " } }, error: null }],
+    ["expired claims", { data: null, error: new Error("expired jwt") }],
+    [
+      "anonymous Auth user",
+      {
+        data: { claims: { is_anonymous: true, sub: "anonymous-user-1" } },
+        error: null
+      }
+    ]
   ])("redirects %s from a private route", async (_caseName, claimsResult) => {
     const { factory } = createServerClientFactory(claimsResult);
     const request = new NextRequest("https://app.example.com/dashboard");

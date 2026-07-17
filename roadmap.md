@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 6 da SR-011 concluído em `QUALITY_VALIDATION`; persistência tenant-safe, composição autenticada, hardening estrutural e experiência responsiva/acessível estão implementados com pipeline verde.
+Estado atual: Dia 7 da SR-011 concluído em `READY_FOR_RELEASE`; a fundação de dados reais de contas, categorias e transações está validada para entrega incremental de código.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -178,7 +178,9 @@ Evidência do Dia 5 da SR-011: `TX-PERF-001` encerrada com uma única leitura me
 
 Evidência do Dia 6 da SR-011: formulário bloqueia todos os campos durante o envio, move foco para erro local e limpa feedback obsoleto; desktop, `390 x 844` e `320 x 800` foram validados sem overflow, manifesto honesto preservado e 61 suítes/292 testes permaneceram verdes.
 
-Próximo passo: executar explicitamente `dia 7` da SR-011 para qualidade final, segurança, observabilidade e entrega incremental. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Evidência do Dia 7 da SR-011: divergência de Anonymous Sign-In no Proxy corrigida em TDD; 61 suítes/294 testes, lint, type-check, audit e build verdes; 89 asserções pgTAP com rollback, migrations alinhadas, Performance Advisor limpo e threat model/observabilidade documentados.
+
+Próximo passo: selecionar explicitamente a próxima small release. Deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`; nenhuma nova fase foi iniciada automaticamente.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
@@ -216,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada, mas aguarda a fundação de dados; `SR-011` está em `QUALITY_VALIDATION` e deve seguir para o Dia 7.
+Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada e agora pode ser refinada sobre a fundação de dados concluída; a seleção continua dependente de comando humano explícito.
 
 Integrações posteriores:
 

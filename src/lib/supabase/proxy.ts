@@ -18,7 +18,9 @@ type CookieToSet = {
 type ProxyClient = {
   auth: {
     getClaims(): Promise<{
-      data: { claims: { sub?: string } | null } | null;
+      data: {
+        claims: { is_anonymous?: boolean; sub?: string } | null;
+      } | null;
       error: unknown | null;
     }>;
   };
@@ -94,7 +96,12 @@ export async function updateSupabaseSession(
     );
 
     const { data, error } = await supabase.auth.getClaims();
-    isAuthenticated = !error && Boolean(data?.claims?.sub);
+    const claims = data?.claims;
+    isAuthenticated =
+      !error &&
+      typeof claims?.sub === "string" &&
+      Boolean(claims.sub.trim()) &&
+      claims.is_anonymous !== true;
   } catch {
     isAuthenticated = false;
   }

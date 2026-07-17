@@ -6,16 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-011 - Persistencia e RLS de transacoes
-- Tipo: Security Item / Small Release
-- Objetivo de negocio: tornar o registro manual utilizavel com dados reais.
-- Valor esperado: historico financeiro persistente e isolado por usuário.
-- Prioridade: Critica
-- Dependencias: SR-008 a SR-010 concluídas.
-- Risco: Alto, por manipular dados financeiros e vínculos tenant-safe.
-- Fase atual: Dia 6 concluído; envio concorrente bloqueado, foco/feedback de validação acessíveis, responsividade e PWA validadas; Dia 7 pendente.
-- Criterio de pronto: repositório Supabase, criação e consulta mensal, FKs compostas, grants mínimos, RLS, testes de isolamento e pipeline verde.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -470,6 +461,25 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-011 — Persistência e RLS de transações
+- Tipo: Security Item / Small Release
+- Resultado: criação e consulta mensal de transações próprias entregues com identidade server-side, vínculos tenant-safe, grants mínimos, RLS e apresentação acessível.
+- Escopo concluído: domínio, casos de uso, mapper, repository, migrations, Server Actions, lista/resumo persistentes, UX responsiva e hardening interno.
+- Banco: migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes` alinhadas; 89 asserções pgTAP verdes; rollback preservou a 1 transação preexistente e não deixou `pgtap` instalada.
+- Quality gates: lint, type-check, 61 suítes/294 testes Jest, auditoria com 0 vulnerabilidades, build e `git diff --check` verdes.
+- Segurança: Proxy, Actions e RLS bloqueiam Auth anônimo; ownership é injetado no servidor; FKs compostas impedem conta/categoria cross-tenant; somente `SELECT`/`INSERT` estão liberados.
+- Observabilidade: eventos e atributos sanitizados definidos; conteúdo financeiro, PII, UUIDs, tokens, cookies, credenciais e payloads brutos são proibidos.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código.
+- Fora do escopo preservado: edição, exclusão, status, transferência, cartão, parcelas, recorrência, importação, analytics avançado, offline e IA.
+- Status: DONE
+
+### BUG-AUTH-ANON-001 — Proxy aceitava Supabase Anonymous Sign-In como sessão permanente
+- Tipo: Bug / Security Item
+- Resultado: o Proxy agora exige subject válido e rejeita `is_anonymous=true`, alinhado às Server Actions e policies financeiras.
+- Evidência TDD: RED com 1 falha e 6 testes verdes; GREEN com 1 suíte e 8 testes verdes; regressão completa com 61 suítes e 294 testes.
+- Risco resolvido: usuário Auth anônimo não atravessa mais a proteção de rotas privadas.
+- Status: DONE
 
 ### SR-010 — Persistência e RLS de categorias
 - Tipo: Security Item / Small Release

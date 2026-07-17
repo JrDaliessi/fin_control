@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-011 concluído; experiência do formulário, acessibilidade, responsividade e PWA validadas
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-011 concluído; pipeline, segurança, Supabase, observabilidade e release incremental validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -74,6 +74,7 @@
 - Data da expansão controlada da SR-011: 2026-07-17
 - Data da refatoração e hardening da SR-011: 2026-07-17
 - Data da revisão de UX, acessibilidade e PWA da SR-011: 2026-07-17
+- Data da validação final e preparação de release da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -926,6 +927,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: a primeira orquestração pgTAP do Dia 7 da SR-011 presumiu que `shell_command` retornaria um objeto com `output`; o retorno era uma string envelopada e quatro chamadas vazias foram rejeitadas antes do SQL. Na tentativa seguinte, o envelope ainda foi enviado e o Postgres rejeitou a palavra `Exit` antes de iniciar transação. Prevenção: inspecionar o tipo de retorno uma vez, extrair o conteúdo após o marcador literal `Output:\n`, validar SQL não vazio e interromper após no máximo duas falhas equivalentes antes de tentar outra abordagem.
+- Erro: o Proxy global tratava qualquer claim com `sub` como sessão permanente, enquanto Server Actions e RLS já bloqueavam usuários do Supabase Anonymous Sign-In por `is_anonymous=true`. Prevenção: todo ponto de entrada autenticado deve aplicar o mesmo contrato fail-closed (`sub` válido e `is_anonymous !== true`) e possuir teste de regressão alinhado às policies antes de qualquer release.
 - Erro: no primeiro GREEN do Dia 4 da SR-011, mocks de callbacks foram inferidos sem argumentos e o teste agregado de rotas ainda renderizava o novo Server Component assíncrono como componente cliente. Prevenção: tipar doubles pela assinatura real desde o RED e, quando uma rota passar a carregar dados no servidor, atualizar todos os testes agregados para aguardar a função de rota e registrar mocks com `jest.requireMock()`/`jest.requireActual()` antes dos gates completos.
 - Erro: três cenários pgTAP de negação da SR-011 usaram `INSERT ... SELECT` para buscar fixtures protegidas depois de ativar RLS; a consulta-fonte retornou zero linhas e nenhuma tentativa proibida foi realmente executada. Prevenção: capturar IDs de fixtures antes de trocar o role e usar valores diretos nos testes negativos, confirmando que a operação alcança a policy que se pretende validar.
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
@@ -1281,7 +1284,7 @@ Estado de saída:
 - Dia 7 da SR-009 concluído; pipeline, 70 testes pgTAP, advisors, threat model e baseline de observabilidade foram validados.
 - Dia 7 da UI-001 concluído; pipeline final passou com 41 suítes e 194 testes.
 - Dia 1 da UI-002 concluído; item movido para `IN_PROGRESS` e arquitetura registrada no ADR 0006.
-- Próximo passo operacional: executar explicitamente `dia 7` da SR-011 para qualidade final, segurança, observabilidade e entrega incremental.
+- Próximo passo operacional: selecionar explicitamente a próxima small release; nenhuma nova fase foi iniciada automaticamente.
 - A proposta FinControl Pulse foi incorporada integralmente como especificação, ADR, trilha de roadmap e backlog `UI-001` a `UI-006`; nenhuma tela foi implementada fora de fase.
 - A publicação dos commits locais da SR-006 continua pendente de autorização explícita e não bloqueia o discovery da SR-007.
 - Manter fora do escopo imediato: cartão, parcelas, IA, importação e Open Finance.
@@ -4219,3 +4222,65 @@ Estado de saída:
 - `QUALITY_VALIDATION`
 - Dia 6 concluído sem avanço automático
 - próximo passo recomendado: executar explicitamente `dia 7` da SR-011
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Correção crítica orientada por teste:
+- a auditoria detectou divergência entre o Proxy global e as fronteiras já seguras da SR-011: um usuário do Supabase Anonymous Sign-In possuía `sub` e atravessava a proteção de rota
+- o erro foi registrado no contexto antes da implementação
+- RED isolado: 1 teste falhou e 6 passaram; o usuário Auth anônimo recebeu acesso à rota privada em vez de redirect
+- o Proxy passou a exigir `sub` textual não vazio e `is_anonymous !== true`, alinhado às Server Actions e às policies RLS
+- GREEN isolado: 1 suíte e 8 testes passaram, incluindo subject vazio e Anonymous Sign-In
+
+Pipeline final:
+- `npm run lint`: passou, 0 warnings
+- `npm run type-check`: passou
+- `npm run test:ci`: passou, 61 suítes e 294 testes
+- `npm audit --audit-level=high`: passou, 0 vulnerabilidades
+- `npm run build`: passou; `/transactions` permaneceu dinâmica e `ƒ Proxy (Middleware)` ativo
+- `git diff --check`: passou; somente avisos esperados de normalização LF/CRLF
+- nenhuma ocorrência de `any`, chave privilegiada ou `service_role` de aplicação foi encontrada em `src`; `.env.example` contém apenas o placeholder vazio esperado
+
+Validação Supabase:
+- projeto `fin_control` permaneceu `ACTIVE_HEALTHY` em Postgres 17
+- as cinco migrations locais e remotas permaneceram alinhadas
+- changelog e documentação oficiais atuais foram revisados; a mudança de exposição automática de tabelas não afeta a SR-011 porque grants são explícitos
+- 89 asserções pgTAP passaram: 46 schema + 21 constraints + 17 RLS + 5 performance
+- rollback preservou a 1 transação preexistente e a extensão `pgtap` permaneceu ausente
+- `authenticated` mantém somente `SELECT` e `INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e privilégio explícito de aplicação para `service_role` permanecem bloqueados
+- Performance Advisor terminou sem alertas
+- Security Advisor manteve somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001`
+- nenhuma migration, policy, grant, configuração Auth, extensão ou fixture foi persistida
+
+Threat model revisado:
+- BOLA/IDOR: owner é derivado de claims verificadas no servidor, filtrado no repository e reforçado por RLS
+- Anonymous Sign-In: Proxy, Server Actions e RLS agora aplicam o mesmo bloqueio por `is_anonymous`
+- owner forjado e mass assignment: DTO público não aceita `userId`; a Action injeta o ator verificado
+- troca cross-tenant de conta/categoria: FKs compostas exigem o mesmo owner e compatibilidade entre `type` e `kind`
+- excesso de privilégio: ausência deliberada de grants e policies para `UPDATE` e `DELETE`; aplicação não usa `service_role`
+- integridade financeira: centavos seguros, data civil, limites e enums são validados no domínio, mapper e banco
+- enumeração e vazamento de infraestrutura: repository usa erro estável e projeção explícita de colunas
+- riscos residuais pré-produção: proteção contra senhas vazadas, rate limit/CAPTCHA, headers HTTP e monitoramento externo permanecem no backlog
+
+Baseline de observabilidade:
+- eventos futuros permitidos: `transactions_page_load`, `transactions_page_failure`, `transaction_create_attempt`, `transaction_create_success` e `transaction_create_failure`
+- atributos permitidos: ambiente, release, rota, operação, resultado técnico, faixa de duração e classe sanitizada do erro
+- proibido registrar descrição, valor, data, notes, conta, categoria, e-mail, UUID de usuário, JWT, cookies, senha, segredo, payload bruto ou mensagem bruta do provedor
+- métricas recomendadas: latência e falha por operação, rejeições de autenticação, indisponibilidade do repository e taxa de erro por release
+- captura de erros com redaction, alertas e teste sintético permanecem em `HARD-OBS-001` antes do deploy público
+- nenhum evento analítico ou provedor de observabilidade foi adicionado nesta fase
+
+Release incremental preparada:
+- escopo liberável: criar e consultar por mês transações manuais próprias, com conta/categoria tenant-safe, grants mínimos, RLS e experiência acessível
+- edição, exclusão, status, transferência, cartão, parcelas, recorrência, importação, analytics avançado, offline financeiro e IA permanecem fora do escopo
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código
+- nenhum deploy, commit, push, PR, merge ou tag foi executado
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- nenhum bloqueio crítico para entrega incremental do código
+- Dia 7 concluído sem iniciar outra small release
+- próximo passo recomendado: selecionar explicitamente a próxima small release ou autorizar a publicação do código em fluxo separado

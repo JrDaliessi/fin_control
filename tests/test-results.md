@@ -539,3 +539,39 @@ Interpretação:
 - o formulário impede mutações concorrentes, direciona o foco ao campo inválido e remove feedback obsoleto durante a correção.
 - responsividade e base PWA permaneceram coerentes sem antecipar offline ou cache financeiro.
 - próximo passo válido: `dia 7` da SR-011.
+
+## Dia 7 — SR-011
+
+### Correção de segurança em TDD
+
+- auditoria identificou que o Proxy aceitava usuário Auth anônimo porque validava apenas a presença de `sub`.
+- RED isolado: 1 teste falhou e 6 passaram; a rota privada não redirecionou `is_anonymous=true`.
+- GREEN isolado: 1 suíte e 8 testes passaram após exigir subject válido e usuário permanente.
+- Server Actions e RLS já aplicavam o bloqueio e permaneceram inalteradas.
+
+### Pipeline completo
+
+- Jest: 61 suítes e 294 testes passaram.
+- type-check: passou.
+- lint: passou, 0 warnings.
+- audit: passou, 0 vulnerabilidades.
+- build: passou com `/transactions` dinâmica e Proxy ativo.
+- `git diff --check`: passou, com avisos esperados de normalização LF/CRLF.
+
+### Supabase
+
+- migrations locais e remotas: 5 versões alinhadas.
+- schema: 46/46 asserções pgTAP.
+- constraints: 21/21 asserções pgTAP.
+- RLS: 17/17 asserções pgTAP.
+- performance: 5/5 asserções pgTAP.
+- total: 89/89 asserções.
+- rollback confirmou 1 transação antes/depois e extensão `pgtap` ausente.
+- Performance Advisor: sem alertas.
+- Security Advisor: somente `SEC-AUTH-001`.
+
+Interpretação:
+- Proxy, Server Actions e RLS aplicam contrato consistente para usuário permanente.
+- grants mínimos, ownership e vínculos cross-tenant permanecem protegidos.
+- SR-011 está `READY_FOR_RELEASE` como entrega incremental de código.
+- deploy público permanece bloqueado por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
