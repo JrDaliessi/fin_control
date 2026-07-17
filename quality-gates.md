@@ -342,6 +342,20 @@
 - Edição, exclusão, arquivamento, categorias, transações, idempotência e segunda migration permaneceram fora do escopo.
 - Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
+### Resultado observado — SR-010
+- Testes de apresentação, actions, rota e integração com Transações foram escritos antes da implementação; RED direcionado confirmou módulos e link ausentes.
+- `/categories` lista categorias persistentes em Server Component e cria por Server Action com claims verificadas.
+- DTOs removem `userId` da fronteira visual; owner é obtido exclusivamente do claim autenticado.
+- Estados `submitting`, `success`, `error`, `loading` e `empty` foram implementados com mensagens acessíveis e erro sanitizado.
+- UI não importa Supabase e não contém regra de negócio pesada; `/categories` permanece subfluxo de Transações.
+- GREEN direcionado passou com 5 suítes e 16 testes; navegação privada passou com 1 suíte e 11 testes.
+- Suíte completa passou com 53 suítes e 249 testes.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Navegador interno autenticado validou formulário, estado vazio, link contextual único e console sem erros; nenhuma gravação foi realizada.
+- Chrome externo bloqueou `localhost` pela extensão, sem impedir a validação autenticada alternativa.
+- Edição, exclusão, arquivamento, personalização visual, seeds e persistência de transações permaneceram fora do escopo.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate do Dia 5
 - Arquivos inchados identificados.
 - Plano de refatoração incremental documentado.

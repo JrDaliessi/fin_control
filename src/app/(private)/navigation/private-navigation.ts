@@ -16,7 +16,7 @@ export const PRIVATE_NAVIGATION_ITEMS = [
     desktopLabel: "Transações",
     href: "/transactions",
     mobileLabel: "Transações",
-    paths: ["/transactions"],
+    paths: ["/transactions", "/categories"],
   },
   {
     desktopLabel: "Contas",

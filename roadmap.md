@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 3 da SR-010 concluído em `IMPLEMENTATION_IN_PROGRESS`; implementação mínima, migration remota e 65 asserções pgTAP estão verdes.
+Estado atual: Dia 4 da SR-010 concluído em `IMPLEMENTATION_IN_PROGRESS`; persistência/RLS, apresentação autenticada e integração contextual com Transações estão verdes.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -166,7 +166,7 @@ Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `2
 
 Recorte da SR-010: criar e listar categorias próprias com nome normalizado e `kind` `income | expense`; rota `/categories` como subfluxo de transações, grants mínimos `SELECT/INSERT`, RLS por proprietário e futura integridade composta com transações. Edição, exclusão, personalização visual, seeds e transações persistidas permanecem fora.
 
-Próximo passo: executar explicitamente o Dia 4 da SR-010 para compor a apresentação essencial sobre os casos de uso estáveis, sem ampliar para edição ou exclusão. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Próximo passo: executar explicitamente o Dia 5 da SR-010 para refatoração e hardening interno preservando os testes, sem ampliar para edição ou exclusão. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
@@ -204,7 +204,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada, mas aguarda a fundação de dados; `SR-010` está em `IN_PROGRESS` e deve seguir para o Dia 4.
+Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada, mas aguarda a fundação de dados; `SR-010` está em `IN_PROGRESS` e deve seguir para o Dia 5.
 
 Integrações posteriores:
 

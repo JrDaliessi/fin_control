@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-010 concluído; implementação mínima, migration e RLS de categorias validadas
+- Fase atual: Dia 4 da SR-010 concluído; apresentação persistente de categorias e integração com transações validadas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -63,6 +63,7 @@
 - Data do discovery e arquitetura da SR-010: 2026-07-16
 - Data da estratégia de testes da SR-010: 2026-07-16
 - Data da implementação mínima da SR-010: 2026-07-16
+- Data da expansão controlada da SR-010: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -3700,3 +3701,57 @@ Arquitetura e limites preservados:
 Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 4` da SR-010
+
+## Dia 4 — Expansão Controlada da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Implementação criada:
+- DTOs de categoria em `application`, sem `userId` na fronteira visual
+- Server Actions autenticadas para criar e listar categorias
+- hook de apresentação para os estados do formulário
+- formulário, lista e página interna da feature
+- rota privada `/categories` com estados de loading e error
+- acesso contextual `Gerenciar categorias` a partir de `/transactions`
+
+Escopo entregue:
+- criação persistente de categoria própria com `name` e `kind`
+- listagem persistente ordenada pelos contratos do repository
+- estados `idle`, `submitting`, `success`, `error`, `loading` e `empty`
+- validação de nome vazio e normalização de espaços antes da action
+- erro de infraestrutura sanitizado para a interface
+- `/categories` permanece subfluxo de Transações, sem quarto destino na navegação principal
+
+Segurança e arquitetura:
+- cada Server Action cria client Supabase server-side por requisição e valida `auth.getClaims()`
+- owner é injetado a partir do claim verificado; o payload visual não aceita `userId`
+- Auth anônimo, claim ausente e falha de autenticação fecham o fluxo sem consultar ou gravar categorias
+- presentation não importa Supabase; application e domain permanecem independentes de React e Next.js
+- nenhuma migration, policy, grant ou configuração remota foi alterada no Dia 4
+
+Evidência TDD e gates:
+- RED direcionado: quatro suítes bloqueadas por módulos ausentes e teste de transações falhando pelo link ainda inexistente
+- GREEN direcionado: 5 suítes e 16 testes da apresentação/actions; navegação privada com 1 suíte e 11 testes
+- `npm run test:ci`: 53 suítes e 249 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou, incluindo `/categories` e Proxy ativo
+
+Validação autenticada no navegador:
+- login local realizado sem persistir credenciais em arquivos
+- `/categories` exibiu formulário acessível e estado vazio para o usuário autenticado
+- `/transactions` exibiu exatamente um link `Gerenciar categorias`
+- console da rota de categorias não apresentou erros
+- nenhuma categoria foi criada durante a inspeção; o banco não recebeu mutação de validação
+- Chrome externo bloqueou `localhost` pela extensão; a inspeção foi concluída no navegador interno autenticado
+
+Limites preservados:
+- nenhuma edição, exclusão, arquivamento, cor, ícone, seed ou categoria global
+- nenhuma persistência de transações ou expansão para UI-003
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 5` da SR-010
