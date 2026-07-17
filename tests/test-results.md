@@ -403,3 +403,41 @@ Interpretação:
 Interpretação:
 - estado vermelho válido do TDD confirmado.
 - implementação autorizável somente após comando explícito `dia 3`.
+
+## Dia 3 — SR-011
+
+### RED reproduzido
+
+- 3 suítes falharam.
+- 9 testes falharam e 11 passaram.
+- type-check apresentou 5 erros planejados.
+
+### GREEN direcionado
+
+- 5 suítes passaram.
+- 34 testes passaram.
+- entidade, mapper e repository satisfizeram os contratos aprovados.
+
+### Banco Supabase
+
+- migrations aplicadas e alinhadas: `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes`.
+- schema: 46/46 asserções pgTAP.
+- constraints: 21/21 asserções pgTAP.
+- RLS: 17/17 asserções pgTAP.
+- performance: 5/5 asserções pgTAP.
+- total: 89/89 asserções.
+- rollback confirmado: 0 transações e extensão pgTAP ausente após os testes.
+- advisor de segurança manteve apenas `SEC-AUTH-001`.
+- avisos de FKs sem índice foram eliminados; índices novos ainda constam como não usados por ausência de dados.
+
+### Pipeline completo
+
+- Jest: 55 suítes e 271 testes passaram.
+- type-check: passou.
+- lint: passou, 0 warnings.
+- audit de produção: passou, 0 vulnerabilidades.
+- build: passou com `/transactions` dinâmica e Proxy ativo.
+
+Interpretação:
+- implementação mínima e persistência tenant-safe concluídas.
+- composição autenticada e apresentação persistente permanecem bloqueadas até `dia 4`.

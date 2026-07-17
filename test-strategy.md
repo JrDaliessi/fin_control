@@ -757,6 +757,21 @@ pgTAP:
 
 Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada até `dia 3` da SR-011.
 
+## Resultado GREEN do Dia 3 — SR-011
+
+- RED inicial reproduzido: 3 suítes falharam, 9 testes falharam, 11 passaram e type-check teve 5 erros planejados.
+- GREEN direcionado: 5 suítes e 34 testes passaram.
+- `Transaction.restore`, normalização, limites e proteção de datas satisfizeram os contratos do domínio.
+- mapper e repository satisfizeram payload mínimo, data civil, bigint seguro, owner, período, ordenação e sanitização.
+- pgTAP: 46 schema + 21 constraints + 17 RLS + 5 performance = 89 asserções verdes.
+- três cenários RLS falsamente negativos foram corrigidos após registro no contexto; os testes agora alcançam diretamente as policies negadas.
+- duas asserções de índices nasceram em RED após o advisor identificar FKs descobertas e passaram após migration incremental.
+- regressão completa: 55 suítes e 271 testes verdes.
+- type-check, lint, audit com 0 vulnerabilidades e build de produção verdes.
+- nenhuma cobertura foi relaxada, removida ou ignorada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Resultado GREEN do Dia 3 — UI-002
 
 - `PRIVATE_NAVIGATION_ITEMS` implementa somente `/dashboard`, `/transactions` e `/accounts`.

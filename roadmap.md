@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 2 da SR-011 concluído em `TEST_STRATEGY_READY`; contratos Jest e 87 asserções pgTAP foram criados em RED válido, sem implementação ou migration.
+Estado atual: Dia 3 da SR-011 concluído em `IMPLEMENTATION_IN_PROGRESS`; domínio, mapper, repository e schema tenant-safe estão implementados com pipeline verde.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -170,7 +170,9 @@ Evidência da SR-010: migration `20260717022313_create_categories`, 65 testes pg
 
 Recorte da SR-011: criar e consultar por mês transações manuais próprias, com data civil, FKs compostas para conta/categoria, compatibilidade `type/kind`, grants mínimos `SELECT/INSERT` e RLS por proprietário. Edição, exclusão, status, transferência, cartão, recorrência, importação e dashboard persistente permanecem fora.
 
-Próximo passo: executar explicitamente `dia 3` da SR-011 para implementar o mínimo necessário à entidade, mapper, repository e migration. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Evidência do Dia 3 da SR-011: migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes`, 89 asserções pgTAP verdes, 55 suítes/271 testes Jest, type-check/lint/audit/build verdes e nenhuma fixture persistida. O Security Advisor manteve somente `SEC-AUTH-001`; os únicos avisos de performance são índices recém-criados ainda sem uso porque a tabela está vazia.
+
+Próximo passo: executar explicitamente `dia 4` da SR-011 para compor leitura e criação autenticadas sem expor `userId` na apresentação. Deploy público continua condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 

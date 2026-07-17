@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-011 concluído; testes essenciais criados e RED válido confirmado
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-011 concluído; domínio, infraestrutura e persistência tenant-safe implementados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -70,6 +70,7 @@
 - Data de seleção da SR-011 como próximo ciclo: 2026-07-17
 - Data do discovery e arquitetura da SR-011: 2026-07-17
 - Data da estratégia de testes da SR-011: 2026-07-17
+- Data da implementação mínima da SR-011: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -922,6 +923,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: três cenários pgTAP de negação da SR-011 usaram `INSERT ... SELECT` para buscar fixtures protegidas depois de ativar RLS; a consulta-fonte retornou zero linhas e nenhuma tentativa proibida foi realmente executada. Prevenção: capturar IDs de fixtures antes de trocar o role e usar valores diretos nos testes negativos, confirmando que a operação alcança a policy que se pretende validar.
 - Erro: implementar código funcional antes de testes. Prevenção: bloquear implementação até Dia 2 gerar testes essenciais.
 - Erro: o workflow Git passou a direcionar features para `develop`, mas o CI permaneceu limitado a `main`, permitindo merge de integração sem gates automáticos. Prevenção: toda mudança na estratégia de branches deve atualizar e testar os gatilhos de CI para branches de integração e release na mesma entrega.
 - Erro: o mock de `signOut` adicionado no Dia 4 da UI-002 foi inferido sem parâmetros, gerando `TS2554` quando o teste verificou `{ scope: "local" }`. Prevenção: tipar mocks de integrações pela assinatura real antes do primeiro type-check e incluir explicitamente os argumentos relevantes no fake, mesmo quando o corpo não os utiliza.
@@ -4026,3 +4028,54 @@ Limites preservados:
 Estado de saída:
 - `TEST_STRATEGY_READY`
 - próximo passo recomendado: executar explicitamente `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-011
+
+Small release: `SR-011 — Persistência e RLS de transações`.
+
+Implementação criada:
+- `Transaction.restore`, normalização e limites de descrição/notas
+- datas defensivamente copiadas sem quebrar a forma estrutural da entidade
+- `TransactionRepository.findByMonth` obrigatório
+- mapper Supabase com data civil em UTC e rejeição de bigint inseguro
+- `SupabaseTransactionRepository` com payload mínimo, filtro por owner, intervalo mensal semiaberto, ordenação estável e erros sanitizados
+- migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes`
+
+Schema e segurança:
+- `public.transactions` criada com 12 colunas aprovadas, sem `status`
+- FKs compostas garantem owner da conta e owner/kind da categoria
+- exclusão de conta ou categoria referenciada permanece restrita
+- `authenticated` possui somente `SELECT` e `INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE` e privilégios explícitos de aplicação para `service_role` permanecem bloqueados
+- RLS habilitada e forçada com policies separadas por operação e ownership via Auth
+- três índices cobrem consulta mensal e as duas FKs compostas
+
+Evidência TDD e correções:
+- RED inicial reproduzido: 3 suítes falharam, 9 testes falharam, 11 passaram e type-check apresentou 5 erros planejados
+- GREEN direcionado: 5 suítes e 34 testes passaram
+- falha estrutural dos doubles causada por datas privadas foi corrigida com armazenamento externo e propriedades públicas imutáveis
+- a suíte RLS revelou três falsos negativos por `INSERT ... SELECT` filtrado pela própria RLS; o erro foi registrado em Erros Recorrentes e o harness passou a usar IDs capturados antes da troca de role
+- o Performance Advisor revelou duas FKs sem índice; duas asserções foram adicionadas em RED e passaram após migration incremental
+
+Validação remota Supabase:
+- 89 asserções pgTAP passaram: 46 schema + 21 constraints + 17 RLS + 5 performance
+- todas as suítes SQL usaram transação e rollback; `public.transactions` permaneceu com zero registros e `pgtap` não ficou instalada
+- migrations locais e remotas permanecem alinhadas nas cinco versões esperadas
+- Security Advisor manteve somente `SEC-AUTH-001`, preexistente
+- avisos de FK sem índice foram eliminados; o Performance Advisor reportou somente os dois índices recém-criados como ainda não usados, esperado com tabela vazia
+
+Resultado dos gates:
+- `npm run test:ci`: 55 suítes e 271 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/transactions` dinâmica e Proxy ativo
+
+Limites preservados:
+- nenhuma Server Action, rota ou UI persistente criada; composição autenticada permanece para o Dia 4
+- nenhuma edição, exclusão, status, transferência, cartão, parcela, recorrência, importação ou dashboard persistente
+- nenhuma nova dependência, fixture persistente, commit, push, PR ou deploy
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 4` da SR-011

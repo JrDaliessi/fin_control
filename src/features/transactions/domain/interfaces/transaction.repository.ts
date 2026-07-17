@@ -8,6 +8,5 @@ export type FindTransactionsByMonthInput = {
 
 export interface TransactionRepository {
   create(input: Transaction): Promise<Transaction>;
-  findByMonth?: (input: FindTransactionsByMonthInput) => Promise<Transaction[]>;
+  findByMonth(input: FindTransactionsByMonthInput): Promise<Transaction[]>;
 }
-

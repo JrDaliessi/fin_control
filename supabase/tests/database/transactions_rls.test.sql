@@ -18,6 +18,13 @@ select id, 'Conta ' || id::text, 'checking', 0 from (values (current_setting('te
 insert into public.categories (user_id, name, kind)
 select id, 'Categoria ' || id::text, 'expense' from (values (current_setting('test.user_a_id')::uuid), (current_setting('test.user_b_id')::uuid), (current_setting('test.anonymous_user_id')::uuid)) as fixture(id);
 
+select set_config('test.account_a_id', (select id::text from public.financial_accounts where user_id = current_setting('test.user_a_id')::uuid), true);
+select set_config('test.account_b_id', (select id::text from public.financial_accounts where user_id = current_setting('test.user_b_id')::uuid), true);
+select set_config('test.anonymous_account_id', (select id::text from public.financial_accounts where user_id = current_setting('test.anonymous_user_id')::uuid), true);
+select set_config('test.category_a_id', (select id::text from public.categories where user_id = current_setting('test.user_a_id')::uuid), true);
+select set_config('test.category_b_id', (select id::text from public.categories where user_id = current_setting('test.user_b_id')::uuid), true);
+select set_config('test.anonymous_category_id', (select id::text from public.categories where user_id = current_setting('test.anonymous_user_id')::uuid), true);
+
 insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on)
 select users.id, accounts.id, categories.id, 'Transação ' || users.id::text, 100, 'expense', date '2026-07-08'
 from (values (current_setting('test.user_a_id')::uuid), (current_setting('test.user_b_id')::uuid), (current_setting('test.anonymous_user_id')::uuid)) as users(id)
@@ -32,7 +39,7 @@ select is(auth.uid(), current_setting('test.user_a_id')::uuid, 'user A identity 
 select results_eq($$select count(*)::bigint from public.transactions$$, $$values (1::bigint)$$, 'user A sees only own transaction');
 select results_eq($$select count(*)::bigint from public.transactions where user_id = current_setting('test.user_b_id')::uuid$$, $$values (0::bigint)$$, 'user A cannot query user B');
 select lives_ok($$insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on) select current_setting('test.user_a_id')::uuid, accounts.id, categories.id, 'Nova A', 200, 'expense', current_date from public.financial_accounts accounts join public.categories categories on categories.user_id = accounts.user_id and categories.kind = 'expense' where accounts.user_id = current_setting('test.user_a_id')::uuid limit 1$$, 'user A inserts owned transaction');
-select throws_ok($$insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on) select current_setting('test.user_b_id')::uuid, accounts.id, categories.id, 'Forjada', 200, 'expense', current_date from public.financial_accounts accounts join public.categories categories on categories.user_id = accounts.user_id and categories.kind = 'expense' where accounts.user_id = current_setting('test.user_b_id')::uuid limit 1$$, '42501', null, 'user A cannot insert for user B');
+select throws_ok($$insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on) values (current_setting('test.user_b_id')::uuid, current_setting('test.account_b_id')::uuid, current_setting('test.category_b_id')::uuid, 'Forjada', 200, 'expense', current_date)$$, '42501', null, 'user A cannot insert for user B');
 select throws_ok($$update public.transactions set description = 'Alterada' where user_id = current_setting('test.user_a_id')::uuid$$, '42501', null, 'authenticated has no update');
 select throws_ok($$delete from public.transactions where user_id = current_setting('test.user_a_id')::uuid$$, '42501', null, 'authenticated has no delete');
 
@@ -43,7 +50,7 @@ set local role authenticated;
 select is(auth.uid(), current_setting('test.user_b_id')::uuid, 'user B identity is active');
 select results_eq($$select count(*)::bigint from public.transactions$$, $$values (1::bigint)$$, 'user B sees only own transaction');
 select results_eq($$select count(*)::bigint from public.transactions where user_id = current_setting('test.user_a_id')::uuid$$, $$values (0::bigint)$$, 'user B cannot query user A');
-select throws_ok($$insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on) select current_setting('test.user_a_id')::uuid, accounts.id, categories.id, 'Forjada B', 200, 'expense', current_date from public.financial_accounts accounts join public.categories categories on categories.user_id = accounts.user_id and categories.kind = 'expense' where accounts.user_id = current_setting('test.user_a_id')::uuid limit 1$$, '42501', null, 'user B cannot insert for user A');
+select throws_ok($$insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on) values (current_setting('test.user_a_id')::uuid, current_setting('test.account_a_id')::uuid, current_setting('test.category_a_id')::uuid, 'Forjada B', 200, 'expense', current_date)$$, '42501', null, 'user B cannot insert for user A');
 
 reset role;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000000', true);
@@ -59,7 +66,7 @@ set local role authenticated;
 select is(auth.uid(), current_setting('test.anonymous_user_id')::uuid, 'anonymous Auth identity is active');
 select is((auth.jwt() ->> 'is_anonymous')::boolean, true, 'anonymous Auth claim is active');
 select results_eq($$select count(*)::bigint from public.transactions$$, $$values (0::bigint)$$, 'anonymous Auth user sees no owned transaction');
-select throws_ok($$insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on) select current_setting('test.anonymous_user_id')::uuid, accounts.id, categories.id, 'Nova anônima', 200, 'expense', current_date from public.financial_accounts accounts join public.categories categories on categories.user_id = accounts.user_id and categories.kind = 'expense' where accounts.user_id = current_setting('test.anonymous_user_id')::uuid limit 1$$, '42501', null, 'anonymous Auth user cannot insert');
+select throws_ok($$insert into public.transactions (user_id, account_id, category_id, description, amount_in_cents, type, occurred_on) values (current_setting('test.anonymous_user_id')::uuid, current_setting('test.anonymous_account_id')::uuid, current_setting('test.anonymous_category_id')::uuid, 'Nova anônima', 200, 'expense', current_date)$$, '42501', null, 'anonymous Auth user cannot insert');
 
 reset role;
 select * from finish();
