@@ -5,6 +5,7 @@ import type {
   CategoryDto,
   CreateCategoryRequest
 } from "../../application/dtos/category.dto";
+import { normalizeCategoryName } from "../../domain/entities/category.entity";
 
 export type CategoryFormValues = CreateCategoryRequest;
 export type CategoryFormField = keyof CategoryFormValues;
@@ -25,7 +26,7 @@ export function useCategoryForm({ onCreateCategory }: UseCategoryFormInput) {
   const [state, setState] = useState<CategoryFormState>(initialState);
 
   async function submit(values: CategoryFormValues): Promise<{ ok: boolean }> {
-    const name = values.name.trim().replace(/\s+/g, " ");
+    const name = normalizeCategoryName(values.name);
 
     if (!name) {
       setState({

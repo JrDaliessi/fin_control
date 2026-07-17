@@ -59,4 +59,30 @@ describe("Category.restore", () => {
       Category.restore({ ...persistedCategory, name: " ", kind: "both" as never })
     ).toThrow();
   });
+
+  it.each([
+    ["missing id", { id: " " }, "id"],
+    ["invalid creation date", { createdAt: new Date("invalid") }, "created"],
+    ["invalid update date", { updatedAt: new Date("invalid") }, "updated"]
+  ])("rejects %s", (_caseName, patch, expectedMessage) => {
+    expect(() => Category.restore({ ...persistedCategory, ...patch })).toThrow(
+      expectedMessage
+    );
+  });
+
+  it("protects persisted dates from external mutation", () => {
+    const createdAt = new Date(persistedCategory.createdAt);
+    const updatedAt = new Date(persistedCategory.updatedAt);
+    const category = Category.restore({ ...persistedCategory, createdAt, updatedAt });
+    const expectedCreatedAt = createdAt.toISOString();
+    const expectedUpdatedAt = updatedAt.toISOString();
+
+    createdAt.setUTCFullYear(2000);
+    updatedAt.setUTCFullYear(2000);
+    category.createdAt?.setUTCFullYear(1999);
+    category.updatedAt?.setUTCFullYear(1999);
+
+    expect(category.createdAt?.toISOString()).toBe(expectedCreatedAt);
+    expect(category.updatedAt?.toISOString()).toBe(expectedUpdatedAt);
+  });
 });

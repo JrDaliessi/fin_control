@@ -20,26 +20,46 @@ type CategoryProps = CreateCategoryInput & {
 
 const validCategoryKinds: readonly CategoryKind[] = ["income", "expense"];
 
+export function normalizeCategoryName(name: string): string {
+  return name.trim().replace(/\s+/g, " ");
+}
+
 export class Category {
   readonly id?: string;
   readonly userId: string;
   readonly name: string;
   readonly kind: CategoryKind;
-  readonly createdAt?: Date;
-  readonly updatedAt?: Date;
+  private readonly persistedCreatedAt?: Date;
+  private readonly persistedUpdatedAt?: Date;
 
   private constructor(props: CategoryProps) {
     this.id = props.id;
     this.userId = props.userId;
     this.name = props.name;
     this.kind = props.kind;
-    this.createdAt = props.createdAt;
-    this.updatedAt = props.updatedAt;
+    this.persistedCreatedAt = props.createdAt
+      ? new Date(props.createdAt.getTime())
+      : undefined;
+    this.persistedUpdatedAt = props.updatedAt
+      ? new Date(props.updatedAt.getTime())
+      : undefined;
+  }
+
+  get createdAt(): Date | undefined {
+    return this.persistedCreatedAt
+      ? new Date(this.persistedCreatedAt.getTime())
+      : undefined;
+  }
+
+  get updatedAt(): Date | undefined {
+    return this.persistedUpdatedAt
+      ? new Date(this.persistedUpdatedAt.getTime())
+      : undefined;
   }
 
   static create(input: CreateCategoryInput): Category {
     const userId = input.userId.trim();
-    const name = input.name.trim().replace(/\s+/g, " ");
+    const name = normalizeCategoryName(input.name);
 
     if (!userId) {
       throw new Error("user is required");
@@ -62,9 +82,22 @@ export class Category {
 
   static restore(input: RestoreCategoryInput): Category {
     const validatedCategory = Category.create(input);
+    const id = input.id.trim();
+
+    if (!id) {
+      throw new Error("id is required");
+    }
+
+    if (Number.isNaN(input.createdAt.getTime())) {
+      throw new Error("created date is invalid");
+    }
+
+    if (Number.isNaN(input.updatedAt.getTime())) {
+      throw new Error("updated date is invalid");
+    }
 
     return new Category({
-      id: input.id,
+      id,
       userId: validatedCategory.userId,
       name: validatedCategory.name,
       kind: validatedCategory.kind,

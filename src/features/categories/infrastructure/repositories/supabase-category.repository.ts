@@ -15,16 +15,18 @@ type SupabaseResult<T> = {
   error: unknown;
 };
 
+const categoryColumns = "id,user_id,name,kind,created_at,updated_at";
+
 type CreateQueryBuilder = {
   insert(input: CategoryInsert): {
-    select(columns: "*"): {
+    select(columns: typeof categoryColumns): {
       single(): Promise<SupabaseResult<CategoryRow>>;
     };
   };
 };
 
 type ListQueryBuilder = {
-  select(columns: "*"): {
+  select(columns: typeof categoryColumns): {
     eq(column: "user_id", value: string): {
       order(column: "kind", options: { ascending: true }): {
         order(column: "name", options: { ascending: true }): {
@@ -60,7 +62,7 @@ export class SupabaseCategoryRepository implements CategoryRepository {
       const table = this.supabaseClient.from("categories") as CreateQueryBuilder;
       const { data, error } = await table
         .insert(mapCategoryToInsert(category))
-        .select("*")
+        .select(categoryColumns)
         .single();
 
       if (error || !data) {
@@ -79,7 +81,7 @@ export class SupabaseCategoryRepository implements CategoryRepository {
     try {
       const table = this.supabaseClient.from("categories") as ListQueryBuilder;
       const { data, error } = await table
-        .select("*")
+        .select(categoryColumns)
         .eq("user_id", input.userId)
         .order("kind", { ascending: true })
         .order("name", { ascending: true })

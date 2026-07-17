@@ -8,6 +8,7 @@ import {
 } from "./fixtures/category.fixtures";
 
 const category = Category.create(validCategoryInput);
+const categoryColumns = "id,user_id,name,kind,created_at,updated_at";
 
 describe("SupabaseCategoryRepository", () => {
   it("creates in categories and returns the persisted row", async () => {
@@ -45,7 +46,7 @@ describe("SupabaseCategoryRepository", () => {
       name: "Alimentação",
       kind: "expense"
     });
-    expect(select).toHaveBeenCalledWith("*");
+    expect(select).toHaveBeenCalledWith(categoryColumns);
     expect(single).toHaveBeenCalledTimes(1);
     expect(result).toEqual(
       expect.objectContaining({ id: persistedCategoryRow.id, userId: categoryUserId })
@@ -109,7 +110,7 @@ describe("SupabaseCategoryRepository", () => {
     const result = await repository.listByUser({ userId: categoryUserId });
 
     expect(from).toHaveBeenCalledWith("categories");
-    expect(select).toHaveBeenCalledWith("*");
+    expect(select).toHaveBeenCalledWith(categoryColumns);
     expect(eq).toHaveBeenCalledWith("user_id", categoryUserId);
     expect(orderByKind).toHaveBeenCalledWith("kind", { ascending: true });
     expect(orderByName).toHaveBeenCalledWith("name", { ascending: true });

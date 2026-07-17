@@ -443,6 +443,21 @@
 - Build preservou `/accounts` dinâmica e `ƒ Proxy (Middleware)`.
 - Estado de saída: retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
 
+### Resultado observado — SR-010
+- Arquivos da feature foram medidos; nenhum monólito crítico foi identificado e `CategoryForm.tsx` permaneceu coeso.
+- Auditoria encontrou normalização duplicada, projeções `select("*")` e metadados persistidos mutáveis/sem validação própria.
+- RED direcionado confirmou seis falhas antes da correção.
+- `Category.restore` passou a validar ID e datas; cópias defensivas protegem `createdAt` e `updatedAt` na entrada e leitura.
+- Normalização de nome foi centralizada no domínio e reutilizada pelo hook de apresentação.
+- Repository passou a selecionar somente `id,user_id,name,kind,created_at,updated_at`.
+- GREEN direcionado passou com 3 suítes e 20 testes.
+- MCP confirmou RLS habilitada/forçada, grants mínimos, policies com initPlan e índices adequados; nenhuma mudança remota foi necessária.
+- Performance Advisor permaneceu limpo; Security Advisor manteve somente `SEC-AUTH-001` preexistente.
+- `npm run test:ci`: 53 suítes e 253 testes passaram.
+- `npm run type-check`, `npm run lint`, `npm audit --omit=dev` e `npm run build` passaram.
+- Nenhuma migration, feature, regra de negócio, dependência ou capability futura foi adicionada.
+- Estado de saída: retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
+
 ## Gate do Dia 6
 - Layout mobile first revisado.
 - Campos principais têm labels acessíveis.

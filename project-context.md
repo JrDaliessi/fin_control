@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SR-010 concluído; apresentação persistente de categorias e integração com transações validadas
+- Fase atual: Dia 5 da SR-010 concluído; hardening de integridade, projeção de dados e consistência interna validado
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -64,6 +64,7 @@
 - Data da estratégia de testes da SR-010: 2026-07-16
 - Data da implementação mínima da SR-010: 2026-07-16
 - Data da expansão controlada da SR-010: 2026-07-17
+- Data da refatoração e hardening da SR-010: 2026-07-17
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -3755,3 +3756,56 @@ Limites preservados:
 Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - próximo passo recomendado: executar explicitamente `dia 5` da SR-010
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-010
+
+Small release: `SR-010 — Persistência e RLS de categorias`.
+
+Auditoria estrutural:
+- arquivos de produção e testes da feature foram medidos; nenhum monólito crítico foi identificado
+- `CategoryForm.tsx` permaneceu coeso como renderização do formulário e não foi dividido por contagem de linhas
+- duplicação real de normalização entre domínio e hook foi identificada
+- acoplamento desnecessário do repository ao `select("*")` foi identificado
+- metadados `Date` restaurados permitiam mutação externa e não validavam ID/datas inválidos
+
+Plano incremental executado:
+1. proteger metadados persistidos da entidade sem alterar a API pública
+2. centralizar a normalização de nome no domínio e reutilizá-la na apresentação
+3. limitar queries do repository às seis colunas aprovadas
+4. preservar policies, grants e índices remotos já corretos
+
+TDD e refatorações:
+- RED direcionado registrou seis falhas: ID/data inválidos, mutação externa e duas projeções ainda usando `*`
+- `Category.restore` passou a validar ID, `createdAt` e `updatedAt`
+- datas persistidas são copiadas na entrada e na leitura, preservando a imutabilidade da entidade
+- `normalizeCategoryName` tornou-se a fonte única da normalização no domínio
+- repository passou a selecionar explicitamente `id,user_id,name,kind,created_at,updated_at`
+- GREEN direcionado passou com 3 suítes e 20 testes
+
+Revisão Supabase via MCP, somente leitura:
+- projeto hospedado permanece em Postgres 17
+- RLS de `public.categories` permanece habilitada e forçada
+- grants permanecem restritos a `SELECT` e `INSERT` para `authenticated`
+- policies de `SELECT`/`INSERT` preservam owner, bloqueio de Auth anônimo e helpers em initPlan
+- índices cobrem ownership, unicidade case-insensitive, chave composta futura e ordenação da listagem
+- Performance Advisor não retornou alertas
+- Security Advisor manteve somente `SEC-AUTH-001` (`auth_leaked_password_protection`), preexistente e fora do escopo
+- nenhuma migration, DDL, policy, grant, configuração ou dado remoto foi alterado
+
+Resultado dos gates:
+- `npm run test:ci`: 53 suítes e 253 testes passaram
+- `npm run type-check`: passou
+- `npm run lint`: passou, 0 warnings
+- `npm audit --omit=dev`: passou, 0 vulnerabilidades
+- `npm run build`: passou com `/categories` dinâmica e Proxy ativo
+
+Limites e dívida:
+- nenhuma nova feature, regra de negócio, dependência ou primitive visual
+- nenhuma edição, exclusão, arquivamento, personalização ou persistência de transações
+- nenhuma nova dívida técnica identificada; `SEC-AUTH-001` permanece rastreada separadamente
+- `.gitignore` e `rewrite-msgs.sh` permaneceram fora do escopo
+- nenhum commit, push, PR ou deploy executado
+
+Estado de saída:
+- retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
+- próximo passo recomendado: executar explicitamente `dia 6` da SR-010
