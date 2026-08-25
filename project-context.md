@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-011 concluído; pipeline, segurança, Supabase, observabilidade e release incremental validados
+- Fase atual: SR-012 selecionada como próxima small release; aguardando comando explícito `dia 1`
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -75,6 +75,7 @@
 - Data da refatoração e hardening da SR-011: 2026-07-17
 - Data da revisão de UX, acessibilidade e PWA da SR-011: 2026-07-17
 - Data da validação final e preparação de release da SR-011: 2026-07-17
+- Data de seleção da SR-012 como próximo ciclo: 2026-08-25
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4284,3 +4285,35 @@ Estado de saída:
 - nenhum bloqueio crítico para entrega incremental do código
 - Dia 7 concluído sem iniciar outra small release
 - próximo passo recomendado: selecionar explicitamente a próxima small release ou autorizar a publicação do código em fluxo separado
+
+## Próximo Ciclo Selecionado — SR-012 Períodos Financeiros
+
+Small release selecionada: `SR-012 — Períodos financeiros`.
+
+Motivo da escolha:
+- é a sequência aprovada após a fundação de dados reais concluída na SR-011
+- habilita agregações financeiras posteriores sem antecipar gráficos ou IA
+- diferencia períodos civis de janelas móveis antes que novos cálculos dependam deles
+
+Escopo inicial para discovery no Dia 1:
+- definir contratos explícitos para semana, últimos 7 dias, quinzena, últimos 15 dias e mês
+- definir limites inclusivos/exclusivos, timezone e tratamento de virada de período
+- preservar cálculos puros no domínio `financial-analytics`
+- reutilizar dados persistentes por contratos, sem acesso do domínio ao Supabase
+
+Fora do escopo desta small release:
+- agregação de evolução financeira da SR-013
+- biblioteca e renderização de gráficos
+- candles, distribuição de frequência, gamificação e IA
+- mudança em grants, RLS ou persistência sem necessidade demonstrada no Dia 1
+
+Critérios de entrada confirmados:
+- SR-011 concluída em `READY_FOR_RELEASE`
+- autenticação, contas, categorias e transações persistidas com RLS
+- sequência SR-012 a SR-014 aprovada no roadmap e no ADR de analytics
+- nenhum item em `IN_PROGRESS`
+
+Estado operacional:
+- item movido de `DISCOVERY` para `READY`
+- nenhuma implementação ou teste da SR-012 iniciado
+- próximo comando válido: `dia 1`

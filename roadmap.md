@@ -180,7 +180,7 @@ Evidência do Dia 6 da SR-011: formulário bloqueia todos os campos durante o en
 
 Evidência do Dia 7 da SR-011: divergência de Anonymous Sign-In no Proxy corrigida em TDD; 61 suítes/294 testes, lint, type-check, audit e build verdes; 89 asserções pgTAP com rollback, migrations alinhadas, Performance Advisor limpo e threat model/observabilidade documentados.
 
-Próximo passo: selecionar explicitamente a próxima small release. Deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`; nenhuma nova fase foi iniciada automaticamente.
+Próximo passo concluído em 2026-08-25: `SR-012 — Períodos financeiros` selecionada como próxima small release. Deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`; o Dia 1 da SR-012 ainda não foi iniciado.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
@@ -238,6 +238,8 @@ Governança:
 ## Marco 9 - Periodos e Evolucao
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
+
+Estado atual: SR-012 promovida para `READY`; próximo comando válido é `dia 1` para definir semântica de períodos, timezone, contratos e limites antes de testes ou implementação.
 
 ## Marco 10 - Candles Financeiros
 
