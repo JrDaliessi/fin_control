@@ -604,3 +604,32 @@ Interpretação:
 - nenhum código funcional, migration, integração, UI ou dependência foi criado
 - estado final: `TEST_STRATEGY_READY`
 - próximo comando válido: `dia 3`
+
+## Dia 3 — SR-012
+
+### GREEN direcionado
+
+- 3 suítes e 37 testes passaram.
+- datas civis canônicas, ano bissexto, viradas de mês/ano e limites semiabertos foram validados.
+- os cinco períodos aprovados foram resolvidos sem relógio, locale, timezone implícito ou `Date`.
+
+### Regressão e qualidade
+
+- regressão completa: 64 suítes e 331 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- build passou.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+- inspeção arquitetural confirmou ausência de React, Next.js, Supabase e `any` nos novos módulos.
+
+### Auditoria de dependências
+
+- auditoria de produção identificou 4 vulnerabilidades altas.
+- auditoria completa identificou 6 vulnerabilidades altas.
+- nenhuma atualização forçada foi aplicada no Dia 3; a remediação foi registrada como `SEC-DEPS-001`, severidade ALTA, antes do Dia 7.
+
+Interpretação:
+- o RED do Dia 2 foi convertido em GREEN sem relaxar ou alterar testes.
+- somente domínio e caso de uso da SR-012 foram implementados; UI, persistência, agregações e `custom` permanecem fora do escopo.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 4`.

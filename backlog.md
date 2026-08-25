@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
 - Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 2 concluído; 37 cenários essenciais em RED válido.
+- Fase atual: Dia 3 concluído; implementação mínima validada em 37 cenários direcionados e 331 testes totais.
 - Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: executar `dia 3` para implementar somente o necessário para o GREEN.
+- Próximo passo: executar `dia 4` para a expansão controlada, sem antecipar persistência ou agregações.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -387,6 +387,20 @@ Nenhum item pronto aguardando início no momento.
 Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial e sem decisão de provedor.
 
 ## DÍVIDA TÉCNICA
+
+### SEC-DEPS-001 — Atualizar dependências com vulnerabilidades altas
+- Tipo: Security Item / Dívida Técnica
+- Descrição: a auditoria de 2026-08-25 identificou 4 vulnerabilidades altas em dependências de produção e 6 altas no conjunto completo, envolvendo `nanoid`, `next`, `postcss`, `sharp`, `brace-expansion` e `js-yaml`.
+- Objetivo de negócio: impedir que uma entrega pública use versões com vulnerabilidades conhecidas.
+- Valor esperado: reduzir exposição a negação de serviço, SSRF, cache poisoning e falhas nas cadeias de imagem, proxy e build.
+- Prioridade: Alta
+- Dependências: ciclo controlado de atualização do Next.js e dependências transitivas, consulta às notas oficiais e regressão completa.
+- Risco: Alto em produção pública; controlado enquanto não houver release/deploy.
+- Severidade: ALTA
+- Fase recomendada: hardening dedicado antes do Dia 7 e de qualquer release público.
+- Prazo: resolver antes da validação final da SR-012.
+- Critério de pronto: `npm audit --omit=dev --audit-level=high` e auditoria completa sem vulnerabilidades altas; testes, type-check, lint e build verdes; Proxy e fluxos atuais preservados.
+- Status: READY
 
 ### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
 - Tipo: Dívida Técnica / Hardening

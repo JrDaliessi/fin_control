@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-012 concluído; testes essenciais criados em RED válido
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-012 concluído; implementação mínima validada em GREEN
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -78,6 +78,7 @@
 - Data de seleção da SR-012 como próximo ciclo: 2026-08-25
 - Data do discovery e arquitetura da SR-012: 2026-08-25
 - Data da estratégia de testes da SR-012: 2026-08-25
+- Data da implementação mínima da SR-012: 2026-08-25
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4438,3 +4439,40 @@ Estado de saída:
 - `TEST_STRATEGY_READY`
 - SR-012 permanece em `IN_PROGRESS`
 - próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Implementação mínima:
+- `CivilDate` valida e preserva datas civis gregorianas no formato canônico `YYYY-MM-DD`, sem `Date`
+- `FinancialPeriodKind` limita o domínio a `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`
+- `resolveFinancialPeriod` calcula intervalos semiabertos determinísticos, incluindo viradas de mês, ano e bissexto
+- `containsCivilDate` valida o candidato e aplica início inclusivo e fim exclusivo
+- `ResolveFinancialPeriodUseCase` mantém a fronteira de application com DTOs planos e serializáveis
+
+Escopo preservado:
+- nenhuma alteração nos testes RED do Dia 2
+- nenhuma UI, presentation, infrastructure, Supabase, migration, repository ou dependência
+- nenhum período `custom`, agregação, comparação ou consulta financeira antecipada
+- domínio e aplicação sem React, Next.js, Supabase, `Date` ou `any`
+
+Evidências de qualidade:
+- GREEN direcionado: 3 suítes e 37 testes passaram
+- regressão completa: 64 suítes e 331 testes passaram
+- type-check passou
+- lint passou com 0 warnings
+- build passou
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Risco registrado:
+- `npm audit --omit=dev --audit-level=high` identificou 4 vulnerabilidades altas em dependências de produção
+- a auditoria completa identificou 6 vulnerabilidades altas
+- nenhuma atualização forçada foi feita nesta fase; `SEC-DEPS-001` foi registrada com severidade ALTA e prazo anterior ao Dia 7
+- release e deploy permanecem bloqueados até a remediação e nova regressão completa
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 3 concluído sem avanço automático de fase
+- próximo comando válido: `dia 4`

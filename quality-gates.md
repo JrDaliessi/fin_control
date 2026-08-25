@@ -203,6 +203,16 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para módulos fora da small release.
 
+### Resultado observado — SR-012
+- `CivilDate`, tipos de período, resolução dos cinco períodos, pertencimento ao intervalo e caso de uso foram implementados sem `Date`, React, Next.js, Supabase ou `any`.
+- Testes direcionados passaram com 3 suítes e 37 testes.
+- Regressão completa passou com 64 suítes e 331 testes.
+- Type-check, lint, build e `git diff --check` passaram.
+- A auditoria encontrou 4 vulnerabilidades altas em produção e 6 no conjunto completo; nenhuma dependência foi alterada fora do escopo do Dia 3.
+- A dívida `SEC-DEPS-001` foi registrada com severidade ALTA e prazo anterior ao Dia 7.
+- A implementação está apta à expansão controlada, mas release e deploy permanecem bloqueados até a remediação da auditoria.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — UI-002
 - Configuração pura de três rotas e alias `/` implementada sem dependência de framework ou infraestrutura.
 - Sidebar/rail, topbar e navegação mobile criadas próximas ao App Router, sem nova primitive compartilhada.
