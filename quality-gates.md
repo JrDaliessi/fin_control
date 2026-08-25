@@ -97,6 +97,18 @@
 - Estado de saída validado como `TEST_STRATEGY_READY`.
 
 ## Gate do Dia 2
+
+### Resultado observado — SR-012
+- Matriz de domain e application documentada em `test-strategy.md`.
+- 3 suítes e 37 cenários foram criados antes da implementação.
+- RED direcionado válido: 3 suítes falharam exclusivamente pelos módulos de produção ausentes.
+- Type-check falhou somente com 6 erros `TS2307` referentes aos 5 módulos planejados.
+- Rede anterior passou com 61 suítes e 294 testes ao excluir os contratos RED da SR-012.
+- Lint passou com 0 warnings e `git diff --check` passou.
+- Build não foi executado porque o type-check vermelho é deliberado.
+- Nenhum código funcional, migration, integração, UI ou dependência foi criado.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+- Próximo comando válido: `dia 3`.
 - Setup técnico mínimo criado.
 - Jest configurado.
 - Testing Library configurada.

@@ -575,3 +575,32 @@ Interpretação:
 - grants mínimos, ownership e vínculos cross-tenant permanecem protegidos.
 - SR-011 está `READY_FOR_RELEASE` como entrega incremental de código.
 - deploy público permanece bloqueado por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
+
+## Dia 2 — SR-012
+
+### Baseline
+
+- suíte anterior: 61 suítes e 294 testes passaram
+- lint passou com 0 warnings
+
+### RED direcionado
+
+- 3 suítes falharam antes de executar os 37 cenários codificados
+- `civil-date.test.ts`: módulo `CivilDate` ausente
+- `resolve-financial-period.test.ts`: serviços e tipos de período ausentes
+- `resolve-financial-period.use-case.test.ts`: caso de uso ausente
+- type-check apresentou 6 erros `TS2307`, todos referentes aos 5 módulos planejados
+
+### Rede de segurança
+
+- 61 suítes e 294 testes anteriores permaneceram verdes ao excluir `src/features/financial-analytics/tests`
+- lint permaneceu verde
+- `git diff --check` passou
+- build não foi executado porque o type-check vermelho é deliberado
+
+Interpretação:
+- RED válido e restrito à implementação ainda bloqueada
+- nenhum teste foi relaxado, ignorado ou removido
+- nenhum código funcional, migration, integração, UI ou dependência foi criado
+- estado final: `TEST_STRATEGY_READY`
+- próximo comando válido: `dia 3`

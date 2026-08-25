@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
 - Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 1 concluído; estratégia de testes pendente.
+- Fase atual: Dia 2 concluído; 37 cenários essenciais em RED válido.
 - Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: executar `dia 2` para criar os testes essenciais em RED.
+- Próximo passo: executar `dia 3` para implementar somente o necessário para o GREEN.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

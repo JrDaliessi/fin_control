@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-012 concluído; domínio, escopo, contratos e limites temporais definidos
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-012 concluído; testes essenciais criados em RED válido
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -77,6 +77,7 @@
 - Data da validação final e preparação de release da SR-011: 2026-07-17
 - Data de seleção da SR-012 como próximo ciclo: 2026-08-25
 - Data do discovery e arquitetura da SR-012: 2026-08-25
+- Data da estratégia de testes da SR-012: 2026-08-25
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4391,3 +4392,49 @@ Estado de saída:
 - `git diff --check`, `npm run lint` e `npm run type-check` passaram
 - testes e build não foram executados porque o Dia 1 alterou somente documentação
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Matriz executada:
+- `CivilDate`: formato canônico, datas reais, bissexto e entradas inválidas
+- `resolveFinancialPeriod`: cinco tipos, limites semiabertos, quinzenas, janelas móveis e viradas de calendário
+- `containsCivilDate`: início inclusivo, fim exclusivo, datas externas e candidato inválido
+- `ResolveFinancialPeriodUseCase`: DTO plano e serializável, kind e referência inválidos
+- infrastructure e presentation: não aplicáveis nesta release
+
+Testes criados antes da implementação:
+- `src/features/financial-analytics/tests/civil-date.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.use-case.test.ts`
+
+Cenários codificados:
+- 3 suítes
+- 37 cenários de domínio e aplicação
+- nenhuma fixture compartilhada, pois entradas primitivas e tabelas locais tornam as expectativas explícitas
+
+Evidência RED:
+- execução direcionada: 3 suítes falharam e 0 testes executaram porque os imports de produção ainda não existem
+- falhas Jest limitadas a `CivilDate`, `containsCivilDate` e `ResolveFinancialPeriodUseCase` ausentes
+- type-check apresentou 6 erros `TS2307`, todos referentes aos 5 módulos planejados da SR-012
+- nenhuma falha funcional inesperada ocorreu
+
+Rede de segurança:
+- baseline anterior: 61 suítes e 294 testes passaram ao excluir somente os testes da SR-012
+- lint passou com 0 warnings
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- build não foi executado porque o type-check vermelho é deliberado
+
+Implementação bloqueada até o Dia 3:
+- `src/features/financial-analytics/domain/value-objects/civil-date.ts`
+- `src/features/financial-analytics/domain/types/financial-period.types.ts`
+- `src/features/financial-analytics/domain/services/resolve-financial-period.ts`
+- `src/features/financial-analytics/domain/services/contains-civil-date.ts`
+- `src/features/financial-analytics/application/use-cases/resolve-financial-period.use-case.ts`
+- qualquer presentation, infrastructure, repository, migration, policy, grant, rota ou dependência
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-012 permanece em `IN_PROGRESS`
+- próximo comando válido: `dia 3`
