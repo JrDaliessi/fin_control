@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-011 concluído; pipeline, segurança, Supabase, observabilidade e release incremental validados
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SR-012 concluído; domínio, escopo, contratos e limites temporais definidos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -75,6 +75,8 @@
 - Data da refatoração e hardening da SR-011: 2026-07-17
 - Data da revisão de UX, acessibilidade e PWA da SR-011: 2026-07-17
 - Data da validação final e preparação de release da SR-011: 2026-07-17
+- Data de seleção da SR-012 como próximo ciclo: 2026-08-25
+- Data do discovery e arquitetura da SR-012: 2026-08-25
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4284,3 +4286,108 @@ Estado de saída:
 - nenhum bloqueio crítico para entrega incremental do código
 - Dia 7 concluído sem iniciar outra small release
 - próximo passo recomendado: selecionar explicitamente a próxima small release ou autorizar a publicação do código em fluxo separado
+
+## Próximo Ciclo Selecionado — SR-012 Períodos Financeiros
+
+Small release selecionada: `SR-012 — Períodos financeiros`.
+
+Motivo da escolha:
+- é a sequência aprovada após a fundação de dados reais concluída na SR-011
+- habilita agregações financeiras posteriores sem antecipar gráficos ou IA
+- diferencia períodos civis de janelas móveis antes que novos cálculos dependam deles
+
+Escopo inicial para discovery no Dia 1:
+- definir contratos explícitos para semana, últimos 7 dias, quinzena, últimos 15 dias e mês
+- definir limites inclusivos/exclusivos, timezone e tratamento de virada de período
+- preservar cálculos puros no domínio `financial-analytics`
+- reutilizar dados persistentes por contratos, sem acesso do domínio ao Supabase
+
+Fora do escopo desta small release:
+- agregação de evolução financeira da SR-013
+- biblioteca e renderização de gráficos
+- candles, distribuição de frequência, gamificação e IA
+- mudança em grants, RLS ou persistência sem necessidade demonstrada no Dia 1
+
+Critérios de entrada confirmados:
+- SR-011 concluída em `READY_FOR_RELEASE`
+- autenticação, contas, categorias e transações persistidas com RLS
+- sequência SR-012 a SR-014 aprovada no roadmap e no ADR de analytics
+- nenhum item em `IN_PROGRESS`
+
+Estado operacional:
+- item movido de `READY` para `IN_PROGRESS`
+- nenhuma implementação ou teste da SR-012 iniciado
+- próximo comando válido: `dia 2`
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Objetivo refinado:
+- criar uma linguagem de domínio determinística para períodos baseados em datas civis
+- diferenciar períodos de calendário de janelas móveis sem depender de React, Next.js, Supabase, relógio global ou timezone implícito
+- preparar a SR-013 para consultar e agregar por intervalo sem antecipar persistência ou visualização
+
+Tipos aprovados:
+- `week`
+- `rolling_7_days`
+- `fortnight`
+- `rolling_15_days`
+- `month`
+
+Semântica aprovada para uma data civil de referência `D`:
+- `week`: segunda-feira da semana de `D` até a segunda-feira seguinte
+- `rolling_7_days`: de `D - 6 dias` até `D + 1 dia`
+- `fortnight`: dias 1 a 15 ou dia 16 ao fim do mês
+- `rolling_15_days`: de `D - 14 dias` até `D + 1 dia`
+- `month`: primeiro dia do mês até o primeiro dia do mês seguinte
+
+Contratos temporais:
+- `CivilDate` representa uma data gregoriana real em `YYYY-MM-DD`, sem horário ou offset
+- `FinancialPeriodKind` contém somente os cinco tipos desta release
+- `FinancialPeriod` contém `kind`, `referenceOn`, `startOnInclusive` e `endOnExclusive`
+- intervalos usam o formato semiaberto `[startOnInclusive, endOnExclusive)`
+- a data de referência sempre pertence ao intervalo
+- cálculos usam dias civis, nunca duração em milissegundos
+- viradas de mês, ano e ano bissexto devem permanecer determinísticas
+- `containsCivilDate` será um predicado puro para verificar pertencimento sem consultar infraestrutura
+
+Política de timezone:
+- o domínio recebe uma `CivilDate` já resolvida e não conhece timezone
+- `occurred_on date` permanece uma data civil e nunca sofre conversão de fuso
+- transformar um instante como “agora” em data civil exige, futuramente, timezone IANA e relógio injetados na borda de aplicação
+- nenhum fallback de timezone foi autorizado nesta release
+- composição automática de “período atual” fica bloqueada até existir contrato explícito para essa borda
+
+Arquitetura:
+- fonte de verdade: `src/features/financial-analytics/domain`
+- `application` exporá `ResolveFinancialPeriodUseCase` com DTOs serializáveis de strings civis
+- `presentation` e `infrastructure` não serão criadas sem consumidor real
+- consulta persistente genérica por intervalo pertence à SR-013 e não altera `TransactionRepository.findByMonth` agora
+- nenhuma migration, grant, policy, view, RPC, dependência ou rota é necessária
+- dashboard futuro compõe casos de uso de analytics e não calcula períodos
+- decisão completa: `adr/0009-financial-periods-civil-date-boundaries.md`
+
+Fora do escopo:
+- `custom`
+- comparação entre períodos
+- agregação de receitas, despesas, líquido, saldo ou quantidade
+- consulta Supabase por intervalo
+- seletor ou apresentação visual
+- gráficos, candles, frequência, metas, gamificação e IA
+- persistência de preferência de timezone
+- status, estorno, transferência e saldo consolidado
+
+Riscos e dependências:
+- usar `Date` ou getters locais para datas persistidas pode deslocar o dia financeiro
+- o repositório atual consulta somente por mês; o port genérico por intervalo será definido quando a SR-013 tiver consumidor real
+- analytics completos continuam dependentes de regras futuras de status, estorno, transferência e saldo inicial
+- esses riscos não bloqueiam a SR-012 enquanto ela permanecer como domínio puro
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-012 em `IN_PROGRESS`
+- implementação funcional, testes e alterações externas não executados
+- `git diff --check`, `npm run lint` e `npm run type-check` passaram
+- testes e build não foram executados porque o Dia 1 alterou somente documentação
+- próximo comando válido: `dia 2`

@@ -6,7 +6,18 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SR-012 — Períodos financeiros
+- Tipo: Small Release
+- Descrição objetiva: modelar períodos financeiros civis e móveis sem ambiguidades antes das agregações analíticas.
+- Objetivo de negócio: permitir análise antes do fechamento mensal.
+- Valor esperado: distinguir semana, últimos 7 dias, quinzena, últimos 15 dias e mês de forma previsível.
+- Prioridade: Alta
+- Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
+- Risco: Médio por limites de datas, timezone e viradas de período.
+- Fase atual: Dia 1 concluído; estratégia de testes pendente.
+- Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
+- Próximo passo: executar `dia 2` para criar os testes essenciais em RED.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -189,17 +200,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SR-012 - Periodos financeiros
-- Tipo: Small Release
-- Objetivo de negocio: analisar antes do fechamento mensal.
-- Valor esperado: semana, 7 dias, quinzena, 15 dias e mes sem ambiguidade.
-- Prioridade: Alta
-- Dependencias: SR-011.
-- Risco: Medio
-- Fase recomendada: primeiro ciclo de analytics.
-- Criterio de pronto: tipos de dominio, timezone e filtros testados.
 - Status: DISCOVERY
 
 ### SR-013 - Agregacao da evolucao financeira

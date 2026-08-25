@@ -16,6 +16,19 @@
 - Backlog fatiado em small releases.
 - Dependências críticas e bloqueios documentados.
 
+### Resultado observado — SR-012
+- SR-011 confirmada em `develop` e branch `feature/SR-012-periodos-financeiros` criada a partir da base integrada.
+- Escopo limitado a `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`.
+- `CivilDate` e intervalos semiabertos foram definidos sem `Date`, relógio ou timezone implícito no domínio.
+- Timezone ficou restrito à futura conversão explícita de instante para data civil; `occurred_on date` não sofre conversão.
+- Contratos de domínio e aplicação foram documentados com DTOs serializáveis.
+- `custom`, consulta persistente por intervalo, agregação, UI, gráficos e alterações Supabase permaneceram fora.
+- ADR `0009-financial-periods-civil-date-boundaries.md` criado.
+- Nenhum código funcional, teste, migration, policy, grant, rota ou dependência foi criado.
+- `git diff --check`, lint e type-check passaram; testes e build não foram executados por se tratar de uma entrega exclusivamente documental.
+- Estado de saída validado como `ARCHITECTURE_READY`.
+- Próximo comando válido: `dia 2`.
+
 ### Resultado observado — UI-002
 - UI-001 confirmada como dependência concluída e UI-002 movida para `IN_PROGRESS`.
 - Rotas funcionais auditadas e limitadas a `/dashboard`, `/transactions` e `/accounts`; `/` permanece alias do dashboard.

@@ -178,6 +178,39 @@ Fora da SR-011:
 - saldo atual persistido ou trigger de saldo
 - integração persistente do dashboard e analytics avançados
 
+### Analytics Financeiros — SR-012 Períodos Financeiros
+
+Conceitos:
+- `CivilDate`: data gregoriana real, canônica e sem horário no formato `YYYY-MM-DD`
+- `FinancialPeriodKind`: `week | rolling_7_days | fortnight | rolling_15_days | month`
+- `FinancialPeriod`: intervalo imutável com `kind`, `referenceOn`, `startOnInclusive` e `endOnExclusive`
+
+Regras:
+- intervalos usam `[startOnInclusive, endOnExclusive)`
+- `referenceOn` deve pertencer ao intervalo
+- semana civil começa na segunda-feira e termina antes da segunda-feira seguinte
+- últimos 7 dias incluem a referência e os seis dias civis anteriores
+- primeira quinzena contém dias 1 a 15; segunda quinzena contém dia 16 ao fim do mês
+- últimos 15 dias incluem a referência e os quatorze dias civis anteriores
+- mês começa no dia 1 e termina antes do primeiro dia do mês seguinte
+- datas inexistentes são inválidas
+- adição e subtração operam por dia civil, sem duração em milissegundos
+- viradas de mês, ano e ano bissexto preservam as invariantes
+- o domínio não lê relógio ou timezone do ambiente
+- uma data financeira persistida como `date` não sofre conversão de fuso
+
+Casos de uso e operações planejados:
+- `resolve-financial-period.use-case.ts`: valida entrada serializável e devolve limites civis
+- `resolveFinancialPeriod`: serviço puro que resolve os cinco tipos
+- `containsCivilDate`: predicado puro de pertencimento ao intervalo
+
+Fora da SR-012:
+- período `custom`
+- período atual derivado automaticamente de relógio/timezone
+- comparação, agregação, consulta persistente, apresentação ou gráfico
+- status, estorno, transferência e saldo consolidado
+- extração prematura de `CivilDate` para `shared`
+
 ### Cartões de Crédito
 Representa compromissos futuros, faturas e limite.
 

@@ -18,3 +18,5 @@ Formato recomendado:
 - `0005-fincontrol-pulse-design-system.md` — direção visual, copy e implementação incremental do FinControl Pulse
 - `0006-responsive-private-shell.md` — matriz de rotas e composição responsiva do shell privado
 - `0007-categories-persistence-rls.md` — domínio, persistência, grants e RLS de categorias
+- `0008-transactions-persistence-rls.md` — persistência, integridade tenant-safe, grants e RLS de transações
+- `0009-financial-periods-civil-date-boundaries.md` — períodos financeiros, datas civis e fronteiras de timezone
