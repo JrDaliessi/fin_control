@@ -294,6 +294,23 @@ Regras:
 - Migrations e testes pgTAP permanecem bloqueados até o RED do Dia 2; alteração remota só pode ocorrer no Dia 3.
 - A decisão completa está em `adr/0008-transactions-persistence-rls.md`.
 
+## Decisões Arquiteturais da SR-012
+
+- `financial-analytics/domain` é a fonte de verdade para semântica de períodos financeiros.
+- A release cobre somente `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`; `custom` permanece fora.
+- Limites usam datas civis canônicas `YYYY-MM-DD`, não instâncias de `Date`.
+- Todo intervalo é semiaberto: `[startOnInclusive, endOnExclusive)`.
+- `week` começa na segunda-feira; janelas móveis incluem a data de referência; quinzena é 1–15 ou 16–fim do mês.
+- O domínio recebe `referenceOn` como data civil e não consulta relógio, locale ou timezone do host.
+- Timezone participa apenas da futura conversão de um instante para a data civil do usuário, em uma borda explícita com timezone IANA e relógio injetados.
+- `transactions.occurred_on` já é uma data civil e não pode ser reinterpretada por timezone.
+- `ResolveFinancialPeriodUseCase` expõe DTOs serializáveis; classes de domínio e `Date` não atravessam a fronteira RSC.
+- `presentation` e `infrastructure` não serão criadas na SR-012 sem consumidor real.
+- O port de consulta por intervalo será criado na SR-013; a SR-012 não estende `TransactionRepository.findByMonth` nem importa `Transaction` no domínio de analytics.
+- Nenhuma migration, policy, grant, view, RPC, dependência ou rota é necessária nesta release.
+- Dashboard e outras features podem compor casos de uso públicos de analytics, mas não recalcular períodos.
+- A decisão completa está em `adr/0009-financial-periods-civil-date-boundaries.md`.
+
 ## PWA
 O projeto deve ter:
 - manifest

@@ -395,6 +395,74 @@ Regras:
 
 Nenhuma infraestrutura nova nesta SR. Sem repositórios, sem clients, sem Supabase.
 
+## Financial Analytics — SR-012
+
+### Domain
+
+```ts
+export type FinancialPeriodKind =
+  | "week"
+  | "rolling_7_days"
+  | "fortnight"
+  | "rolling_15_days"
+  | "month";
+
+export type FinancialPeriod = {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+};
+```
+
+`CivilDate` valida e encapsula strings `YYYY-MM-DD`. O domínio expõe:
+
+```ts
+export function resolveFinancialPeriod(input: {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+}): FinancialPeriod;
+
+export function containsCivilDate(
+  period: FinancialPeriod,
+  candidateOn: string,
+): boolean;
+```
+
+Regras:
+- limites são civis e semiabertos
+- nenhuma função lê `new Date()`, timezone ou locale do ambiente
+- `Date`, React, Next.js, Supabase e `Transaction` não são dependências do domínio
+- `custom` não pertence à união da SR-012
+
+### Application
+
+```ts
+export type ResolveFinancialPeriodInput = {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+};
+
+export type FinancialPeriodDto = {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+};
+
+export interface ResolveFinancialPeriodUseCase {
+  execute(input: ResolveFinancialPeriodInput): FinancialPeriodDto;
+}
+```
+
+O DTO usa somente strings serializáveis. A conversão futura de um instante para `referenceOn` deverá receber timezone IANA e relógio explicitamente; ela não integra a SR-012.
+
+### Infrastructure e Presentation
+
+- nenhuma implementação nesta release
+- o port de consulta por intervalo nasce somente na SR-013, quando houver consumidor
+- nenhuma rota, seletor, migration, policy, grant ou dependência adicional é autorizada
+
 ## Sistema Visual — UI-001
 
 Este contrato é transversal de apresentação. Ele não pertence ao domínio financeiro e não pode importar Supabase, casos de uso financeiros ou infraestrutura.
