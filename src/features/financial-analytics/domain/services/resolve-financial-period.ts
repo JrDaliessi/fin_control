@@ -30,6 +30,10 @@ function parseCivilDate(value: string): CivilDateParts {
 }
 
 function formatCivilDate(parts: CivilDateParts): string {
+  if (parts.year < 1 || parts.year > 9999) {
+    throw new Error("civil date is out of range");
+  }
+
   return `${parts.year.toString().padStart(4, "0")}-${parts.month
     .toString()
     .padStart(2, "0")}-${parts.day.toString().padStart(2, "0")}`;

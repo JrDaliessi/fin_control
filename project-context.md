@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-012 concluído; implementação mínima validada em GREEN
+- Fase atual: Dia 4 da SR-012 concluído; limites civis expandidos e validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -79,6 +79,7 @@
 - Data do discovery e arquitetura da SR-012: 2026-08-25
 - Data da estratégia de testes da SR-012: 2026-08-25
 - Data da implementação mínima da SR-012: 2026-08-25
+- Data da expansão controlada da SR-012: 2026-08-25
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4476,3 +4477,38 @@ Estado de saída:
 - SR-012 permanece em `IN_PROGRESS`
 - Dia 3 concluído sem avanço automático de fase
 - próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Expansão aprovada:
+- cobertura explícita das datas civis extremas `0001-01-01` e `9999-12-31`
+- cobertura da semana iniciada em `0001-01-01`
+- rejeição de `month` e `fortnight` quando o fim exclusivo ultrapassa o ano `9999`
+- nenhuma camada de presentation foi criada porque a arquitetura desta release permanece domínio puro
+
+Ciclo TDD:
+- RED direcionado: 2 falhas e 40 testes verdes
+- causa: o formatador interno aceitava o ano `10000` nos limites calculados
+- GREEN: guarda única rejeita anos fora de `0001` a `9999`
+- resultado direcionado: 3 suítes e 42 testes passaram
+- regressão completa: 64 suítes e 336 testes passaram
+
+Evidências de qualidade:
+- type-check passou
+- lint passou com 0 warnings usando o binário local, pois o `npm` global da máquina está incompleto
+- build passou após acesso de rede ao Google Fonts exigido pelo `next/font`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- nenhuma dependência, UI, integration, infrastructure, Supabase, migration ou contrato de analytics futuro foi adicionado
+
+Riscos e pendências:
+- o estado da auditoria permanece em 4 vulnerabilidades altas de produção e 6 no conjunto completo porque o lockfile não foi alterado
+- `SEC-DEPS-001` permanece ALTA, com release e deploy bloqueados até a remediação
+- o `npm` global quebrado é uma limitação do ambiente local; os binários versionados do projeto executaram Jest, ESLint e Next com sucesso
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 4 concluído sem avanço automático de fase
+- próximo comando válido: `dia 5`

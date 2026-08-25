@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
 - Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 3 concluído; implementação mínima validada em 37 cenários direcionados e 331 testes totais.
+- Fase atual: Dia 4 concluído; faixa civil completa validada em 42 cenários direcionados e 336 testes totais.
 - Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: executar `dia 4` para a expansão controlada, sem antecipar persistência ou agregações.
+- Próximo passo: executar `dia 5` para refatoração e hardening interno, incluindo o planejamento de `SEC-DEPS-001`.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

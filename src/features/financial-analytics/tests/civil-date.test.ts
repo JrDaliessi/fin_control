@@ -2,7 +2,13 @@ import { describe, expect, it } from "@jest/globals";
 import { CivilDate } from "../domain/value-objects/civil-date";
 
 describe("CivilDate", () => {
-  it.each(["2026-08-25", "2024-02-29", "2000-02-29"])(
+  it.each([
+    "0001-01-01",
+    "2026-08-25",
+    "2024-02-29",
+    "2000-02-29",
+    "9999-12-31"
+  ])(
     "accepts the real canonical date %s",
     (value) => {
       expect(CivilDate.fromString(value).value).toBe(value);

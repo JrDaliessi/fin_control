@@ -24,6 +24,12 @@ const periodCases: readonly PeriodCase[] = [
     endOnExclusive: "2026-01-05"
   },
   {
+    kind: "week",
+    referenceOn: "0001-01-01",
+    startOnInclusive: "0001-01-01",
+    endOnExclusive: "0001-01-08"
+  },
+  {
     kind: "rolling_7_days",
     referenceOn: "2026-03-02",
     startOnInclusive: "2026-02-24",
@@ -101,6 +107,18 @@ describe("resolveFinancialPeriod", () => {
       expect(() =>
         resolveFinancialPeriod({ kind: "month", referenceOn })
       ).toThrow("referenceOn");
+    }
+  );
+
+  it.each([
+    ["month", "9999-12-31"],
+    ["fortnight", "9999-12-31"]
+  ] as const)(
+    "rejects a %s period whose exclusive end exceeds the civil range",
+    (kind, referenceOn) => {
+      expect(() => resolveFinancialPeriod({ kind, referenceOn })).toThrow(
+        "civil date is out of range"
+      );
     }
   );
 });

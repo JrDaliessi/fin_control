@@ -306,6 +306,17 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para cartão, parcelas, dashboard completo, IA, importação ou Open Finance.
 
+### Resultado observado — SR-012
+- Presentation e estados visuais não se aplicam à SR-012, conforme arquitetura aprovada para esta release de domínio puro.
+- RED direcionado confirmou 2 falhas: `month` e `fortnight` aceitavam fim exclusivo no ano `10000`.
+- `CivilDate` passou a ter cobertura explícita dos limites `0001-01-01` e `9999-12-31`.
+- O formatador interno agora rejeita qualquer limite calculado fora dos anos `0001` a `9999`.
+- GREEN direcionado passou com 3 suítes e 42 testes; regressão completa passou com 64 suítes e 336 testes.
+- Type-check, lint, build e `git diff --check` passaram; o build precisou de acesso de rede somente para baixar Geist pelo `next/font`.
+- Nenhuma UI, infraestrutura, integração, dependência ou nova capacidade financeira foi adicionada.
+- A auditoria permanece com 4 vulnerabilidades altas em produção e 6 no conjunto completo, já registradas em `SEC-DEPS-001`; release continua bloqueado.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — UI-002
 - RED direcionado confirmou somente a ausência do atalho de conteúdo; 16 cenários anteriores permaneceram verdes.
 - Skip link e alvo focalizável adicionados sem introduzir um segundo `main`.

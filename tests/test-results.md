@@ -633,3 +633,28 @@ Interpretação:
 - somente domínio e caso de uso da SR-012 foram implementados; UI, persistência, agregações e `custom` permanecem fora do escopo.
 - estado final: `IMPLEMENTATION_IN_PROGRESS`.
 - próximo comando válido: `dia 4`.
+
+## Dia 4 — SR-012
+
+### RED de expansão controlada
+
+- 2 cenários novos falharam e 40 passaram.
+- `month` e `fortnight` com referência `9999-12-31` produziam fim exclusivo `10000-01-01`, fora do formato civil canônico.
+- os limites civis válidos `0001-01-01` e `9999-12-31` e a primeira semana do ano 1 permaneceram verdes.
+
+### GREEN e regressão
+
+- uma única guarda de faixa foi adicionada ao formatador civil interno.
+- GREEN direcionado: 3 suítes e 42 testes passaram.
+- regressão completa: 64 suítes e 336 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- build passou após liberar o acesso necessário ao Google Fonts para o `next/font`.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+
+Interpretação:
+- períodos resolvidos nunca expõem uma data fora do contrato `YYYY-MM-DD` entre os anos `0001` e `9999`.
+- nenhuma UI, persistência, agregação, comparação ou nova dependência foi antecipada.
+- a auditoria conhecida permanece registrada em `SEC-DEPS-001` e continua bloqueando release.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 5`.
