@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-012 concluído; pipeline local, GitHub Actions e previews Vercel verdes
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SR-013 concluído; agregação diária, snapshot persistente e fronteira temporal definidos
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -83,6 +83,8 @@
 - Data da refatoração e hardening da SR-012: 2026-08-26
 - Data da revisão de UX, acessibilidade e PWA da SR-012: 2026-08-26
 - Data da validação final da SR-012: 2026-08-26
+- Data de seleção da SR-013 como próximo ciclo: 2026-08-26
+- Data do discovery e arquitetura da SR-013: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4641,3 +4643,76 @@ Estado de saída:
 - GitHub Actions `Quality Gates` passou em 1m13s; `Vercel – fin-control`, `Vercel – fin-control-zljm` e `Vercel Preview Comments` passaram
 - a existência de dois projetos Vercel permanece como observação operacional não bloqueante; nenhuma remoção foi autorizada
 - nenhum deploy, merge, configuração externa ou mudança de Supabase foi executado
+
+## Próximo Ciclo Selecionado — SR-013 Agregação da Evolução Financeira
+
+Small release selecionada: `SR-013 — Agregação da evolução financeira`.
+
+Motivo da escolha:
+- sucede os períodos civis entregues pela SR-012
+- fornece matemática e view model reutilizáveis por tabela, gráficos e IA futura
+- habilita o próximo spike de biblioteca visual sem antecipar gráfico
+
+Critérios de entrada confirmados:
+- SR-012 concluída e incorporada em `develop`
+- contas, categorias e transações persistidas com RLS
+- saldo inicial em centavos e períodos semiabertos disponíveis
+- nenhum item anterior em `IN_PROGRESS`
+
+Estado operacional:
+- item movido de `DISCOVERY` para `IN_PROGRESS`
+- branch `feature/SR-013-agregacao-evolucao-financeira` criada a partir de `develop`
+- nenhum teste ou código funcional iniciado
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-013
+
+Objetivo refinado:
+- explicar a evolução registrada de saldo, receitas, despesas, líquido e quantidade por dia civil
+- calcular saldo de abertura sem transportar histórico ilimitado para a aplicação
+- produzir DTO serializável para tabela acessível e gráfico futuro
+
+Domínio aprovado:
+- todos os cinco períodos atuais usam buckets diários contínuos
+- cada ponto usa `[startOnInclusive, endOnExclusive)`
+- dias vazios preservam saldo e retornam totais zero
+- `netInCents = incomeInCents - expenseInCents`
+- saldo de fechamento acumula o saldo de abertura e o líquido de cada ponto
+- somatórios exigem inteiros seguros e rejeitam overflow
+- movimentos fora do período, datas inválidas, valores não positivos ou tipos desconhecidos são rejeitados
+- o saldo inicial configurado é a linha de base anterior aos movimentos persistidos e não possui data efetiva no modelo atual
+- todos os registros atuais de transações são considerados efetivos; nenhum status, estorno ou transferência é inferido
+
+Application e infraestrutura:
+- `ListFinancialEvolutionUseCase` valida usuário e período, consulta um port próprio e aplica a função pura
+- `FinancialAnalyticsQueryRepository.loadEvolutionSnapshot` retorna quantidade de contas, saldo de abertura e projeções neutras do intervalo
+- analytics não estende `TransactionRepository.findByMonth` nem importa entidades de accounts/transactions
+- a RPC `load_financial_evolution_snapshot(p_start_on date, p_end_on date)` com `SECURITY INVOKER` fornecerá abertura e movimentos em uma fotografia consistente
+- a função não recebe `userId`; sessão e RLS continuam autoridades
+- privilégios serão mínimos e testados antes da migration do Dia 3
+- nenhuma tabela, view, coluna, policy ou índice adicional foi aprovado
+- a função limita o intervalo a 31 dias, filtra explicitamente pelo ator para aproveitar índices, preserva RLS e terá plano validado por `EXPLAIN (ANALYZE, BUFFERS)` transacional
+
+Fronteira temporal aprovada:
+- `America/Sao_Paulo` é o timezone IANA padrão explícito e temporário da aplicação
+- `referenceInstant` é injetado; domínio e resolver não consultam relógio global
+- `occurred_on date` permanece civil e nunca sofre conversão de fuso
+- preferência individual de timezone permanece em release futura
+- a decisão permite resolver `TIME-BOUNDARY-001` antes da composição visual
+
+Presentation planejada para os Dias 4 e 6:
+- seletor acessível dos cinco períodos, com `month` como seleção inicial
+- tabela com caption, cabeçalhos semânticos e colunas Dia, Receitas, Despesas, Líquido, Saldo e Movimentos
+- loading e error pertencem ao App Router; ausência de contas, período sem movimentos e success têm estados distintos
+- nenhum gráfico, biblioteca visual, comparação anterior ou redesenho amplo da UI-003 entra nesta release
+
+Riscos registrados:
+- saldo inicial sem data efetiva recalcula todo o histórico como linha de base; uma data de abertura exigirá release própria
+- registros futuros também são tratados como efetivos enquanto status/agendamento não existirem
+- função SQL exige RED de contrato e pgTAP antes de migration
+- dois projetos Vercel seguem conectados, observação não bloqueante e fora do escopo
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-013 em `IN_PROGRESS`
+- nenhuma implementação, teste, migration, alteração remota, commit, push ou PR executado
+- próximo comando válido: `dia 2`

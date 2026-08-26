@@ -6,7 +6,18 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SR-013 — Agregação da evolução financeira
+- Tipo: Small Release
+- Descrição objetiva: calcular saldo de abertura e evolução diária por período com tabela acessível baseada em dados reais.
+- Objetivo de negócio: explicar saldo, receitas, despesas e líquido no tempo.
+- Valor esperado: base matemática e serializável para tabela, gráficos e IA futura.
+- Prioridade: Alta
+- Dependências: SR-012 concluída, saldos iniciais e movimentos persistidos com RLS.
+- Risco: Alto por continuidade de saldo, timezone, overflow e consulta histórica.
+- Fase atual: Dia 1 concluído; domínio, port, snapshot SQL e fronteira temporal aprovados.
+- Critério de pronto: função pura e caso de uso testados, snapshot autorizado e eficiente, tabela acessível com dados reais, sem biblioteca visual.
+- Próximo passo: executar `dia 2` para matriz TDD, RED de Jest e contratos pgTAP.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -189,17 +200,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SR-013 - Agregacao da evolucao financeira
-- Tipo: Small Release
-- Objetivo de negocio: explicar saldo, receitas, despesas e liquido no tempo.
-- Valor esperado: base matematica para graficos e IA.
-- Prioridade: Alta
-- Dependencias: SR-012 e saldo inicial confiavel.
-- Risco: Alto
-- Fase recomendada: apos SR-012.
-- Criterio de pronto: funcao pura testada e tabela acessivel, sem biblioteca visual.
 - Status: DISCOVERY
 
 ### SP-001 - Avaliar biblioteca de graficos

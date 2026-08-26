@@ -211,6 +211,46 @@ Fora da SR-012:
 - status, estorno, transferência e saldo consolidado
 - extração prematura de `CivilDate` para `shared`
 
+## Evolução Financeira — SR-013
+
+### Movimento analítico
+
+Uma projeção analítica contém somente `id`, `occurredOn`, `createdAt`, `type` e `amountInCents`. Ela não é a entidade `Transaction`.
+
+Regras:
+- `occurredOn` é uma data civil canônica
+- `createdAt` existe somente para desempate estável na infraestrutura
+- `type` aceita `income` ou `expense`
+- o valor é positivo e inteiro seguro em centavos
+- o movimento deve pertencer ao intervalo agregado
+
+### Ponto diário
+
+Cada ponto representa um dia civil do período e contém:
+- `startOnInclusive`
+- `endOnExclusive`
+- `incomeInCents`
+- `expenseInCents`
+- `netInCents`
+- `closingBalanceInCents`
+- `transactionCount`
+
+Invariantes:
+- todos os dias do período aparecem em ordem crescente
+- não existem lacunas ou sobreposição
+- `net = income - expense`
+- o fechamento do primeiro ponto parte do saldo de abertura
+- os demais partem do fechamento anterior
+- dia sem movimentos carrega o saldo anterior
+- totais e saldos fora do intervalo seguro são rejeitados
+
+### Semântica atual do saldo
+
+- saldo inicial é a linha de base configurada antes dos movimentos do livro financeiro
+- saldo de abertura do período soma essa linha de base e todos os movimentos anteriores ao início
+- o modelo atual não atribui data efetiva ao saldo inicial
+- todos os registros persistidos são efetivos; status, estorno, transferência e agendamento entram somente quando forem modelados explicitamente
+
 ### Cartões de Crédito
 Representa compromissos futuros, faturas e limite.
 

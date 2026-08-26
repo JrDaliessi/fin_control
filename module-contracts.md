@@ -463,6 +463,82 @@ O DTO usa somente strings serializáveis. A conversão futura de um instante par
 - o port de consulta por intervalo nasce somente na SR-013, quando houver consumidor
 - nenhuma rota, seletor, migration, policy, grant ou dependência adicional é autorizada
 
+## Financial Analytics — SR-013
+
+### Domain
+
+```ts
+export type FinancialMovementProjection = Readonly<{
+  id: string;
+  occurredOn: string;
+  createdAt: string;
+  type: "income" | "expense";
+  amountInCents: number;
+}>;
+
+export type FinancialEvolutionPoint = Readonly<{
+  startOnInclusive: string;
+  endOnExclusive: string;
+  incomeInCents: number;
+  expenseInCents: number;
+  netInCents: number;
+  closingBalanceInCents: number;
+  transactionCount: number;
+}>;
+
+export function aggregateFinancialEvolution(input: {
+  period: FinancialPeriod;
+  openingBalanceInCents: number;
+  movements: readonly FinancialMovementProjection[];
+}): readonly FinancialEvolutionPoint[];
+```
+
+### Application
+
+```ts
+export type LoadFinancialEvolutionSnapshotInput = {
+  userId: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+};
+
+export type FinancialEvolutionSnapshot = Readonly<{
+  accountCount: number;
+  openingBalanceInCents: number;
+  movements: readonly FinancialMovementProjection[];
+}>;
+
+export interface FinancialAnalyticsQueryRepository {
+  loadEvolutionSnapshot(
+    input: LoadFinancialEvolutionSnapshotInput,
+  ): Promise<FinancialEvolutionSnapshot>;
+}
+```
+
+`ListFinancialEvolutionUseCase` recebe ator, kind e `referenceOn`, resolve o período, consulta o snapshot e devolve DTO plano com status `missing_accounts | empty | success`, resumo e pontos diários.
+
+A borda de período atual recebe `referenceInstant` e `timeZone` explicitamente. A composition root usa temporariamente `America/Sao_Paulo`; nenhuma instância de `Date` atravessa a fronteira RSC.
+
+### Infrastructure
+
+- repository próprio em `financial-analytics/infrastructure`
+- RPC `load_financial_evolution_snapshot(p_start_on date, p_end_on date)` com limites civis, `SECURITY INVOKER` e `search_path` fixo
+- identidade derivada da sessão/RLS, nunca de parâmetro livre da RPC
+- projeção ordenada por `occurred_on`, `created_at` e `id`
+- intervalo máximo de 31 dias; limites nulos ou invertidos são rejeitados no banco
+- retorno contém `account_count`, `opening_balance_in_cents` e colunas nullable do movimento; intervalo vazio preserva uma linha de snapshot
+- consultas incluem filtro explícito por `(select auth.uid())` para selecionar os índices compostos, sem substituir RLS
+- plano será validado com `EXPLAIN (ANALYZE, BUFFERS)` dentro de teste transacional antes da aceitação
+- nenhuma extensão de `TransactionRepository.findByMonth`
+- nenhuma tabela, view, coluna, policy ou índice novo
+
+### Presentation
+
+- `FinancialPeriodSelector` escolhe somente os cinco kinds existentes
+- `FinancialEvolutionTable` renderiza dados reais com caption e cabeçalhos semânticos
+- tabela não calcula período, saldo ou agregação
+- gráficos, comparação, `custom`, calendário histórico e redesign completo do dashboard permanecem fora
+
 ## Sistema Visual — UI-001
 
 Este contrato é transversal de apresentação. Ele não pertence ao domínio financeiro e não pode importar Supabase, casos de uso financeiros ou infraestrutura.
