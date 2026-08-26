@@ -6,32 +6,9 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-012 — Períodos financeiros
-- Tipo: Small Release
-- Descrição objetiva: modelar períodos financeiros civis e móveis sem ambiguidades antes das agregações analíticas.
-- Objetivo de negócio: permitir análise antes do fechamento mensal.
-- Valor esperado: distinguir semana, últimos 7 dias, quinzena, últimos 15 dias e mês de forma previsível.
-- Prioridade: Alta
-- Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
-- Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 7 executado; gates locais e GitHub Actions verdes, checks Vercel em falha.
-- Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: resolver `CI-VERCEL-001` e revalidar os checks do PR 8.
-- Status: BLOCKED
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
-
-### CI-VERCEL-001 — Diagnosticar previews Vercel em falha no PR 8
-- Tipo: Hardening
-- Descrição objetiva: corrigir a autoria Git divergente que bloqueou os checks `Vercel – fin-control` e `Vercel – fin-control-zljm`.
-- Objetivo de negócio: impedir entrega incremental com pipeline remoto incompleto.
-- Valor esperado: PR auditável com todos os checks obrigatórios verdes.
-- Prioridade: Crítica
-- Dependências: novo commit associado ao GitHub `JrDaliessi`, proprietário do repositório e do time Vercel.
-- Risco: Alto enquanto os previews não forem reexecutados; gates locais e GitHub Actions permanecem verdes.
-- Fase recomendada: desbloqueio imediato do Dia 7 da SR-012.
-- Critério de pronto: identidade Git corrigida sem reescrever histórico, ambos os checks Vercel verdes e vínculo duplicado classificado separadamente.
-- Status: BLOCKED
 
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
@@ -502,6 +479,22 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-012 — Períodos financeiros
+- Tipo: Small Release
+- Resultado: cinco períodos financeiros civis e móveis implementados com datas canônicas, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes.
+- Arquitetura: domínio e application puros; nenhuma UI, persistência, agregação, Supabase ou timezone implícito antecipado.
+- Quality gates: 64 suítes/336 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e dois previews Vercel verdes.
+- Segurança e observabilidade: entradas limitadas, calendário validado, loops curtos e baseline sanitizada sem PII ou dados financeiros.
+- Riscos residuais: `TIME-BOUNDARY-001` deve ser resolvido antes da composição SR-013/UI-003; hardenings globais de deploy público permanecem rastreados.
+- Status: DONE
+
+### CI-VERCEL-001 — Corrigir autoria Git dos previews Vercel
+- Tipo: Hardening
+- Resultado: divergência entre `JuniorDaliessi` e `JrDaliessi` corrigida no escopo local do repositório, sem reescrever histórico.
+- Evidência: commit `268ab3e` associado ao GitHub `JrDaliessi` (ID `131720853`); ambos os previews e GitHub Actions concluíram com sucesso.
+- Observação: dois projetos Vercel continuam conectados ao repositório; avaliação de consolidação permanece opcional e separada.
+- Status: DONE
 
 ### SR-011 — Persistência e RLS de transações
 - Tipo: Security Item / Small Release

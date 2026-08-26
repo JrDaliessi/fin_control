@@ -985,7 +985,9 @@ Uma release incremental só pode ser considerada pronta quando:
 - diagnóstico confirmado pelo GitHub/Vercel Bot: deployments bloqueados antes do build porque o autor `JuniorDaliessi` não possui acesso ao time Vercel de `JrDaliessi`.
 - identidade esperada para a reexecução: GitHub `JrDaliessi` (ID `131720853`), usando endereço noreply canônico no escopo deste repositório.
 - nenhum deploy, merge, mudança de configuração externa ou Supabase foi executado.
-- estado final: `BLOCKED`, rastreado em `CI-VERCEL-001`; é proibido declarar `READY_FOR_RELEASE` antes dos checks Vercel verdes.
+- correção operacional: identidade Git do repositório alinhada a `JrDaliessi`, sem reescrever commits publicados.
+- revalidação remota no commit `268ab3e`: GitHub Actions, `Vercel Preview Comments`, `Vercel – fin-control` e `Vercel – fin-control-zljm` verdes.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código; hardenings globais de produção continuam explicitamente rastreados.
 
 ## Correção crítica antes do Dia 5 — BUG-001
 

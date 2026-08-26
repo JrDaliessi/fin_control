@@ -746,4 +746,6 @@ Interpretação:
 - checks `Vercel – fin-control` e `Vercel – fin-control-zljm` falharam no PR 8.
 - GitHub registrou `Deployment was blocked`; o comentário do Vercel Bot confirmou que o autor `JuniorDaliessi` não pertence ao time Vercel de `JrDaliessi`.
 - a autoria divergente foi identificada antes de qualquer reescrita de histórico; a correção será validada por novo commit com a identidade canônica do proprietário.
-- estado final: `BLOCKED` por `CI-VERCEL-001`, apesar dos gates locais e GitHub Actions verdes.
+- correção: identidade Git local alinhada a `JrDaliessi` sem reescrever histórico.
+- revalidação: GitHub Actions e os dois previews Vercel passaram no commit `268ab3e`.
+- estado final: `READY_FOR_RELEASE`; `CI-VERCEL-001` concluído.

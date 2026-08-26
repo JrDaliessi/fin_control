@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `BLOCKED`
-- Fase atual: Dia 7 da SR-012 executado; gates locais e GitHub Actions verdes, previews Vercel bloqueando a entrega
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-012 concluído; pipeline local, GitHub Actions e previews Vercel verdes
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -4635,7 +4635,9 @@ Bloqueio de entrega:
 - ação mínima: usar a identidade Git canônica de `JrDaliessi` em novo commit, reexecutar os previews e somente então avaliar separadamente o vínculo duplicado dos projetos
 
 Estado de saída:
-- `BLOCKED`
-- SR-012 permanece em `IN_PROGRESS`
-- bloqueio externo rastreado como `CI-VERCEL-001`
+- `READY_FOR_RELEASE`
+- SR-012 concluída como entrega incremental de código
+- `CI-VERCEL-001` resolvido sem reescrita de histórico: a identidade Git local do repositório foi alinhada a `JrDaliessi` e os dois previews concluíram com sucesso no commit `268ab3e`
+- GitHub Actions `Quality Gates` passou em 1m13s; `Vercel – fin-control`, `Vercel – fin-control-zljm` e `Vercel Preview Comments` passaram
+- a existência de dois projetos Vercel permanece como observação operacional não bloqueante; nenhuma remoção foi autorizada
 - nenhum deploy, merge, configuração externa ou mudança de Supabase foi executado
