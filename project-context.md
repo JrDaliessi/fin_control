@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-012 concluído; refatoração e hardening validados
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SR-012 concluído; aplicabilidade de UX, acessibilidade e PWA validada
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -81,6 +81,7 @@
 - Data da implementação mínima da SR-012: 2026-08-25
 - Data da expansão controlada da SR-012: 2026-08-25
 - Data da refatoração e hardening da SR-012: 2026-08-26
+- Data da revisão de UX, acessibilidade e PWA da SR-012: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4553,3 +4554,48 @@ Estado de saída:
 - SR-012 permanece em `IN_PROGRESS`
 - Dia 5 concluído sem avanço automático de fase
 - próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Aplicabilidade:
+- a SR-012 não possui presentation por decisão explícita do ADR 0009 e do Dia 1
+- criar seletor, cards ou gráficos nesta fase anteciparia a UI-003 e dependeria de agregações ainda ausentes da SR-013
+- responsividade, estados visuais e microinterações específicos foram classificados como não aplicáveis, sem tratar acessibilidade como opcional
+
+Contrato para a futura UI analítica:
+- rótulos `Semana`, `Últimos 7 dias`, `Quinzena`, `Últimos 15 dias` e `Mês` pertencem à presentation; os kinds canônicos permanecem internos
+- seleção deve ser única e semanticamente nomeada por `select`, radiogroup ou padrão equivalente acessível
+- controles devem preservar alvo mínimo de 44 px, foco visível, teclado e ausência de comunicação somente por cor
+- loading, empty, success e error pertencem à composição da SR-013/UI-003, não ao domínio temporal
+- UI recebe DTOs de strings civis e nunca calcula limites, converte `occurred_on` ou usa timezone/browser implícito
+- gráficos permanecem condicionados à série temporal da SR-014
+
+Revisão PWA e responsiva:
+- `public/manifest.webmanifest` preserva `standalone`, `pt-BR`, ícones 192/512/maskable e shortcuts somente para transações e contas
+- metadata preserva viewport, `theme-color` claro/escuro, Apple Web App e vínculo com o manifest
+- design system preserva `prefers-reduced-motion`
+- shell preserva skip link, landmarks, safe area mobile e alvos mínimos de 44 px
+- nenhum service worker, cache financeiro, shortcut analítico ou promessa offline foi adicionado
+
+Risco identificado:
+- `src/app/(private)/transactions/page.tsx` deriva a competência atual com relógio global e getters UTC
+- perto da virada mensal civil, a rota pode abrir um mês diferente do percebido pelo usuário, sem corromper dados
+- correção ficou registrada como `TIME-BOUNDARY-001`, severidade MÉDIA, antes da composição SR-013/UI-003
+- a correção exigirá `referenceInstant` e timezone IANA explícitos na borda de aplicação; `occurred_on` continuará sem conversão de fuso
+
+Evidências:
+- testes direcionados de PWA, design system, shell e páginas: 9 suítes e 46 testes passaram
+- regressão completa: 64 suítes e 336 testes passaram
+- type-check passou
+- lint passou com 0 warnings
+- auditoria completa retornou 0 vulnerabilidades
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 6 concluído sem avanço automático de fase
+- próximo comando válido: `dia 7`

@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
 - Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 5 concluído; calendário gregoriano consolidado e quality gates verdes.
+- Fase atual: Dia 6 concluído; contratos futuros de UI e limites PWA validados sem criar presentation prematura.
 - Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: executar `dia 6` para revisar a aplicabilidade de UX, acessibilidade e PWA nesta release de domínio puro.
+- Próximo passo: executar `dia 7` para qualidade final, segurança e preparação da entrega incremental.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -40,10 +40,10 @@ Nenhum item pronto aguardando início no momento.
 - Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
 - Valor esperado: visão rápida sem promessas ou indicadores fictícios.
 - Prioridade: Alta
-- Dependências: UI-001, UI-002 e casos de uso/dados disponíveis.
+- Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também da série temporal da SR-014.
 - Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
 - Fase recomendada: após shell; expansão progressiva com SR-012 a SR-023.
-- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, acessibilidade e pipeline verde.
+- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
 - Status: DISCOVERY
 
 ### UI-004 — Experiência de contas em cards e drawer
@@ -403,6 +403,19 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Resultado: Next `16.3.3`, React `19.2.8`, PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18` e transitivas vulneráveis atualizados sem `--force`; auditorias de produção e completa retornaram 0 vulnerabilidades; 64 suítes e 336 testes, type-check, lint e build permaneceram verdes.
 - Data de conclusão: 2026-08-26
 - Status: DONE
+
+### TIME-BOUNDARY-001 — Remover competência mensal ancorada em UTC da rota de transações
+- Tipo: Bug / Dívida Técnica
+- Descrição: `src/app/(private)/transactions/page.tsx` usa `new Date()` com `getUTCFullYear()` e `getUTCMonth()` para escolher a competência inicial, podendo abrir o mês incorreto perto da virada civil do usuário.
+- Objetivo de negócio: garantir que a competência padrão corresponda ao dia financeiro percebido pelo usuário.
+- Valor esperado: evitar navegação inicial confusa sem alterar ou converter `occurred_on` persistido.
+- Prioridade: Média
+- Dependências: contrato explícito de `referenceInstant` e timezone IANA na borda de aplicação; decisão futura sobre preferência do usuário ou timezone padrão aprovado.
+- Risco: Médio para experiência; não há corrupção de dados.
+- Severidade: MÉDIA
+- Fase recomendada: antes da composição da SR-013 com a UI-003.
+- Critério de pronto: remover relógio/UTC direto da página, injetar a âncora temporal na aplicação e cobrir viradas UTC/local por testes sem converter datas civis persistidas.
+- Status: DISCOVERY
 
 ### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
 - Tipo: Dívida Técnica / Hardening

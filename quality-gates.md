@@ -536,6 +536,18 @@
 - `npm audit` passou com 0 vulnerabilidades.
 - Limitação de verificação visual pelo navegador integrado documentada.
 
+### Resultado observado — SR-012
+- Presentation, responsividade e microinterações específicas são não aplicáveis porque a release aprovada permanece domínio puro.
+- Contratos atuais expõem somente strings civis serializáveis; nenhum `Date`, timezone, locale ou estado visual atravessa a fronteira de application.
+- A futura UI-003 deve localizar os cinco rótulos na presentation, oferecer seleção única acessível e delegar todo cálculo temporal aos casos de uso.
+- Manifest preserva instalação `standalone`, idioma `pt-BR`, ícones 192/512/maskable e shortcuts apenas para transações e contas existentes.
+- Metadata preserva viewport responsivo, temas claro/escuro e `prefers-reduced-motion`; shell mantém skip link, landmarks, safe area e alvos mínimos de 44 px.
+- Nenhum service worker, cache financeiro, shortcut analítico ou promessa offline foi criado.
+- Testes direcionados de PWA, design system, shell e páginas passaram com 9 suítes e 46 testes.
+- Regressão completa passou com 64 suítes e 336 testes; type-check, lint, audit com 0 vulnerabilidades e build com `ƒ Proxy (Middleware)` passaram.
+- A competência UTC preexistente da rota de transações foi registrada como `TIME-BOUNDARY-001`, fora do escopo desta release.
+- Estado de saída validado como `QUALITY_VALIDATION`.
+
 ### Resultado observado — UI-002
 - Shell revisado por semântica, testes, classes responsivas e contratos PWA.
 - RED direcionado confirmou reserva inferior sem safe area e ausência de tratamento explícito para movimento reduzido: 2 falhas e 17 testes preservados.

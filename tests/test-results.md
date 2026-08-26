@@ -691,3 +691,34 @@ Interpretação:
 - nenhuma UI, persistência, agregação ou regra financeira foi adicionada.
 - estado final: `IMPLEMENTATION_IN_PROGRESS`.
 - próximo comando válido: `dia 6`.
+
+## Dia 6 — SR-012
+
+### Aplicabilidade de UX e acessibilidade
+
+- nenhuma presentation foi criada porque a SR-012 entrega somente contratos de domínio e application.
+- DTOs permanecem compostos por strings civis serializáveis, sem `Date`, timezone ou locale implícito.
+- requisitos futuros do seletor foram registrados para UI-003: rótulos localizados, escolha única acessível e cálculo delegado ao caso de uso.
+
+### PWA e responsividade preservadas
+
+- manifest mantém instalação `standalone`, idioma `pt-BR`, ícones raster/maskable e shortcuts apenas para fluxos reais.
+- metadata mantém viewport responsivo, cores de tema e vínculo com o manifest.
+- design system preserva movimento reduzido; shell mantém skip link, landmarks, safe area e alvos de 44 px.
+- nenhum service worker, cache financeiro ou promessa offline foi adicionado.
+
+### Validação
+
+- testes direcionados de PWA, design system, shell e páginas: 9 suítes e 46 testes passaram.
+- regressão completa: 64 suítes e 336 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- auditoria completa passou com 0 vulnerabilidades.
+- build Next `16.3.3` passou e declarou `ƒ Proxy (Middleware)`.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+
+Interpretação:
+- a experiência existente permaneceu estável sem antecipar a UI analítica.
+- a competência mensal UTC preexistente foi registrada como `TIME-BOUNDARY-001` para correção antes da composição SR-013/UI-003.
+- estado final: `QUALITY_VALIDATION`.
+- próximo comando válido: `dia 7`.
