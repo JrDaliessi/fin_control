@@ -744,5 +744,6 @@ Interpretação:
 ### Bloqueio remoto
 
 - checks `Vercel – fin-control` e `Vercel – fin-control-zljm` falharam no PR 8.
-- logs privados não puderam ser inspecionados porque o conector exige reautenticação e o browser disponível não possui sessão Vercel.
+- GitHub registrou `Deployment was blocked`; o comentário do Vercel Bot confirmou que o autor `JuniorDaliessi` não pertence ao time Vercel de `JrDaliessi`.
+- a autoria divergente foi identificada antes de qualquer reescrita de histórico; a correção será validada por novo commit com a identidade canônica do proprietário.
 - estado final: `BLOCKED` por `CI-VERCEL-001`, apesar dos gates locais e GitHub Actions verdes.

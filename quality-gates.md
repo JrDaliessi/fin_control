@@ -982,7 +982,8 @@ Uma release incremental só pode ser considerada pronta quando:
 - segurança: entradas canônicas e limitadas; calendário validado; laços limitados; nenhum segredo real encontrado.
 - observabilidade futura: evento técnico categórico e latência, com proibição de PII, UUIDs, datas exatas, valores financeiros, tokens, cookies e payloads brutos.
 - previews remotos: `Vercel – fin-control` e `Vercel – fin-control-zljm` permanecem vermelhos.
-- diagnóstico remoto incompleto: conector Vercel com OAuth expirado e browser sem sessão autenticada.
+- diagnóstico confirmado pelo GitHub/Vercel Bot: deployments bloqueados antes do build porque o autor `JuniorDaliessi` não possui acesso ao time Vercel de `JrDaliessi`.
+- identidade esperada para a reexecução: GitHub `JrDaliessi` (ID `131720853`), usando endereço noreply canônico no escopo deste repositório.
 - nenhum deploy, merge, mudança de configuração externa ou Supabase foi executado.
 - estado final: `BLOCKED`, rastreado em `CI-VERCEL-001`; é proibido declarar `READY_FOR_RELEASE` antes dos checks Vercel verdes.
 

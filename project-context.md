@@ -4628,9 +4628,11 @@ Baseline de observabilidade:
 
 Bloqueio de entrega:
 - os checks `Vercel – fin-control` e `Vercel – fin-control-zljm` estão em falha no PR 8
-- a inspeção autenticada pelo conector Vercel falhou por OAuth expirado; a inspeção no browser chegou à tela de login, portanto os logs privados não puderam ser lidos
+- o GitHub confirmou `Deployment was blocked` antes do build e o bot Vercel informou que `JuniorDaliessi` não pertence ao time `JrDaliessi's projects`
+- os commits estavam associados ao GitHub `JuniorDaliessi` (ID `77872897`), enquanto o repositório, a sessão `gh` e o time Vercel pertencem a `JrDaliessi` (ID `131720853`)
+- a integração Vercel do Codex permaneceu sem sessão utilizável, mas os deployments e comentários do GitHub forneceram evidência suficiente da causa
 - o código não deve ser declarado pronto enquanto os checks obrigatórios do PR permanecerem vermelhos
-- ação mínima: reautenticar a integração Vercel, inspecionar os dois deployments e corrigir ou remover o vínculo duplicado conforme a causa comprovada; depois reexecutar os checks sem alterar o escopo da SR-012
+- ação mínima: usar a identidade Git canônica de `JrDaliessi` em novo commit, reexecutar os previews e somente então avaliar separadamente o vínculo duplicado dos projetos
 
 Estado de saída:
 - `BLOCKED`

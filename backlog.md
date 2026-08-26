@@ -23,14 +23,14 @@ Nenhum item pronto aguardando início no momento.
 
 ### CI-VERCEL-001 — Diagnosticar previews Vercel em falha no PR 8
 - Tipo: Hardening
-- Descrição objetiva: identificar a causa dos checks `Vercel – fin-control` e `Vercel – fin-control-zljm` vermelhos no commit `cd103d0`.
+- Descrição objetiva: corrigir a autoria Git divergente que bloqueou os checks `Vercel – fin-control` e `Vercel – fin-control-zljm`.
 - Objetivo de negócio: impedir entrega incremental com pipeline remoto incompleto.
 - Valor esperado: PR auditável com todos os checks obrigatórios verdes.
 - Prioridade: Crítica
-- Dependências: reautenticação da integração Vercel e acesso aos logs privados dos deployments.
-- Risco: Alto enquanto a causa dos previews não for conhecida; gates locais e GitHub Actions permanecem verdes.
+- Dependências: novo commit associado ao GitHub `JrDaliessi`, proprietário do repositório e do time Vercel.
+- Risco: Alto enquanto os previews não forem reexecutados; gates locais e GitHub Actions permanecem verdes.
 - Fase recomendada: desbloqueio imediato do Dia 7 da SR-012.
-- Critério de pronto: causa documentada, configuração ou código corrigido com menor mudança segura e ambos os checks Vercel verdes.
+- Critério de pronto: identidade Git corrigida sem reescrever histórico, ambos os checks Vercel verdes e vínculo duplicado classificado separadamente.
 - Status: BLOCKED
 
 ### EPIC-UI-001 — FinControl Pulse
