@@ -90,3 +90,7 @@ Rejeitada. A borda recebe instante e timezone explicitamente; o padrão temporá
 - https://supabase.com/docs/reference/javascript/using-modifiers-order
 - https://supabase.com/blog/postgrest-aggregate-functions
 - https://supabase.com/docs/guides/api/securing-your-api
+- https://supabase.com/docs/guides/database/functions
+- https://supabase.com/docs/guides/database/postgres/row-level-security
+- https://supabase.com/docs/guides/database/extensions/pgtap
+- https://supabase.com/changelog

@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-013 concluído; agregação diária, snapshot persistente e fronteira temporal definidos
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-013 concluído; testes essenciais e contratos pgTAP em RED válido
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -85,6 +85,7 @@
 - Data da validação final da SR-012: 2026-08-26
 - Data de seleção da SR-013 como próximo ciclo: 2026-08-26
 - Data do discovery e arquitetura da SR-013: 2026-08-26
+- Data da estratégia de testes da SR-013: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4716,3 +4717,51 @@ Estado de saída:
 - SR-013 em `IN_PROGRESS`
 - nenhuma implementação, teste, migration, alteração remota, commit, push ou PR executado
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Matriz executada:
+- domínio: buckets diários contínuos, bissexto, vazio, saldo negativo, entradas inválidas e overflow
+- application: instante/timezone explícitos, ator, período, estados `missing_accounts | empty | success`, uma consulta e erro sanitizado
+- infrastructure: mapper de numeric/bigint, sentinela nula, snapshot consistente, uma RPC sem ownership no payload e falhas estáveis
+- database: assinatura, retorno, grants, invoker, RLS, isolamento, Auth anônimo, limites e planos com índices
+- presentation: contratos documentados para seletor, tabela e estados; nenhum componente antecipado
+
+Testes criados antes da implementação:
+- 5 suítes Jest com 39 cenários planejados
+- 1 fixture explícita e não sensível de analytics
+- 3 suítes pgTAP com 15 + 14 + 4 = 33 asserções
+
+Evidência RED:
+- as 5 suítes Jest falharam por imports dos módulos de produção deliberadamente ausentes; 0 cenários foram executados prematuramente
+- type-check apresentou somente 7 erros `TS2307` para os 7 módulos planejados
+- contrato estrutural pgTAP falhou em 9 de 15 asserções porque `public.load_financial_evolution_snapshot(date,date)` ainda não existe
+- a consulta pgTAP ocorreu em transação com rollback; a função permaneceu ausente e `pgtap` não ficou instalada
+
+Rede de segurança:
+- baseline anterior, excluindo somente as cinco suítes RED: 64 suítes e 336 testes passaram
+- lint passou com 0 warnings
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- build não foi executado porque o type-check vermelho é deliberado
+
+Decisões refinadas pelos testes:
+- `ListFinancialEvolutionUseCase` recebe `referenceInstant` ISO e `timeZone`, derivando `referenceOn` antes de resolver o período
+- `missing_accounts` devolve pontos vazios; `empty` preserva buckets e saldo de abertura quando existem contas sem movimentos
+- a RPC recebe somente `p_start_on` e `p_end_on`; identidade vem da sessão e RLS
+- inteiros agregados retornados como strings numéricas pelo provider são aceitos somente quando permanecem inteiros seguros
+- `PUBLIC`, `anon`, `service_role` e Supabase Anonymous Sign-In não podem executar ou obter o snapshot
+
+Implementação bloqueada até o Dia 3:
+- tipos e agregador da evolução financeira
+- serviço temporal e caso de uso
+- port, mapper e repository Supabase
+- migration da função, grants e qualquer execução comportamental/performance
+- presentation, rota, gráfico, biblioteca visual e expansão ampla da UI-003
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-013 permanece `IN_PROGRESS`
+- nenhum módulo funcional, migration, tabela, policy, grant, índice, dependência, commit, push ou PR foi criado
+- próximo comando válido: `dia 3`

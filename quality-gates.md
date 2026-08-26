@@ -985,6 +985,24 @@ Uma release incremental só pode ser considerada pronta quando:
 - testes e build não executados porque o Dia 1 alterou somente documentação.
 - estado de saída: `ARCHITECTURE_READY`.
 
+## Gate do Dia 2 — SR-013
+
+- contexto central e workflow do Dia 2 consultados antes da execução.
+- skills Supabase e Postgres aplicadas ao desenho de função, grants, RLS e performance.
+- changelog e documentação oficiais atuais revisados; nenhuma breaking change aplicável bloqueia os contratos.
+- testes Jest: 5 suítes novas em RED por 7 módulos deliberadamente ausentes.
+- type-check: RED somente com 7 erros `TS2307` planejados.
+- lint: verde, 0 warnings.
+- baseline anterior: 64 suítes e 336 testes verdes ao excluir somente o novo RED.
+- pgTAP estrutural remoto: 9 falhas de 15 pela função ausente, com rollback confirmado.
+- pgTAP comportamental e performance: 18 asserções escritas e bloqueadas até o Dia 3.
+- segurança: função exige `SECURITY INVOKER`, search path fixo, ausência de `userId`, grants mínimos e bloqueio de Auth anônimo.
+- performance: contratos exigem filtros explícitos, índices existentes e `EXPLAIN (ANALYZE, BUFFERS)` transacional.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- build não executado porque o type-check vermelho é parte da evidência TDD.
+- nenhuma implementação, migration persistente, tabela, policy, grant, índice, dependência, UI, commit, push ou PR foi criada.
+- estado de saída: `TEST_STRATEGY_READY`.
+
 ## Gate do Dia 7 — SR-012
 
 - regressão completa: 64 suítes e 336 testes passaram.

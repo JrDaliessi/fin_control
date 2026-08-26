@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: Dia 1 da SR-013 concluído em `ARCHITECTURE_READY`. Agregação diária, saldo de abertura, snapshot protegido, timezone explícito e contrato da tabela foram definidos. Próximo comando válido: `dia 2`.
+Estado atual: Dia 2 da SR-013 concluído em `TEST_STRATEGY_READY`. Cinco suítes Jest, três suítes pgTAP e a matriz por camada estão em RED válido; a rede anterior permanece com 64 suítes e 336 testes verdes. Próximo comando válido: `dia 3`.
 
 ## Marco 10 - Candles Financeiros
 

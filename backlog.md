@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-012 concluída, saldos iniciais e movimentos persistidos com RLS.
 - Risco: Alto por continuidade de saldo, timezone, overflow e consulta histórica.
-- Fase atual: Dia 1 concluído; domínio, port, snapshot SQL e fronteira temporal aprovados.
+- Fase atual: Dia 2 concluído; matriz TDD, 39 cenários Jest e 33 asserções pgTAP preparados em RED válido.
 - Critério de pronto: função pura e caso de uso testados, snapshot autorizado e eficiente, tabela acessível com dados reais, sem biblioteca visual.
-- Próximo passo: executar `dia 2` para matriz TDD, RED de Jest e contratos pgTAP.
+- Próximo passo: executar `dia 3` para implementar o mínimo que satisfaça os contratos, incluindo a migration da RPC somente após o RED registrado.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

@@ -515,7 +515,9 @@ export interface FinancialAnalyticsQueryRepository {
 }
 ```
 
-`ListFinancialEvolutionUseCase` recebe ator, kind e `referenceOn`, resolve o período, consulta o snapshot e devolve DTO plano com status `missing_accounts | empty | success`, resumo e pontos diários.
+`ListFinancialEvolutionUseCase` recebe ator, kind, `referenceInstant` ISO e `timeZone`, deriva `referenceOn`, resolve o período, consulta o snapshot e devolve DTO plano com status `missing_accounts | empty | success`, resumo e pontos diários.
+
+O estado `missing_accounts` não fabrica pontos diários. O estado `empty` preserva todos os buckets e o saldo de abertura quando existem contas, mas nenhum movimento no intervalo.
 
 A borda de período atual recebe `referenceInstant` e `timeZone` explicitamente. A composition root usa temporariamente `America/Sao_Paulo`; nenhuma instância de `Date` atravessa a fronteira RSC.
 
