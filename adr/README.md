@@ -20,3 +20,4 @@ Formato recomendado:
 - `0007-categories-persistence-rls.md` — domínio, persistência, grants e RLS de categorias
 - `0008-transactions-persistence-rls.md` — persistência, integridade tenant-safe, grants e RLS de transações
 - `0009-financial-periods-civil-date-boundaries.md` — períodos financeiros, datas civis e fronteiras de timezone
+- `0010-financial-evolution-snapshot-and-daily-buckets.md` — snapshot, saldo de abertura e agregação diária da evolução

@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: Dia 7 da SR-012 concluído em `READY_FOR_RELEASE`. Domínio, aplicação, segurança, pipeline local, GitHub Actions e ambos os previews Vercel estão verdes; `CI-VERCEL-001` foi resolvido ao alinhar a identidade Git local a `JrDaliessi`, sem reescrever histórico. Próximo passo: decisão humana sobre o PR 8 e seleção explícita da próxima small release.
+Estado atual: Dia 1 da SR-013 concluído em `ARCHITECTURE_READY`. Agregação diária, saldo de abertura, snapshot protegido, timezone explícito e contrato da tabela foram definidos. Próximo comando válido: `dia 2`.
 
 ## Marco 10 - Candles Financeiros
 

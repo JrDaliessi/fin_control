@@ -479,6 +479,18 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Planejamento TDD da SR-013 — definido no Dia 1
+
+Alvos obrigatórios para o Dia 2:
+- domain: buckets diários completos, vazio, viradas de mês/ano, saldo negativo, totais, ordem, entradas inválidas e overflow
+- application: ator, período, estados `missing_accounts | empty | success`, chamada única ao repository e erro sanitizado
+- timezone: instante explícito em `America/Sao_Paulo`, incluindo viradas UTC/local, sem relógio global
+- infrastructure: mapper do snapshot, limites `gte/lt`, ordenação estável e normalização de falhas
+- database: assinatura da função, grants mínimos, `SECURITY INVOKER`, RLS por usuário, Auth anônimo bloqueado, abertura, intervalo e plano com índices
+- presentation: seletor semanticamente nomeado, tabela com caption/headers, estados e ausência de cálculo financeiro na UI
+
+Nenhum desses testes ou artefatos funcionais pertence ao Dia 1.
+
 ## Dia 2 — SR-012 Períodos Financeiros
 
 ## Objetivo

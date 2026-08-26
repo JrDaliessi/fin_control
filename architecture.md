@@ -311,6 +311,19 @@ Regras:
 - Dashboard e outras features podem compor casos de uso públicos de analytics, mas não recalcular períodos.
 - A decisão completa está em `adr/0009-financial-periods-civil-date-boundaries.md`.
 
+## Decisões Arquiteturais da SR-013
+
+- `financial-analytics/domain` agrega movimentos neutros em buckets civis diários contínuos para os cinco períodos atuais.
+- Pontos expõem limites semiabertos, receitas, despesas, líquido, saldo de fechamento e quantidade; valores permanecem inteiros seguros em centavos.
+- Saldo de abertura combina saldos iniciais configurados e movimentos anteriores ao início do período.
+- `FinancialAnalyticsQueryRepository` nasce em `application/ports`; o domínio não importa `Transaction`, `FinancialAccount` ou contratos de outras features.
+- A implementação concreta pertence a `financial-analytics/infrastructure` e usa uma função SQL `SECURITY INVOKER` para obter abertura e movimentos na mesma fotografia.
+- A função não recebe identidade livre, depende da sessão Supabase e das RLS existentes, e terá `EXECUTE` mínimo para `authenticated` permanente.
+- Nenhuma tabela, view, coluna, policy ou índice novo é necessário; saldo e pontos não são persistidos.
+- `America/Sao_Paulo` é a configuração IANA explícita e temporária da borda de aplicação. `referenceInstant` é injetado e `occurred_on date` não é convertido.
+- A tabela acessível poderá ser composta no dashboard sem antecipar gráfico ou o redesenho amplo da UI-003.
+- A decisão completa está em `adr/0010-financial-evolution-snapshot-and-daily-buckets.md`.
+
 ## PWA
 O projeto deve ter:
 - manifest

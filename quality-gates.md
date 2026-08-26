@@ -970,6 +970,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - backlog foi atualizado
 - próximo passo está claro
 
+## Gate do Dia 1 — SR-013
+
+- contexto central e workflow do Dia 1 consultados antes da execução.
+- SR-012 confirmada em `develop` e SR-013 selecionada em branch própria.
+- escopo, domínio, casos de uso, port de consulta, RPC futura e contrato da tabela acessível definidos.
+- ADR 0010 registra snapshot consistente, buckets diários, baseline de saldo e timezone explícito.
+- Supabase revisado somente por migrations locais e documentação oficial; nenhuma consulta ou alteração remota executada.
+- índice existente segue a ordem recomendada: igualdade por `user_id`, range por `occurred_on` e desempates estáveis.
+- RPC futura exige privilégio mínimo, `SECURITY INVOKER`, RLS, intervalo máximo de 31 dias, pgTAP, `EXPLAIN (ANALYZE, BUFFERS)` e advisors antes de aceitação.
+- lint: verde, 0 warnings.
+- type-check: verde.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- testes e build não executados porque o Dia 1 alterou somente documentação.
+- estado de saída: `ARCHITECTURE_READY`.
+
 ## Gate do Dia 7 — SR-012
 
 - regressão completa: 64 suítes e 336 testes passaram.

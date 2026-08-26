@@ -749,3 +749,22 @@ Interpretação:
 - correção: identidade Git local alinhada a `JrDaliessi` sem reescrever histórico.
 - revalidação: GitHub Actions e os dois previews Vercel passaram no commit `268ab3e`.
 - estado final: `READY_FOR_RELEASE`; `CI-VERCEL-001` concluído.
+
+## Dia 1 — SR-013
+
+### Discovery e arquitetura
+
+- SR-013 selecionada e fatiada sem criar implementação ou teste prematuro.
+- buckets diários, saldo de abertura, projeção neutra, estados de aplicação e tabela acessível foram definidos.
+- `America/Sao_Paulo` foi aprovado como timezone IANA padrão explícito e temporário da borda de aplicação.
+- RPC futura `load_financial_evolution_snapshot` foi limitada a 31 dias, `SECURITY INVOKER`, RLS e grants mínimos.
+- nenhuma tabela, coluna, view, policy ou índice novo foi considerado necessário.
+
+### Validação
+
+- lint passou com 0 warnings.
+- type-check passou.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+- Jest, pgTAP e build não foram executados porque o Dia 1 alterou somente documentação; o RED pertence ao Dia 2.
+- estado final: `ARCHITECTURE_READY`.
+- próximo comando válido: `dia 2`.
