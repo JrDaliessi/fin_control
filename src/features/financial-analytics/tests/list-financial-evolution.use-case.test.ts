@@ -1,5 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import type { FinancialAnalyticsQueryRepository } from "../application/ports/financial-analytics-query.repository";
+import type {
+  FinancialAnalyticsQueryRepository,
+  LoadEvolutionSnapshotInput
+} from "../application/ports/financial-analytics-query.repository";
 import { ListFinancialEvolutionUseCase } from "../application/use-cases/list-financial-evolution.use-case";
 import {
   analyticsUserId,
@@ -13,7 +16,12 @@ function createRepository(
   >
 ) {
   return {
-    loadEvolutionSnapshot: jest.fn(async () => snapshot)
+    loadEvolutionSnapshot: jest.fn(
+      async (input: LoadEvolutionSnapshotInput) => {
+        void input;
+        return snapshot;
+      }
+    )
   } satisfies FinancialAnalyticsQueryRepository;
 }
 

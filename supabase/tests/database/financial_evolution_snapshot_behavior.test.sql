@@ -86,12 +86,12 @@ select
   fixture.user_id,
   account.id,
   category.id,
-  description,
-  amount_in_cents,
+  fixture.description,
+  fixture.amount_in_cents,
   fixture.type,
-  occurred_on,
-  created_at,
-  created_at
+  fixture.occurred_on,
+  fixture.created_at,
+  fixture.created_at
 from (
   values
     (gen_random_uuid(), current_setting('test.user_a_id')::uuid, 'A anterior receita', 3000::bigint, 'income', date '2026-02-20', timestamptz '2026-02-20 09:00:00+00'),

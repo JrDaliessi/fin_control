@@ -1003,6 +1003,25 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma implementação, migration persistente, tabela, policy, grant, índice, dependência, UI, commit, push ou PR foi criada.
 - estado de saída: `TEST_STRATEGY_READY`.
 
+## Gate do Dia 3 — SR-013
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- skills Supabase e Postgres aplicadas; changelog e documentação oficial atual revisados.
+- GREEN direcionado: 5 suítes e 39 testes passaram.
+- regressão completa: 69 suítes e 375 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- build: verde em Next `16.3.3`; `ƒ Proxy (Middleware)` preservado.
+- pgTAP remoto: 15/15 asserções de schema, 14/14 de comportamento e 4/4 de performance passaram.
+- migration remota e local alinhadas em `20260826190714_create_financial_evolution_snapshot`.
+- RPC usa `SECURITY INVOKER`, search path fixo, RLS, identidade da sessão e `EXECUTE` somente para `authenticated` permanente.
+- `PUBLIC`, `anon`, `service_role` e Auth anônimo não podem executar a função.
+- `EXPLAIN (ANALYZE, BUFFERS)` confirmou os índices existentes; nenhum índice novo foi criado.
+- advisors não identificaram alerta novo da RPC; o aviso global de proteção contra senhas vazadas permanece fora do escopo.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- nenhuma UI, gráfico, biblioteca visual, deploy, commit, push, PR ou merge foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate do Dia 7 — SR-012
 
 - regressão completa: 64 suítes e 336 testes passaram.

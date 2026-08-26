@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-012 concluída, saldos iniciais e movimentos persistidos com RLS.
 - Risco: Alto por continuidade de saldo, timezone, overflow e consulta histórica.
-- Fase atual: Dia 2 concluído; matriz TDD, 39 cenários Jest e 33 asserções pgTAP preparados em RED válido.
+- Fase atual: Dia 3 concluído; domínio, application, adapter Supabase e RPC estão em GREEN.
 - Critério de pronto: função pura e caso de uso testados, snapshot autorizado e eficiente, tabela acessível com dados reais, sem biblioteca visual.
-- Próximo passo: executar `dia 3` para implementar o mínimo que satisfaça os contratos, incluindo a migration da RPC somente após o RED registrado.
+- Próximo passo: executar `dia 4` para compor a tabela acessível e os estados visuais com o caso de uso estável, sem antecipar gráficos.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

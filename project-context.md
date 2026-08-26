@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-013 concluído; testes essenciais e contratos pgTAP em RED válido
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-013 concluído; agregação, caso de uso, adapter e RPC estão em GREEN
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -86,6 +86,7 @@
 - Data de seleção da SR-013 como próximo ciclo: 2026-08-26
 - Data do discovery e arquitetura da SR-013: 2026-08-26
 - Data da estratégia de testes da SR-013: 2026-08-26
+- Data da implementação mínima da SR-013: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -938,6 +939,10 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: o contrato inicial de performance da SR-013 exigiu um índice específico para a agregação de contas, mas o PostgreSQL 17 escolheu a chave única existente `(user_id, id)`, igualmente válida para o filtro por proprietário. Prevenção: testes de plano devem validar a propriedade arquitetural e uma allowlist de planos seguros, não acoplar o harness a uma única escolha legítima do planner.
+- Erro: o contrato de performance da SR-013 usou um helper pgTAP `like(text, pattern, description)` inexistente na versão provisionada e falhou antes de avaliar os planos. Prevenção: expressar inspeções de texto portavelmente com `ok(actual like pattern, description)` e validar o harness na mesma versão remota dentro de transação descartável.
+- Erro: no primeiro GREEN da SR-013, o mock de `loadEvolutionSnapshot` criado no RED foi inferido sem argumentos e o type-check só expôs a assinatura estreita depois que o port passou a existir. Prevenção: tipar mocks de ports futuros com o input planejado desde o Dia 2, para que o RED seja causado apenas pelos módulos funcionais ausentes.
+- Erro: a fixture comportamental pgTAP da SR-013 referenciou `created_at` sem qualificação após joins com contas e categorias que também possuem essa coluna, produzindo ambiguidade antes de exercitar a RPC. Prevenção: em `INSERT ... SELECT` de testes com joins, qualificar todas as colunas originadas da fixture e executar o harness completo em rollback antes de aplicar a migration.
 - Erro: a primeira orquestração pgTAP do Dia 7 da SR-011 presumiu que `shell_command` retornaria um objeto com `output`; o retorno era uma string envelopada e quatro chamadas vazias foram rejeitadas antes do SQL. Na tentativa seguinte, o envelope ainda foi enviado e o Postgres rejeitou a palavra `Exit` antes de iniciar transação. Prevenção: inspecionar o tipo de retorno uma vez, extrair o conteúdo após o marcador literal `Output:\n`, validar SQL não vazio e interromper após no máximo duas falhas equivalentes antes de tentar outra abordagem.
 - Erro: o Proxy global tratava qualquer claim com `sub` como sessão permanente, enquanto Server Actions e RLS já bloqueavam usuários do Supabase Anonymous Sign-In por `is_anonymous=true`. Prevenção: todo ponto de entrada autenticado deve aplicar o mesmo contrato fail-closed (`sub` válido e `is_anonymous !== true`) e possuir teste de regressão alinhado às policies antes de qualquer release.
 - Erro: no primeiro GREEN do Dia 4 da SR-011, mocks de callbacks foram inferidos sem argumentos e o teste agregado de rotas ainda renderizava o novo Server Component assíncrono como componente cliente. Prevenção: tipar doubles pela assinatura real desde o RED e, quando uma rota passar a carregar dados no servidor, atualizar todos os testes agregados para aguardar a função de rota e registrar mocks com `jest.requireMock()`/`jest.requireActual()` antes dos gates completos.
@@ -4765,3 +4770,47 @@ Estado de saída:
 - SR-013 permanece `IN_PROGRESS`
 - nenhum módulo funcional, migration, tabela, policy, grant, índice, dependência, commit, push ou PR foi criado
 - próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Implementação entregue:
+- domínio com projeções neutras e agregação diária contínua em intervalos semiabertos
+- validação de datas civis, tipos, valores positivos, inteiros seguros e overflow
+- borda temporal explícita que resolve `referenceInstant` no timezone IANA recebido
+- port `FinancialAnalyticsQueryRepository` e caso de uso `ListFinancialEvolutionUseCase`
+- estados serializáveis `missing_accounts`, `empty` e `success`
+- mapper defensivo para números do provider e repository Supabase com erro sanitizado
+- migration `20260826190714_create_financial_evolution_snapshot.sql`
+
+Banco e segurança:
+- RPC `public.load_financial_evolution_snapshot(date,date)` criada com `SECURITY INVOKER` e `search_path` fixo
+- função sem parâmetro de ownership; identidade deriva de `auth.uid()` e as RLS permanecem autoridades
+- `EXECUTE` concedido somente a `authenticated`; `PUBLIC`, `anon` e `service_role` permanecem revogados
+- Supabase Anonymous Sign-In é rejeitado dentro da função
+- intervalo máximo de 31 dias e fronteiras nulas/invertidas são rejeitados
+- nenhuma tabela, policy, coluna ou índice foi criado
+
+Evidências TDD e qualidade:
+- GREEN direcionado: 5 suítes e 39 testes passaram
+- regressão completa: 69 suítes e 375 testes passaram
+- pgTAP remoto persistente: 15 asserções de schema, 14 de comportamento e 4 de performance passaram
+- `EXPLAIN (ANALYZE, BUFFERS)` confirmou índices existentes para transações e contas
+- type-check passou
+- lint passou com 0 warnings
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Advisors e riscos:
+- nenhum alerta de segurança ou performance foi introduzido pela RPC
+- permanece o aviso global `auth_leaked_password_protection`, fora do escopo da SR-013
+- três índices preexistentes aparecem como não utilizados em nível informativo; nenhum foi removido nesta fase
+- o Supabase CLI não estava disponível e o `npm` global segue incompleto; a migration foi validada em rollback, aplicada pelo conector Supabase e alinhada à versão remota
+- nenhum componente foi criado porque a presentation acessível está explicitamente planejada para o Dia 4
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-013 permanece `IN_PROGRESS`
+- nenhuma UI, gráfico, biblioteca visual, deploy, commit, push, PR ou merge foi executado
+- próximo comando válido: `dia 4`

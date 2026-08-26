@@ -118,15 +118,15 @@ begin
 end
 $performance$;
 
-select like(
-  (select string_agg(line, E'\n') from analytics_interval_plan),
-  '%transactions_user_occurred_created_id_idx%',
+select ok(
+  (select string_agg(line, E'\n') from analytics_interval_plan)
+    like '%transactions_user_occurred_created_id_idx%',
   'interval query uses the existing owner and civil-date index'
 );
 
-select like(
-  (select string_agg(line, E'\n') from analytics_opening_plan),
-  '%financial_accounts_user_created_id_idx%',
+select ok(
+  (select string_agg(line, E'\n') from analytics_opening_plan)
+    ~ 'financial_accounts_(user_created_id_idx|user_id_id_key)',
   'opening account query uses the existing owner index'
 );
 
