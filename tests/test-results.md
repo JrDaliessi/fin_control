@@ -722,3 +722,27 @@ Interpretação:
 - a competência mensal UTC preexistente foi registrada como `TIME-BOUNDARY-001` para correção antes da composição SR-013/UI-003.
 - estado final: `QUALITY_VALIDATION`.
 - próximo comando válido: `dia 7`.
+
+## Dia 7 — SR-012
+
+### Pipeline local e CI
+
+- regressão completa: 64 suítes e 336 testes passaram.
+- lint passou, 0 warnings.
+- type-check passou.
+- auditoria completa passou com 0 vulnerabilidades.
+- build Next `16.3.3` passou e declarou `ƒ Proxy (Middleware)`.
+- GitHub Actions `Quality Gates`, execução 36, passou no commit `cd103d0`.
+
+### Segurança e observabilidade
+
+- nenhuma dependência de UI, Next.js, Supabase, IO, ambiente ou logging foi encontrada na feature.
+- validações canônicas, limites gregorianos e laços curtos mitigam entradas inválidas e abuso de recursos.
+- nenhum segredo real foi encontrado nos arquivos rastreados.
+- baseline futuro limita telemetria a kind, resultado categórico e latência; PII e conteúdo financeiro são proibidos.
+
+### Bloqueio remoto
+
+- checks `Vercel – fin-control` e `Vercel – fin-control-zljm` falharam no PR 8.
+- logs privados não puderam ser inspecionados porque o conector exige reautenticação e o browser disponível não possui sessão Vercel.
+- estado final: `BLOCKED` por `CI-VERCEL-001`, apesar dos gates locais e GitHub Actions verdes.

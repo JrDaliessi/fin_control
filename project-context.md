@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-012 concluído; aplicabilidade de UX, acessibilidade e PWA validada
+- Estado atual da máquina de estados: `BLOCKED`
+- Fase atual: Dia 7 da SR-012 executado; gates locais e GitHub Actions verdes, previews Vercel bloqueando a entrega
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -82,6 +82,7 @@
 - Data da expansão controlada da SR-012: 2026-08-25
 - Data da refatoração e hardening da SR-012: 2026-08-26
 - Data da revisão de UX, acessibilidade e PWA da SR-012: 2026-08-26
+- Data da validação final da SR-012: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4599,3 +4600,40 @@ Estado de saída:
 - SR-012 permanece em `IN_PROGRESS`
 - Dia 6 concluído sem avanço automático de fase
 - próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Quality gates locais:
+- regressão completa: 64 suítes e 336 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- auditoria completa retornou 0 vulnerabilidades
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- GitHub Actions `Quality Gates`, execução 36, concluiu com sucesso para o commit `cd103d0`
+
+Revisão de segurança:
+- a feature permanece pura, sem React, Next.js, Supabase, variáveis de ambiente, IO, logs ou execução dinâmica
+- entradas públicas rejeitam kind desconhecido, datas não canônicas, datas gregorianas inexistentes e resultados fora de `0001-01-01` a `9999-12-31`
+- intervalos permanecem semiabertos e os deslocamentos são limitados a no máximo 15 iterações
+- nenhum segredo real foi encontrado; `.env.example` contém somente placeholders vazios e arquivos `.env*` locais permanecem ignorados
+- threat model cobre abuso de entrada, estouro de calendário, negação de serviço por laços, vazamento de dados e quebra de fronteiras arquiteturais
+
+Baseline de observabilidade:
+- quando houver consumidor real, registrar somente evento técnico `financial_period_resolution`, kind, resultado categórico e latência
+- resultados permitidos: `success`, `invalid_kind`, `invalid_reference` e `out_of_range`
+- é proibido registrar `userId`, datas exatas, valores, saldos, descrições, UUIDs, tokens, cookies, credenciais ou payloads financeiros
+- nenhum provedor externo foi instalado nesta release de domínio puro
+
+Bloqueio de entrega:
+- os checks `Vercel – fin-control` e `Vercel – fin-control-zljm` estão em falha no PR 8
+- a inspeção autenticada pelo conector Vercel falhou por OAuth expirado; a inspeção no browser chegou à tela de login, portanto os logs privados não puderam ser lidos
+- o código não deve ser declarado pronto enquanto os checks obrigatórios do PR permanecerem vermelhos
+- ação mínima: reautenticar a integração Vercel, inspecionar os dois deployments e corrigir ou remover o vínculo duplicado conforme a causa comprovada; depois reexecutar os checks sem alterar o escopo da SR-012
+
+Estado de saída:
+- `BLOCKED`
+- SR-012 permanece em `IN_PROGRESS`
+- bloqueio externo rastreado como `CI-VERCEL-001`
+- nenhum deploy, merge, configuração externa ou mudança de Supabase foi executado

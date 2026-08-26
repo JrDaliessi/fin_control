@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: Dia 1 da SR-012 concluído em `ARCHITECTURE_READY`; cinco períodos, datas civis, limites semiabertos e fronteiras de timezone foram definidos. Próximo comando válido: `dia 2`.
+Estado atual: Dia 7 da SR-012 executado. Domínio, aplicação, segurança e gates locais estão verdes, mas a release está `BLOCKED` por dois checks Vercel em falha no PR 8 (`CI-VERCEL-001`). Próximo passo: diagnosticar os previews após reautenticar a integração Vercel e revalidar o pipeline remoto.
 
 ## Marco 10 - Candles Financeiros
 

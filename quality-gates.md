@@ -970,6 +970,22 @@ Uma release incremental só pode ser considerada pronta quando:
 - backlog foi atualizado
 - próximo passo está claro
 
+## Gate do Dia 7 — SR-012
+
+- regressão completa: 64 suítes e 336 testes passaram.
+- lint: verde, 0 warnings.
+- type-check: verde.
+- auditoria npm completa: verde, 0 vulnerabilidades.
+- build: verde em Next `16.3.3`; `ƒ Proxy (Middleware)` preservado.
+- GitHub Actions: workflow `Quality Gates`, execução 36, verde no commit `cd103d0`.
+- arquitetura: domínio/application sem React, Next.js, Supabase, IO, relógio ou timezone implícito.
+- segurança: entradas canônicas e limitadas; calendário validado; laços limitados; nenhum segredo real encontrado.
+- observabilidade futura: evento técnico categórico e latência, com proibição de PII, UUIDs, datas exatas, valores financeiros, tokens, cookies e payloads brutos.
+- previews remotos: `Vercel – fin-control` e `Vercel – fin-control-zljm` permanecem vermelhos.
+- diagnóstico remoto incompleto: conector Vercel com OAuth expirado e browser sem sessão autenticada.
+- nenhum deploy, merge, mudança de configuração externa ou Supabase foi executado.
+- estado final: `BLOCKED`, rastreado em `CI-VERCEL-001`; é proibido declarar `READY_FOR_RELEASE` antes dos checks Vercel verdes.
+
 ## Correção crítica antes do Dia 5 — BUG-001
 
 - `npm run test:ci -- src/features/auth/tests/supabase-proxy.test.ts`: passou, 1 suíte e 6 testes.

@@ -14,12 +14,24 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
 - Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 6 concluído; contratos futuros de UI e limites PWA validados sem criar presentation prematura.
+- Fase atual: Dia 7 executado; gates locais e GitHub Actions verdes, checks Vercel em falha.
 - Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: executar `dia 7` para qualidade final, segurança e preparação da entrega incremental.
-- Status: IN_PROGRESS
+- Próximo passo: resolver `CI-VERCEL-001` e revalidar os checks do PR 8.
+- Status: BLOCKED
 
 ## DISCOVERY
+
+### CI-VERCEL-001 — Diagnosticar previews Vercel em falha no PR 8
+- Tipo: Hardening
+- Descrição objetiva: identificar a causa dos checks `Vercel – fin-control` e `Vercel – fin-control-zljm` vermelhos no commit `cd103d0`.
+- Objetivo de negócio: impedir entrega incremental com pipeline remoto incompleto.
+- Valor esperado: PR auditável com todos os checks obrigatórios verdes.
+- Prioridade: Crítica
+- Dependências: reautenticação da integração Vercel e acesso aos logs privados dos deployments.
+- Risco: Alto enquanto a causa dos previews não for conhecida; gates locais e GitHub Actions permanecem verdes.
+- Fase recomendada: desbloqueio imediato do Dia 7 da SR-012.
+- Critério de pronto: causa documentada, configuração ou código corrigido com menor mudança segura e ambos os checks Vercel verdes.
+- Status: BLOCKED
 
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
