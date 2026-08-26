@@ -415,6 +415,18 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para nova feature de negócio.
 
+### Resultado observado — SR-012
+- Arquivos medidos: o resolver possui 181 linhas e permanece coeso; nenhum módulo foi classificado como monólito.
+- A única duplicação relevante, cálculo de ano bissexto e dias do mês, foi consolidada no serviço puro `gregorian-calendar.ts`.
+- Deslocamentos permanecem limitados a no máximo 15 iterações civis; nenhum gargalo justificou otimização adicional.
+- A refatoração preservou 3 suítes e 42 testes direcionados.
+- Next foi atualizado de `16.2.10` para `16.3.3` seguindo a trilha oficial da versão 16, sem codemod ou mudança de major.
+- React/React DOM `19.2.8`, ESLint Config Next `16.3.3`, PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18`, `brace-expansion` e `js-yaml` foram alinhados sem `--force`.
+- Auditorias de produção e completa passaram com 0 vulnerabilidades; `SEC-DEPS-001` foi concluída.
+- Regressão completa passou com 64 suítes e 336 testes; type-check, lint e build com `ƒ Proxy (Middleware)` passaram.
+- Nenhuma regra financeira, UI, integração, Supabase ou migration foi adicionada.
+- Hardening encerrado com retorno a `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — UI-002
 - Arquivos do shell medidos; o maior tinha 99 linhas e nenhum foi classificado como monólito.
 - Componentes desktop e mobile permaneceram separados por diferenças reais de composição e responsividade.

@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
 - Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 4 concluído; faixa civil completa validada em 42 cenários direcionados e 336 testes totais.
+- Fase atual: Dia 5 concluído; calendário gregoriano consolidado e quality gates verdes.
 - Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: executar `dia 5` para refatoração e hardening interno, incluindo o planejamento de `SEC-DEPS-001`.
+- Próximo passo: executar `dia 6` para revisar a aplicabilidade de UX, acessibilidade e PWA nesta release de domínio puro.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -400,7 +400,9 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Fase recomendada: hardening dedicado antes do Dia 7 e de qualquer release público.
 - Prazo: resolver antes da validação final da SR-012.
 - Critério de pronto: `npm audit --omit=dev --audit-level=high` e auditoria completa sem vulnerabilidades altas; testes, type-check, lint e build verdes; Proxy e fluxos atuais preservados.
-- Status: READY
+- Resultado: Next `16.3.3`, React `19.2.8`, PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18` e transitivas vulneráveis atualizados sem `--force`; auditorias de produção e completa retornaram 0 vulnerabilidades; 64 suítes e 336 testes, type-check, lint e build permaneceram verdes.
+- Data de conclusão: 2026-08-26
+- Status: DONE
 
 ### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
 - Tipo: Dívida Técnica / Hardening

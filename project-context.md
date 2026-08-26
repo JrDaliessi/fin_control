@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SR-012 concluído; limites civis expandidos e validados
+- Fase atual: Dia 5 da SR-012 concluído; refatoração e hardening validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -80,6 +80,7 @@
 - Data da estratégia de testes da SR-012: 2026-08-25
 - Data da implementação mínima da SR-012: 2026-08-25
 - Data da expansão controlada da SR-012: 2026-08-25
+- Data da refatoração e hardening da SR-012: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4512,3 +4513,43 @@ Estado de saída:
 - SR-012 permanece em `IN_PROGRESS`
 - Dia 4 concluído sem avanço automático de fase
 - próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração e Hardening Interno da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Diagnóstico estrutural:
+- módulos de domínio e aplicação medidos entre 13 e 181 linhas
+- `resolve-financial-period.ts`, com 181 linhas, permanece coeso e não foi dividido por contagem arbitrária
+- a única duplicação concreta estava nas regras gregorianas de ano bissexto e dias por mês
+- os deslocamentos de período executam no máximo 15 iterações; nenhum gargalo de performance foi identificado
+
+Refatoração aplicada:
+- criado `src/features/financial-analytics/domain/services/gregorian-calendar.ts`
+- `CivilDate` e `resolveFinancialPeriod` passaram a reutilizar a mesma regra gregoriana pura
+- contratos públicos, mensagens de validação e resultados permaneceram inalterados
+- 3 suítes e 42 testes direcionados permaneceram verdes
+
+Hardening de dependências:
+- a skill `vercel:next-upgrade` e a documentação oficial do Next 16 orientaram a atualização dentro da mesma versão principal
+- Next `16.2.10` foi atualizado para `16.3.3`; nenhum codemod foi necessário
+- React e React DOM foram atualizados de `19.2.7` para `19.2.8`, com tipos alinhados
+- ESLint Config Next foi atualizado para `16.3.3`
+- PostCSS foi atualizado para `8.5.23`, Sharp para `0.35.3` e Nanoid para `3.3.18`
+- `npm audit fix` sem `--force` atualizou somente transitivas vulneráveis de desenvolvimento, incluindo `brace-expansion` e `js-yaml`
+- auditoria de produção e auditoria completa retornaram 0 vulnerabilidades
+- `SEC-DEPS-001` foi concluída em 2026-08-26
+
+Evidências de qualidade:
+- regressão completa: 64 suítes e 336 testes passaram
+- type-check passou
+- lint passou com 0 warnings
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- nenhuma UI, integration, infrastructure, Supabase, migration ou regra financeira foi adicionada
+
+Estado de saída:
+- retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 5 concluído sem avanço automático de fase
+- próximo comando válido: `dia 6`

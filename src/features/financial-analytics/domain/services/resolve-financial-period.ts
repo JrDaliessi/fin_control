@@ -1,4 +1,5 @@
 import { CivilDate } from "../value-objects/civil-date";
+import { daysInGregorianMonth } from "./gregorian-calendar";
 import type {
   FinancialPeriod,
   FinancialPeriodKind
@@ -39,18 +40,6 @@ function formatCivilDate(parts: CivilDateParts): string {
     .padStart(2, "0")}-${parts.day.toString().padStart(2, "0")}`;
 }
 
-function isLeapYear(year: number): boolean {
-  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-}
-
-function daysInMonth(year: number, month: number): number {
-  if (month === 2) {
-    return isLeapYear(year) ? 29 : 28;
-  }
-
-  return [4, 6, 9, 11].includes(month) ? 30 : 31;
-}
-
 function addCivilDays(value: string, amount: number): string {
   const parts = parseCivilDate(value);
   const direction = Math.sign(amount);
@@ -58,7 +47,10 @@ function addCivilDays(value: string, amount: number): string {
   for (let remaining = Math.abs(amount); remaining > 0; remaining -= 1) {
     parts.day += direction;
 
-    if (direction > 0 && parts.day > daysInMonth(parts.year, parts.month)) {
+    if (
+      direction > 0 &&
+      parts.day > daysInGregorianMonth(parts.year, parts.month)
+    ) {
       parts.day = 1;
       parts.month += 1;
 
@@ -80,7 +72,7 @@ function addCivilDays(value: string, amount: number): string {
         throw new Error("civil date is out of range");
       }
 
-      parts.day = daysInMonth(parts.year, parts.month);
+      parts.day = daysInGregorianMonth(parts.year, parts.month);
     }
 
     if (parts.year < 1 || parts.year > 9999) {
@@ -102,7 +94,7 @@ function mondayBasedWeekday(value: string): number {
   let daysBeforeMonth = 0;
 
   for (let currentMonth = 1; currentMonth < month; currentMonth += 1) {
-    daysBeforeMonth += daysInMonth(year, currentMonth);
+    daysBeforeMonth += daysInGregorianMonth(year, currentMonth);
   }
 
   return (daysBeforeYear + daysBeforeMonth + day - 1) % 7;

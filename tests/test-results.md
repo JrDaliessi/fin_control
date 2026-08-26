@@ -658,3 +658,36 @@ Interpretação:
 - a auditoria conhecida permanece registrada em `SEC-DEPS-001` e continua bloqueando release.
 - estado final: `IMPLEMENTATION_IN_PROGRESS`.
 - próximo comando válido: `dia 5`.
+
+## Dia 5 — SR-012
+
+### Refatoração preservando comportamento
+
+- os módulos de domínio e aplicação foram medidos; o maior arquivo possui 181 linhas e mantém responsabilidade única.
+- regras duplicadas de ano bissexto e quantidade de dias por mês foram extraídas para `gregorian-calendar.ts`.
+- testes direcionados permaneceram verdes com 3 suítes e 42 testes.
+- type-check passou após a extração.
+
+### Hardening de dependências
+
+- Next foi atualizado de `16.2.10` para `16.3.3` dentro da versão principal atual.
+- React e React DOM foram atualizados para `19.2.8`; tipos React foram alinhados.
+- PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18`, `brace-expansion` e `js-yaml` corrigiram as vulnerabilidades registradas.
+- nenhuma instalação usou `--force` e nenhum codemod foi necessário.
+- auditoria de produção: 0 vulnerabilidades.
+- auditoria completa: 0 vulnerabilidades.
+
+### Regressão e build
+
+- regressão completa: 64 suítes e 336 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- build Next `16.3.3` passou e declarou `ƒ Proxy (Middleware)`.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+
+Interpretação:
+- duplicação de calendário foi removida sem alterar contratos ou comportamento.
+- `SEC-DEPS-001` foi concluída antes do Dia 7.
+- nenhuma UI, persistência, agregação ou regra financeira foi adicionada.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 6`.
