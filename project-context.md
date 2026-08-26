@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-012 concluído; domínio, escopo, contratos e limites temporais definidos
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-012 concluído; pipeline local, GitHub Actions e previews Vercel verdes
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -77,6 +77,12 @@
 - Data da validação final e preparação de release da SR-011: 2026-07-17
 - Data de seleção da SR-012 como próximo ciclo: 2026-08-25
 - Data do discovery e arquitetura da SR-012: 2026-08-25
+- Data da estratégia de testes da SR-012: 2026-08-25
+- Data da implementação mínima da SR-012: 2026-08-25
+- Data da expansão controlada da SR-012: 2026-08-25
+- Data da refatoração e hardening da SR-012: 2026-08-26
+- Data da revisão de UX, acessibilidade e PWA da SR-012: 2026-08-26
+- Data da validação final da SR-012: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4391,3 +4397,247 @@ Estado de saída:
 - `git diff --check`, `npm run lint` e `npm run type-check` passaram
 - testes e build não foram executados porque o Dia 1 alterou somente documentação
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Matriz executada:
+- `CivilDate`: formato canônico, datas reais, bissexto e entradas inválidas
+- `resolveFinancialPeriod`: cinco tipos, limites semiabertos, quinzenas, janelas móveis e viradas de calendário
+- `containsCivilDate`: início inclusivo, fim exclusivo, datas externas e candidato inválido
+- `ResolveFinancialPeriodUseCase`: DTO plano e serializável, kind e referência inválidos
+- infrastructure e presentation: não aplicáveis nesta release
+
+Testes criados antes da implementação:
+- `src/features/financial-analytics/tests/civil-date.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.use-case.test.ts`
+
+Cenários codificados:
+- 3 suítes
+- 37 cenários de domínio e aplicação
+- nenhuma fixture compartilhada, pois entradas primitivas e tabelas locais tornam as expectativas explícitas
+
+Evidência RED:
+- execução direcionada: 3 suítes falharam e 0 testes executaram porque os imports de produção ainda não existem
+- falhas Jest limitadas a `CivilDate`, `containsCivilDate` e `ResolveFinancialPeriodUseCase` ausentes
+- type-check apresentou 6 erros `TS2307`, todos referentes aos 5 módulos planejados da SR-012
+- nenhuma falha funcional inesperada ocorreu
+
+Rede de segurança:
+- baseline anterior: 61 suítes e 294 testes passaram ao excluir somente os testes da SR-012
+- lint passou com 0 warnings
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- build não foi executado porque o type-check vermelho é deliberado
+
+Implementação bloqueada até o Dia 3:
+- `src/features/financial-analytics/domain/value-objects/civil-date.ts`
+- `src/features/financial-analytics/domain/types/financial-period.types.ts`
+- `src/features/financial-analytics/domain/services/resolve-financial-period.ts`
+- `src/features/financial-analytics/domain/services/contains-civil-date.ts`
+- `src/features/financial-analytics/application/use-cases/resolve-financial-period.use-case.ts`
+- qualquer presentation, infrastructure, repository, migration, policy, grant, rota ou dependência
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-012 permanece em `IN_PROGRESS`
+- próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Implementação mínima:
+- `CivilDate` valida e preserva datas civis gregorianas no formato canônico `YYYY-MM-DD`, sem `Date`
+- `FinancialPeriodKind` limita o domínio a `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`
+- `resolveFinancialPeriod` calcula intervalos semiabertos determinísticos, incluindo viradas de mês, ano e bissexto
+- `containsCivilDate` valida o candidato e aplica início inclusivo e fim exclusivo
+- `ResolveFinancialPeriodUseCase` mantém a fronteira de application com DTOs planos e serializáveis
+
+Escopo preservado:
+- nenhuma alteração nos testes RED do Dia 2
+- nenhuma UI, presentation, infrastructure, Supabase, migration, repository ou dependência
+- nenhum período `custom`, agregação, comparação ou consulta financeira antecipada
+- domínio e aplicação sem React, Next.js, Supabase, `Date` ou `any`
+
+Evidências de qualidade:
+- GREEN direcionado: 3 suítes e 37 testes passaram
+- regressão completa: 64 suítes e 331 testes passaram
+- type-check passou
+- lint passou com 0 warnings
+- build passou
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Risco registrado:
+- `npm audit --omit=dev --audit-level=high` identificou 4 vulnerabilidades altas em dependências de produção
+- a auditoria completa identificou 6 vulnerabilidades altas
+- nenhuma atualização forçada foi feita nesta fase; `SEC-DEPS-001` foi registrada com severidade ALTA e prazo anterior ao Dia 7
+- release e deploy permanecem bloqueados até a remediação e nova regressão completa
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 3 concluído sem avanço automático de fase
+- próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Expansão aprovada:
+- cobertura explícita das datas civis extremas `0001-01-01` e `9999-12-31`
+- cobertura da semana iniciada em `0001-01-01`
+- rejeição de `month` e `fortnight` quando o fim exclusivo ultrapassa o ano `9999`
+- nenhuma camada de presentation foi criada porque a arquitetura desta release permanece domínio puro
+
+Ciclo TDD:
+- RED direcionado: 2 falhas e 40 testes verdes
+- causa: o formatador interno aceitava o ano `10000` nos limites calculados
+- GREEN: guarda única rejeita anos fora de `0001` a `9999`
+- resultado direcionado: 3 suítes e 42 testes passaram
+- regressão completa: 64 suítes e 336 testes passaram
+
+Evidências de qualidade:
+- type-check passou
+- lint passou com 0 warnings usando o binário local, pois o `npm` global da máquina está incompleto
+- build passou após acesso de rede ao Google Fonts exigido pelo `next/font`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- nenhuma dependência, UI, integration, infrastructure, Supabase, migration ou contrato de analytics futuro foi adicionado
+
+Riscos e pendências:
+- o estado da auditoria permanece em 4 vulnerabilidades altas de produção e 6 no conjunto completo porque o lockfile não foi alterado
+- `SEC-DEPS-001` permanece ALTA, com release e deploy bloqueados até a remediação
+- o `npm` global quebrado é uma limitação do ambiente local; os binários versionados do projeto executaram Jest, ESLint e Next com sucesso
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 4 concluído sem avanço automático de fase
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração e Hardening Interno da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Diagnóstico estrutural:
+- módulos de domínio e aplicação medidos entre 13 e 181 linhas
+- `resolve-financial-period.ts`, com 181 linhas, permanece coeso e não foi dividido por contagem arbitrária
+- a única duplicação concreta estava nas regras gregorianas de ano bissexto e dias por mês
+- os deslocamentos de período executam no máximo 15 iterações; nenhum gargalo de performance foi identificado
+
+Refatoração aplicada:
+- criado `src/features/financial-analytics/domain/services/gregorian-calendar.ts`
+- `CivilDate` e `resolveFinancialPeriod` passaram a reutilizar a mesma regra gregoriana pura
+- contratos públicos, mensagens de validação e resultados permaneceram inalterados
+- 3 suítes e 42 testes direcionados permaneceram verdes
+
+Hardening de dependências:
+- a skill `vercel:next-upgrade` e a documentação oficial do Next 16 orientaram a atualização dentro da mesma versão principal
+- Next `16.2.10` foi atualizado para `16.3.3`; nenhum codemod foi necessário
+- React e React DOM foram atualizados de `19.2.7` para `19.2.8`, com tipos alinhados
+- ESLint Config Next foi atualizado para `16.3.3`
+- PostCSS foi atualizado para `8.5.23`, Sharp para `0.35.3` e Nanoid para `3.3.18`
+- `npm audit fix` sem `--force` atualizou somente transitivas vulneráveis de desenvolvimento, incluindo `brace-expansion` e `js-yaml`
+- auditoria de produção e auditoria completa retornaram 0 vulnerabilidades
+- `SEC-DEPS-001` foi concluída em 2026-08-26
+
+Evidências de qualidade:
+- regressão completa: 64 suítes e 336 testes passaram
+- type-check passou
+- lint passou com 0 warnings
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- nenhuma UI, integration, infrastructure, Supabase, migration ou regra financeira foi adicionada
+
+Estado de saída:
+- retorno ao fluxo estável em `IMPLEMENTATION_IN_PROGRESS`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 5 concluído sem avanço automático de fase
+- próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Aplicabilidade:
+- a SR-012 não possui presentation por decisão explícita do ADR 0009 e do Dia 1
+- criar seletor, cards ou gráficos nesta fase anteciparia a UI-003 e dependeria de agregações ainda ausentes da SR-013
+- responsividade, estados visuais e microinterações específicos foram classificados como não aplicáveis, sem tratar acessibilidade como opcional
+
+Contrato para a futura UI analítica:
+- rótulos `Semana`, `Últimos 7 dias`, `Quinzena`, `Últimos 15 dias` e `Mês` pertencem à presentation; os kinds canônicos permanecem internos
+- seleção deve ser única e semanticamente nomeada por `select`, radiogroup ou padrão equivalente acessível
+- controles devem preservar alvo mínimo de 44 px, foco visível, teclado e ausência de comunicação somente por cor
+- loading, empty, success e error pertencem à composição da SR-013/UI-003, não ao domínio temporal
+- UI recebe DTOs de strings civis e nunca calcula limites, converte `occurred_on` ou usa timezone/browser implícito
+- gráficos permanecem condicionados à série temporal da SR-014
+
+Revisão PWA e responsiva:
+- `public/manifest.webmanifest` preserva `standalone`, `pt-BR`, ícones 192/512/maskable e shortcuts somente para transações e contas
+- metadata preserva viewport, `theme-color` claro/escuro, Apple Web App e vínculo com o manifest
+- design system preserva `prefers-reduced-motion`
+- shell preserva skip link, landmarks, safe area mobile e alvos mínimos de 44 px
+- nenhum service worker, cache financeiro, shortcut analítico ou promessa offline foi adicionado
+
+Risco identificado:
+- `src/app/(private)/transactions/page.tsx` deriva a competência atual com relógio global e getters UTC
+- perto da virada mensal civil, a rota pode abrir um mês diferente do percebido pelo usuário, sem corromper dados
+- correção ficou registrada como `TIME-BOUNDARY-001`, severidade MÉDIA, antes da composição SR-013/UI-003
+- a correção exigirá `referenceInstant` e timezone IANA explícitos na borda de aplicação; `occurred_on` continuará sem conversão de fuso
+
+Evidências:
+- testes direcionados de PWA, design system, shell e páginas: 9 suítes e 46 testes passaram
+- regressão completa: 64 suítes e 336 testes passaram
+- type-check passou
+- lint passou com 0 warnings
+- auditoria completa retornou 0 vulnerabilidades
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SR-012 permanece em `IN_PROGRESS`
+- Dia 6 concluído sem avanço automático de fase
+- próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-012
+
+Small release: `SR-012 — Períodos financeiros`.
+
+Quality gates locais:
+- regressão completa: 64 suítes e 336 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- auditoria completa retornou 0 vulnerabilidades
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- GitHub Actions `Quality Gates`, execução 36, concluiu com sucesso para o commit `cd103d0`
+
+Revisão de segurança:
+- a feature permanece pura, sem React, Next.js, Supabase, variáveis de ambiente, IO, logs ou execução dinâmica
+- entradas públicas rejeitam kind desconhecido, datas não canônicas, datas gregorianas inexistentes e resultados fora de `0001-01-01` a `9999-12-31`
+- intervalos permanecem semiabertos e os deslocamentos são limitados a no máximo 15 iterações
+- nenhum segredo real foi encontrado; `.env.example` contém somente placeholders vazios e arquivos `.env*` locais permanecem ignorados
+- threat model cobre abuso de entrada, estouro de calendário, negação de serviço por laços, vazamento de dados e quebra de fronteiras arquiteturais
+
+Baseline de observabilidade:
+- quando houver consumidor real, registrar somente evento técnico `financial_period_resolution`, kind, resultado categórico e latência
+- resultados permitidos: `success`, `invalid_kind`, `invalid_reference` e `out_of_range`
+- é proibido registrar `userId`, datas exatas, valores, saldos, descrições, UUIDs, tokens, cookies, credenciais ou payloads financeiros
+- nenhum provedor externo foi instalado nesta release de domínio puro
+
+Bloqueio de entrega:
+- os checks `Vercel – fin-control` e `Vercel – fin-control-zljm` estão em falha no PR 8
+- o GitHub confirmou `Deployment was blocked` antes do build e o bot Vercel informou que `JuniorDaliessi` não pertence ao time `JrDaliessi's projects`
+- os commits estavam associados ao GitHub `JuniorDaliessi` (ID `77872897`), enquanto o repositório, a sessão `gh` e o time Vercel pertencem a `JrDaliessi` (ID `131720853`)
+- a integração Vercel do Codex permaneceu sem sessão utilizável, mas os deployments e comentários do GitHub forneceram evidência suficiente da causa
+- o código não deve ser declarado pronto enquanto os checks obrigatórios do PR permanecerem vermelhos
+- ação mínima: usar a identidade Git canônica de `JrDaliessi` em novo commit, reexecutar os previews e somente então avaliar separadamente o vínculo duplicado dos projetos
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- SR-012 concluída como entrega incremental de código
+- `CI-VERCEL-001` resolvido sem reescrita de histórico: a identidade Git local do repositório foi alinhada a `JrDaliessi` e os dois previews concluíram com sucesso no commit `268ab3e`
+- GitHub Actions `Quality Gates` passou em 1m13s; `Vercel – fin-control`, `Vercel – fin-control-zljm` e `Vercel Preview Comments` passaram
+- a existência de dois projetos Vercel permanece como observação operacional não bloqueante; nenhuma remoção foi autorizada
+- nenhum deploy, merge, configuração externa ou mudança de Supabase foi executado

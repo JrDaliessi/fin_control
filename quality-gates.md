@@ -97,6 +97,18 @@
 - Estado de saída validado como `TEST_STRATEGY_READY`.
 
 ## Gate do Dia 2
+
+### Resultado observado — SR-012
+- Matriz de domain e application documentada em `test-strategy.md`.
+- 3 suítes e 37 cenários foram criados antes da implementação.
+- RED direcionado válido: 3 suítes falharam exclusivamente pelos módulos de produção ausentes.
+- Type-check falhou somente com 6 erros `TS2307` referentes aos 5 módulos planejados.
+- Rede anterior passou com 61 suítes e 294 testes ao excluir os contratos RED da SR-012.
+- Lint passou com 0 warnings e `git diff --check` passou.
+- Build não foi executado porque o type-check vermelho é deliberado.
+- Nenhum código funcional, migration, integração, UI ou dependência foi criado.
+- Estado de saída validado como `TEST_STRATEGY_READY`.
+- Próximo comando válido: `dia 3`.
 - Setup técnico mínimo criado.
 - Jest configurado.
 - Testing Library configurada.
@@ -191,6 +203,16 @@
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para módulos fora da small release.
 
+### Resultado observado — SR-012
+- `CivilDate`, tipos de período, resolução dos cinco períodos, pertencimento ao intervalo e caso de uso foram implementados sem `Date`, React, Next.js, Supabase ou `any`.
+- Testes direcionados passaram com 3 suítes e 37 testes.
+- Regressão completa passou com 64 suítes e 331 testes.
+- Type-check, lint, build e `git diff --check` passaram.
+- A auditoria encontrou 4 vulnerabilidades altas em produção e 6 no conjunto completo; nenhuma dependência foi alterada fora do escopo do Dia 3.
+- A dívida `SEC-DEPS-001` foi registrada com severidade ALTA e prazo anterior ao Dia 7.
+- A implementação está apta à expansão controlada, mas release e deploy permanecem bloqueados até a remediação da auditoria.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
+
 ### Resultado observado — UI-002
 - Configuração pura de três rotas e alias `/` implementada sem dependência de framework ou infraestrutura.
 - Sidebar/rail, topbar e navegação mobile criadas próximas ao App Router, sem nova primitive compartilhada.
@@ -283,6 +305,17 @@
 - Build passando.
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para cartão, parcelas, dashboard completo, IA, importação ou Open Finance.
+
+### Resultado observado — SR-012
+- Presentation e estados visuais não se aplicam à SR-012, conforme arquitetura aprovada para esta release de domínio puro.
+- RED direcionado confirmou 2 falhas: `month` e `fortnight` aceitavam fim exclusivo no ano `10000`.
+- `CivilDate` passou a ter cobertura explícita dos limites `0001-01-01` e `9999-12-31`.
+- O formatador interno agora rejeita qualquer limite calculado fora dos anos `0001` a `9999`.
+- GREEN direcionado passou com 3 suítes e 42 testes; regressão completa passou com 64 suítes e 336 testes.
+- Type-check, lint, build e `git diff --check` passaram; o build precisou de acesso de rede somente para baixar Geist pelo `next/font`.
+- Nenhuma UI, infraestrutura, integração, dependência ou nova capacidade financeira foi adicionada.
+- A auditoria permanece com 4 vulnerabilidades altas em produção e 6 no conjunto completo, já registradas em `SEC-DEPS-001`; release continua bloqueado.
+- Estado de saída validado como `IMPLEMENTATION_IN_PROGRESS`.
 
 ### Resultado observado — UI-002
 - RED direcionado confirmou somente a ausência do atalho de conteúdo; 16 cenários anteriores permaneceram verdes.
@@ -381,6 +414,18 @@
 - Build passando.
 - Audit sem vulnerabilidades conhecidas.
 - Escopo não expandido para nova feature de negócio.
+
+### Resultado observado — SR-012
+- Arquivos medidos: o resolver possui 181 linhas e permanece coeso; nenhum módulo foi classificado como monólito.
+- A única duplicação relevante, cálculo de ano bissexto e dias do mês, foi consolidada no serviço puro `gregorian-calendar.ts`.
+- Deslocamentos permanecem limitados a no máximo 15 iterações civis; nenhum gargalo justificou otimização adicional.
+- A refatoração preservou 3 suítes e 42 testes direcionados.
+- Next foi atualizado de `16.2.10` para `16.3.3` seguindo a trilha oficial da versão 16, sem codemod ou mudança de major.
+- React/React DOM `19.2.8`, ESLint Config Next `16.3.3`, PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18`, `brace-expansion` e `js-yaml` foram alinhados sem `--force`.
+- Auditorias de produção e completa passaram com 0 vulnerabilidades; `SEC-DEPS-001` foi concluída.
+- Regressão completa passou com 64 suítes e 336 testes; type-check, lint e build com `ƒ Proxy (Middleware)` passaram.
+- Nenhuma regra financeira, UI, integração, Supabase ou migration foi adicionada.
+- Hardening encerrado com retorno a `IMPLEMENTATION_IN_PROGRESS`.
 
 ### Resultado observado — UI-002
 - Arquivos do shell medidos; o maior tinha 99 linhas e nenhum foi classificado como monólito.
@@ -490,6 +535,18 @@
 - `npm run build` passou.
 - `npm audit` passou com 0 vulnerabilidades.
 - Limitação de verificação visual pelo navegador integrado documentada.
+
+### Resultado observado — SR-012
+- Presentation, responsividade e microinterações específicas são não aplicáveis porque a release aprovada permanece domínio puro.
+- Contratos atuais expõem somente strings civis serializáveis; nenhum `Date`, timezone, locale ou estado visual atravessa a fronteira de application.
+- A futura UI-003 deve localizar os cinco rótulos na presentation, oferecer seleção única acessível e delegar todo cálculo temporal aos casos de uso.
+- Manifest preserva instalação `standalone`, idioma `pt-BR`, ícones 192/512/maskable e shortcuts apenas para transações e contas existentes.
+- Metadata preserva viewport responsivo, temas claro/escuro e `prefers-reduced-motion`; shell mantém skip link, landmarks, safe area e alvos mínimos de 44 px.
+- Nenhum service worker, cache financeiro, shortcut analítico ou promessa offline foi criado.
+- Testes direcionados de PWA, design system, shell e páginas passaram com 9 suítes e 46 testes.
+- Regressão completa passou com 64 suítes e 336 testes; type-check, lint, audit com 0 vulnerabilidades e build com `ƒ Proxy (Middleware)` passaram.
+- A competência UTC preexistente da rota de transações foi registrada como `TIME-BOUNDARY-001`, fora do escopo desta release.
+- Estado de saída validado como `QUALITY_VALIDATION`.
 
 ### Resultado observado — UI-002
 - Shell revisado por semântica, testes, classes responsivas e contratos PWA.
@@ -912,6 +969,25 @@ Uma release incremental só pode ser considerada pronta quando:
 - riscos remanescentes foram documentados
 - backlog foi atualizado
 - próximo passo está claro
+
+## Gate do Dia 7 — SR-012
+
+- regressão completa: 64 suítes e 336 testes passaram.
+- lint: verde, 0 warnings.
+- type-check: verde.
+- auditoria npm completa: verde, 0 vulnerabilidades.
+- build: verde em Next `16.3.3`; `ƒ Proxy (Middleware)` preservado.
+- GitHub Actions: workflow `Quality Gates`, execução 36, verde no commit `cd103d0`.
+- arquitetura: domínio/application sem React, Next.js, Supabase, IO, relógio ou timezone implícito.
+- segurança: entradas canônicas e limitadas; calendário validado; laços limitados; nenhum segredo real encontrado.
+- observabilidade futura: evento técnico categórico e latência, com proibição de PII, UUIDs, datas exatas, valores financeiros, tokens, cookies e payloads brutos.
+- previews remotos: `Vercel – fin-control` e `Vercel – fin-control-zljm` permanecem vermelhos.
+- diagnóstico confirmado pelo GitHub/Vercel Bot: deployments bloqueados antes do build porque o autor `JuniorDaliessi` não possui acesso ao time Vercel de `JrDaliessi`.
+- identidade esperada para a reexecução: GitHub `JrDaliessi` (ID `131720853`), usando endereço noreply canônico no escopo deste repositório.
+- nenhum deploy, merge, mudança de configuração externa ou Supabase foi executado.
+- correção operacional: identidade Git do repositório alinhada a `JrDaliessi`, sem reescrever commits publicados.
+- revalidação remota no commit `268ab3e`: GitHub Actions, `Vercel Preview Comments`, `Vercel – fin-control` e `Vercel – fin-control-zljm` verdes.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código; hardenings globais de produção continuam explicitamente rastreados.
 
 ## Correção crítica antes do Dia 5 — BUG-001
 

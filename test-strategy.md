@@ -479,6 +479,84 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Dia 2 — SR-012 Períodos Financeiros
+
+## Objetivo
+
+Transformar os contratos civis e temporais da SR-012 em testes executáveis antes de criar `CivilDate`, o resolvedor, o predicado de pertencimento ou o caso de uso.
+
+## Prioridade por Camada
+
+1. `domain`: validar datas civis reais, os cinco períodos e limites semiabertos.
+2. `application`: validar o DTO serializável do caso de uso.
+3. `infrastructure`: não aplicável nesta release.
+4. `presentation`: não aplicável enquanto não existir consumidor real.
+
+## Matriz de Testes da SR-012
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `CivilDate` | formato canônico, datas reais, bissexto, ano/mês/dia inválidos e rejeição de timestamp | testes criados |
+| domain | `resolveFinancialPeriod` | cinco kinds, semana seg–dom, quinzenas, janelas móveis e viradas de mês/ano | testes criados |
+| domain | `containsCivilDate` | início incluso, interior, último dia, fim exclusivo, antes do início e candidato inválido | testes criados |
+| application | `ResolveFinancialPeriodUseCase` | DTO plano, serialização, kind inválido e referência inválida | testes criados |
+| infrastructure | não aplicável | nenhuma consulta, migration ou integração autorizada | fora do escopo |
+| presentation | não aplicável | nenhum seletor, rota ou componente autorizado | fora do escopo |
+
+## Cenário Feliz
+
+O caso de uso recebe `rolling_7_days` e a data civil `2026-08-25`, resolve o intervalo `[2026-08-19, 2026-08-26)` e devolve somente strings serializáveis.
+
+## Cenários Alternativos
+
+- semana civil atravessando a virada do ano
+- primeira e segunda quinzenas
+- janela móvel atravessando mês ou ano
+- mês de fevereiro em ano bissexto
+- mês de dezembro terminando em janeiro do ano seguinte
+
+## Edge Cases Críticos
+
+- data inexistente, timestamp ou formato não canônico
+- ano, mês ou dia zero
+- século não bissexto
+- `custom` ou outro kind fora da união aprovada
+- começo inclusivo e fim exclusivo
+- candidato inválido no predicado de pertencimento
+- uso acidental de `Date`, relógio, locale ou timezone nos contratos
+
+## Testes Criados
+
+- `src/features/financial-analytics/tests/civil-date.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.use-case.test.ts`
+
+Fixtures compartilhadas não foram criadas: as entradas são primitivas e as tabelas locais mantêm cada resultado esperado explícito.
+
+## Implementação Bloqueada até o Dia 3
+
+- `src/features/financial-analytics/domain/value-objects/civil-date.ts`
+- `src/features/financial-analytics/domain/types/financial-period.types.ts`
+- `src/features/financial-analytics/domain/services/resolve-financial-period.ts`
+- `src/features/financial-analytics/domain/services/contains-civil-date.ts`
+- `src/features/financial-analytics/application/use-cases/resolve-financial-period.use-case.ts`
+
+Não criar `presentation`, `infrastructure`, repository, migration, policy, grant, rota ou dependência nesta release.
+
+## Resultado Observado do Dia 2 — SR-012
+
+- baseline anterior: 61 suítes e 294 testes verdes
+- 3 suítes novas com 37 cenários codificados
+- RED direcionado: 3 suítes falharam antes da execução dos cenários por módulos deliberadamente ausentes
+- type-check: 6 erros `TS2307`, todos limitados aos 5 módulos planejados
+- rede anterior: 61 suítes e 294 testes permaneceram verdes ao excluir a pasta da SR-012
+- lint: verde, 0 warnings
+- `git diff --check`: verde, com avisos esperados de LF/CRLF
+- build não executado porque o type-check vermelho é deliberado
+- nenhum código funcional, UI, infrastructure, migration, integração ou dependência foi criado
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
 ## Matriz Planejada — Trilha FinControl Pulse
 
 Esta matriz orienta os futuros Dias 2 de `UI-001` a `UI-006`. Nenhum teste ou código funcional foi antecipado nesta incorporação de escopo.

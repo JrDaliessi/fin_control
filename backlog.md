@@ -6,18 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-012 — Períodos financeiros
-- Tipo: Small Release
-- Descrição objetiva: modelar períodos financeiros civis e móveis sem ambiguidades antes das agregações analíticas.
-- Objetivo de negócio: permitir análise antes do fechamento mensal.
-- Valor esperado: distinguir semana, últimos 7 dias, quinzena, últimos 15 dias e mês de forma previsível.
-- Prioridade: Alta
-- Dependências: SR-011 concluída em `READY_FOR_RELEASE`.
-- Risco: Médio por limites de datas, timezone e viradas de período.
-- Fase atual: Dia 1 concluído; estratégia de testes pendente.
-- Critério de pronto: os cinco tipos de período, datas civis, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes; nenhuma biblioteca visual ou persistência antecipada.
-- Próximo passo: executar `dia 2` para criar os testes essenciais em RED.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -40,10 +29,10 @@ Nenhum item pronto aguardando início no momento.
 - Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
 - Valor esperado: visão rápida sem promessas ou indicadores fictícios.
 - Prioridade: Alta
-- Dependências: UI-001, UI-002 e casos de uso/dados disponíveis.
+- Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também da série temporal da SR-014.
 - Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
 - Fase recomendada: após shell; expansão progressiva com SR-012 a SR-023.
-- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, acessibilidade e pipeline verde.
+- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
 - Status: DISCOVERY
 
 ### UI-004 — Experiência de contas em cards e drawer
@@ -388,6 +377,35 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
+### SEC-DEPS-001 — Atualizar dependências com vulnerabilidades altas
+- Tipo: Security Item / Dívida Técnica
+- Descrição: a auditoria de 2026-08-25 identificou 4 vulnerabilidades altas em dependências de produção e 6 altas no conjunto completo, envolvendo `nanoid`, `next`, `postcss`, `sharp`, `brace-expansion` e `js-yaml`.
+- Objetivo de negócio: impedir que uma entrega pública use versões com vulnerabilidades conhecidas.
+- Valor esperado: reduzir exposição a negação de serviço, SSRF, cache poisoning e falhas nas cadeias de imagem, proxy e build.
+- Prioridade: Alta
+- Dependências: ciclo controlado de atualização do Next.js e dependências transitivas, consulta às notas oficiais e regressão completa.
+- Risco: Alto em produção pública; controlado enquanto não houver release/deploy.
+- Severidade: ALTA
+- Fase recomendada: hardening dedicado antes do Dia 7 e de qualquer release público.
+- Prazo: resolver antes da validação final da SR-012.
+- Critério de pronto: `npm audit --omit=dev --audit-level=high` e auditoria completa sem vulnerabilidades altas; testes, type-check, lint e build verdes; Proxy e fluxos atuais preservados.
+- Resultado: Next `16.3.3`, React `19.2.8`, PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18` e transitivas vulneráveis atualizados sem `--force`; auditorias de produção e completa retornaram 0 vulnerabilidades; 64 suítes e 336 testes, type-check, lint e build permaneceram verdes.
+- Data de conclusão: 2026-08-26
+- Status: DONE
+
+### TIME-BOUNDARY-001 — Remover competência mensal ancorada em UTC da rota de transações
+- Tipo: Bug / Dívida Técnica
+- Descrição: `src/app/(private)/transactions/page.tsx` usa `new Date()` com `getUTCFullYear()` e `getUTCMonth()` para escolher a competência inicial, podendo abrir o mês incorreto perto da virada civil do usuário.
+- Objetivo de negócio: garantir que a competência padrão corresponda ao dia financeiro percebido pelo usuário.
+- Valor esperado: evitar navegação inicial confusa sem alterar ou converter `occurred_on` persistido.
+- Prioridade: Média
+- Dependências: contrato explícito de `referenceInstant` e timezone IANA na borda de aplicação; decisão futura sobre preferência do usuário ou timezone padrão aprovado.
+- Risco: Médio para experiência; não há corrupção de dados.
+- Severidade: MÉDIA
+- Fase recomendada: antes da composição da SR-013 com a UI-003.
+- Critério de pronto: remover relógio/UTC direto da página, injetar a âncora temporal na aplicação e cobrir viradas UTC/local por testes sem converter datas civis persistidas.
+- Status: DISCOVERY
+
 ### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
 - Tipo: Dívida Técnica / Hardening
 - Descrição: a carga de `/transactions` consulta o mesmo mês uma vez para a lista e outra vez para o resumo mensal.
@@ -461,6 +479,22 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-012 — Períodos financeiros
+- Tipo: Small Release
+- Resultado: cinco períodos financeiros civis e móveis implementados com datas canônicas, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes.
+- Arquitetura: domínio e application puros; nenhuma UI, persistência, agregação, Supabase ou timezone implícito antecipado.
+- Quality gates: 64 suítes/336 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e dois previews Vercel verdes.
+- Segurança e observabilidade: entradas limitadas, calendário validado, loops curtos e baseline sanitizada sem PII ou dados financeiros.
+- Riscos residuais: `TIME-BOUNDARY-001` deve ser resolvido antes da composição SR-013/UI-003; hardenings globais de deploy público permanecem rastreados.
+- Status: DONE
+
+### CI-VERCEL-001 — Corrigir autoria Git dos previews Vercel
+- Tipo: Hardening
+- Resultado: divergência entre `JuniorDaliessi` e `JrDaliessi` corrigida no escopo local do repositório, sem reescrever histórico.
+- Evidência: commit `268ab3e` associado ao GitHub `JrDaliessi` (ID `131720853`); ambos os previews e GitHub Actions concluíram com sucesso.
+- Observação: dois projetos Vercel continuam conectados ao repositório; avaliação de consolidação permanece opcional e separada.
+- Status: DONE
 
 ### SR-011 — Persistência e RLS de transações
 - Tipo: Security Item / Small Release

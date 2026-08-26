@@ -575,3 +575,177 @@ Interpretação:
 - grants mínimos, ownership e vínculos cross-tenant permanecem protegidos.
 - SR-011 está `READY_FOR_RELEASE` como entrega incremental de código.
 - deploy público permanece bloqueado por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
+
+## Dia 2 — SR-012
+
+### Baseline
+
+- suíte anterior: 61 suítes e 294 testes passaram
+- lint passou com 0 warnings
+
+### RED direcionado
+
+- 3 suítes falharam antes de executar os 37 cenários codificados
+- `civil-date.test.ts`: módulo `CivilDate` ausente
+- `resolve-financial-period.test.ts`: serviços e tipos de período ausentes
+- `resolve-financial-period.use-case.test.ts`: caso de uso ausente
+- type-check apresentou 6 erros `TS2307`, todos referentes aos 5 módulos planejados
+
+### Rede de segurança
+
+- 61 suítes e 294 testes anteriores permaneceram verdes ao excluir `src/features/financial-analytics/tests`
+- lint permaneceu verde
+- `git diff --check` passou
+- build não foi executado porque o type-check vermelho é deliberado
+
+Interpretação:
+- RED válido e restrito à implementação ainda bloqueada
+- nenhum teste foi relaxado, ignorado ou removido
+- nenhum código funcional, migration, integração, UI ou dependência foi criado
+- estado final: `TEST_STRATEGY_READY`
+- próximo comando válido: `dia 3`
+
+## Dia 3 — SR-012
+
+### GREEN direcionado
+
+- 3 suítes e 37 testes passaram.
+- datas civis canônicas, ano bissexto, viradas de mês/ano e limites semiabertos foram validados.
+- os cinco períodos aprovados foram resolvidos sem relógio, locale, timezone implícito ou `Date`.
+
+### Regressão e qualidade
+
+- regressão completa: 64 suítes e 331 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- build passou.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+- inspeção arquitetural confirmou ausência de React, Next.js, Supabase e `any` nos novos módulos.
+
+### Auditoria de dependências
+
+- auditoria de produção identificou 4 vulnerabilidades altas.
+- auditoria completa identificou 6 vulnerabilidades altas.
+- nenhuma atualização forçada foi aplicada no Dia 3; a remediação foi registrada como `SEC-DEPS-001`, severidade ALTA, antes do Dia 7.
+
+Interpretação:
+- o RED do Dia 2 foi convertido em GREEN sem relaxar ou alterar testes.
+- somente domínio e caso de uso da SR-012 foram implementados; UI, persistência, agregações e `custom` permanecem fora do escopo.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 4`.
+
+## Dia 4 — SR-012
+
+### RED de expansão controlada
+
+- 2 cenários novos falharam e 40 passaram.
+- `month` e `fortnight` com referência `9999-12-31` produziam fim exclusivo `10000-01-01`, fora do formato civil canônico.
+- os limites civis válidos `0001-01-01` e `9999-12-31` e a primeira semana do ano 1 permaneceram verdes.
+
+### GREEN e regressão
+
+- uma única guarda de faixa foi adicionada ao formatador civil interno.
+- GREEN direcionado: 3 suítes e 42 testes passaram.
+- regressão completa: 64 suítes e 336 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- build passou após liberar o acesso necessário ao Google Fonts para o `next/font`.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+
+Interpretação:
+- períodos resolvidos nunca expõem uma data fora do contrato `YYYY-MM-DD` entre os anos `0001` e `9999`.
+- nenhuma UI, persistência, agregação, comparação ou nova dependência foi antecipada.
+- a auditoria conhecida permanece registrada em `SEC-DEPS-001` e continua bloqueando release.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 5`.
+
+## Dia 5 — SR-012
+
+### Refatoração preservando comportamento
+
+- os módulos de domínio e aplicação foram medidos; o maior arquivo possui 181 linhas e mantém responsabilidade única.
+- regras duplicadas de ano bissexto e quantidade de dias por mês foram extraídas para `gregorian-calendar.ts`.
+- testes direcionados permaneceram verdes com 3 suítes e 42 testes.
+- type-check passou após a extração.
+
+### Hardening de dependências
+
+- Next foi atualizado de `16.2.10` para `16.3.3` dentro da versão principal atual.
+- React e React DOM foram atualizados para `19.2.8`; tipos React foram alinhados.
+- PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18`, `brace-expansion` e `js-yaml` corrigiram as vulnerabilidades registradas.
+- nenhuma instalação usou `--force` e nenhum codemod foi necessário.
+- auditoria de produção: 0 vulnerabilidades.
+- auditoria completa: 0 vulnerabilidades.
+
+### Regressão e build
+
+- regressão completa: 64 suítes e 336 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- build Next `16.3.3` passou e declarou `ƒ Proxy (Middleware)`.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+
+Interpretação:
+- duplicação de calendário foi removida sem alterar contratos ou comportamento.
+- `SEC-DEPS-001` foi concluída antes do Dia 7.
+- nenhuma UI, persistência, agregação ou regra financeira foi adicionada.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 6`.
+
+## Dia 6 — SR-012
+
+### Aplicabilidade de UX e acessibilidade
+
+- nenhuma presentation foi criada porque a SR-012 entrega somente contratos de domínio e application.
+- DTOs permanecem compostos por strings civis serializáveis, sem `Date`, timezone ou locale implícito.
+- requisitos futuros do seletor foram registrados para UI-003: rótulos localizados, escolha única acessível e cálculo delegado ao caso de uso.
+
+### PWA e responsividade preservadas
+
+- manifest mantém instalação `standalone`, idioma `pt-BR`, ícones raster/maskable e shortcuts apenas para fluxos reais.
+- metadata mantém viewport responsivo, cores de tema e vínculo com o manifest.
+- design system preserva movimento reduzido; shell mantém skip link, landmarks, safe area e alvos de 44 px.
+- nenhum service worker, cache financeiro ou promessa offline foi adicionado.
+
+### Validação
+
+- testes direcionados de PWA, design system, shell e páginas: 9 suítes e 46 testes passaram.
+- regressão completa: 64 suítes e 336 testes passaram.
+- type-check passou.
+- lint passou, 0 warnings.
+- auditoria completa passou com 0 vulnerabilidades.
+- build Next `16.3.3` passou e declarou `ƒ Proxy (Middleware)`.
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF.
+
+Interpretação:
+- a experiência existente permaneceu estável sem antecipar a UI analítica.
+- a competência mensal UTC preexistente foi registrada como `TIME-BOUNDARY-001` para correção antes da composição SR-013/UI-003.
+- estado final: `QUALITY_VALIDATION`.
+- próximo comando válido: `dia 7`.
+
+## Dia 7 — SR-012
+
+### Pipeline local e CI
+
+- regressão completa: 64 suítes e 336 testes passaram.
+- lint passou, 0 warnings.
+- type-check passou.
+- auditoria completa passou com 0 vulnerabilidades.
+- build Next `16.3.3` passou e declarou `ƒ Proxy (Middleware)`.
+- GitHub Actions `Quality Gates`, execução 36, passou no commit `cd103d0`.
+
+### Segurança e observabilidade
+
+- nenhuma dependência de UI, Next.js, Supabase, IO, ambiente ou logging foi encontrada na feature.
+- validações canônicas, limites gregorianos e laços curtos mitigam entradas inválidas e abuso de recursos.
+- nenhum segredo real foi encontrado nos arquivos rastreados.
+- baseline futuro limita telemetria a kind, resultado categórico e latência; PII e conteúdo financeiro são proibidos.
+
+### Bloqueio remoto
+
+- checks `Vercel – fin-control` e `Vercel – fin-control-zljm` falharam no PR 8.
+- GitHub registrou `Deployment was blocked`; o comentário do Vercel Bot confirmou que o autor `JuniorDaliessi` não pertence ao time Vercel de `JrDaliessi`.
+- a autoria divergente foi identificada antes de qualquer reescrita de histórico; a correção será validada por novo commit com a identidade canônica do proprietário.
+- correção: identidade Git local alinhada a `JrDaliessi` sem reescrever histórico.
+- revalidação: GitHub Actions e os dois previews Vercel passaram no commit `268ab3e`.
+- estado final: `READY_FOR_RELEASE`; `CI-VERCEL-001` concluído.
