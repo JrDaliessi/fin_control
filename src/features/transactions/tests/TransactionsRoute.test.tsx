@@ -23,6 +23,9 @@ const { default: TransactionsLoading } = jest.requireActual<
 const { default: TransactionsError } = jest.requireActual<
   typeof import("@/app/(private)/transactions/error")
 >("@/app/(private)/transactions/error");
+const { resolveDefaultTransactionMonthRef } = jest.requireActual<
+  typeof import("@/app/(private)/transactions/resolve-default-transaction-month")
+>("@/app/(private)/transactions/resolve-default-transaction-month");
 
 const pageData = {
   monthRef: "2026-07",
@@ -65,6 +68,15 @@ describe("transactions route", () => {
     expect(loadTransactionsPageAction).toHaveBeenCalledWith({
       monthRef: expect.stringMatching(/^\d{4}-(0[1-9]|1[0-2])$/)
     });
+  });
+
+  it("anchors the default month to the configured civil timezone", () => {
+    expect(
+      resolveDefaultTransactionMonthRef("2026-04-01T02:30:00.000Z")
+    ).toBe("2026-03");
+    expect(
+      resolveDefaultTransactionMonthRef("2026-04-01T03:30:00.000Z")
+    ).toBe("2026-04");
   });
 
   it("renders an accessible loading state", () => {

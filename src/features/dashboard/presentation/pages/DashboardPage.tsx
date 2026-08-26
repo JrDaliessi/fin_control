@@ -9,8 +9,19 @@ import { DashboardSummaryPanel } from "../components/DashboardSummaryPanel";
 import { DashboardEmptyState } from "../components/DashboardEmptyState";
 import { RecentTransactionsList } from "../components/RecentTransactionsList";
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
+import type { FinancialEvolutionDto } from "@/features/financial-analytics/application/use-cases/list-financial-evolution.use-case";
+import type { FinancialPeriodKind } from "@/features/financial-analytics/domain/types/financial-period.types";
+import { FinancialEvolutionPanel } from "@/features/financial-analytics/presentation/components/FinancialEvolutionPanel";
 
-export function DashboardPage() {
+type DashboardPageProps = Readonly<{
+  financialEvolution?: FinancialEvolutionDto;
+  selectedPeriodKind?: FinancialPeriodKind;
+}>;
+
+export function DashboardPage({
+  financialEvolution,
+  selectedPeriodKind = "month"
+}: DashboardPageProps = {}) {
   const { user } = useAuthSession();
   const { transactions } = useTransactionSession();
   const dashboardState = useDashboardSummary({
@@ -54,6 +65,13 @@ export function DashboardPage() {
             ) : null}
           </div>
         </header>
+
+        {financialEvolution ? (
+          <FinancialEvolutionPanel
+            result={financialEvolution}
+            selectedPeriodKind={selectedPeriodKind}
+          />
+        ) : null}
 
         {dashboardState.status === "loading" ? (
           <p className="text-sm text-muted-foreground" role="status">

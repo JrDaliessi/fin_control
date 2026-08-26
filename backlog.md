@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-012 concluída, saldos iniciais e movimentos persistidos com RLS.
 - Risco: Alto por continuidade de saldo, timezone, overflow e consulta histórica.
-- Fase atual: Dia 3 concluído; domínio, application, adapter Supabase e RPC estão em GREEN.
+- Fase atual: Dia 4 concluído; domínio, application, adapter/RPC, composição autenticada e tabela acessível estão em GREEN.
 - Critério de pronto: função pura e caso de uso testados, snapshot autorizado e eficiente, tabela acessível com dados reais, sem biblioteca visual.
-- Próximo passo: executar `dia 4` para compor a tabela acessível e os estados visuais com o caso de uso estável, sem antecipar gráficos.
+- Próximo passo: executar `dia 5` para revisar duplicação, fronteiras e consistência interna preservando o comportamento, sem antecipar gráficos.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -404,7 +404,9 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Severidade: MÉDIA
 - Fase recomendada: antes da composição da SR-013 com a UI-003.
 - Critério de pronto: remover relógio/UTC direto da página, injetar a âncora temporal na aplicação e cobrir viradas UTC/local por testes sem converter datas civis persistidas.
-- Status: DISCOVERY
+- Resultado: a rota injeta o instante ISO em um resolver de application que converte a âncora para `America/Sao_Paulo`; testes cobrem a virada em `2026-04-01T02:30Z`/`03:30Z` e `occurred_on` permanece civil e inalterado.
+- Data de conclusão: 2026-08-26
+- Status: DONE
 
 ### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
 - Tipo: Dívida Técnica / Hardening
@@ -486,7 +488,7 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Arquitetura: domínio e application puros; nenhuma UI, persistência, agregação, Supabase ou timezone implícito antecipado.
 - Quality gates: 64 suítes/336 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e dois previews Vercel verdes.
 - Segurança e observabilidade: entradas limitadas, calendário validado, loops curtos e baseline sanitizada sem PII ou dados financeiros.
-- Riscos residuais: `TIME-BOUNDARY-001` deve ser resolvido antes da composição SR-013/UI-003; hardenings globais de deploy público permanecem rastreados.
+- Riscos residuais: `TIME-BOUNDARY-001` foi resolvido no Dia 4 da SR-013; hardenings globais de deploy público permanecem rastreados.
 - Status: DONE
 
 ### CI-VERCEL-001 — Corrigir autoria Git dos previews Vercel

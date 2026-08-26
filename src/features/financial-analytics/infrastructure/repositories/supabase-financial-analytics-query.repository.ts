@@ -17,7 +17,7 @@ type FinancialAnalyticsSupabaseClient = Readonly<{
   rpc(
     functionName: string,
     parameters: Readonly<{ p_start_on: string; p_end_on: string }>
-  ): Promise<SupabaseRpcResult>;
+  ): PromiseLike<SupabaseRpcResult>;
 }>;
 
 type SupabaseFinancialAnalyticsQueryRepositoryDependencies = Readonly<{

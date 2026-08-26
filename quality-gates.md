@@ -1022,6 +1022,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma UI, gráfico, biblioteca visual, deploy, commit, push, PR ou merge foi executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## Gate do Dia 4 — SR-013
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da implementação.
+- testes de presentation e composição nasceram em RED por módulos deliberadamente ausentes.
+- seletor GET acessível oferece somente `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`, com fallback seguro para `month`.
+- estados `missing_accounts`, `empty` e `success` permanecem distintos; loading/error pertencem ao App Router e mensagens de erro não expõem detalhes do provider.
+- tabela semântica contém caption e colunas Dia, Receitas, Despesas, Líquido, Saldo e Movimentos; wrapper responsivo preserva leitura mobile.
+- composição server-side revalida claims, bloqueia Auth anônimo e passa somente DTO serializável à presentation; UI não acessa Supabase.
+- timezone padrão temporário está explícito como `America/Sao_Paulo`; a competência de transações deixou de usar UTC direto e ganhou testes de virada civil.
+- nenhuma migration, policy, grant, tabela, índice, dado, dependência, gráfico, biblioteca visual, comparação ou redesenho amplo foi criado.
+- regressão: 71 suítes e 385 testes verdes; lint, type-check, build e `git diff --check`: verdes.
+- validação HTTP local: `/dashboard` anônimo redirecionou para `/login` com resposta 200 e sem erro de aplicação; a inspeção autenticada da nova tabela ficou limitada porque o CLI `agent-browser` não está instalado e não havia sessão reutilizável.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Gate do Dia 7 — SR-012
 
 - regressão completa: 64 suítes e 336 testes passaram.

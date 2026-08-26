@@ -3,14 +3,14 @@ import {
   createTransactionAction,
   loadTransactionsPageAction
 } from "./actions";
+import { resolveDefaultTransactionMonthRef } from "./resolve-default-transaction-month";
 
 export const dynamic = "force-dynamic";
 
 export default async function TransactionsRoutePage() {
-  const now = new Date();
-  const monthRef = `${now.getUTCFullYear()}-${(now.getUTCMonth() + 1)
-    .toString()
-    .padStart(2, "0")}`;
+  const monthRef = resolveDefaultTransactionMonthRef(
+    new Date().toISOString()
+  );
   const initialData = await loadTransactionsPageAction({ monthRef });
 
   return (

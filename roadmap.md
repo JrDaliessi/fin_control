@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: Dia 3 da SR-013 concluído em `IMPLEMENTATION_IN_PROGRESS`. Agregação diária, caso de uso, adapter e RPC estão em GREEN; 69 suítes/375 testes Jest e 33 asserções pgTAP passaram. Próximo comando válido: `dia 4`.
+Estado atual: Dia 4 da SR-013 concluído em `IMPLEMENTATION_IN_PROGRESS`. Composição server-side autenticada, cinco períodos, estados acessíveis e tabela diária baseada em dados reais estão em GREEN; nenhum gráfico ou redesenho amplo foi antecipado. Próximo comando válido: `dia 5`.
 
 ## Marco 10 - Candles Financeiros
 

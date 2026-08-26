@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-013 concluído; agregação, caso de uso, adapter e RPC estão em GREEN
+- Fase atual: Dia 4 da SR-013 concluído; composição autenticada, seletor acessível, estados e tabela diária estão em GREEN
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -87,6 +87,7 @@
 - Data do discovery e arquitetura da SR-013: 2026-08-26
 - Data da estratégia de testes da SR-013: 2026-08-26
 - Data da implementação mínima da SR-013: 2026-08-26
+- Data da expansão controlada da SR-013: 2026-08-26
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -939,6 +940,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: a primeira integração real do repository da SR-013 tipou `rpc` como `Promise`, enquanto o cliente Supabase retorna um builder aguardável (`PromiseLike`), fazendo o type-check falhar apesar do comportamento correto. Prevenção: modelar adapters externos pelo menor contrato aguardável real, validar a implementação concreta no primeiro GREEN integrado e não ampliar o port de application com tipos do provider.
+- Erro: o teste agregado das rotas do Dia 4 da SR-013 importou as páginas estaticamente e o transformador Next/Jest carregou o loader real antes do mock, tentando acessar `cookies()` fora de request scope. Prevenção: em testes de Server Components, registrar o mock antes e carregar página/loader com `jest.requireActual()`/`jest.requireMock()` quando a ordem de avaliação fizer parte do isolamento.
 - Erro: o contrato inicial de performance da SR-013 exigiu um índice específico para a agregação de contas, mas o PostgreSQL 17 escolheu a chave única existente `(user_id, id)`, igualmente válida para o filtro por proprietário. Prevenção: testes de plano devem validar a propriedade arquitetural e uma allowlist de planos seguros, não acoplar o harness a uma única escolha legítima do planner.
 - Erro: o contrato de performance da SR-013 usou um helper pgTAP `like(text, pattern, description)` inexistente na versão provisionada e falhou antes de avaliar os planos. Prevenção: expressar inspeções de texto portavelmente com `ok(actual like pattern, description)` e validar o harness na mesma versão remota dentro de transação descartável.
 - Erro: no primeiro GREEN da SR-013, o mock de `loadEvolutionSnapshot` criado no RED foi inferido sem argumentos e o type-check só expôs a assinatura estreita depois que o port passou a existir. Prevenção: tipar mocks de ports futuros com o input planejado desde o Dia 2, para que o RED seja causado apenas pelos módulos funcionais ausentes.
@@ -4814,3 +4817,49 @@ Estado de saída:
 - SR-013 permanece `IN_PROGRESS`
 - nenhuma UI, gráfico, biblioteca visual, deploy, commit, push, PR ou merge foi executado
 - próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+TDD e apresentação:
+- testes de presentation e composição foram criados antes dos módulos visuais e falharam em RED por imports deliberadamente ausentes
+- seletor acessível por GET oferece os cinco períodos aprovados e usa `month` como fallback para ausência, arrays ou valor inválido na URL
+- estados `missing_accounts`, `empty` e `success` possuem mensagens e ações distintas
+- períodos vazios mantêm os saldos diários visíveis; ausência de contas direciona para `/accounts` sem fabricar pontos
+- tabela semântica possui caption e colunas Dia, Receitas, Despesas, Líquido, Saldo e Movimentos, com rolagem horizontal controlada em telas estreitas
+- loading e error são tratados por arquivos especiais do App Router; erro exibido é sanitizado e recuperável
+
+Composição e segurança:
+- `/` e `/dashboard` carregam a evolução no servidor e passam somente `FinancialEvolutionDto` serializável para a presentation
+- o composition root cria o client SSR por request, chama `auth.getClaims()`, exige `sub` válido e rejeita Supabase Anonymous Sign-In
+- o repository continua sendo o único adaptador que chama a RPC; nenhum `userId` é enviado ao banco e a UI não importa Supabase
+- `referenceInstant` nasce no limite da aplicação e o timezone padrão temporário é a constante explícita `America/Sao_Paulo`
+- `TIME-BOUNDARY-001` foi resolvido: a rota de transações injeta o instante em resolver civil testado, sem UTC direto e sem converter `occurred_on`
+
+Escopo preservado:
+- nenhum gráfico, biblioteca visual, comparação de período, previsão, IA, offline ou redesenho amplo da UI-003
+- nenhuma migration, policy, grant, tabela, índice, configuração remota, dado ou dependência foi alterado
+- nenhum deploy, commit, push, PR ou merge foi executado
+
+Evidências:
+- GREEN direcionado da presentation/composição: 4 suítes e 18 testes passaram antes da correção temporal adicional
+- teste de virada civil cobre `2026-04-01T02:30:00.000Z` como março e `03:30:00.000Z` como abril em `America/Sao_Paulo`
+- regressão completa: 71 suítes e 385 testes passaram; lint, type-check e build Next `16.3.3` ficaram verdes
+- build preservou `ƒ Proxy (Middleware)` e as rotas `/` e `/dashboard` como dinâmicas
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- validação HTTP local confirmou `/dashboard` anônimo redirecionando para `/login` com resposta final 200 e sem erro de aplicação
+- a inspeção visual autenticada da tabela permaneceu limitada porque o CLI `agent-browser` não está instalado e não havia sessão reutilizável; a semântica e os estados estão cobertos pelo Testing Library
+- aviso local não bloqueante: `next/font` usou fallback da Geist porque o ambiente não alcançou `fonts.googleapis.com`
+
+Revisão React/Next/Supabase:
+- nenhum effect, estado derivado duplicado ou fetch client-side foi introduzido
+- Server Component aguarda `searchParams`, autentica antes da consulta e serializa apenas dados simples
+- formulário nativo preserva navegação progressiva e evita JavaScript de cliente para trocar período
+- apresentação não contém regra temporal, autenticação, acesso ao banco ou detalhes do provider
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-013 permanece `IN_PROGRESS`
+- Dia 4 concluído sem avanço automático de fase
+- próximo comando válido: `dia 5`
