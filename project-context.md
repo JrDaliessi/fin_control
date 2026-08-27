@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-013 concluído; painel analítico revisado para mobile, teclado, semântica e PWA sem ampliar o escopo
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-013 concluído; pipeline, segurança, Supabase, observabilidade e previews remotos validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -90,6 +90,7 @@
 - Data da expansão controlada da SR-013: 2026-08-26
 - Data da refatoração e hardening da SR-013: 2026-08-27
 - Data da revisão de UX, acessibilidade e PWA da SR-013: 2026-08-27
+- Data da validação final e preparação de release da SR-013: 2026-08-27
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4960,3 +4961,42 @@ Estado de saída:
 - SR-013 permanece `IN_PROGRESS`
 - Dia 6 concluído sem avanço automático de fase
 - próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Pipeline e release incremental:
+- regressão completa: 72 suítes e 390 testes passaram
+- lint passou com 0 warnings; type-check passou
+- auditoria npm online passou com 0 vulnerabilidades
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos
+- GitHub Actions `validate` e os checks `Vercel Preview Comments`, `Vercel – fin-control`, `Vercel – fin-control-mzhv` e `Vercel – fin-control-zljm` estão verdes no commit `e508f6b`
+- PR #10 permanece aberto como draft contra `develop`; merge, promoção e deploy de produção não foram executados
+
+Supabase, integridade e segurança:
+- seis migrations locais e remotas permanecem alinhadas, incluindo `20260826190714_create_financial_evolution_snapshot`
+- pgTAP remoto foi repetido em transações com rollback: 15/15 schema, 14/14 comportamento e 4/4 performance passaram; `pgtap` permaneceu ausente após a execução
+- RPC confirmada como `SECURITY INVOKER`, search path fixo e argumentos restritos às duas datas civis
+- somente `authenticated` possui `EXECUTE`; `PUBLIC`, `anon` e `service_role` permanecem sem privilégio de aplicação
+- RLS segue habilitada em `financial_accounts`, `categories` e `transactions`, cada tabela com duas policies
+- nenhum segredo real está rastreado: `SUPABASE_SERVICE_ROLE_KEY` permanece vazio em `.env.example`, `.env.local` é ignorado e a feature não usa `any`, logging direto ou ambiente em código funcional
+- threat model revisado: BOLA/IDOR é mitigado por identidade derivada de `auth.uid()` e RLS; Auth anônimo é rejeitado; abuso de intervalo é limitado a 31 dias; erros de provider permanecem sanitizados; nenhum payload financeiro, PII, cookie, JWT ou segredo deve entrar em logs
+- Security Advisor mantém somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`; o Performance Advisor mantém três avisos informativos de índices ainda não usados, sem evidência para remoção
+
+Observabilidade e validação remota:
+- deployment Vercel do commit `e508f6b` está `READY`
+- acesso sem sessão a `/dashboard` no preview falha fechado e entrega a tela de login
+- o deployment atual não apresentou logs `error` ou `fatal` na janela recente consultada
+- erros DNS de conexão ao Supabase foram encontrados apenas em um deployment anterior de 2026-08-25 e não se repetiram no preview atual
+- baseline operacional usa GitHub Actions, estado/build logs e runtime errors da Vercel, além de advisors e logs do Supabase; captura externa sanitizada continua rastreada em `HARD-OBS-001` antes de produção pública
+
+Escopo preservado:
+- nenhuma feature, gráfico, dependência, migration, policy, grant, configuração Auth, fixture ou dado persistente foi criado ou alterado
+- nenhum commit, push, merge, promoção ou deploy de produção foi executado no Dia 7
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- SR-013 concluída como entrega incremental de código
+- produção pública continua condicionada a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
+- próximo passo recomendado: selecionar humanamente a próxima small release entre refinar `UI-003` e preparar `SP-001`, sem iniciar automaticamente outro ciclo

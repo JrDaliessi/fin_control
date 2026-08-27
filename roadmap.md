@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: Dia 5 da SR-013 concluído em `IMPLEMENTATION_IN_PROGRESS`. `/` e `/dashboard` compartilham uma composição server-side, analytics não entra no bundle cliente e integridade/RPC permanecem inalteradas e cobertas; 72 suítes/388 testes estão verdes. Próximo comando válido: `dia 6`.
+Estado atual: Dia 7 da SR-013 concluído em `READY_FOR_RELEASE`. Evolução financeira, tabela acessível, RPC protegida e composição server-side foram validadas com 72 suítes/390 testes, 33 asserções pgTAP, audit, build, GitHub Actions e previews Vercel verdes. Próximo passo depende de seleção humana entre refinar `UI-003` e preparar `SP-001`.
 
 ## Marco 10 - Candles Financeiros
 

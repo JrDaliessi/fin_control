@@ -6,18 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-013 — Agregação da evolução financeira
-- Tipo: Small Release
-- Descrição objetiva: calcular saldo de abertura e evolução diária por período com tabela acessível baseada em dados reais.
-- Objetivo de negócio: explicar saldo, receitas, despesas e líquido no tempo.
-- Valor esperado: base matemática e serializável para tabela, gráficos e IA futura.
-- Prioridade: Alta
-- Dependências: SR-012 concluída, saldos iniciais e movimentos persistidos com RLS.
-- Risco: Alto por continuidade de saldo, timezone, overflow e consulta histórica.
-- Fase atual: Dia 5 concluído; composição duplicada removida, painel analítico preservado no servidor e contratos de integridade/performance revisados.
-- Critério de pronto: função pura e caso de uso testados, snapshot autorizado e eficiente, tabela acessível com dados reais, sem biblioteca visual.
-- Próximo passo: executar `dia 6` para revisar responsividade, acessibilidade e experiência PWA da tabela e do seletor, sem antecipar gráficos.
-- Status: IN_PROGRESS
+Nenhum item em execução no momento.
 
 ## DISCOVERY
 
@@ -481,6 +470,16 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-013 — Agregação da evolução financeira
+- Tipo: Small Release
+- Resultado: saldo de abertura e evolução diária por período entregues com tabela acessível baseada em dados reais, sem antecipar biblioteca de gráficos.
+- Arquitetura: domínio e application puros; composição server-side; UI recebe DTO serializável; Supabase permanece isolado no repository.
+- Banco: migration `20260826190714_create_financial_evolution_snapshot` alinhada local/remoto; RPC `SECURITY INVOKER`, RLS e grants mínimos; 33 asserções pgTAP verdes em rollback.
+- Quality gates: 72 suítes/390 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e três previews Vercel verdes no commit `e508f6b`.
+- Segurança e observabilidade: ownership derivado da sessão, Auth anônimo bloqueado, intervalo máximo de 31 dias, erros sanitizados e baseline remota validada sem registrar PII ou conteúdo financeiro.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` permanecem como hardening obrigatório antes de produção pública; três índices sem uso continuam apenas informativos.
+- Status: DONE
 
 ### SR-012 — Períodos financeiros
 - Tipo: Small Release

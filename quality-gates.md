@@ -1072,6 +1072,33 @@ Uma release incremental só pode ser considerada pronta quando:
 - revalidação remota no commit `268ab3e`: GitHub Actions, `Vercel Preview Comments`, `Vercel – fin-control` e `Vercel – fin-control-zljm` verdes.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código; hardenings globais de produção continuam explicitamente rastreados.
 
+## Gate do Dia 6 — SR-013
+
+- regressão completa: 72 suítes e 390 testes verdes.
+- lint: verde, 0 warnings; type-check: verde; build Next `16.3.3`: verde.
+- seletor responsivo, grupos `dl/dt/dd`, região horizontal operável por teclado e algarismos tabulares validados.
+- manifest, viewport mobile, idioma, alvos de 44 px, foco e preferência de movimento reduzido preservados.
+- nenhum cache financeiro, service worker ou promessa offline foi introduzido.
+- estado de saída: `QUALITY_VALIDATION`.
+
+## Gate do Dia 7 — SR-013
+
+- regressão completa: 72 suítes e 390 testes passaram.
+- lint: verde, 0 warnings; type-check: verde.
+- auditoria npm online: verde, 0 vulnerabilidades.
+- build Next `16.3.3`: verde; `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos preservados.
+- `git diff --check`: verde para os artefatos da fase.
+- migrations: seis versões locais/remotas alinhadas.
+- pgTAP remoto em rollback: 15/15 schema, 14/14 comportamento e 4/4 performance; `pgtap` ausente após os testes.
+- grants/RLS: RPC `SECURITY INVOKER`, search path fixo, `EXECUTE` somente para `authenticated`; RLS habilitada nas três tabelas consultadas.
+- segredos: somente `.env.example` está rastreado, com placeholder de `service_role` vazio; `.env.local` permanece ignorado e nenhum logging direto foi encontrado na feature.
+- advisors: nenhum alerta novo da SR-013; `auth_leaked_password_protection` permanece em `SEC-AUTH-001` e três índices sem uso permanecem informativos.
+- GitHub/Vercel: workflow `validate` e quatro checks Vercel verdes no commit `e508f6b`; deployment atual `READY`.
+- segurança: threat model cobre BOLA/IDOR, Auth anônimo, abuso de intervalo, escalada privilegiada e vazamento de dados/segredos.
+- observabilidade: preview atual sem `error`/`fatal` recente; erro DNS histórico ficou restrito a deployment anterior; captura externa sanitizada permanece em `HARD-OBS-001`.
+- nenhum commit, push, merge, migration, alteração de Auth, fixture ou deploy de produção foi executado.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código; produção pública permanece condicionada aos hardenings documentados.
+
 ## Correção crítica antes do Dia 5 — BUG-001
 
 - `npm run test:ci -- src/features/auth/tests/supabase-proxy.test.ts`: passou, 1 suíte e 6 testes.

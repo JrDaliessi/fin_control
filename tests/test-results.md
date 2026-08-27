@@ -801,3 +801,29 @@ Interpretação:
 - build não executado porque o type-check vermelho é deliberado.
 - estado final: `TEST_STRATEGY_READY`.
 - próximo comando válido: `dia 3`.
+
+## Dia 7 — SR-013
+
+### Pipeline final
+
+- regressão completa: 72 suítes e 390 testes passaram.
+- lint passou com 0 warnings.
+- type-check passou.
+- auditoria npm online passou com 0 vulnerabilidades.
+- build Next `16.3.3` passou; `ƒ Proxy (Middleware)`, `/` e `/dashboard` permaneceram dinâmicos.
+- GitHub Actions `validate` e quatro checks Vercel passaram no commit `e508f6b`.
+
+### Banco, segurança e rollback
+
+- seis migrations locais/remotas alinhadas.
+- pgTAP remoto: 15/15 schema, 14/14 comportamento e 4/4 performance.
+- testes SQL executaram em transações com rollback; extensão `pgtap` permaneceu ausente.
+- RPC confirmada como `SECURITY INVOKER`, search path fixo e `EXECUTE` somente para `authenticated`.
+- RLS confirmada em contas, categorias e transações; Auth anônimo, `anon`, `PUBLIC` e privilégio de aplicação para `service_role` permanecem bloqueados.
+
+### Observabilidade e resultado
+
+- deployment atual Vercel está `READY`; `/dashboard` sem sessão falha fechado para login.
+- nenhum log `error` ou `fatal` foi encontrado no deployment atual na janela recente.
+- aviso global de proteção contra senhas vazadas e hardenings de produção permanecem registrados, sem alerta novo da SR-013.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código.
