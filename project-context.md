@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-013 concluído; pipeline, segurança, Supabase, observabilidade e previews remotos validados
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da UI-003 concluído; dashboard Pulse fatiado sobre dados reais e pronto para estratégia TDD
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -91,6 +91,8 @@
 - Data da refatoração e hardening da SR-013: 2026-08-27
 - Data da revisão de UX, acessibilidade e PWA da SR-013: 2026-08-27
 - Data da validação final e preparação de release da SR-013: 2026-08-27
+- Data de seleção da UI-003 como próximo ciclo: 2026-08-27
+- Data do discovery e arquitetura da UI-003: 2026-08-27
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5000,3 +5002,79 @@ Estado de saída:
 - SR-013 concluída como entrega incremental de código
 - produção pública continua condicionada a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
 - próximo passo recomendado: selecionar humanamente a próxima small release entre refinar `UI-003` e preparar `SP-001`, sem iniciar automaticamente outro ciclo
+
+## Próximo Ciclo Selecionado — UI-003 Dashboard FinControl Pulse
+
+Small release selecionada: `UI-003 — Dashboard FinControl Pulse`.
+
+Objetivo:
+- reorganizar o dashboard em uma hierarquia responsiva e coerente com o FinControl Pulse
+- compor somente métricas, estados, ações e evolução financeira sustentados por casos de uso reais
+- preservar seletor de período, tabela acessível e composição server-side entregues pela SR-013
+
+Dependências confirmadas:
+- UI-001 e UI-002 concluídas
+- SR-012 e SR-013 concluídas em `READY_FOR_RELEASE`
+- PR #10 incorporado em `develop` com pipeline e previews verdes
+- gráficos continuam bloqueados até `SP-001` e a série temporal visual da SR-014
+
+Escopo inicial preservado:
+- nenhuma métrica fictícia, projeção, comparação, gráfico, IA, busca, notificação ou ação sem fluxo real
+- nenhuma alteração de Supabase, migration, RLS, policy, grant ou persistência é esperada para o recorte visual inicial
+- branch `codex/ui-003-dashboard-pulse` criada a partir de `develop` atualizado
+- nenhuma implementação ou teste da UI-003 foi iniciado durante a seleção
+
+Estado de entrada:
+- máquina de estados permanece `READY_FOR_RELEASE` até a abertura formal do Dia 1
+- UI-003 está `IN_PROGRESS` no backlog apenas como ciclo selecionado
+- próximo comando válido: `dia 1`
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Diagnóstico do estado atual:
+- a evolução financeira da SR-013 é carregada no servidor por `composeDashboardRoute` e representa a fonte real aprovada para saldo, receitas, despesas, líquido, contagem e pontos diários
+- o resumo mensal e as “Últimas transações” atuais derivam de `TransactionSessionProvider`, que é inicializado vazio no layout privado e não representa as transações persistidas
+- manter as duas fontes no dashboard produziria empty state enganoso e possível divergência entre dados reais do servidor e estado efêmero do navegador
+- `DashboardPage` ainda é cliente apenas por causa desses providers legados; sua composição visual pode voltar a ser server-compatible sem perder o slot React já validado
+
+Decisões aprovadas:
+- UI-003 usa exclusivamente `FinancialEvolutionDto` e estados `missing_accounts | empty | success` como fonte financeira desta release
+- `DashboardPage` torna-se apresentação pura e server-compatible; não importa Auth, transações, Supabase, domínio ou casos de uso financeiros
+- `composeDashboardRoute` continua aguardando `searchParams`, autenticando e carregando dados diretamente no servidor, sem Route Handler, fetch cliente ou nova API
+- o slot React preserva a fronteira entre dashboard e financial-analytics; nenhum DTO financeiro atravessa para o bundle cliente
+- título principal será “Visão geral”, com saudação neutra e sem inferir nome a partir do e-mail
+- “Disponível de verdade”, previsão, tendência e comparação permanecem proibidos; o valor principal será rotulado “Saldo ao fim do período”
+- evolução passa a usar a copy “Como seu dinheiro evoluiu”; tabela acessível continua equivalente ao futuro gráfico
+- ações ficam limitadas a fluxos reais de Contas e Transações; CTA contextual depende apenas do estado já devolvido pela SR-013
+
+Grid e estados:
+- grid lógico de 12 colunas, uma coluna no mobile, expansão progressiva em `sm`, `lg` e `xl`, sem largura mínima no contêiner principal
+- cabeçalho e contexto ocupam 12 colunas; saldo final recebe maior hierarquia; receitas, despesas e líquido usam cards secundários; saldo inicial e contagem permanecem contexto textual ou métrica auxiliar
+- `missing_accounts`: onboarding para Contas, sem zeros ou pontos fabricados
+- `empty`: saldos reais permanecem visíveis e a ausência de movimentos é explicada
+- `success`: resumo, seletor e tabela diária são exibidos
+- loading e error continuam nos arquivos especiais do App Router, com mensagem sanitizada e tentativa de recuperação
+
+Small releases internas:
+1. `UI-003A — Fonte real e hierarquia`: remover o resumo cliente legado do dashboard, tornar `DashboardPage` server-compatible e aplicar cabeçalho/copy neutra com ações reais.
+2. `UI-003B — Resumo responsivo do período`: reorganizar `FinancialEvolutionPanel` no grid de 12 colunas e preservar os três estados sem alterar cálculos.
+3. `UI-003C — Hardening visual`: validar mobile, teclado, contraste, loading/error, redução de movimento e ausência de analytics no bundle cliente.
+
+Fora do escopo:
+- lista detalhada de movimentações recentes, pois o contrato atual do período não retorna descrição, conta e categoria, e a consulta existente por mês não acompanha todos os kinds do seletor
+- gráficos, áreas, candles, distribuição e biblioteca visual até `SP-001` e SR-014
+- comparação de período, compromissos, cartões, valor livre, projeções, metas, IA, busca, notificações, perfil e ações sem fluxo real
+- qualquer mudança de domínio, application financeira, infrastructure, Supabase, migration, RLS, policy, grant, dependência ou persistência
+
+Evidências da fase:
+- contexto, workflow, backlog, arquitetura, contratos, modelo de domínio, estratégia de testes e especificação visual foram confrontados com o código atual
+- skill Next.js confirmou leitura direta em Server Component, `searchParams` assíncrono, slot RSC e props serializáveis como padrão adequado
+- ADR `0011-dashboard-pulse-real-data-composition.md` registra fonte de verdade, fronteira server/client e conteúdo bloqueado
+- nenhuma implementação funcional ou teste foi criado no Dia 1
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- UI-003 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 2`

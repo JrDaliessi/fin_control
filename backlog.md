@@ -6,7 +6,19 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em execução no momento.
+### UI-003 — Dashboard FinControl Pulse
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
+- Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
+- Valor esperado: visão rápida sem promessas ou indicadores fictícios.
+- Prioridade: Alta
+- Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também de SP-001 e da série temporal visual da SR-014.
+- Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
+- Fase atual: Dia 1 concluído; fonte real, grid, estados, contratos e limites arquiteturais aprovados.
+- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
+- Small releases: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
+- Próximo passo: executar `dia 2` para criar a matriz e os testes essenciais antes de remover o dashboard cliente legado.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -21,18 +33,6 @@ Nenhum item em execução no momento.
 - Fase recomendada: trilha transversal, uma small release por vez.
 - Critério de pronto: itens filhos concluídos sem rotas vazias, dados fictícios ou quebra arquitetural.
 - Especificação: `docs/product/fincontrol-pulse-interface-copy.md`.
-- Status: DISCOVERY
-
-### UI-003 — Dashboard FinControl Pulse
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
-- Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
-- Valor esperado: visão rápida sem promessas ou indicadores fictícios.
-- Prioridade: Alta
-- Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também da série temporal da SR-014.
-- Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
-- Fase recomendada: após shell; expansão progressiva com SR-012 a SR-023.
-- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
 - Status: DISCOVERY
 
 ### UI-004 — Experiência de contas em cards e drawer

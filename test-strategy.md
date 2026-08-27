@@ -479,6 +479,39 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Estratégia Planejada do Dia 1 — UI-003
+
+O Dia 2 deve escrever os testes abaixo antes de alterar componentes:
+
+| Camada | Alvo | Contratos essenciais |
+| --- | --- | --- |
+| architecture | `DashboardPage` | server-compatible; sem `use client`, Auth, `TransactionSessionProvider`, hook de resumo ou tipos financeiros |
+| presentation | cabeçalho | “Visão geral”, saudação neutra, Contas e Transações; ausência de nome inferido e capacidades futuras |
+| presentation | painel financeiro | “Saldo ao fim do período”, receitas, despesas, líquido, abertura/contexto e contagem com dados do DTO |
+| presentation | estados | `missing_accounts`, `empty` e `success` distintos; sem zeros ou pontos fabricados |
+| presentation | acessibilidade | um `main`, headings ordenados, `dl/dt/dd`, tabela/caption, foco e alvos de 44 px |
+| route | composição | `searchParams` aguardado, kind normalizado, uma leitura server-side e slot compartilhado por `/` e `/dashboard` |
+| boundary | RSC/bundle | DTO não atravessa para componente cliente; sem RPC, provider ou analytics nos chunks cliente |
+
+Cenário feliz:
+- usuário permanente com conta e movimentos abre o dashboard, seleciona um período e recebe saldo final, receitas, despesas, líquido e tabela diária calculados pela SR-013.
+
+Cenários alternativos:
+- conta existente sem movimentos no período mantém saldos e mensagem vazia
+- ausência de contas mostra onboarding sem métricas fabricadas
+- kind ausente ou inválido usa fallback aprovado
+- falha de carregamento usa error boundary sanitizada e recuperável
+
+Edge cases:
+- saldo negativo
+- receitas ou despesas iguais a zero
+- período atravessando mês/ano
+- texto longo e valores monetários grandes sem overflow
+- viewport de 320 px, teclado, leitor de tela e movimento reduzido
+- ausência explícita de “disponível de verdade”, previsão, comparação, gráfico e movimentações detalhadas
+
+Nenhum teste foi criado no Dia 1. A implementação permanece bloqueada até o RED válido do Dia 2.
+
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
 Small release: `SR-013 — Agregação da evolução financeira`.

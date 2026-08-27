@@ -827,3 +827,20 @@ Interpretação:
 - nenhum log `error` ou `fatal` foi encontrado no deployment atual na janela recente.
 - aviso global de proteção contra senhas vazadas e hardenings de produção permanecem registrados, sem alerta novo da SR-013.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código.
+
+## Dia 1 — UI-003
+
+### Discovery e arquitetura
+
+- nenhuma suíte nova foi criada ou executada antes da estratégia TDD.
+- auditoria identificou que o dashboard legado usa um provider cliente inicializado vazio para resumo e recentes.
+- snapshot da SR-013 aprovado como única fonte financeira real da UI-003.
+- matriz futura do Dia 2 cobre fronteira RSC, copy, estados, acessibilidade, composição e ausência de capacidades bloqueadas.
+
+### Gates documentais
+
+- lint passou com 0 warnings.
+- type-check passou.
+- `git diff --check` passou.
+- nenhum teste foi relaxado, removido ou ignorado.
+- estado final: `ARCHITECTURE_READY`.

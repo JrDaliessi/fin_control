@@ -623,3 +623,46 @@ export interface OpenFinanceProviderGateway {
 Status:
 - bloqueado para ciclo futuro
 - exige ADR, revisão de segurança e escolha entre Pluggy, Belvo ou alternativa formal
+
+## Dashboard Pulse — UI-003
+
+### App Router / composição
+
+```ts
+export type DashboardRouteProps = Readonly<{
+  searchParams: Promise<Readonly<{
+    period?: string | readonly string[];
+  }>>;
+}>;
+```
+
+- `/` e `/dashboard` delegam a `composeDashboardRoute`.
+- a composição normaliza o kind, carrega a evolução no servidor e monta o painel como slot React.
+- nenhuma identidade, `Date`, classe, função arbitrária ou client provider cruza a fronteira RSC.
+
+### Presentation do dashboard
+
+```ts
+export type DashboardPageProps = Readonly<{
+  children?: React.ReactNode;
+}>;
+```
+
+- `DashboardPage` não conhece o tipo do DTO financeiro e não calcula resumo.
+- o cabeçalho usa “Visão geral” e texto neutro; nome de perfil só poderá entrar quando existir dado consentido próprio.
+- ações estáticas apontam somente para Contas e Transações.
+
+### Presentation de financial-analytics
+
+```ts
+export type FinancialEvolutionPanelProps = Readonly<{
+  result: FinancialEvolutionDto;
+  selectedPeriodKind: FinancialPeriodKind;
+}>;
+```
+
+- `missing_accounts` exibe onboarding para Contas.
+- `empty` preserva saldos e buckets, explicando ausência de movimentos.
+- `success` mostra saldo ao fim do período, receitas, despesas, líquido, contagem e tabela.
+- saldo inicial permanece contexto do cálculo, sem ser rotulado como disponível.
+- comparação, previsão, lista detalhada recente e gráficos não fazem parte deste contrato.

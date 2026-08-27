@@ -1099,6 +1099,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum commit, push, merge, migration, alteração de Auth, fixture ou deploy de produção foi executado.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código; produção pública permanece condicionada aos hardenings documentados.
 
+## Gate do Dia 1 — UI-003
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- dashboard atual confrontado com especificação, arquitetura, contratos, domínio, backlog e código real.
+- fonte financeira aprovada limitada ao `FinancialEvolutionDto` da SR-013.
+- resumo mensal e recentes baseados no `TransactionSessionProvider` vazio identificados como fonte não persistente a remover do dashboard.
+- composição server-side, slot RSC, `searchParams` assíncrono e props serializáveis preservados conforme a skill Next.js.
+- grid de 12 colunas, copy, estados e ações reais definidos sem criar regra financeira.
+- ADR 0011 criado; UI-003 fatiada em fonte/hierarquia, resumo responsivo e hardening visual.
+- nenhum componente, teste, dependência, migration, Supabase, commit, push, PR ou deploy foi criado na fase.
+- lint, type-check e `git diff --check`: verdes.
+- estado de saída: `ARCHITECTURE_READY`.
+
 ## Correção crítica antes do Dia 5 — BUG-001
 
 - `npm run test:ci -- src/features/auth/tests/supabase-proxy.test.ts`: passou, 1 suíte e 6 testes.

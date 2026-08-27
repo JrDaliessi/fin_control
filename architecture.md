@@ -370,6 +370,22 @@ O projeto deve ter:
 - Nenhuma mudança de domain, application, infrastructure, Supabase, migration, PWA offline ou regra financeira pertence à UI-002.
 - Decisão completa: `adr/0006-responsive-private-shell.md`.
 
+## Dashboard FinControl Pulse — UI-003
+
+- `src/app/(private)/dashboard/compose-dashboard-route.tsx` permanece a composition root server-side compartilhada por `/` e `/dashboard`.
+- A rota aguarda `searchParams`, normaliza o período e carrega `FinancialEvolutionDto` diretamente no servidor; não cria Route Handler nem fetch de leitura no cliente.
+- `DashboardPage` deve ser apresentação pura e server-compatible, recebendo composição por slot React sem importar Auth, transações, analytics, Supabase ou infraestrutura.
+- `FinancialEvolutionPanel` permanece na feature dona da semântica financeira e recebe somente DTO plano e kind aprovado.
+- A UI-003 elimina do dashboard o resumo baseado no `TransactionSessionProvider`, porque o provider começa vazio e não representa a persistência real.
+- A única fonte financeira deste recorte é o snapshot da SR-013: abertura, receitas, despesas, líquido, fechamento, contagem e buckets diários.
+- O grid é lógico de 12 colunas e mobile first. Layout não altera cálculos nem replica valores em estado cliente.
+- Loading e error permanecem em arquivos especiais do App Router; `missing_accounts`, `empty` e `success` pertencem ao DTO da aplicação.
+- “Saldo ao fim do período” é a métrica principal. “Disponível de verdade”, comparação, tendência e previsão continuam bloqueados até contratos próprios.
+- Links ficam restritos a `/accounts` e `/transactions`; lista detalhada recente permanece fora até existir projeção server-side alinhada ao período selecionado.
+- Nenhuma mudança de domínio, application financeira, infrastructure, Supabase, migration, RLS, policy, grant ou dependência pertence à UI-003.
+- Gráficos permanecem bloqueados até `SP-001` e SR-014; a tabela acessível continua obrigatória mesmo após gráficos.
+- Decisão completa: `adr/0011-dashboard-pulse-real-data-composition.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações
