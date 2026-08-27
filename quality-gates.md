@@ -1036,6 +1036,23 @@ Uma release incremental só pode ser considerada pronta quando:
 - validação HTTP local: `/dashboard` anônimo redirecionou para `/login` com resposta 200 e sem erro de aplicação; a inspeção autenticada da nova tabela ficou limitada porque o CLI `agent-browser` não está instalado e não havia sessão reutilizável.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## Gate do Dia 5 — SR-013
+
+- contexto central e workflow do Dia 5 consultados; plano revisado e aprovado antes da refatoração.
+- inventário não encontrou arquivo funcional monolítico crítico; os módulos da SR-013 permanecem entre 1 e 150 linhas.
+- RED estrutural confirmou dependência de analytics no `DashboardPage` cliente, duplicação entre `/` e `/dashboard` e ausência do slot server-rendered.
+- GREEN focado: 5 suítes e 21 testes passaram após a composição compartilhada e o slot React.
+- `DashboardPage` cliente não importa DTO, domínio ou componente de financial analytics.
+- inspeção do build não encontrou referências a `FinancialEvolutionPanel`, RPC ou configuração de períodos nos chunks cliente.
+- repository permanece com uma RPC por carregamento, sem `userId` no payload; mapper, inteiros seguros, `SECURITY INVOKER`, grants e RLS não foram alterados.
+- nenhuma migration, policy, grant, tabela, índice, dependência, regra de negócio, gráfico ou redesenho foi criado.
+- regressão: 72 suítes e 388 testes verdes.
+- lint: verde, 0 warnings.
+- type-check: verde.
+- build Next `16.3.3`: verde após liberar acesso de rede para o download da Geist; `ƒ Proxy (Middleware)` e rotas dinâmicas preservados.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
+
 ## Gate do Dia 7 — SR-012
 
 - regressão completa: 64 suítes e 336 testes passaram.

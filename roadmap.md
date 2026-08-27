@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: Dia 4 da SR-013 concluído em `IMPLEMENTATION_IN_PROGRESS`. Composição server-side autenticada, cinco períodos, estados acessíveis e tabela diária baseada em dados reais estão em GREEN; nenhum gráfico ou redesenho amplo foi antecipado. Próximo comando válido: `dia 5`.
+Estado atual: Dia 5 da SR-013 concluído em `IMPLEMENTATION_IN_PROGRESS`. `/` e `/dashboard` compartilham uma composição server-side, analytics não entra no bundle cliente e integridade/RPC permanecem inalteradas e cobertas; 72 suítes/388 testes estão verdes. Próximo comando válido: `dia 6`.
 
 ## Marco 10 - Candles Financeiros
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Plus, WalletCards } from "lucide-react";
+import type { ReactNode } from "react";
 import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
 import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { useTransactionSession } from "../../../transactions/presentation/providers/TransactionSessionProvider";
@@ -9,19 +10,12 @@ import { DashboardSummaryPanel } from "../components/DashboardSummaryPanel";
 import { DashboardEmptyState } from "../components/DashboardEmptyState";
 import { RecentTransactionsList } from "../components/RecentTransactionsList";
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
-import type { FinancialEvolutionDto } from "@/features/financial-analytics/application/use-cases/list-financial-evolution.use-case";
-import type { FinancialPeriodKind } from "@/features/financial-analytics/domain/types/financial-period.types";
-import { FinancialEvolutionPanel } from "@/features/financial-analytics/presentation/components/FinancialEvolutionPanel";
 
 type DashboardPageProps = Readonly<{
-  financialEvolution?: FinancialEvolutionDto;
-  selectedPeriodKind?: FinancialPeriodKind;
+  children?: ReactNode;
 }>;
 
-export function DashboardPage({
-  financialEvolution,
-  selectedPeriodKind = "month"
-}: DashboardPageProps = {}) {
+export function DashboardPage({ children }: DashboardPageProps = {}) {
   const { user } = useAuthSession();
   const { transactions } = useTransactionSession();
   const dashboardState = useDashboardSummary({
@@ -66,12 +60,7 @@ export function DashboardPage({
           </div>
         </header>
 
-        {financialEvolution ? (
-          <FinancialEvolutionPanel
-            result={financialEvolution}
-            selectedPeriodKind={selectedPeriodKind}
-          />
-        ) : null}
+        {children}
 
         {dashboardState.status === "loading" ? (
           <p className="text-sm text-muted-foreground" role="status">

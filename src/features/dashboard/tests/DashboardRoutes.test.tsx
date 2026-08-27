@@ -79,6 +79,9 @@ describe("dashboard routes", () => {
     expect(
       screen.getByRole("heading", { name: "Dashboard" })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Evolução financeira" })
+    ).toBeInTheDocument();
     expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
   });
 
@@ -91,6 +94,9 @@ describe("dashboard routes", () => {
 
     expect(
       screen.getByRole("heading", { name: "Dashboard" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Evolução financeira" })
     ).toBeInTheDocument();
     expect(loadFinancialEvolution).toHaveBeenCalledWith({
       kind: "rolling_15_days"

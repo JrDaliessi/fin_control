@@ -322,6 +322,7 @@ Regras:
 - Nenhuma tabela, view, coluna, policy ou índice novo é necessário; saldo e pontos não são persistidos.
 - `America/Sao_Paulo` é a configuração IANA explícita e temporária da borda de aplicação. `referenceInstant` é injetado e `occurred_on date` não é convertido.
 - A tabela acessível poderá ser composta no dashboard sem antecipar gráfico ou o redesenho amplo da UI-003.
+- `/` e `/dashboard` delegam à mesma composição server-side; o painel de analytics é passado como slot React para o `DashboardPage` cliente, evitando serializar o DTO financeiro ou incluir módulos de analytics no bundle cliente.
 - A decisão completa está em `adr/0010-financial-evolution-snapshot-and-daily-buckets.md`.
 
 ## PWA

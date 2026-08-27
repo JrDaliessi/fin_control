@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SR-013 concluído; composição autenticada, seletor acessível, estados e tabela diária estão em GREEN
+- Fase atual: Dia 5 da SR-013 concluído; composição compartilhada e fronteira Server/Client estão endurecidas com comportamento preservado
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -88,6 +88,7 @@
 - Data da estratégia de testes da SR-013: 2026-08-26
 - Data da implementação mínima da SR-013: 2026-08-26
 - Data da expansão controlada da SR-013: 2026-08-26
+- Data da refatoração e hardening da SR-013: 2026-08-27
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4863,3 +4864,54 @@ Estado de saída:
 - SR-013 permanece `IN_PROGRESS`
 - Dia 4 concluído sem avanço automático de fase
 - próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Diagnóstico:
+- nenhum arquivo funcional monolítico crítico foi encontrado; os módulos da SR-013 permanecem entre 1 e 150 linhas
+- `/` e `/dashboard` repetiam normalização do período, carregamento do caso de uso e composição do painel
+- `DashboardPage` é cliente e importava DTOs, tipos e o painel de analytics, incluindo código estático da feature no bundle cliente e serializando o DTO através da fronteira RSC
+- repository e RPC já executavam uma consulta por carregamento, com contrato de segurança e performance validado; não havia evidência para alterar banco
+
+TDD da refatoração:
+- teste arquitetural nasceu em RED ao encontrar `financial-analytics` no componente cliente e composição repetida nas duas rotas
+- teste comportamental do slot nasceu em RED porque `DashboardPage` ainda não renderizava conteúdo server-side recebido
+- `composeDashboardRoute` centraliza `searchParams`, normalização, caso de uso e montagem de `FinancialEvolutionPanel`
+- `/` e `/dashboard` delegam à mesma composição, preservando alias, período padrão e valores válidos/inválidos da URL
+- `DashboardPage` recebe somente `ReactNode`; não conhece DTO, kind, application, domain ou presentation de analytics
+- GREEN focado: 5 suítes e 21 testes passaram
+
+Integridade, segurança e performance:
+- uma única chamada `load_financial_evolution_snapshot` permanece por carregamento
+- payload continua restrito a `p_start_on` e `p_end_on`, sem identidade fornecida pelo cliente
+- validação de claims, bloqueio de Auth anônimo, erros sanitizados, inteiros seguros, `SECURITY INVOKER`, search path, grants e RLS permanecem inalterados
+- migration, função SQL e schema não foram modificados
+- changelog atual do Supabase foi revisado; nenhuma breaking change aplicável à RPC, claims ou hospedagem gerenciada exige ação nesta fase
+- inspeção dos chunks de produção não encontrou referências a `FinancialEvolutionPanel`, RPC ou configuração de períodos no JavaScript cliente
+
+Revisão React/Next:
+- Server Component continua aguardando `searchParams` e carregando dados diretamente, sem Route Handler ou fetch client-side
+- painel analítico é renderizado no servidor e atravessa o componente cliente como slot React
+- nenhum effect, estado duplicado, import barrel, componente assíncrono cliente ou prop não serializável foi introduzido
+- condicionais numéricas permanecem explícitas e o comportamento dos estados visuais não mudou
+
+Evidências finais:
+- regressão completa: 72 suítes e 388 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos
+- o primeiro build no sandbox falhou somente ao buscar a Geist; repetido com rede liberada, compilou com sucesso
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Escopo preservado:
+- nenhuma nova regra de negócio, gráfico, biblioteca visual, comparação, previsão, IA, offline ou redesign
+- nenhuma migration, policy, grant, tabela, índice, configuração remota, dado ou dependência
+- nenhum deploy, commit, push, PR ou merge executado no Dia 5
+
+Estado de saída:
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS`
+- SR-013 permanece `IN_PROGRESS`
+- Dia 5 concluído sem avanço automático de fase
+- próximo comando válido: `dia 6`

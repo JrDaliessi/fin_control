@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-012 concluída, saldos iniciais e movimentos persistidos com RLS.
 - Risco: Alto por continuidade de saldo, timezone, overflow e consulta histórica.
-- Fase atual: Dia 4 concluído; domínio, application, adapter/RPC, composição autenticada e tabela acessível estão em GREEN.
+- Fase atual: Dia 5 concluído; composição duplicada removida, painel analítico preservado no servidor e contratos de integridade/performance revisados.
 - Critério de pronto: função pura e caso de uso testados, snapshot autorizado e eficiente, tabela acessível com dados reais, sem biblioteca visual.
-- Próximo passo: executar `dia 5` para revisar duplicação, fronteiras e consistência interna preservando o comportamento, sem antecipar gráficos.
+- Próximo passo: executar `dia 6` para revisar responsividade, acessibilidade e experiência PWA da tabela e do seletor, sem antecipar gráficos.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

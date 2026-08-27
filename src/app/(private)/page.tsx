@@ -1,22 +1,8 @@
-import { DashboardPage } from "@/features/dashboard/presentation/pages/DashboardPage";
-import { normalizeFinancialPeriodKind } from "@/features/financial-analytics/presentation/config/financial-period-options";
-import { loadFinancialEvolution } from "@/app/(private)/dashboard/load-financial-evolution";
+import {
+  composeDashboardRoute,
+  type DashboardRouteProps
+} from "./dashboard/compose-dashboard-route";
 
-type HomePageProps = Readonly<{
-  searchParams: Promise<Readonly<{ period?: string | readonly string[] }>>;
-}>;
-
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const { period } = await searchParams;
-  const selectedPeriodKind = normalizeFinancialPeriodKind(period);
-  const financialEvolution = await loadFinancialEvolution({
-    kind: selectedPeriodKind
-  });
-
-  return (
-    <DashboardPage
-      financialEvolution={financialEvolution}
-      selectedPeriodKind={selectedPeriodKind}
-    />
-  );
+export default function HomePage(props: DashboardRouteProps) {
+  return composeDashboardRoute(props);
 }
