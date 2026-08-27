@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da UI-003 concluído; dashboard Pulse fatiado sobre dados reais e pronto para estratégia TDD
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da UI-003 concluído; contratos essenciais em RED válido e implementação mínima liberada para aprovação
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -93,6 +93,7 @@
 - Data da validação final e preparação de release da SR-013: 2026-08-27
 - Data de seleção da UI-003 como próximo ciclo: 2026-08-27
 - Data do discovery e arquitetura da UI-003: 2026-08-27
+- Data da estratégia de testes da UI-003: 2026-08-27
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5078,3 +5079,32 @@ Estado de saída:
 - `ARCHITECTURE_READY`
 - UI-003 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Matriz executada:
+- architecture: `DashboardPage` deve ser server-compatible e não depender de `use client`, Auth, sessão de transações, hook de resumo ou componentes financeiros legados
+- presentation/dashboard: título “Visão geral”, apoio neutro, ações exclusivas para Contas e Transações, slot React e ausência de promessas financeiras não suportadas
+- presentation/analytics: “Como seu dinheiro evoluiu”, “Saldo ao fim do período”, grid lógico de 12 colunas e estados `missing_accounts | empty | success` sem dados fabricados
+- route: `/` e `/dashboard` compartilham a composição, normalizam o período e realizam uma única leitura server-side
+- acessibilidade/regressão: semântica de headings, `dl/dt/dd`, tabela, caption, região horizontal e loading/error existentes foram preservados
+
+RED observado:
+- 4 suítes direcionadas executadas; 11 testes falharam e 6 passaram
+- as falhas ficaram limitadas às dependências cliente legadas, copy antiga, métrica “Saldo final”, empty copy incompleta e ausência do grid de 12 colunas
+- não houve falha de importação, configuração, fixture ou módulo ausente
+- nenhuma implementação funcional, dependência, migration, Supabase ou persistência foi criada
+
+Rede de segurança:
+- baseline anterior direcionado: 4 suítes e 21 testes verdes antes da alteração dos contratos
+- regressão excluindo somente as 4 suítes RED: 68 suítes e 371 testes verdes
+- type-check verde
+- lint local verde com 0 warnings; o wrapper global do npm permanece quebrado no ambiente, por isso o binário local versionado foi usado
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- UI-003 permanece `IN_PROGRESS`
+- implementação bloqueada até aprovação explícita do `dia 3`
+- próximo comando válido: `dia 3`

@@ -1112,6 +1112,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - lint, type-check e `git diff --check`: verdes.
 - estado de saída: `ARCHITECTURE_READY`.
 
+## Gate do Dia 2 — UI-003
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional revisada e aprovada antes da execução.
+- baseline direcionado: 4 suítes e 21 testes verdes.
+- RED direcionado: 4 suítes falharam; 11 testes falharam e 6 passaram exclusivamente pelos contratos ainda não implementados.
+- contratos cobrem fronteira server/client, copy aprovada, ações reais, slot compartilhado, estados sem dados fabricados, métrica principal e grid de 12 colunas.
+- loading/error do App Router, semântica da tabela, seletor e composição com uma leitura permanecem cobertos pela rede existente.
+- regressão excluindo somente as 4 suítes RED: 68 suítes e 371 testes verdes.
+- lint local: verde, 0 warnings; type-check: verde.
+- wrapper global do npm continua indisponível no ambiente; validação de lint foi executada pelo binário local fixado no projeto.
+- nenhuma implementação funcional, dependência, Supabase, migration, persistência, commit, push, PR ou deploy foi executado.
+- estado de saída: `TEST_STRATEGY_READY`.
+
 ## Correção crítica antes do Dia 5 — BUG-001
 
 - `npm run test:ci -- src/features/auth/tests/supabase-proxy.test.ts`: passou, 1 suíte e 6 testes.

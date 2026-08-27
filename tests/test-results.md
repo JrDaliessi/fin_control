@@ -844,3 +844,22 @@ Interpretação:
 - `git diff --check` passou.
 - nenhum teste foi relaxado, removido ou ignorado.
 - estado final: `ARCHITECTURE_READY`.
+
+## Dia 2 — UI-003
+
+### Baseline e RED
+
+- baseline direcionado antes dos novos contratos: 4 suítes e 21 testes passaram.
+- RED direcionado: 4 suítes falharam; 11 testes falharam e 6 passaram.
+- falhas explicadas por dependências cliente legadas, copy antiga, rótulo “Saldo final”, empty copy incompleta e ausência do grid lógico de 12 colunas.
+- nenhuma falha decorreu de import, configuração, fixture ou módulo ausente.
+
+### Rede de segurança
+
+- regressão excluindo somente as 4 suítes RED: 68 suítes e 371 testes passaram.
+- type-check passou.
+- lint local passou com 0 warnings via `node_modules/.bin/eslint.cmd`.
+- `npm run lint` não foi usado como evidência porque a instalação global do npm procura um `npm-cli.js` ausente; o binário local do projeto executou a mesma configuração.
+- nenhuma implementação funcional, migration, integração Supabase ou dependência foi criada.
+- estado final: `TEST_STRATEGY_READY`.
+- próximo comando válido: `dia 3`.

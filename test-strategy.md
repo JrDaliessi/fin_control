@@ -479,9 +479,9 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
-## Estratégia Planejada do Dia 1 — UI-003
+## Matriz Executada no Dia 2 — UI-003
 
-O Dia 2 deve escrever os testes abaixo antes de alterar componentes:
+Os testes abaixo foram escritos antes de qualquer alteração funcional nos componentes:
 
 | Camada | Alvo | Contratos essenciais |
 | --- | --- | --- |
@@ -510,7 +510,20 @@ Edge cases:
 - viewport de 320 px, teclado, leitor de tela e movimento reduzido
 - ausência explícita de “disponível de verdade”, previsão, comparação, gráfico e movimentações detalhadas
 
-Nenhum teste foi criado no Dia 1. A implementação permanece bloqueada até o RED válido do Dia 2.
+Resultado observado:
+- baseline direcionado antes do RED: 4 suítes e 21 testes verdes
+- RED direcionado: 4 suítes falharam; 11 testes falharam e 6 passaram
+- causas exclusivas: dependências cliente legadas no `DashboardPage`, copy antiga, rótulo “Saldo final”, empty copy incompleta e ausência de `grid-cols-12`
+- rede anterior, excluindo somente as 4 suítes RED: 68 suítes e 371 testes verdes
+- type-check e lint local verdes; nenhuma implementação funcional foi criada
+
+Implementação bloqueada até o Dia 3:
+- tornar `DashboardPage` server-compatible e puramente visual
+- remover o resumo/recentes baseados no provider cliente vazio
+- aplicar copy, ações reais e slot aprovado
+- reorganizar o resumo financeiro no grid de 12 colunas sem alterar cálculos
+
+Estado de saída: `TEST_STRATEGY_READY`.
 
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
