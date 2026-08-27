@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { render, screen, within } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
 import type { CreateTransactionInput } from "../../transactions/domain/entities/transaction.entity";
 import { TransactionSessionProvider } from "../../transactions/presentation/providers/TransactionSessionProvider";
@@ -22,14 +23,15 @@ function makeTransaction(
 
 function renderDashboard(
   transactions: CreateTransactionInput[] = [],
-  userId = "user-1"
+  userId = "user-1",
+  children?: ReactNode
 ) {
   render(
     <AuthSessionProvider
       user={{ id: userId, email: "usuario@example.com" }}
     >
       <TransactionSessionProvider initialTransactions={transactions}>
-        <DashboardPage />
+        <DashboardPage>{children}</DashboardPage>
       </TransactionSessionProvider>
     </AuthSessionProvider>
   );
@@ -78,6 +80,22 @@ describe("DashboardPage", () => {
     expect(
       screen.getByRole("link", { name: "Contas" })
     ).toHaveAttribute("href", "/accounts");
+
+    await screen.findByText(/nenhuma transação registrada/i);
+  });
+
+  it("should compose server-rendered dashboard content through a slot", async () => {
+    renderDashboard(
+      [],
+      "user-1",
+      <section aria-label="Conteúdo financeiro do servidor">
+        Evolução serializada
+      </section>
+    );
+
+    expect(
+      screen.getByRole("region", { name: "Conteúdo financeiro do servidor" })
+    ).toHaveTextContent("Evolução serializada");
 
     await screen.findByText(/nenhuma transação registrada/i);
   });

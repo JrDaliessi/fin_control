@@ -1,5 +1,8 @@
-import { DashboardPage } from "@/features/dashboard/presentation/pages/DashboardPage";
+import {
+  composeDashboardRoute,
+  type DashboardRouteProps
+} from "./compose-dashboard-route";
 
-export default function DashboardRoutePage() {
-  return <DashboardPage />;
+export default function DashboardRoutePage(props: DashboardRouteProps) {
+  return composeDashboardRoute(props);
 }

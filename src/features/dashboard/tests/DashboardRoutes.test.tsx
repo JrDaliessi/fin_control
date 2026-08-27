@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 
 jest.mock("next/navigation", () => ({
@@ -10,14 +10,25 @@ jest.mock("@/app/(private)/transactions/actions", () => ({
   loadTransactionsPageAction: jest.fn()
 }));
 
-import DashboardRoutePage from "../../../app/(private)/dashboard/page";
-import HomePage from "../../../app/(private)/page";
+jest.mock("@/app/(private)/dashboard/load-financial-evolution", () => ({
+  loadFinancialEvolution: jest.fn()
+}));
+
 import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
 import { TransactionSessionProvider } from "../../transactions/presentation/providers/TransactionSessionProvider";
 
 const { loadTransactionsPageAction } = jest.requireMock<
   typeof import("@/app/(private)/transactions/actions")
 >("@/app/(private)/transactions/actions");
+const { loadFinancialEvolution } = jest.requireMock<
+  typeof import("@/app/(private)/dashboard/load-financial-evolution")
+>("@/app/(private)/dashboard/load-financial-evolution");
+const { default: DashboardRoutePage } = jest.requireActual<
+  typeof import("@/app/(private)/dashboard/page")
+>("@/app/(private)/dashboard/page");
+const { default: HomePage } = jest.requireActual<
+  typeof import("@/app/(private)/page")
+>("@/app/(private)/page");
 const { default: TransactionsRoutePage } = jest.requireActual<
   typeof import("@/app/(private)/transactions/page")
 >("@/app/(private)/transactions/page");
@@ -32,21 +43,74 @@ function renderRoute(route: React.ReactNode) {
   );
 }
 
-describe("dashboard routes", () => {
-  it("should render the dashboard on the root route", () => {
-    renderRoute(<HomePage />);
+const financialEvolutionResult = {
+  status: "empty" as const,
+  accountCount: 1,
+  period: {
+    kind: "month" as const,
+    referenceOn: "2026-03-07",
+    startOnInclusive: "2026-03-01",
+    endOnExclusive: "2026-04-01"
+  },
+  summary: {
+    openingBalanceInCents: 2_500,
+    incomeInCents: 0,
+    expenseInCents: 0,
+    netInCents: 0,
+    closingBalanceInCents: 2_500,
+    transactionCount: 0
+  },
+  points: []
+};
 
-    expect(
-      screen.getByRole("heading", { name: "Dashboard" })
-    ).toBeInTheDocument();
+describe("dashboard routes", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(loadFinancialEvolution).mockResolvedValue(
+      financialEvolutionResult
+    );
   });
 
-  it("should render the dashboard on /dashboard", () => {
-    renderRoute(<DashboardRoutePage />);
+  it("should render the dashboard on the root route with month as default", async () => {
+    renderRoute(
+      await HomePage({ searchParams: Promise.resolve({}) })
+    );
 
     expect(
       screen.getByRole("heading", { name: "Dashboard" })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Evolução financeira" })
+    ).toBeInTheDocument();
+    expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
+  });
+
+  it("should render the dashboard on /dashboard with a supported period", async () => {
+    renderRoute(
+      await DashboardRoutePage({
+        searchParams: Promise.resolve({ period: "rolling_15_days" })
+      })
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Dashboard" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Evolução financeira" })
+    ).toBeInTheDocument();
+    expect(loadFinancialEvolution).toHaveBeenCalledWith({
+      kind: "rolling_15_days"
+    });
+  });
+
+  it("falls back to month for an unsupported URL period", async () => {
+    renderRoute(
+      await DashboardRoutePage({
+        searchParams: Promise.resolve({ period: "custom" })
+      })
+    );
+
+    expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
   });
 
   it("should render the manual transaction flow on /transactions", async () => {

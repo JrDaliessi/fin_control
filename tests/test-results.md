@@ -768,3 +768,62 @@ Interpretação:
 - Jest, pgTAP e build não foram executados porque o Dia 1 alterou somente documentação; o RED pertence ao Dia 2.
 - estado final: `ARCHITECTURE_READY`.
 - próximo comando válido: `dia 2`.
+
+## Dia 2 — SR-013
+
+### RED de domínio, aplicação e infraestrutura
+
+- 5 suítes Jest novas foram executadas de forma direcionada.
+- todas falharam exclusivamente por módulos de produção ainda ausentes.
+- 0 cenários funcionais executaram antes da implementação.
+- type-check retornou 7 erros `TS2307`, todos limitados aos módulos planejados.
+- lint passou com 0 warnings.
+
+### Rede de segurança anterior
+
+- comando excluindo somente as cinco suítes RED passou.
+- resultado: 64 suítes e 336 testes verdes.
+- nenhuma regressão foi identificada em períodos financeiros ou features anteriores.
+
+### RED pgTAP remoto e rollback
+
+- `financial_evolution_snapshot_schema.test.sql` executou 15 asserções em transação.
+- resultado: 9 falhas esperadas porque a RPC ainda não existe; 6 contratos preexistentes/negativos permaneceram verdes.
+- `financial_evolution_snapshot_behavior.test.sql` contém 14 asserções para abertura, intervalo, ordem, isolamento e validação.
+- `financial_evolution_snapshot_performance.test.sql` contém 4 asserções para índices e initPlan de RLS.
+- comportamento e performance não foram executados antes da função, evitando ruído pouco diagnóstico.
+- rollback confirmado por consulta posterior: função ausente e extensão `pgtap` não instalada.
+
+### Interpretação
+
+- RED válido e limitado à SR-013.
+- nenhuma migration, função, grant, policy, índice ou implementação funcional foi criada.
+- build não executado porque o type-check vermelho é deliberado.
+- estado final: `TEST_STRATEGY_READY`.
+- próximo comando válido: `dia 3`.
+
+## Dia 7 — SR-013
+
+### Pipeline final
+
+- regressão completa: 72 suítes e 390 testes passaram.
+- lint passou com 0 warnings.
+- type-check passou.
+- auditoria npm online passou com 0 vulnerabilidades.
+- build Next `16.3.3` passou; `ƒ Proxy (Middleware)`, `/` e `/dashboard` permaneceram dinâmicos.
+- GitHub Actions `validate` e quatro checks Vercel passaram no commit `e508f6b`.
+
+### Banco, segurança e rollback
+
+- seis migrations locais/remotas alinhadas.
+- pgTAP remoto: 15/15 schema, 14/14 comportamento e 4/4 performance.
+- testes SQL executaram em transações com rollback; extensão `pgtap` permaneceu ausente.
+- RPC confirmada como `SECURITY INVOKER`, search path fixo e `EXECUTE` somente para `authenticated`.
+- RLS confirmada em contas, categorias e transações; Auth anônimo, `anon`, `PUBLIC` e privilégio de aplicação para `service_role` permanecem bloqueados.
+
+### Observabilidade e resultado
+
+- deployment atual Vercel está `READY`; `/dashboard` sem sessão falha fechado para login.
+- nenhum log `error` ou `fatal` foi encontrado no deployment atual na janela recente.
+- aviso global de proteção contra senhas vazadas e hardenings de produção permanecem registrados, sem alerta novo da SR-013.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código.

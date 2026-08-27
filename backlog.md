@@ -6,18 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-013 — Agregação da evolução financeira
-- Tipo: Small Release
-- Descrição objetiva: calcular saldo de abertura e evolução diária por período com tabela acessível baseada em dados reais.
-- Objetivo de negócio: explicar saldo, receitas, despesas e líquido no tempo.
-- Valor esperado: base matemática e serializável para tabela, gráficos e IA futura.
-- Prioridade: Alta
-- Dependências: SR-012 concluída, saldos iniciais e movimentos persistidos com RLS.
-- Risco: Alto por continuidade de saldo, timezone, overflow e consulta histórica.
-- Fase atual: Dia 1 concluído; domínio, port, snapshot SQL e fronteira temporal aprovados.
-- Critério de pronto: função pura e caso de uso testados, snapshot autorizado e eficiente, tabela acessível com dados reais, sem biblioteca visual.
-- Próximo passo: executar `dia 2` para matriz TDD, RED de Jest e contratos pgTAP.
-- Status: IN_PROGRESS
+Nenhum item em execução no momento.
 
 ## DISCOVERY
 
@@ -404,7 +393,9 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Severidade: MÉDIA
 - Fase recomendada: antes da composição da SR-013 com a UI-003.
 - Critério de pronto: remover relógio/UTC direto da página, injetar a âncora temporal na aplicação e cobrir viradas UTC/local por testes sem converter datas civis persistidas.
-- Status: DISCOVERY
+- Resultado: a rota injeta o instante ISO em um resolver de application que converte a âncora para `America/Sao_Paulo`; testes cobrem a virada em `2026-04-01T02:30Z`/`03:30Z` e `occurred_on` permanece civil e inalterado.
+- Data de conclusão: 2026-08-26
+- Status: DONE
 
 ### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
 - Tipo: Dívida Técnica / Hardening
@@ -480,13 +471,23 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DONE
 
+### SR-013 — Agregação da evolução financeira
+- Tipo: Small Release
+- Resultado: saldo de abertura e evolução diária por período entregues com tabela acessível baseada em dados reais, sem antecipar biblioteca de gráficos.
+- Arquitetura: domínio e application puros; composição server-side; UI recebe DTO serializável; Supabase permanece isolado no repository.
+- Banco: migration `20260826190714_create_financial_evolution_snapshot` alinhada local/remoto; RPC `SECURITY INVOKER`, RLS e grants mínimos; 33 asserções pgTAP verdes em rollback.
+- Quality gates: 72 suítes/390 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e três previews Vercel verdes no commit `e508f6b`.
+- Segurança e observabilidade: ownership derivado da sessão, Auth anônimo bloqueado, intervalo máximo de 31 dias, erros sanitizados e baseline remota validada sem registrar PII ou conteúdo financeiro.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` permanecem como hardening obrigatório antes de produção pública; três índices sem uso continuam apenas informativos.
+- Status: DONE
+
 ### SR-012 — Períodos financeiros
 - Tipo: Small Release
 - Resultado: cinco períodos financeiros civis e móveis implementados com datas canônicas, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes.
 - Arquitetura: domínio e application puros; nenhuma UI, persistência, agregação, Supabase ou timezone implícito antecipado.
 - Quality gates: 64 suítes/336 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e dois previews Vercel verdes.
 - Segurança e observabilidade: entradas limitadas, calendário validado, loops curtos e baseline sanitizada sem PII ou dados financeiros.
-- Riscos residuais: `TIME-BOUNDARY-001` deve ser resolvido antes da composição SR-013/UI-003; hardenings globais de deploy público permanecem rastreados.
+- Riscos residuais: `TIME-BOUNDARY-001` foi resolvido no Dia 4 da SR-013; hardenings globais de deploy público permanecem rastreados.
 - Status: DONE
 
 ### CI-VERCEL-001 — Corrigir autoria Git dos previews Vercel

@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-013 concluído; agregação diária, snapshot persistente e fronteira temporal definidos
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-013 concluído; pipeline, segurança, Supabase, observabilidade e previews remotos validados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -85,6 +85,12 @@
 - Data da validação final da SR-012: 2026-08-26
 - Data de seleção da SR-013 como próximo ciclo: 2026-08-26
 - Data do discovery e arquitetura da SR-013: 2026-08-26
+- Data da estratégia de testes da SR-013: 2026-08-26
+- Data da implementação mínima da SR-013: 2026-08-26
+- Data da expansão controlada da SR-013: 2026-08-26
+- Data da refatoração e hardening da SR-013: 2026-08-27
+- Data da revisão de UX, acessibilidade e PWA da SR-013: 2026-08-27
+- Data da validação final e preparação de release da SR-013: 2026-08-27
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -937,6 +943,12 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: a primeira integração real do repository da SR-013 tipou `rpc` como `Promise`, enquanto o cliente Supabase retorna um builder aguardável (`PromiseLike`), fazendo o type-check falhar apesar do comportamento correto. Prevenção: modelar adapters externos pelo menor contrato aguardável real, validar a implementação concreta no primeiro GREEN integrado e não ampliar o port de application com tipos do provider.
+- Erro: o teste agregado das rotas do Dia 4 da SR-013 importou as páginas estaticamente e o transformador Next/Jest carregou o loader real antes do mock, tentando acessar `cookies()` fora de request scope. Prevenção: em testes de Server Components, registrar o mock antes e carregar página/loader com `jest.requireActual()`/`jest.requireMock()` quando a ordem de avaliação fizer parte do isolamento.
+- Erro: o contrato inicial de performance da SR-013 exigiu um índice específico para a agregação de contas, mas o PostgreSQL 17 escolheu a chave única existente `(user_id, id)`, igualmente válida para o filtro por proprietário. Prevenção: testes de plano devem validar a propriedade arquitetural e uma allowlist de planos seguros, não acoplar o harness a uma única escolha legítima do planner.
+- Erro: o contrato de performance da SR-013 usou um helper pgTAP `like(text, pattern, description)` inexistente na versão provisionada e falhou antes de avaliar os planos. Prevenção: expressar inspeções de texto portavelmente com `ok(actual like pattern, description)` e validar o harness na mesma versão remota dentro de transação descartável.
+- Erro: no primeiro GREEN da SR-013, o mock de `loadEvolutionSnapshot` criado no RED foi inferido sem argumentos e o type-check só expôs a assinatura estreita depois que o port passou a existir. Prevenção: tipar mocks de ports futuros com o input planejado desde o Dia 2, para que o RED seja causado apenas pelos módulos funcionais ausentes.
+- Erro: a fixture comportamental pgTAP da SR-013 referenciou `created_at` sem qualificação após joins com contas e categorias que também possuem essa coluna, produzindo ambiguidade antes de exercitar a RPC. Prevenção: em `INSERT ... SELECT` de testes com joins, qualificar todas as colunas originadas da fixture e executar o harness completo em rollback antes de aplicar a migration.
 - Erro: a primeira orquestração pgTAP do Dia 7 da SR-011 presumiu que `shell_command` retornaria um objeto com `output`; o retorno era uma string envelopada e quatro chamadas vazias foram rejeitadas antes do SQL. Na tentativa seguinte, o envelope ainda foi enviado e o Postgres rejeitou a palavra `Exit` antes de iniciar transação. Prevenção: inspecionar o tipo de retorno uma vez, extrair o conteúdo após o marcador literal `Output:\n`, validar SQL não vazio e interromper após no máximo duas falhas equivalentes antes de tentar outra abordagem.
 - Erro: o Proxy global tratava qualquer claim com `sub` como sessão permanente, enquanto Server Actions e RLS já bloqueavam usuários do Supabase Anonymous Sign-In por `is_anonymous=true`. Prevenção: todo ponto de entrada autenticado deve aplicar o mesmo contrato fail-closed (`sub` válido e `is_anonymous !== true`) e possuir teste de regressão alinhado às policies antes de qualquer release.
 - Erro: no primeiro GREEN do Dia 4 da SR-011, mocks de callbacks foram inferidos sem argumentos e o teste agregado de rotas ainda renderizava o novo Server Component assíncrono como componente cliente. Prevenção: tipar doubles pela assinatura real desde o RED e, quando uma rota passar a carregar dados no servidor, atualizar todos os testes agregados para aguardar a função de rota e registrar mocks com `jest.requireMock()`/`jest.requireActual()` antes dos gates completos.
@@ -4716,3 +4728,275 @@ Estado de saída:
 - SR-013 em `IN_PROGRESS`
 - nenhuma implementação, teste, migration, alteração remota, commit, push ou PR executado
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Matriz executada:
+- domínio: buckets diários contínuos, bissexto, vazio, saldo negativo, entradas inválidas e overflow
+- application: instante/timezone explícitos, ator, período, estados `missing_accounts | empty | success`, uma consulta e erro sanitizado
+- infrastructure: mapper de numeric/bigint, sentinela nula, snapshot consistente, uma RPC sem ownership no payload e falhas estáveis
+- database: assinatura, retorno, grants, invoker, RLS, isolamento, Auth anônimo, limites e planos com índices
+- presentation: contratos documentados para seletor, tabela e estados; nenhum componente antecipado
+
+Testes criados antes da implementação:
+- 5 suítes Jest com 39 cenários planejados
+- 1 fixture explícita e não sensível de analytics
+- 3 suítes pgTAP com 15 + 14 + 4 = 33 asserções
+
+Evidência RED:
+- as 5 suítes Jest falharam por imports dos módulos de produção deliberadamente ausentes; 0 cenários foram executados prematuramente
+- type-check apresentou somente 7 erros `TS2307` para os 7 módulos planejados
+- contrato estrutural pgTAP falhou em 9 de 15 asserções porque `public.load_financial_evolution_snapshot(date,date)` ainda não existe
+- a consulta pgTAP ocorreu em transação com rollback; a função permaneceu ausente e `pgtap` não ficou instalada
+
+Rede de segurança:
+- baseline anterior, excluindo somente as cinco suítes RED: 64 suítes e 336 testes passaram
+- lint passou com 0 warnings
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- build não foi executado porque o type-check vermelho é deliberado
+
+Decisões refinadas pelos testes:
+- `ListFinancialEvolutionUseCase` recebe `referenceInstant` ISO e `timeZone`, derivando `referenceOn` antes de resolver o período
+- `missing_accounts` devolve pontos vazios; `empty` preserva buckets e saldo de abertura quando existem contas sem movimentos
+- a RPC recebe somente `p_start_on` e `p_end_on`; identidade vem da sessão e RLS
+- inteiros agregados retornados como strings numéricas pelo provider são aceitos somente quando permanecem inteiros seguros
+- `PUBLIC`, `anon`, `service_role` e Supabase Anonymous Sign-In não podem executar ou obter o snapshot
+
+Implementação bloqueada até o Dia 3:
+- tipos e agregador da evolução financeira
+- serviço temporal e caso de uso
+- port, mapper e repository Supabase
+- migration da função, grants e qualquer execução comportamental/performance
+- presentation, rota, gráfico, biblioteca visual e expansão ampla da UI-003
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-013 permanece `IN_PROGRESS`
+- nenhum módulo funcional, migration, tabela, policy, grant, índice, dependência, commit, push ou PR foi criado
+- próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Implementação entregue:
+- domínio com projeções neutras e agregação diária contínua em intervalos semiabertos
+- validação de datas civis, tipos, valores positivos, inteiros seguros e overflow
+- borda temporal explícita que resolve `referenceInstant` no timezone IANA recebido
+- port `FinancialAnalyticsQueryRepository` e caso de uso `ListFinancialEvolutionUseCase`
+- estados serializáveis `missing_accounts`, `empty` e `success`
+- mapper defensivo para números do provider e repository Supabase com erro sanitizado
+- migration `20260826190714_create_financial_evolution_snapshot.sql`
+
+Banco e segurança:
+- RPC `public.load_financial_evolution_snapshot(date,date)` criada com `SECURITY INVOKER` e `search_path` fixo
+- função sem parâmetro de ownership; identidade deriva de `auth.uid()` e as RLS permanecem autoridades
+- `EXECUTE` concedido somente a `authenticated`; `PUBLIC`, `anon` e `service_role` permanecem revogados
+- Supabase Anonymous Sign-In é rejeitado dentro da função
+- intervalo máximo de 31 dias e fronteiras nulas/invertidas são rejeitados
+- nenhuma tabela, policy, coluna ou índice foi criado
+
+Evidências TDD e qualidade:
+- GREEN direcionado: 5 suítes e 39 testes passaram
+- regressão completa: 69 suítes e 375 testes passaram
+- pgTAP remoto persistente: 15 asserções de schema, 14 de comportamento e 4 de performance passaram
+- `EXPLAIN (ANALYZE, BUFFERS)` confirmou índices existentes para transações e contas
+- type-check passou
+- lint passou com 0 warnings
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Advisors e riscos:
+- nenhum alerta de segurança ou performance foi introduzido pela RPC
+- permanece o aviso global `auth_leaked_password_protection`, fora do escopo da SR-013
+- três índices preexistentes aparecem como não utilizados em nível informativo; nenhum foi removido nesta fase
+- o Supabase CLI não estava disponível e o `npm` global segue incompleto; a migration foi validada em rollback, aplicada pelo conector Supabase e alinhada à versão remota
+- nenhum componente foi criado porque a presentation acessível está explicitamente planejada para o Dia 4
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-013 permanece `IN_PROGRESS`
+- nenhuma UI, gráfico, biblioteca visual, deploy, commit, push, PR ou merge foi executado
+- próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+TDD e apresentação:
+- testes de presentation e composição foram criados antes dos módulos visuais e falharam em RED por imports deliberadamente ausentes
+- seletor acessível por GET oferece os cinco períodos aprovados e usa `month` como fallback para ausência, arrays ou valor inválido na URL
+- estados `missing_accounts`, `empty` e `success` possuem mensagens e ações distintas
+- períodos vazios mantêm os saldos diários visíveis; ausência de contas direciona para `/accounts` sem fabricar pontos
+- tabela semântica possui caption e colunas Dia, Receitas, Despesas, Líquido, Saldo e Movimentos, com rolagem horizontal controlada em telas estreitas
+- loading e error são tratados por arquivos especiais do App Router; erro exibido é sanitizado e recuperável
+
+Composição e segurança:
+- `/` e `/dashboard` carregam a evolução no servidor e passam somente `FinancialEvolutionDto` serializável para a presentation
+- o composition root cria o client SSR por request, chama `auth.getClaims()`, exige `sub` válido e rejeita Supabase Anonymous Sign-In
+- o repository continua sendo o único adaptador que chama a RPC; nenhum `userId` é enviado ao banco e a UI não importa Supabase
+- `referenceInstant` nasce no limite da aplicação e o timezone padrão temporário é a constante explícita `America/Sao_Paulo`
+- `TIME-BOUNDARY-001` foi resolvido: a rota de transações injeta o instante em resolver civil testado, sem UTC direto e sem converter `occurred_on`
+
+Escopo preservado:
+- nenhum gráfico, biblioteca visual, comparação de período, previsão, IA, offline ou redesenho amplo da UI-003
+- nenhuma migration, policy, grant, tabela, índice, configuração remota, dado ou dependência foi alterado
+- nenhum deploy, commit, push, PR ou merge foi executado
+
+Evidências:
+- GREEN direcionado da presentation/composição: 4 suítes e 18 testes passaram antes da correção temporal adicional
+- teste de virada civil cobre `2026-04-01T02:30:00.000Z` como março e `03:30:00.000Z` como abril em `America/Sao_Paulo`
+- regressão completa: 71 suítes e 385 testes passaram; lint, type-check e build Next `16.3.3` ficaram verdes
+- build preservou `ƒ Proxy (Middleware)` e as rotas `/` e `/dashboard` como dinâmicas
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+- validação HTTP local confirmou `/dashboard` anônimo redirecionando para `/login` com resposta final 200 e sem erro de aplicação
+- a inspeção visual autenticada da tabela permaneceu limitada porque o CLI `agent-browser` não está instalado e não havia sessão reutilizável; a semântica e os estados estão cobertos pelo Testing Library
+- aviso local não bloqueante: `next/font` usou fallback da Geist porque o ambiente não alcançou `fonts.googleapis.com`
+
+Revisão React/Next/Supabase:
+- nenhum effect, estado derivado duplicado ou fetch client-side foi introduzido
+- Server Component aguarda `searchParams`, autentica antes da consulta e serializa apenas dados simples
+- formulário nativo preserva navegação progressiva e evita JavaScript de cliente para trocar período
+- apresentação não contém regra temporal, autenticação, acesso ao banco ou detalhes do provider
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-013 permanece `IN_PROGRESS`
+- Dia 4 concluído sem avanço automático de fase
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Diagnóstico:
+- nenhum arquivo funcional monolítico crítico foi encontrado; os módulos da SR-013 permanecem entre 1 e 150 linhas
+- `/` e `/dashboard` repetiam normalização do período, carregamento do caso de uso e composição do painel
+- `DashboardPage` é cliente e importava DTOs, tipos e o painel de analytics, incluindo código estático da feature no bundle cliente e serializando o DTO através da fronteira RSC
+- repository e RPC já executavam uma consulta por carregamento, com contrato de segurança e performance validado; não havia evidência para alterar banco
+
+TDD da refatoração:
+- teste arquitetural nasceu em RED ao encontrar `financial-analytics` no componente cliente e composição repetida nas duas rotas
+- teste comportamental do slot nasceu em RED porque `DashboardPage` ainda não renderizava conteúdo server-side recebido
+- `composeDashboardRoute` centraliza `searchParams`, normalização, caso de uso e montagem de `FinancialEvolutionPanel`
+- `/` e `/dashboard` delegam à mesma composição, preservando alias, período padrão e valores válidos/inválidos da URL
+- `DashboardPage` recebe somente `ReactNode`; não conhece DTO, kind, application, domain ou presentation de analytics
+- GREEN focado: 5 suítes e 21 testes passaram
+
+Integridade, segurança e performance:
+- uma única chamada `load_financial_evolution_snapshot` permanece por carregamento
+- payload continua restrito a `p_start_on` e `p_end_on`, sem identidade fornecida pelo cliente
+- validação de claims, bloqueio de Auth anônimo, erros sanitizados, inteiros seguros, `SECURITY INVOKER`, search path, grants e RLS permanecem inalterados
+- migration, função SQL e schema não foram modificados
+- changelog atual do Supabase foi revisado; nenhuma breaking change aplicável à RPC, claims ou hospedagem gerenciada exige ação nesta fase
+- inspeção dos chunks de produção não encontrou referências a `FinancialEvolutionPanel`, RPC ou configuração de períodos no JavaScript cliente
+
+Revisão React/Next:
+- Server Component continua aguardando `searchParams` e carregando dados diretamente, sem Route Handler ou fetch client-side
+- painel analítico é renderizado no servidor e atravessa o componente cliente como slot React
+- nenhum effect, estado duplicado, import barrel, componente assíncrono cliente ou prop não serializável foi introduzido
+- condicionais numéricas permanecem explícitas e o comportamento dos estados visuais não mudou
+
+Evidências finais:
+- regressão completa: 72 suítes e 388 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos
+- o primeiro build no sandbox falhou somente ao buscar a Geist; repetido com rede liberada, compilou com sucesso
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Escopo preservado:
+- nenhuma nova regra de negócio, gráfico, biblioteca visual, comparação, previsão, IA, offline ou redesign
+- nenhuma migration, policy, grant, tabela, índice, configuração remota, dado ou dependência
+- nenhum deploy, commit, push, PR ou merge executado no Dia 5
+
+Estado de saída:
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS`
+- SR-013 permanece `IN_PROGRESS`
+- Dia 5 concluído sem avanço automático de fase
+- próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+TDD e melhorias aplicadas:
+- três contratos nasceram em RED: controles de período responsivos, associação acessível entre métricas e valores, e região horizontal operável por teclado
+- seletor e botão de período agora ocupam toda a largura no mobile e retornam ao tamanho intrínseco a partir de `sm`
+- resumo passou a usar `dl`, `dt` e `dd`; cada métrica expõe nome e valor como grupo acessível
+- tabela ampla recebeu região nomeada, foco visível, `tabIndex=0`, overscroll contido e instrução mobile para rolagem horizontal
+- valores financeiros e quantidades usam algarismos tabulares para facilitar comparação visual
+- GREEN direcionado: 1 suíte e 6 testes passaram
+
+Revisão de experiência e acessibilidade:
+- hierarquia de headings, caption da tabela, cabeçalhos de coluna, estados `missing_accounts | empty | success`, loading e error foram preservados
+- alvos de ação permanecem com altura mínima de 44 px e foco visível
+- comunicação não depende somente de cor; receitas, despesas, líquido e saldo possuem rótulos textuais explícitos
+- shell mantém skip link, landmarks, safe area da navegação móvel e preferência global de movimento reduzido
+- componentes da SR-013 continuam server-side, sem hooks, effects, fetch client-side ou ampliação da fronteira RSC
+
+PWA e mobile:
+- manifest respondeu HTTP 200 como `application/manifest+json`, com `standalone`, `start_url=/`, atalhos para transações/contas e ícone maskable
+- viewport real de 375×812 não apresentou overflow horizontal na tela pública; campos e ação principal mediram 44 px de altura
+- documento mantém `lang=pt-BR`, vínculo com o manifest e nenhum overlay ou erro de console no navegador
+- nenhum service worker, cache de dados financeiros ou promessa offline foi criado; instalabilidade permanece separada de consistência offline
+
+Evidências de qualidade:
+- recorte de analytics, dashboard, shell, design system e PWA: 6 suítes e 32 testes passaram
+- regressão completa: 72 suítes e 390 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Limitações e escopo preservado:
+- inspeção autenticada ao vivo não foi concluída porque o servidor dev existente estava sem saída de rede para o Supabase; a tela pública e o manifest foram verificados no navegador, e o painel privado permaneceu coberto pelo Testing Library
+- avisos locais de fallback da Geist e `allowedDevOrigins` para `127.0.0.1` pertencem ao ambiente de teste e não afetaram o build de produção
+- nenhuma migration, policy, grant, tabela, índice, configuração remota, dado, dependência, gráfico, offline, deploy, commit, push, PR ou merge foi executado
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SR-013 permanece `IN_PROGRESS`
+- Dia 6 concluído sem avanço automático de fase
+- próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+Pipeline e release incremental:
+- regressão completa: 72 suítes e 390 testes passaram
+- lint passou com 0 warnings; type-check passou
+- auditoria npm online passou com 0 vulnerabilidades
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos
+- GitHub Actions `validate` e os checks `Vercel Preview Comments`, `Vercel – fin-control`, `Vercel – fin-control-mzhv` e `Vercel – fin-control-zljm` estão verdes no commit `e508f6b`
+- PR #10 permanece aberto como draft contra `develop`; merge, promoção e deploy de produção não foram executados
+
+Supabase, integridade e segurança:
+- seis migrations locais e remotas permanecem alinhadas, incluindo `20260826190714_create_financial_evolution_snapshot`
+- pgTAP remoto foi repetido em transações com rollback: 15/15 schema, 14/14 comportamento e 4/4 performance passaram; `pgtap` permaneceu ausente após a execução
+- RPC confirmada como `SECURITY INVOKER`, search path fixo e argumentos restritos às duas datas civis
+- somente `authenticated` possui `EXECUTE`; `PUBLIC`, `anon` e `service_role` permanecem sem privilégio de aplicação
+- RLS segue habilitada em `financial_accounts`, `categories` e `transactions`, cada tabela com duas policies
+- nenhum segredo real está rastreado: `SUPABASE_SERVICE_ROLE_KEY` permanece vazio em `.env.example`, `.env.local` é ignorado e a feature não usa `any`, logging direto ou ambiente em código funcional
+- threat model revisado: BOLA/IDOR é mitigado por identidade derivada de `auth.uid()` e RLS; Auth anônimo é rejeitado; abuso de intervalo é limitado a 31 dias; erros de provider permanecem sanitizados; nenhum payload financeiro, PII, cookie, JWT ou segredo deve entrar em logs
+- Security Advisor mantém somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`; o Performance Advisor mantém três avisos informativos de índices ainda não usados, sem evidência para remoção
+
+Observabilidade e validação remota:
+- deployment Vercel do commit `e508f6b` está `READY`
+- acesso sem sessão a `/dashboard` no preview falha fechado e entrega a tela de login
+- o deployment atual não apresentou logs `error` ou `fatal` na janela recente consultada
+- erros DNS de conexão ao Supabase foram encontrados apenas em um deployment anterior de 2026-08-25 e não se repetiram no preview atual
+- baseline operacional usa GitHub Actions, estado/build logs e runtime errors da Vercel, além de advisors e logs do Supabase; captura externa sanitizada continua rastreada em `HARD-OBS-001` antes de produção pública
+
+Escopo preservado:
+- nenhuma feature, gráfico, dependência, migration, policy, grant, configuração Auth, fixture ou dado persistente foi criado ou alterado
+- nenhum commit, push, merge, promoção ou deploy de produção foi executado no Dia 7
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- SR-013 concluída como entrega incremental de código
+- produção pública continua condicionada a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
+- próximo passo recomendado: selecionar humanamente a próxima small release entre refinar `UI-003` e preparar `SP-001`, sem iniciar automaticamente outro ciclo

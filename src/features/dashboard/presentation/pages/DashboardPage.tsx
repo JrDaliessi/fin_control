@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Plus, WalletCards } from "lucide-react";
+import type { ReactNode } from "react";
 import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
 import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { useTransactionSession } from "../../../transactions/presentation/providers/TransactionSessionProvider";
@@ -10,7 +11,11 @@ import { DashboardEmptyState } from "../components/DashboardEmptyState";
 import { RecentTransactionsList } from "../components/RecentTransactionsList";
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
 
-export function DashboardPage() {
+type DashboardPageProps = Readonly<{
+  children?: ReactNode;
+}>;
+
+export function DashboardPage({ children }: DashboardPageProps = {}) {
   const { user } = useAuthSession();
   const { transactions } = useTransactionSession();
   const dashboardState = useDashboardSummary({
@@ -54,6 +59,8 @@ export function DashboardPage() {
             ) : null}
           </div>
         </header>
+
+        {children}
 
         {dashboardState.status === "loading" ? (
           <p className="text-sm text-muted-foreground" role="status">

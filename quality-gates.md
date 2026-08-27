@@ -985,6 +985,74 @@ Uma release incremental só pode ser considerada pronta quando:
 - testes e build não executados porque o Dia 1 alterou somente documentação.
 - estado de saída: `ARCHITECTURE_READY`.
 
+## Gate do Dia 2 — SR-013
+
+- contexto central e workflow do Dia 2 consultados antes da execução.
+- skills Supabase e Postgres aplicadas ao desenho de função, grants, RLS e performance.
+- changelog e documentação oficiais atuais revisados; nenhuma breaking change aplicável bloqueia os contratos.
+- testes Jest: 5 suítes novas em RED por 7 módulos deliberadamente ausentes.
+- type-check: RED somente com 7 erros `TS2307` planejados.
+- lint: verde, 0 warnings.
+- baseline anterior: 64 suítes e 336 testes verdes ao excluir somente o novo RED.
+- pgTAP estrutural remoto: 9 falhas de 15 pela função ausente, com rollback confirmado.
+- pgTAP comportamental e performance: 18 asserções escritas e bloqueadas até o Dia 3.
+- segurança: função exige `SECURITY INVOKER`, search path fixo, ausência de `userId`, grants mínimos e bloqueio de Auth anônimo.
+- performance: contratos exigem filtros explícitos, índices existentes e `EXPLAIN (ANALYZE, BUFFERS)` transacional.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- build não executado porque o type-check vermelho é parte da evidência TDD.
+- nenhuma implementação, migration persistente, tabela, policy, grant, índice, dependência, UI, commit, push ou PR foi criada.
+- estado de saída: `TEST_STRATEGY_READY`.
+
+## Gate do Dia 3 — SR-013
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- skills Supabase e Postgres aplicadas; changelog e documentação oficial atual revisados.
+- GREEN direcionado: 5 suítes e 39 testes passaram.
+- regressão completa: 69 suítes e 375 testes passaram.
+- type-check: verde.
+- lint: verde, 0 warnings.
+- build: verde em Next `16.3.3`; `ƒ Proxy (Middleware)` preservado.
+- pgTAP remoto: 15/15 asserções de schema, 14/14 de comportamento e 4/4 de performance passaram.
+- migration remota e local alinhadas em `20260826190714_create_financial_evolution_snapshot`.
+- RPC usa `SECURITY INVOKER`, search path fixo, RLS, identidade da sessão e `EXECUTE` somente para `authenticated` permanente.
+- `PUBLIC`, `anon`, `service_role` e Auth anônimo não podem executar a função.
+- `EXPLAIN (ANALYZE, BUFFERS)` confirmou os índices existentes; nenhum índice novo foi criado.
+- advisors não identificaram alerta novo da RPC; o aviso global de proteção contra senhas vazadas permanece fora do escopo.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- nenhuma UI, gráfico, biblioteca visual, deploy, commit, push, PR ou merge foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 4 — SR-013
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da implementação.
+- testes de presentation e composição nasceram em RED por módulos deliberadamente ausentes.
+- seletor GET acessível oferece somente `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`, com fallback seguro para `month`.
+- estados `missing_accounts`, `empty` e `success` permanecem distintos; loading/error pertencem ao App Router e mensagens de erro não expõem detalhes do provider.
+- tabela semântica contém caption e colunas Dia, Receitas, Despesas, Líquido, Saldo e Movimentos; wrapper responsivo preserva leitura mobile.
+- composição server-side revalida claims, bloqueia Auth anônimo e passa somente DTO serializável à presentation; UI não acessa Supabase.
+- timezone padrão temporário está explícito como `America/Sao_Paulo`; a competência de transações deixou de usar UTC direto e ganhou testes de virada civil.
+- nenhuma migration, policy, grant, tabela, índice, dado, dependência, gráfico, biblioteca visual, comparação ou redesenho amplo foi criado.
+- regressão: 71 suítes e 385 testes verdes; lint, type-check, build e `git diff --check`: verdes.
+- validação HTTP local: `/dashboard` anônimo redirecionou para `/login` com resposta 200 e sem erro de aplicação; a inspeção autenticada da nova tabela ficou limitada porque o CLI `agent-browser` não está instalado e não havia sessão reutilizável.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 5 — SR-013
+
+- contexto central e workflow do Dia 5 consultados; plano revisado e aprovado antes da refatoração.
+- inventário não encontrou arquivo funcional monolítico crítico; os módulos da SR-013 permanecem entre 1 e 150 linhas.
+- RED estrutural confirmou dependência de analytics no `DashboardPage` cliente, duplicação entre `/` e `/dashboard` e ausência do slot server-rendered.
+- GREEN focado: 5 suítes e 21 testes passaram após a composição compartilhada e o slot React.
+- `DashboardPage` cliente não importa DTO, domínio ou componente de financial analytics.
+- inspeção do build não encontrou referências a `FinancialEvolutionPanel`, RPC ou configuração de períodos nos chunks cliente.
+- repository permanece com uma RPC por carregamento, sem `userId` no payload; mapper, inteiros seguros, `SECURITY INVOKER`, grants e RLS não foram alterados.
+- nenhuma migration, policy, grant, tabela, índice, dependência, regra de negócio, gráfico ou redesenho foi criado.
+- regressão: 72 suítes e 388 testes verdes.
+- lint: verde, 0 warnings.
+- type-check: verde.
+- build Next `16.3.3`: verde após liberar acesso de rede para o download da Geist; `ƒ Proxy (Middleware)` e rotas dinâmicas preservados.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`, pronto para o Dia 6.
+
 ## Gate do Dia 7 — SR-012
 
 - regressão completa: 64 suítes e 336 testes passaram.
@@ -1003,6 +1071,33 @@ Uma release incremental só pode ser considerada pronta quando:
 - correção operacional: identidade Git do repositório alinhada a `JrDaliessi`, sem reescrever commits publicados.
 - revalidação remota no commit `268ab3e`: GitHub Actions, `Vercel Preview Comments`, `Vercel – fin-control` e `Vercel – fin-control-zljm` verdes.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código; hardenings globais de produção continuam explicitamente rastreados.
+
+## Gate do Dia 6 — SR-013
+
+- regressão completa: 72 suítes e 390 testes verdes.
+- lint: verde, 0 warnings; type-check: verde; build Next `16.3.3`: verde.
+- seletor responsivo, grupos `dl/dt/dd`, região horizontal operável por teclado e algarismos tabulares validados.
+- manifest, viewport mobile, idioma, alvos de 44 px, foco e preferência de movimento reduzido preservados.
+- nenhum cache financeiro, service worker ou promessa offline foi introduzido.
+- estado de saída: `QUALITY_VALIDATION`.
+
+## Gate do Dia 7 — SR-013
+
+- regressão completa: 72 suítes e 390 testes passaram.
+- lint: verde, 0 warnings; type-check: verde.
+- auditoria npm online: verde, 0 vulnerabilidades.
+- build Next `16.3.3`: verde; `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos preservados.
+- `git diff --check`: verde para os artefatos da fase.
+- migrations: seis versões locais/remotas alinhadas.
+- pgTAP remoto em rollback: 15/15 schema, 14/14 comportamento e 4/4 performance; `pgtap` ausente após os testes.
+- grants/RLS: RPC `SECURITY INVOKER`, search path fixo, `EXECUTE` somente para `authenticated`; RLS habilitada nas três tabelas consultadas.
+- segredos: somente `.env.example` está rastreado, com placeholder de `service_role` vazio; `.env.local` permanece ignorado e nenhum logging direto foi encontrado na feature.
+- advisors: nenhum alerta novo da SR-013; `auth_leaked_password_protection` permanece em `SEC-AUTH-001` e três índices sem uso permanecem informativos.
+- GitHub/Vercel: workflow `validate` e quatro checks Vercel verdes no commit `e508f6b`; deployment atual `READY`.
+- segurança: threat model cobre BOLA/IDOR, Auth anônimo, abuso de intervalo, escalada privilegiada e vazamento de dados/segredos.
+- observabilidade: preview atual sem `error`/`fatal` recente; erro DNS histórico ficou restrito a deployment anterior; captura externa sanitizada permanece em `HARD-OBS-001`.
+- nenhum commit, push, merge, migration, alteração de Auth, fixture ou deploy de produção foi executado.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código; produção pública permanece condicionada aos hardenings documentados.
 
 ## Correção crítica antes do Dia 5 — BUG-001
 

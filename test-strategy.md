@@ -479,6 +479,100 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+### Prioridade por camada
+
+1. `domain`: produzir buckets civis diários completos e validar aritmética financeira segura.
+2. `application`: resolver a âncora em timezone explícito, orquestrar um snapshot e devolver DTO serializável.
+3. `infrastructure`: mapear a projeção tabular da RPC e sanitizar falhas do provider.
+4. `database`: proteger a função, preservar RLS e comprovar limites, isolamento e plano de consulta.
+5. `presentation`: documentar contratos futuros; componentes permanecem bloqueados até a expansão controlada.
+
+### Matriz executável
+
+| Camada | Alvo | Cenários essenciais | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `aggregateFinancialEvolution` | buckets contínuos, dias vazios, bissexto, saldo negativo, ordem de entrada, intervalo semiaberto, entradas inválidas e overflow | RED por módulos ausentes |
+| application | `resolveReferenceCivilDate` | virada UTC/local, timezone explícito, instante e IANA inválidos | RED por módulo ausente |
+| application | `ListFinancialEvolutionUseCase` | success, missing accounts, empty, ator/período inválidos, uma consulta e erro sanitizado | RED por módulos ausentes |
+| infrastructure | mapper de snapshot | numeric string, sentinela nula, repetição consistente, tipos e inteiros seguros | RED por módulo ausente |
+| infrastructure | repository Supabase | uma RPC, limites civis, ausência de `userId` no payload e erro estável | RED por módulo ausente |
+| database | assinatura e grants | dois parâmetros date, sete colunas, invoker, search path e EXECUTE mínimo | 9 falhas de 15 em RED remoto |
+| database | comportamento/RLS | abertura, intervalo, ordem, tenants, anon, Auth anônimo, nulos, inversão e 31 dias | escrito; execução bloqueada até a função existir |
+| database | performance | índices existentes, filtros explícitos e helpers Auth em initPlan | escrito; execução bloqueada até o Dia 3 |
+| presentation | seletor/tabela/estados | nomes acessíveis, caption, headers, missing accounts, empty, success e ausência de cálculo na UI | documentado para Dia 4 |
+
+### Cenário feliz
+
+O caso de uso recebe um ator verificado, `rolling_7_days`, o instante `2026-03-07T15:00:00.000Z` e `America/Sao_Paulo`; resolve `[2026-03-01, 2026-03-08)`, carrega um snapshot, agrega sete pontos e devolve resumo e DTOs serializáveis.
+
+### Cenários alternativos
+
+- usuário possui contas, saldo de abertura e nenhum movimento no intervalo
+- usuário ainda não possui conta financeira
+- período atravessa fevereiro bissexto
+- saldo de fechamento se torna negativo
+- movimentos chegam fora de ordem e são agrupados pelo dia civil
+- RPC retorna inteiros Postgres como strings numéricas
+- snapshot vazio usa uma linha sentinela com colunas de movimento nulas
+
+### Edge cases críticos
+
+- início inclusivo e fim exclusivo
+- movimento anterior ao início ou igual ao fim
+- data civil inexistente
+- tipo desconhecido, valor zero, fracionário ou inseguro
+- overflow do total diário ou saldo acumulado
+- instante inválido ou timezone IANA desconhecido
+- divergência entre valores repetidos do snapshot
+- payload RPC contendo ownership controlado pelo cliente
+- função executável por `PUBLIC`, `anon`, `service_role` ou Auth anônimo
+- limites nulos, invertidos ou acima de 31 dias
+- plano sem os índices existentes de owner e data civil
+
+### Testes criados
+
+Jest:
+- `src/features/financial-analytics/tests/aggregate-financial-evolution.test.ts`
+- `src/features/financial-analytics/tests/resolve-reference-civil-date.test.ts`
+- `src/features/financial-analytics/tests/list-financial-evolution.use-case.test.ts`
+- `src/features/financial-analytics/tests/financial-evolution-snapshot.mapper.test.ts`
+- `src/features/financial-analytics/tests/supabase-financial-analytics-query.repository.test.ts`
+- `src/features/financial-analytics/tests/fixtures/financial-evolution.fixtures.ts`
+
+pgTAP:
+- `supabase/tests/database/financial_evolution_snapshot_schema.test.sql` — 15 asserções
+- `supabase/tests/database/financial_evolution_snapshot_behavior.test.sql` — 14 asserções
+- `supabase/tests/database/financial_evolution_snapshot_performance.test.sql` — 4 asserções
+
+### Resultado RED observado
+
+- 5 suítes Jest falharam antes de executar cenários porque os 7 módulos de produção planejados ainda não existem.
+- type-check apresentou somente 7 erros `TS2307` para os mesmos módulos ausentes.
+- contrato estrutural pgTAP executado transacionalmente no projeto `fin_control`: 9 falhas de 15 pela função ainda ausente.
+- rollback confirmado: função continuou ausente e `pgtap` permaneceu não instalada.
+- rede anterior excluindo somente as cinco suítes novas: 64 suítes e 336 testes verdes.
+- lint: verde, 0 warnings.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- build não executado porque o type-check vermelho é deliberado.
+
+### Implementação bloqueada até o Dia 3
+
+- `src/features/financial-analytics/domain/types/financial-evolution.types.ts`
+- `src/features/financial-analytics/domain/services/aggregate-financial-evolution.ts`
+- `src/features/financial-analytics/application/services/resolve-reference-civil-date.ts`
+- `src/features/financial-analytics/application/ports/financial-analytics-query.repository.ts`
+- `src/features/financial-analytics/application/use-cases/list-financial-evolution.use-case.ts`
+- `src/features/financial-analytics/infrastructure/supabase/financial-evolution-snapshot.mapper.ts`
+- `src/features/financial-analytics/infrastructure/repositories/supabase-financial-analytics-query.repository.ts`
+- migration `load_financial_evolution_snapshot`, grants e execução dos contratos comportamentais/performance
+- qualquer componente, rota, gráfico, dependência visual ou expansão da UI-003
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
 ## Planejamento TDD da SR-013 — definido no Dia 1
 
 Alvos obrigatórios para o Dia 2:
