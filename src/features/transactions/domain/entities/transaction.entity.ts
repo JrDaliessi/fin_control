@@ -22,7 +22,30 @@ export type TransactionProps = CreateTransactionInput & {
   updatedAt?: Date;
 };
 
-const validPaymentMethods = ["manual", "pix", "cash", "debit"];
+export type RestoreTransactionInput = CreateTransactionInput & {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+const validPaymentMethods: readonly PaymentMethod[] = [
+  "manual",
+  "pix",
+  "cash",
+  "debit"
+];
+
+function copyValidDate(value: Date, field: string): Date {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
+    throw new Error(`${field} date is invalid`);
+  }
+
+  return new Date(value);
+}
+
+const occurredAtByTransaction = new WeakMap<Transaction, Date>();
+const createdAtByTransaction = new WeakMap<Transaction, Date>();
+const updatedAtByTransaction = new WeakMap<Transaction, Date>();
 
 export class Transaction {
   readonly id?: string;
@@ -32,7 +55,7 @@ export class Transaction {
   readonly description: string;
   readonly amountInCents: number;
   readonly type: TransactionType;
-  readonly occurredAt: Date;
+  readonly occurredAt!: Date;
   readonly paymentMethod: PaymentMethod;
   readonly notes?: string;
   readonly createdAt?: Date;
@@ -46,11 +69,38 @@ export class Transaction {
     this.description = props.description;
     this.amountInCents = props.amountInCents;
     this.type = props.type;
-    this.occurredAt = props.occurredAt;
     this.paymentMethod = props.paymentMethod ?? "manual";
     this.notes = props.notes;
-    this.createdAt = props.createdAt;
-    this.updatedAt = props.updatedAt;
+    occurredAtByTransaction.set(this, new Date(props.occurredAt));
+
+    if (props.createdAt) {
+      createdAtByTransaction.set(this, new Date(props.createdAt));
+    }
+
+    if (props.updatedAt) {
+      updatedAtByTransaction.set(this, new Date(props.updatedAt));
+    }
+
+    Object.defineProperties(this, {
+      occurredAt: {
+        enumerable: true,
+        get: () => new Date(occurredAtByTransaction.get(this) as Date)
+      },
+      createdAt: {
+        enumerable: true,
+        get: () => {
+          const value = createdAtByTransaction.get(this);
+          return value ? new Date(value) : undefined;
+        }
+      },
+      updatedAt: {
+        enumerable: true,
+        get: () => {
+          const value = updatedAtByTransaction.get(this);
+          return value ? new Date(value) : undefined;
+        }
+      }
+    });
   }
 
   static create(input: CreateTransactionInput): Transaction {
@@ -58,6 +108,7 @@ export class Transaction {
     const accountId = input.accountId.trim();
     const categoryId = input.categoryId.trim();
     const description = input.description.trim();
+    const notes = input.notes?.trim() || undefined;
     const paymentMethod = input.paymentMethod ?? "manual";
 
     if (!userId) {
@@ -76,19 +127,25 @@ export class Transaction {
       throw new Error("description is required");
     }
 
+    if (description.length > 160) {
+      throw new Error("description is too long");
+    }
+
+    if (notes && notes.length > 1000) {
+      throw new Error("notes are too long");
+    }
+
     const amount = Money.fromPositiveCents(input.amountInCents);
 
     if (input.type !== "income" && input.type !== "expense") {
       throw new Error("transaction type is invalid");
     }
 
-    if (!validPaymentMethods.includes(paymentMethod)) {
+    if (!validPaymentMethods.includes(paymentMethod as PaymentMethod)) {
       throw new Error("payment method is invalid");
     }
 
-    if (!(input.occurredAt instanceof Date) || Number.isNaN(input.occurredAt.getTime())) {
-      throw new Error("occurredAt date is invalid");
-    }
+    const occurredAt = copyValidDate(input.occurredAt, "occurredAt");
 
     return new Transaction({
       ...input,
@@ -97,7 +154,36 @@ export class Transaction {
       categoryId,
       description,
       amountInCents: amount.amountInCents,
-      paymentMethod
+      paymentMethod,
+      occurredAt,
+      notes
+    });
+  }
+
+  static restore(input: RestoreTransactionInput): Transaction {
+    const id = input.id.trim();
+
+    if (!id) {
+      throw new Error("transaction id is required");
+    }
+
+    const createdAt = copyValidDate(input.createdAt, "createdAt");
+    const updatedAt = copyValidDate(input.updatedAt, "updatedAt");
+    const transaction = Transaction.create(input);
+
+    return new Transaction({
+      id,
+      userId: transaction.userId,
+      accountId: transaction.accountId,
+      categoryId: transaction.categoryId,
+      description: transaction.description,
+      amountInCents: transaction.amountInCents,
+      type: transaction.type,
+      occurredAt: transaction.occurredAt,
+      paymentMethod: transaction.paymentMethod,
+      notes: transaction.notes,
+      createdAt,
+      updatedAt
     });
   }
 }

@@ -1,11 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { SignOutUseCase } from "@/features/auth/application/use-cases/sign-out.use-case";
 import { SupabaseAuthGateway } from "@/features/auth/infrastructure/supabase/supabase-auth.gateway";
-import { SignOutButton } from "@/features/auth/presentation/components/SignOutButton";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import {
+  DesktopPrivateNavigation,
+  MobilePrivateNavigation,
+} from "./components/PrivateNavigation";
+import { PrivateTopbar } from "./components/PrivateTopbar";
 
 type PrivateAppShellProps = {
   children: ReactNode;
@@ -13,6 +17,7 @@ type PrivateAppShellProps = {
 };
 
 export function PrivateAppShell({ children, email }: PrivateAppShellProps) {
+  const pathname = usePathname();
   const router = useRouter();
 
   async function handleSignOut() {
@@ -27,16 +32,30 @@ export function PrivateAppShell({ children, email }: PrivateAppShellProps) {
   }
 
   return (
-    <>
-      <header className="border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-8">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3">
-          <p className="min-w-0 truncate text-sm text-muted-foreground">
-            Sessão: <span className="font-medium text-foreground">{email}</span>
-          </p>
-          <SignOutButton onSignOut={handleSignOut} />
+    <div className="min-h-dvh bg-background text-foreground md:pl-20 lg:pl-64">
+      <a
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+        href="#conteudo-principal"
+      >
+        Pular para o conteúdo
+      </a>
+      <DesktopPrivateNavigation pathname={pathname} />
+      <div className="min-w-0">
+        <PrivateTopbar
+          email={email}
+          onSignOut={handleSignOut}
+          pathname={pathname}
+        />
+        <div
+          className="min-w-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0"
+          data-testid="private-shell-content"
+          id="conteudo-principal"
+          tabIndex={-1}
+        >
+          {children}
         </div>
-      </header>
-      {children}
-    </>
+      </div>
+      <MobilePrivateNavigation pathname={pathname} />
+    </div>
   );
 }

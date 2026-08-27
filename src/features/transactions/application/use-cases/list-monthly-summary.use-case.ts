@@ -1,9 +1,6 @@
 import { MonthRef } from "../../domain/value-objects/month-ref";
 import type { Transaction } from "../../domain/entities/transaction.entity";
-import type {
-  FindTransactionsByMonthInput,
-  TransactionRepository
-} from "../../domain/interfaces/transaction.repository";
+import type { TransactionRepository } from "../../domain/interfaces/transaction.repository";
 
 export type ListMonthlySummaryInput = {
   userId: string;
@@ -18,16 +15,51 @@ export type MonthlySummary = {
   transactionCount: number;
 };
 
-type MonthlySummaryTransactionRepository = TransactionRepository & {
-  findByMonth(input: FindTransactionsByMonthInput): Promise<Transaction[]>;
+type ListMonthlySummaryUseCaseDependencies = {
+  transactionRepository: TransactionRepository;
 };
 
-type ListMonthlySummaryUseCaseDependencies = {
-  transactionRepository: MonthlySummaryTransactionRepository;
+export type CalculateMonthlySummaryInput = {
+  monthRef: string;
+  transactions: readonly Transaction[];
 };
+
+export function calculateMonthlySummary({
+  monthRef: monthRefValue,
+  transactions
+}: CalculateMonthlySummaryInput): MonthlySummary {
+  const monthRef = MonthRef.fromString(monthRefValue);
+
+  return calculateMonthlySummaryForMonth(transactions, monthRef);
+}
+
+function calculateMonthlySummaryForMonth(
+  transactions: readonly Transaction[],
+  monthRef: MonthRef
+): MonthlySummary {
+  const monthlyTransactions = transactions.filter(
+    (transaction) =>
+      transaction.occurredAt.getUTCFullYear() === monthRef.year &&
+      transaction.occurredAt.getUTCMonth() + 1 === monthRef.month
+  );
+  const sumByType = (type: Transaction["type"]) =>
+    monthlyTransactions
+      .filter((transaction) => transaction.type === type)
+      .reduce((total, transaction) => total + transaction.amountInCents, 0);
+  const incomeTotalInCents = sumByType("income");
+  const expenseTotalInCents = sumByType("expense");
+
+  return {
+    monthRef: monthRef.value,
+    incomeTotalInCents,
+    expenseTotalInCents,
+    netBalanceInCents: incomeTotalInCents - expenseTotalInCents,
+    transactionCount: monthlyTransactions.length
+  };
+}
 
 export class ListMonthlySummaryUseCase {
-  private readonly transactionRepository: MonthlySummaryTransactionRepository;
+  private readonly transactionRepository: TransactionRepository;
 
   constructor({ transactionRepository }: ListMonthlySummaryUseCaseDependencies) {
     this.transactionRepository = transactionRepository;
@@ -46,44 +78,6 @@ export class ListMonthlySummaryUseCase {
       year: monthRef.year,
       month: monthRef.month
     });
-    const monthlyTransactions = transactions.filter((transaction) =>
-      this.isTransactionInMonth(transaction, monthRef)
-    );
-
-    const incomeTotalInCents = this.sumTransactionsByType(
-      monthlyTransactions,
-      "income"
-    );
-    const expenseTotalInCents = this.sumTransactionsByType(
-      monthlyTransactions,
-      "expense"
-    );
-
-    return {
-      monthRef: monthRef.value,
-      incomeTotalInCents,
-      expenseTotalInCents,
-      netBalanceInCents: incomeTotalInCents - expenseTotalInCents,
-      transactionCount: monthlyTransactions.length
-    };
-  }
-
-  private isTransactionInMonth(
-    transaction: Transaction,
-    monthRef: MonthRef
-  ): boolean {
-    return (
-      transaction.occurredAt.getUTCFullYear() === monthRef.year &&
-      transaction.occurredAt.getUTCMonth() + 1 === monthRef.month
-    );
-  }
-
-  private sumTransactionsByType(
-    transactions: Transaction[],
-    type: Transaction["type"]
-  ): number {
-    return transactions
-      .filter((transaction) => transaction.type === type)
-      .reduce((total, transaction) => total + transaction.amountInCents, 0);
+    return calculateMonthlySummaryForMonth(transactions, monthRef);
   }
 }

@@ -706,7 +706,7 @@ Não criar todos antecipadamente. Cada componente nasce com uma necessidade real
 | 9 | SR-023 | FinControl IA | cálculos determinísticos, consentimento e privacidade |
 | 10 | features futuras | cartões, orçamentos, relatórios, importação e configurações | domínios específicos |
 
-`UI-001` foi selecionada e concluiu o Dia 1 em 2026-07-14. `UI-002` a `UI-006` permanecem em `DISCOVERY`; a existência desta especificação não autoriza antecipar suas telas ou alterar automaticamente a prioridade da SR-010.
+`UI-001` e `UI-002` estão concluídas. `UI-003` concluiu o Dia 3 em 2026-08-27 com implementação mínima verde; `UI-004` a `UI-006` permanecem em `DISCOVERY`.
 
 ### 21.1. Recorte aprovado da UI-001
 
@@ -753,6 +753,36 @@ Primitives adicionais só podem entrar após evidência de repetição e contrat
 | Foco | `#2563EB` | `#7DD3FC` |
 
 O Dia 2 deve transformar esta referência em testes de contrato, contraste e regressão antes de qualquer implementação.
+
+### 21.3. Recorte aprovado da UI-003
+
+Objetivo: transformar o dashboard atual em uma visão geral coerente com o FinControl Pulse usando somente os dados reais da evolução financeira.
+
+Incluído:
+- título “Visão geral” e saudação neutra, sem inferir nome pelo e-mail;
+- grid lógico de 12 colunas com composição mobile first;
+- “Saldo ao fim do período” como métrica principal;
+- receitas, despesas, líquido, saldo inicial contextual e contagem do período;
+- copy “Como seu dinheiro evoluiu”, seletor existente e tabela diária acessível;
+- estados de ausência de contas, período vazio, sucesso, loading e error;
+- ações somente para Contas e Transações;
+- remoção do resumo cliente baseado em sessão vazia como fonte do dashboard.
+
+Excluído:
+- “Disponível de verdade”, valor livre, compromissos, previsão, tendência e comparação;
+- lista detalhada de movimentações recentes sem projeção alinhada ao período;
+- gráficos e bibliotecas antes de `SP-001` e SR-014;
+- distribuição, metas, gamificação, IA, busca, notificações e perfil;
+- dados demonstrativos, nova regra financeira, Supabase, migration ou persistência.
+
+Copy aprovada para o recorte:
+- título: “Visão geral”;
+- apoio: “Aqui está o que aconteceu com seu dinheiro no período selecionado.”;
+- seção: “Como seu dinheiro evoluiu”;
+- métrica principal: “Saldo ao fim do período”;
+- empty: “Nenhuma movimentação neste período. Seus saldos continuam visíveis.”
+
+O Dia 2 deve transformar esse recorte em testes antes de qualquer mudança funcional.
 
 ## 22. Copy de aquisição futura
 

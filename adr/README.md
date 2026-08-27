@@ -16,3 +16,9 @@ Formato recomendado:
 - `0003-auth-session-boundary.md` — autenticação e sessão protegida
 - `0004-financial-accounts-persistence-rls.md` — persistência, grants e RLS de contas
 - `0005-fincontrol-pulse-design-system.md` — direção visual, copy e implementação incremental do FinControl Pulse
+- `0006-responsive-private-shell.md` — matriz de rotas e composição responsiva do shell privado
+- `0007-categories-persistence-rls.md` — domínio, persistência, grants e RLS de categorias
+- `0008-transactions-persistence-rls.md` — persistência, integridade tenant-safe, grants e RLS de transações
+- `0009-financial-periods-civil-date-boundaries.md` — períodos financeiros, datas civis e fronteiras de timezone
+- `0010-financial-evolution-snapshot-and-daily-buckets.md` — snapshot, saldo de abertura e agregação diária da evolução
+- `0011-dashboard-pulse-real-data-composition.md` — fonte real, composição server-side e limites do dashboard Pulse

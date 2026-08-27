@@ -258,6 +258,73 @@ Regras:
 - O caminho canônico dos artefatos locais passa a ser `supabase/migrations/` e `supabase/tests/database/`; os diretórios só surgirão quando os testes do Dia 2 exigirem.
 - A decisão completa está em `adr/0004-financial-accounts-persistence-rls.md`.
 
+## Decisões Arquiteturais da SR-010
+
+- A feature `categories` será criada com separação entre `presentation`, `application`, `domain` e `infrastructure`.
+- O recorte funcional cobre criação e listagem de categorias próprias; edição, exclusão, arquivamento e categorias globais permanecem fora.
+- Cada categoria pertence a um usuário e possui `kind` estritamente `income` ou `expense`; o valor `both` foi rejeitado para preservar filtragem e validação determinísticas por tipo de transação.
+- O nome é normalizado, limitado a 80 caracteres e único por usuário e `kind` em comparação case-insensitive. Cor e ícone permanecem fora até existir personalização real.
+- A rota privada `/categories` será um subfluxo de transações, sem ampliar a navegação principal definida pela UI-002.
+- A composition root usará Server Component para leitura e Server Action para criação; ambas revalidarão claims e nunca aceitarão `userId` da apresentação como autoridade.
+- `CategoryRepository` exporá somente `create` e `listByUser`; `findById` permanece fora até a SR-011 possuir consumidor real.
+- `SupabaseCategoryRepository` e o mapper `snake_case` ficarão em `categories/infrastructure`; erros brutos do Supabase não atravessarão a fronteira.
+- `public.categories` terá FK para `auth.users`, constraints, ordenação determinística e chave composta candidata `(user_id, id)` para a futura FK tenant-safe de transações.
+- `authenticated` receberá somente `SELECT` e `INSERT`; `anon`, usuários anônimos do Auth, `UPDATE`, `DELETE` e uso de `service_role` pela aplicação permanecerão bloqueados.
+- Grants explícitos, RLS forçada, policies por proprietário, constraints e índices nascerão na mesma migration somente após os testes do Dia 2.
+- Supabase MCP será usado para aplicar a migration, executar pgTAP transacional, inspecionar schema e rodar advisors nos dias autorizados; no Dia 1 seu uso é somente leitura.
+- A decisão completa está em `adr/0007-categories-persistence-rls.md`.
+
+## Decisões Arquiteturais da SR-011
+
+- O recorte cobre criação persistente e consulta mensal de transações manuais próprias.
+- `Transaction` e os casos de uso existentes continuam independentes de React, Next.js e Supabase; restauração persistente será adicionada ao domínio sob TDD.
+- `TransactionRepository.findByMonth` torna-se obrigatório; a implementação concreta e o mapper ficam em `transactions/infrastructure`.
+- A data manual será persistida como `occurred_on date`, pois a UI captura uma data civil sem horário. O mapper usa meia-noite UTC para manter compatibilidade com o domínio atual.
+- A tabela terá ownership direto por `user_id` e vínculos compostos tenant-safe com contas e categorias.
+- A FK de categoria incluirá `type/kind`, impedindo que uma despesa use categoria de receita ou vice-versa.
+- `financial_accounts` e `categories` receberão somente constraints auxiliares necessárias às FKs compostas; não haverá mudança nas operações liberadas dessas features.
+- A composition root revalidará claims em Server Component e Server Action. A apresentação não enviará `userId` como autoridade e não importará Supabase.
+- O contrato de apresentação usa DTOs serializáveis, mantém `occurredOn` como data civil e omite ownership; somente a Server Action converte a data e injeta o `sub` verificado.
+- A rota `/transactions` é um Server Component dinâmico; a página cliente recebe apenas dados iniciais e a action autorizada, e solicita `router.refresh()` após criação bem-sucedida.
+- Loading e erro pertencem ao App Router; estados empty, configuração ausente e success pertencem à apresentação da feature.
+- A composition root executa uma única consulta mensal e deriva lista e resumo do mesmo conjunto; o caso de uso público de resumo continua disponível para consumidores independentes.
+- DTOs de opções exigem IDs persistidos em runtime, evitando casts que poderiam propagar entidades incompletas à apresentação.
+- `authenticated` receberá somente `SELECT` e `INSERT`; RLS será habilitada e forçada, e usuários Auth anônimos serão bloqueados explicitamente.
+- Não haverá `UPDATE`, `DELETE`, status, transferência, cartão, recorrência, importação, trigger de saldo ou dashboard persistente nesta release.
+- Migrations e testes pgTAP permanecem bloqueados até o RED do Dia 2; alteração remota só pode ocorrer no Dia 3.
+- A decisão completa está em `adr/0008-transactions-persistence-rls.md`.
+
+## Decisões Arquiteturais da SR-012
+
+- `financial-analytics/domain` é a fonte de verdade para semântica de períodos financeiros.
+- A release cobre somente `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`; `custom` permanece fora.
+- Limites usam datas civis canônicas `YYYY-MM-DD`, não instâncias de `Date`.
+- Todo intervalo é semiaberto: `[startOnInclusive, endOnExclusive)`.
+- `week` começa na segunda-feira; janelas móveis incluem a data de referência; quinzena é 1–15 ou 16–fim do mês.
+- O domínio recebe `referenceOn` como data civil e não consulta relógio, locale ou timezone do host.
+- Timezone participa apenas da futura conversão de um instante para a data civil do usuário, em uma borda explícita com timezone IANA e relógio injetados.
+- `transactions.occurred_on` já é uma data civil e não pode ser reinterpretada por timezone.
+- `ResolveFinancialPeriodUseCase` expõe DTOs serializáveis; classes de domínio e `Date` não atravessam a fronteira RSC.
+- `presentation` e `infrastructure` não serão criadas na SR-012 sem consumidor real.
+- O port de consulta por intervalo será criado na SR-013; a SR-012 não estende `TransactionRepository.findByMonth` nem importa `Transaction` no domínio de analytics.
+- Nenhuma migration, policy, grant, view, RPC, dependência ou rota é necessária nesta release.
+- Dashboard e outras features podem compor casos de uso públicos de analytics, mas não recalcular períodos.
+- A decisão completa está em `adr/0009-financial-periods-civil-date-boundaries.md`.
+
+## Decisões Arquiteturais da SR-013
+
+- `financial-analytics/domain` agrega movimentos neutros em buckets civis diários contínuos para os cinco períodos atuais.
+- Pontos expõem limites semiabertos, receitas, despesas, líquido, saldo de fechamento e quantidade; valores permanecem inteiros seguros em centavos.
+- Saldo de abertura combina saldos iniciais configurados e movimentos anteriores ao início do período.
+- `FinancialAnalyticsQueryRepository` nasce em `application/ports`; o domínio não importa `Transaction`, `FinancialAccount` ou contratos de outras features.
+- A implementação concreta pertence a `financial-analytics/infrastructure` e usa uma função SQL `SECURITY INVOKER` para obter abertura e movimentos na mesma fotografia.
+- A função não recebe identidade livre, depende da sessão Supabase e das RLS existentes, e terá `EXECUTE` mínimo para `authenticated` permanente.
+- Nenhuma tabela, view, coluna, policy ou índice novo é necessário; saldo e pontos não são persistidos.
+- `America/Sao_Paulo` é a configuração IANA explícita e temporária da borda de aplicação. `referenceInstant` é injetado e `occurred_on date` não é convertido.
+- A tabela acessível poderá ser composta no dashboard sem antecipar gráfico ou o redesenho amplo da UI-003.
+- `/` e `/dashboard` delegam à mesma composição server-side; o painel de analytics é passado como slot React para o `DashboardPage` cliente, evitando serializar o DTO financeiro ou incluir módulos de analytics no bundle cliente.
+- A decisão completa está em `adr/0010-financial-evolution-snapshot-and-daily-buckets.md`.
+
 ## PWA
 O projeto deve ter:
 - manifest
@@ -287,6 +354,37 @@ O projeto deve ter:
 - O tema não altera contratos de domain/application/infrastructure e não introduz acesso ao Supabase.
 - Decisão completa: `adr/0005-fincontrol-pulse-design-system.md`.
 - Especificação completa: `docs/product/fincontrol-pulse-interface-copy.md`.
+
+## Shell e Navegação Responsiva — UI-002
+
+- `src/app/(private)/PrivateAppShell.tsx` permanece a composition root cliente do shell privado e não recebe regras financeiras.
+- A matriz navegável inicial contém somente `/dashboard`, `/transactions` e `/accounts`; `/` permanece alias do dashboard e deve ativar o mesmo item de Visão geral.
+- O estado ativo deriva exclusivamente do pathname conhecido, com correspondência exata para evitar ativação indevida, e expõe `aria-current="page"`.
+- Desktop a partir de `1024px` usa sidebar expandida; tablet entre `768px` e `1023px` usa rail compacto com nomes acessíveis; mobile abaixo de `768px` usa topbar compacta e navegação inferior.
+- O mobile contém apenas Início, Transações e Contas. O botão “Adicionar”, Metas e “Mais” permanecem ausentes porque seus fluxos agregadores ainda não existem.
+- A topbar pode compor marca, título derivado da rota conhecida, `ThemeSwitcher`, identidade disponível e `SignOutButton`; busca, notificações e menu de perfil não são exibidos antes de seus respectivos fluxos.
+- Navegação e topbar são componentes de composição do App Router e ficam em `src/app/(private)/components` enquanto não houver reutilização fora do shell. Isso evita transformar candidatos visuais em primitives genéricas prematuras.
+- O contrato de logout existente permanece inalterado: `SignOutUseCase` e `SupabaseAuthGateway` são montados na composition root, com redirecionamento fixo para `/login`.
+- Conteúdo deve preservar um único `main` pertencente à página. O shell fornece contêiner e landmarks de navegação, sem envolver as páginas em um segundo `main`.
+- Em mobile, o conteúdo deve reservar espaço inferior para que a navegação fixa não cubra controles; todas as ações mantêm alvo mínimo de 44 × 44 px, foco visível e uso completo por teclado.
+- Nenhuma mudança de domain, application, infrastructure, Supabase, migration, PWA offline ou regra financeira pertence à UI-002.
+- Decisão completa: `adr/0006-responsive-private-shell.md`.
+
+## Dashboard FinControl Pulse — UI-003
+
+- `src/app/(private)/dashboard/compose-dashboard-route.tsx` permanece a composition root server-side compartilhada por `/` e `/dashboard`.
+- A rota aguarda `searchParams`, normaliza o período e carrega `FinancialEvolutionDto` diretamente no servidor; não cria Route Handler nem fetch de leitura no cliente.
+- `DashboardPage` deve ser apresentação pura e server-compatible, recebendo composição por slot React sem importar Auth, transações, analytics, Supabase ou infraestrutura.
+- `FinancialEvolutionPanel` permanece na feature dona da semântica financeira e recebe somente DTO plano e kind aprovado.
+- A UI-003 elimina do dashboard o resumo baseado no `TransactionSessionProvider`, porque o provider começa vazio e não representa a persistência real.
+- A única fonte financeira deste recorte é o snapshot da SR-013: abertura, receitas, despesas, líquido, fechamento, contagem e buckets diários.
+- O grid é lógico de 12 colunas e mobile first. Layout não altera cálculos nem replica valores em estado cliente.
+- Loading e error permanecem em arquivos especiais do App Router; `missing_accounts`, `empty` e `success` pertencem ao DTO da aplicação.
+- “Saldo ao fim do período” é a métrica principal. “Disponível de verdade”, comparação, tendência e previsão continuam bloqueados até contratos próprios.
+- Links ficam restritos a `/accounts` e `/transactions`; lista detalhada recente permanece fora até existir projeção server-side alinhada ao período selecionado.
+- Nenhuma mudança de domínio, application financeira, infrastructure, Supabase, migration, RLS, policy, grant ou dependência pertence à UI-003.
+- Gráficos permanecem bloqueados até `SP-001` e SR-014; a tabela acessível continua obrigatória mesmo após gráficos.
+- Decisão completa: `adr/0011-dashboard-pulse-real-data-composition.md`.
 
 ## IA
 A IA deve atuar como análise e recomendação:

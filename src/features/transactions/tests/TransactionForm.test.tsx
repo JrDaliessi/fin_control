@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { CreateTransactionInput } from "../domain/entities/transaction.entity";
+import type { CreateTransactionRequest } from "../application/dtos/transaction.dto";
 import { TransactionForm } from "../presentation/components/TransactionForm";
 import { parseTransactionAmountToCents } from "../presentation/utils/parseTransactionAmountToCents";
 
@@ -15,16 +15,21 @@ const accountOptions = [
 const categoryOptions = [
   {
     id: "category-1",
-    name: "Mercado"
+    name: "Mercado",
+    kind: "expense" as const
+  },
+  {
+    id: "category-2",
+    name: "Salário",
+    kind: "income" as const
   }
 ];
 
-type OnCreateTransaction = (input: CreateTransactionInput) => Promise<void>;
+type OnCreateTransaction = (input: CreateTransactionRequest) => Promise<void>;
 
 function renderTransactionForm(onSubmit: OnCreateTransaction = async () => undefined) {
   render(
     <TransactionForm
-      userId="user-1"
       accounts={accountOptions}
       categories={categoryOptions}
       onCreateTransaction={onSubmit}
@@ -64,7 +69,7 @@ describe("TransactionForm", () => {
   });
 
   it("submits a valid manual expense transaction", async () => {
-    let submittedInput: CreateTransactionInput | null = null;
+    let submittedInput: CreateTransactionRequest | null = null;
     const { user } = renderTransactionForm(async (input) => {
       submittedInput = input;
     });
@@ -79,13 +84,12 @@ describe("TransactionForm", () => {
 
     await waitFor(() => {
       expect(submittedInput).toEqual({
-        userId: "user-1",
         accountId: "account-1",
         categoryId: "category-1",
         description: "Mercado",
         amountInCents: 12550,
         type: "expense",
-        occurredAt: new Date("2026-07-08T00:00:00.000Z")
+        occurredOn: "2026-07-08"
       });
     });
   });
@@ -105,7 +109,14 @@ describe("TransactionForm", () => {
     await user.click(screen.getByRole("button", { name: "Registrar transação" }));
 
     const submitButton = screen.getByRole("button", { name: "Salvando..." });
-    expect((submitButton as HTMLButtonElement).disabled).toBe(true);
+    expect(submitButton).toBeDisabled();
+    expect(screen.getByLabelText("Descrição")).toBeDisabled();
+    expect(screen.getByLabelText("Valor")).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "Despesa" })).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "Receita" })).toBeDisabled();
+    expect(screen.getByLabelText("Conta")).toBeDisabled();
+    expect(screen.getByLabelText("Categoria")).toBeDisabled();
+    expect(screen.getByLabelText("Data")).toBeDisabled();
     expect(screen.getByRole("form", { name: "Registro manual de transação" })).toHaveAttribute(
       "aria-busy",
       "true"
@@ -148,7 +159,14 @@ describe("TransactionForm", () => {
 
     expect(await screen.findByText("Informe um valor maior que zero.")).not.toBeNull();
     expect(amountInput).toHaveAttribute("aria-invalid", "true");
+    expect(amountInput).toHaveFocus();
     expect(submitCount).toBe(0);
+
+    await user.clear(amountInput);
+    await user.type(amountInput, "125,50");
+
+    expect(screen.queryByText("Informe um valor maior que zero.")).not.toBeInTheDocument();
+    expect(amountInput).toHaveAttribute("aria-invalid", "false");
   });
 
   it("exposes required fields and helper text to assistive technology", () => {

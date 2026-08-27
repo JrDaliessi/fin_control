@@ -6,7 +6,19 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### UI-003 — Dashboard FinControl Pulse
+- Tipo: Small Release / UX Improvement
+- Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
+- Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
+- Valor esperado: visão rápida sem promessas ou indicadores fictícios.
+- Prioridade: Alta
+- Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também de SP-001 e da série temporal visual da SR-014.
+- Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
+- Fase atual: Dia 3 concluído; fonte real, hierarquia e resumo responsivo implementados com pipeline local verde.
+- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
+- Small releases: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
+- Próximo passo: executar `dia 4` para expandir estados e experiência de forma controlada sem alterar cálculos ou arquitetura.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -21,30 +33,6 @@ Nenhum item em andamento no momento.
 - Fase recomendada: trilha transversal, uma small release por vez.
 - Critério de pronto: itens filhos concluídos sem rotas vazias, dados fictícios ou quebra arquitetural.
 - Especificação: `docs/product/fincontrol-pulse-interface-copy.md`.
-- Status: DISCOVERY
-
-### UI-002 — Shell e navegação responsiva
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: evoluir `PrivateAppShell` com sidebar, topbar e barra inferior mobile exibindo somente rotas funcionais.
-- Objetivo de negócio: permitir orientação e acesso rápido aos fluxos existentes.
-- Valor esperado: experiência coerente em desktop, tablet e mobile.
-- Prioridade: Alta
-- Dependências: UI-001 e matriz de rotas disponíveis.
-- Risco: Médio por afetar todas as rotas privadas e logout.
-- Fase recomendada: após UI-001.
-- Critério de pronto: navegação ativa, teclado, foco, 44 px, mobile sem overflow, logout preservado e rotas indisponíveis ausentes.
-- Status: DISCOVERY
-
-### UI-003 — Dashboard FinControl Pulse
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
-- Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
-- Valor esperado: visão rápida sem promessas ou indicadores fictícios.
-- Prioridade: Alta
-- Dependências: UI-001, UI-002 e casos de uso/dados disponíveis.
-- Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
-- Fase recomendada: após shell; expansão progressiva com SR-012 a SR-023.
-- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, acessibilidade e pipeline verde.
 - Status: DISCOVERY
 
 ### UI-004 — Experiência de contas em cards e drawer
@@ -201,50 +189,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SR-010 - Persistencia e RLS de categorias
-- Tipo: Small Release
-- Objetivo de negocio: substituir categorias demonstrativas.
-- Valor esperado: classificacao real por usuario.
-- Prioridade: Alta
-- Dependencias: SR-008 e SR-009.
-- Risco: Alto
-- Fase recomendada: ciclo seguinte.
-- Criterio de pronto: migration, repositorio, RLS e testes de isolamento.
-- Status: DISCOVERY
-
-### SR-011 - Persistencia e RLS de transacoes
-- Tipo: Security Item / Small Release
-- Objetivo de negocio: tornar o registro manual utilizavel com dados reais.
-- Valor esperado: historico financeiro persistente.
-- Prioridade: Critica
-- Dependencias: SR-008 a SR-010.
-- Risco: Alto
-- Fase recomendada: ciclo seguinte.
-- Criterio de pronto: repositorio Supabase, RLS, status definido e testes de isolamento.
-- Status: DISCOVERY
-
-### SR-012 - Periodos financeiros
-- Tipo: Small Release
-- Objetivo de negocio: analisar antes do fechamento mensal.
-- Valor esperado: semana, 7 dias, quinzena, 15 dias e mes sem ambiguidade.
-- Prioridade: Alta
-- Dependencias: SR-011.
-- Risco: Medio
-- Fase recomendada: primeiro ciclo de analytics.
-- Criterio de pronto: tipos de dominio, timezone e filtros testados.
-- Status: DISCOVERY
-
-### SR-013 - Agregacao da evolucao financeira
-- Tipo: Small Release
-- Objetivo de negocio: explicar saldo, receitas, despesas e liquido no tempo.
-- Valor esperado: base matematica para graficos e IA.
-- Prioridade: Alta
-- Dependencias: SR-012 e saldo inicial confiavel.
-- Risco: Alto
-- Fase recomendada: apos SR-012.
-- Criterio de pronto: funcao pura testada e tabela acessivel, sem biblioteca visual.
 - Status: DISCOVERY
 
 ### SP-001 - Avaliar biblioteca de graficos
@@ -422,6 +366,51 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
+### SEC-DEPS-001 — Atualizar dependências com vulnerabilidades altas
+- Tipo: Security Item / Dívida Técnica
+- Descrição: a auditoria de 2026-08-25 identificou 4 vulnerabilidades altas em dependências de produção e 6 altas no conjunto completo, envolvendo `nanoid`, `next`, `postcss`, `sharp`, `brace-expansion` e `js-yaml`.
+- Objetivo de negócio: impedir que uma entrega pública use versões com vulnerabilidades conhecidas.
+- Valor esperado: reduzir exposição a negação de serviço, SSRF, cache poisoning e falhas nas cadeias de imagem, proxy e build.
+- Prioridade: Alta
+- Dependências: ciclo controlado de atualização do Next.js e dependências transitivas, consulta às notas oficiais e regressão completa.
+- Risco: Alto em produção pública; controlado enquanto não houver release/deploy.
+- Severidade: ALTA
+- Fase recomendada: hardening dedicado antes do Dia 7 e de qualquer release público.
+- Prazo: resolver antes da validação final da SR-012.
+- Critério de pronto: `npm audit --omit=dev --audit-level=high` e auditoria completa sem vulnerabilidades altas; testes, type-check, lint e build verdes; Proxy e fluxos atuais preservados.
+- Resultado: Next `16.3.3`, React `19.2.8`, PostCSS `8.5.23`, Sharp `0.35.3`, Nanoid `3.3.18` e transitivas vulneráveis atualizados sem `--force`; auditorias de produção e completa retornaram 0 vulnerabilidades; 64 suítes e 336 testes, type-check, lint e build permaneceram verdes.
+- Data de conclusão: 2026-08-26
+- Status: DONE
+
+### TIME-BOUNDARY-001 — Remover competência mensal ancorada em UTC da rota de transações
+- Tipo: Bug / Dívida Técnica
+- Descrição: `src/app/(private)/transactions/page.tsx` usa `new Date()` com `getUTCFullYear()` e `getUTCMonth()` para escolher a competência inicial, podendo abrir o mês incorreto perto da virada civil do usuário.
+- Objetivo de negócio: garantir que a competência padrão corresponda ao dia financeiro percebido pelo usuário.
+- Valor esperado: evitar navegação inicial confusa sem alterar ou converter `occurred_on` persistido.
+- Prioridade: Média
+- Dependências: contrato explícito de `referenceInstant` e timezone IANA na borda de aplicação; decisão futura sobre preferência do usuário ou timezone padrão aprovado.
+- Risco: Médio para experiência; não há corrupção de dados.
+- Severidade: MÉDIA
+- Fase recomendada: antes da composição da SR-013 com a UI-003.
+- Critério de pronto: remover relógio/UTC direto da página, injetar a âncora temporal na aplicação e cobrir viradas UTC/local por testes sem converter datas civis persistidas.
+- Resultado: a rota injeta o instante ISO em um resolver de application que converte a âncora para `America/Sao_Paulo`; testes cobrem a virada em `2026-04-01T02:30Z`/`03:30Z` e `occurred_on` permanece civil e inalterado.
+- Data de conclusão: 2026-08-26
+- Status: DONE
+
+### TX-PERF-001 — Eliminar consulta mensal duplicada na composição de transações
+- Tipo: Dívida Técnica / Hardening
+- Descrição: a carga de `/transactions` consulta o mesmo mês uma vez para a lista e outra vez para o resumo mensal.
+- Objetivo de negócio: manter a página previsível quando o histórico crescer sem alterar resultados financeiros.
+- Valor esperado: reduzir round-trips e trabalho duplicado no banco.
+- Prioridade: Média
+- Dependências: composição autenticada do Dia 4 da SR-011 e testes existentes de lista/resumo.
+- Risco: Baixo com tabela vazia; Médio em escala.
+- Severidade: MÉDIA
+- Fase recomendada: Dia 5 da SR-011.
+- Critério de pronto: calcular lista e resumo com uma única leitura mensal, preservar os contratos de application e manter todos os gates verdes.
+- Resultado: a composition root passou a consultar transações uma vez e `calculateMonthlySummary` deriva o resumo do conjunto já carregado; 61 suítes e 292 testes permaneceram verdes.
+- Status: DONE
+
 ### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
 - Tipo: Security Item
 - Objetivo de negócio: impedir uso de credenciais conhecidamente comprometidas.
@@ -481,6 +470,74 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-013 — Agregação da evolução financeira
+- Tipo: Small Release
+- Resultado: saldo de abertura e evolução diária por período entregues com tabela acessível baseada em dados reais, sem antecipar biblioteca de gráficos.
+- Arquitetura: domínio e application puros; composição server-side; UI recebe DTO serializável; Supabase permanece isolado no repository.
+- Banco: migration `20260826190714_create_financial_evolution_snapshot` alinhada local/remoto; RPC `SECURITY INVOKER`, RLS e grants mínimos; 33 asserções pgTAP verdes em rollback.
+- Quality gates: 72 suítes/390 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e três previews Vercel verdes no commit `e508f6b`.
+- Segurança e observabilidade: ownership derivado da sessão, Auth anônimo bloqueado, intervalo máximo de 31 dias, erros sanitizados e baseline remota validada sem registrar PII ou conteúdo financeiro.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` permanecem como hardening obrigatório antes de produção pública; três índices sem uso continuam apenas informativos.
+- Status: DONE
+
+### SR-012 — Períodos financeiros
+- Tipo: Small Release
+- Resultado: cinco períodos financeiros civis e móveis implementados com datas canônicas, limites semiabertos, viradas de calendário e pertencimento ao intervalo cobertos por testes.
+- Arquitetura: domínio e application puros; nenhuma UI, persistência, agregação, Supabase ou timezone implícito antecipado.
+- Quality gates: 64 suítes/336 testes, lint, type-check, auditoria sem vulnerabilidades, build, GitHub Actions e dois previews Vercel verdes.
+- Segurança e observabilidade: entradas limitadas, calendário validado, loops curtos e baseline sanitizada sem PII ou dados financeiros.
+- Riscos residuais: `TIME-BOUNDARY-001` foi resolvido no Dia 4 da SR-013; hardenings globais de deploy público permanecem rastreados.
+- Status: DONE
+
+### CI-VERCEL-001 — Corrigir autoria Git dos previews Vercel
+- Tipo: Hardening
+- Resultado: divergência entre `JuniorDaliessi` e `JrDaliessi` corrigida no escopo local do repositório, sem reescrever histórico.
+- Evidência: commit `268ab3e` associado ao GitHub `JrDaliessi` (ID `131720853`); ambos os previews e GitHub Actions concluíram com sucesso.
+- Observação: dois projetos Vercel continuam conectados ao repositório; avaliação de consolidação permanece opcional e separada.
+- Status: DONE
+
+### SR-011 — Persistência e RLS de transações
+- Tipo: Security Item / Small Release
+- Resultado: criação e consulta mensal de transações próprias entregues com identidade server-side, vínculos tenant-safe, grants mínimos, RLS e apresentação acessível.
+- Escopo concluído: domínio, casos de uso, mapper, repository, migrations, Server Actions, lista/resumo persistentes, UX responsiva e hardening interno.
+- Banco: migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes` alinhadas; 89 asserções pgTAP verdes; rollback preservou a 1 transação preexistente e não deixou `pgtap` instalada.
+- Quality gates: lint, type-check, 61 suítes/294 testes Jest, auditoria com 0 vulnerabilidades, build e `git diff --check` verdes.
+- Segurança: Proxy, Actions e RLS bloqueiam Auth anônimo; ownership é injetado no servidor; FKs compostas impedem conta/categoria cross-tenant; somente `SELECT`/`INSERT` estão liberados.
+- Observabilidade: eventos e atributos sanitizados definidos; conteúdo financeiro, PII, UUIDs, tokens, cookies, credenciais e payloads brutos são proibidos.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código.
+- Fora do escopo preservado: edição, exclusão, status, transferência, cartão, parcelas, recorrência, importação, analytics avançado, offline e IA.
+- Status: DONE
+
+### BUG-AUTH-ANON-001 — Proxy aceitava Supabase Anonymous Sign-In como sessão permanente
+- Tipo: Bug / Security Item
+- Resultado: o Proxy agora exige subject válido e rejeita `is_anonymous=true`, alinhado às Server Actions e policies financeiras.
+- Evidência TDD: RED com 1 falha e 6 testes verdes; GREEN com 1 suíte e 8 testes verdes; regressão completa com 61 suítes e 294 testes.
+- Risco resolvido: usuário Auth anônimo não atravessa mais a proteção de rotas privadas.
+- Status: DONE
+
+### SR-010 — Persistência e RLS de categorias
+- Tipo: Security Item / Small Release
+- Resultado: criação e listagem persistentes de categorias próprias entregues com identidade server-side, grants mínimos, RLS forçada e isolamento por proprietário.
+- Escopo concluído: domínio, casos de uso, migration, repository, mapper, Server Actions autenticadas, estados acessíveis e experiência PWA coerente.
+- Banco: migration `20260717022313_create_categories` aplicada; 65 asserções pgTAP verdes; Performance Advisor limpo; tabela permaneceu vazia após os testes transacionais do Dia 7.
+- Quality gates: lint, type-check, 53 suítes/255 testes Jest, auditoria sem vulnerabilidades e build de produção verdes.
+- Segurança: `authenticated` somente com `SELECT`/`INSERT`; `anon`, Auth anônimo, `UPDATE`, `DELETE`, owner forjado e uso de `service_role` pela aplicação bloqueados.
+- Observabilidade: eventos e atributos sanitizados definidos; nomes, payloads, PII, credenciais, tokens e conteúdo financeiro são proibidos.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam deploy público, mas não a entrega incremental do código.
+- Fora do escopo preservado: edição, exclusão, arquivamento, cor, ícone, seeds, categorias globais, persistência de transações, offline e IA.
+- Status: DONE
+
+### UI-002 — Shell e navegação responsiva
+- Tipo: Small Release / UX Improvement
+- Resultado: sidebar desktop, rail tablet, navegação inferior mobile e topbar entregues somente com destinos funcionais.
+- Escopo concluído: estado ativo por rota/alias, teclado, foco, alvos de 44 px, safe area, movimento reduzido, tema, logout e experiência PWA coerente.
+- Quality gates: lint, type-check, 44 suítes/212 testes, auditoria com 0 vulnerabilidades, build e `git diff --check` verdes.
+- Segurança: logout local com redirect fixo, UI sem acesso direto a Supabase, sem segredo real ou escape de tipagem.
+- Governança: CI validado por teste e executado em pushes/PRs para `develop` e `main`.
+- Riscos residuais não críticos: inspeção visual automatizada indisponível e pinagem das Actions por SHA registrada como dívida baixa.
+- Fora do escopo preservado: rotas futuras, busca, notificações, perfil, configurações, Adicionar, drawers, gráficos, IA e offline.
+- Status: DONE
 
 ### UI-001 — Sistema visual, marca e temas
 - Tipo: Small Release / UX Improvement

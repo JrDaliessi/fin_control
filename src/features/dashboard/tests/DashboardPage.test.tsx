@@ -1,124 +1,68 @@
 import { describe, expect, it } from "@jest/globals";
-import { render, screen, within } from "@testing-library/react";
-import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
-import type { CreateTransactionInput } from "../../transactions/domain/entities/transaction.entity";
-import { TransactionSessionProvider } from "../../transactions/presentation/providers/TransactionSessionProvider";
+import { render, screen } from "@testing-library/react";
 import { DashboardPage } from "../presentation/pages/DashboardPage";
 
-function makeTransaction(
-  overrides: Partial<CreateTransactionInput> = {}
-): CreateTransactionInput {
-  return {
-    userId: "user-1",
-    accountId: "account-1",
-    categoryId: "category-1",
-    description: "Mercado",
-    amountInCents: 12550,
-    type: "expense",
-    occurredAt: new Date("2026-07-08T12:00:00Z"),
-    ...overrides
-  };
-}
-
-function renderDashboard(
-  transactions: CreateTransactionInput[] = [],
-  userId = "user-1"
-) {
-  render(
-    <AuthSessionProvider
-      user={{ id: userId, email: "usuario@example.com" }}
-    >
-      <TransactionSessionProvider initialTransactions={transactions}>
-        <DashboardPage />
-      </TransactionSessionProvider>
-    </AuthSessionProvider>
-  );
-}
-
 describe("DashboardPage", () => {
-  it("should render the dashboard heading", async () => {
-    renderDashboard();
+  it("presents the approved dashboard hierarchy and neutral supporting copy", () => {
+    render(<DashboardPage />);
 
-    expect(
-      screen.getByRole("heading", { name: /dashboard/i })
-    ).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(
-      await screen.findByText(/nenhuma transação registrada/i)
+      screen.getByRole("heading", { name: "Visão geral", level: 1 })
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Aqui está o que aconteceu com seu dinheiro no período selecionado."
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/usuario@example\.com/i)).not.toBeInTheDocument();
   });
 
-  it("should render loading and empty states when there are no transactions", async () => {
-    renderDashboard();
+  it("offers only actions backed by existing account and transaction flows", () => {
+    render(<DashboardPage />);
 
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Carregando dashboard"
+    const actionHrefs = screen
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"));
+    expect(actionHrefs).toHaveLength(2);
+    expect(actionHrefs).toEqual(
+      expect.arrayContaining(["/accounts", "/transactions"])
+    );
+    expect(screen.getByRole("link", { name: "Contas" })).toHaveAttribute(
+      "href",
+      "/accounts"
+    );
+    expect(screen.getByRole("link", { name: "Transações" })).toHaveAttribute(
+      "href",
+      "/transactions"
+    );
+  });
+
+  it("composes server-rendered financial content through its React slot", () => {
+    render(
+      <DashboardPage>
+        <section aria-label="Conteúdo financeiro do servidor">
+          Evolução serializada
+        </section>
+      </DashboardPage>
     );
 
     expect(
-      await screen.findByText(/nenhuma transação registrada/i)
-    ).toHaveAttribute("role", "status");
+      screen.getByRole("region", { name: "Conteúdo financeiro do servidor" })
+    ).toHaveTextContent("Evolução serializada");
   });
 
-  it("should render a call-to-action link to register a transaction", async () => {
-    renderDashboard();
+  it("does not expose unsupported or legacy financial promises", () => {
+    render(<DashboardPage />);
 
-    const ctaLink = await screen.findByRole("link", {
-      name: /registrar.*transação/i
-    });
-
-    expect(ctaLink).toBeInTheDocument();
-    expect(ctaLink).toHaveAttribute("href", "/transactions");
-    expect(ctaLink).toHaveClass("min-h-11", "focus-visible:ring-2");
-  });
-
-  it("should provide navigation to financial accounts", async () => {
-    renderDashboard();
-
-    expect(
-      screen.getByRole("link", { name: "Contas" })
-    ).toHaveAttribute("href", "/accounts");
-
-    await screen.findByText(/nenhuma transação registrada/i);
-  });
-
-  it("should render the monthly summary and recent transactions", async () => {
-    renderDashboard([
-      makeTransaction({
-        description: "Salário",
-        amountInCents: 500000,
-        type: "income",
-        occurredAt: new Date("2026-07-10T12:00:00Z")
-      }),
-      makeTransaction()
-    ]);
-
-    const summaryRegion = await screen.findByRole("region", {
-      name: "Resumo financeiro do mês"
-    });
-    const recentRegion = screen.getByRole("region", {
-      name: "Últimas transações"
-    });
-
-    expect(
-      within(summaryRegion).getByRole("group", {
-        name: /Receitas: R\$\s*5\.000,00/
-      })
-    ).toBeInTheDocument();
-    expect(
-      within(summaryRegion).getByRole("group", {
-        name: /Despesas: R\$\s*125,50/
-      })
-    ).toBeInTheDocument();
-    expect(within(recentRegion).getByText("Salário")).toBeInTheDocument();
-    expect(within(recentRegion).getByText("Mercado")).toBeInTheDocument();
-  });
-
-  it("should render an error state when the dashboard cannot be calculated", async () => {
-    renderDashboard([], " ");
-
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Não foi possível carregar o dashboard."
-    );
+    for (const unsupportedCopy of [
+      /disponível de verdade/i,
+      /resumo financeiro do mês/i,
+      /últimas transações/i,
+      /previsão/i,
+      /tendência/i
+    ]) {
+      expect(screen.queryByText(unsupportedCopy)).not.toBeInTheDocument();
+    }
   });
 });

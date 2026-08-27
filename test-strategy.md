@@ -479,6 +479,249 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Matriz Executada no Dia 2 — UI-003
+
+Os testes abaixo foram escritos antes de qualquer alteração funcional nos componentes:
+
+| Camada | Alvo | Contratos essenciais |
+| --- | --- | --- |
+| architecture | `DashboardPage` | server-compatible; sem `use client`, Auth, `TransactionSessionProvider`, hook de resumo ou tipos financeiros |
+| presentation | cabeçalho | “Visão geral”, saudação neutra, Contas e Transações; ausência de nome inferido e capacidades futuras |
+| presentation | painel financeiro | “Saldo ao fim do período”, receitas, despesas, líquido, abertura/contexto e contagem com dados do DTO |
+| presentation | estados | `missing_accounts`, `empty` e `success` distintos; sem zeros ou pontos fabricados |
+| presentation | acessibilidade | um `main`, headings ordenados, `dl/dt/dd`, tabela/caption, foco e alvos de 44 px |
+| route | composição | `searchParams` aguardado, kind normalizado, uma leitura server-side e slot compartilhado por `/` e `/dashboard` |
+| boundary | RSC/bundle | DTO não atravessa para componente cliente; sem RPC, provider ou analytics nos chunks cliente |
+
+Cenário feliz:
+- usuário permanente com conta e movimentos abre o dashboard, seleciona um período e recebe saldo final, receitas, despesas, líquido e tabela diária calculados pela SR-013.
+
+Cenários alternativos:
+- conta existente sem movimentos no período mantém saldos e mensagem vazia
+- ausência de contas mostra onboarding sem métricas fabricadas
+- kind ausente ou inválido usa fallback aprovado
+- falha de carregamento usa error boundary sanitizada e recuperável
+
+Edge cases:
+- saldo negativo
+- receitas ou despesas iguais a zero
+- período atravessando mês/ano
+- texto longo e valores monetários grandes sem overflow
+- viewport de 320 px, teclado, leitor de tela e movimento reduzido
+- ausência explícita de “disponível de verdade”, previsão, comparação, gráfico e movimentações detalhadas
+
+Resultado observado:
+- baseline direcionado antes do RED: 4 suítes e 21 testes verdes
+- RED direcionado: 4 suítes falharam; 11 testes falharam e 6 passaram
+- causas exclusivas: dependências cliente legadas no `DashboardPage`, copy antiga, rótulo “Saldo final”, empty copy incompleta e ausência de `grid-cols-12`
+- rede anterior, excluindo somente as 4 suítes RED: 68 suítes e 371 testes verdes
+- type-check e lint local verdes; nenhuma implementação funcional foi criada
+
+Implementação bloqueada até o Dia 3:
+- tornar `DashboardPage` server-compatible e puramente visual
+- remover o resumo/recentes baseados no provider cliente vazio
+- aplicar copy, ações reais e slot aprovado
+- reorganizar o resumo financeiro no grid de 12 colunas sem alterar cálculos
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## GREEN do Dia 3 — UI-003
+
+- `DashboardPage` tornou-se server-compatible e deixou de depender de Auth, sessão cliente, hook de resumo e componentes financeiros legados.
+- copy, ações reais, slot React, métrica principal, empty state e grid de 12 colunas satisfizeram os contratos do Dia 2.
+- GREEN direcionado: 4 suítes e 17 testes passaram.
+- um contrato transversal de design system obsoleto foi reproduzido na regressão e realinhado para o `FinancialEvolutionPanel`, que efetivamente usa `Card` e `FeedbackMessage`.
+- GREEN ampliado: 5 suítes e 26 testes passaram.
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint, type-check e build de produção passaram.
+- nenhum teste foi relaxado; o contrato transversal mudou de proprietário junto com a responsabilidade visual.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+### Prioridade por camada
+
+1. `domain`: produzir buckets civis diários completos e validar aritmética financeira segura.
+2. `application`: resolver a âncora em timezone explícito, orquestrar um snapshot e devolver DTO serializável.
+3. `infrastructure`: mapear a projeção tabular da RPC e sanitizar falhas do provider.
+4. `database`: proteger a função, preservar RLS e comprovar limites, isolamento e plano de consulta.
+5. `presentation`: documentar contratos futuros; componentes permanecem bloqueados até a expansão controlada.
+
+### Matriz executável
+
+| Camada | Alvo | Cenários essenciais | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `aggregateFinancialEvolution` | buckets contínuos, dias vazios, bissexto, saldo negativo, ordem de entrada, intervalo semiaberto, entradas inválidas e overflow | RED por módulos ausentes |
+| application | `resolveReferenceCivilDate` | virada UTC/local, timezone explícito, instante e IANA inválidos | RED por módulo ausente |
+| application | `ListFinancialEvolutionUseCase` | success, missing accounts, empty, ator/período inválidos, uma consulta e erro sanitizado | RED por módulos ausentes |
+| infrastructure | mapper de snapshot | numeric string, sentinela nula, repetição consistente, tipos e inteiros seguros | RED por módulo ausente |
+| infrastructure | repository Supabase | uma RPC, limites civis, ausência de `userId` no payload e erro estável | RED por módulo ausente |
+| database | assinatura e grants | dois parâmetros date, sete colunas, invoker, search path e EXECUTE mínimo | 9 falhas de 15 em RED remoto |
+| database | comportamento/RLS | abertura, intervalo, ordem, tenants, anon, Auth anônimo, nulos, inversão e 31 dias | escrito; execução bloqueada até a função existir |
+| database | performance | índices existentes, filtros explícitos e helpers Auth em initPlan | escrito; execução bloqueada até o Dia 3 |
+| presentation | seletor/tabela/estados | nomes acessíveis, caption, headers, missing accounts, empty, success e ausência de cálculo na UI | documentado para Dia 4 |
+
+### Cenário feliz
+
+O caso de uso recebe um ator verificado, `rolling_7_days`, o instante `2026-03-07T15:00:00.000Z` e `America/Sao_Paulo`; resolve `[2026-03-01, 2026-03-08)`, carrega um snapshot, agrega sete pontos e devolve resumo e DTOs serializáveis.
+
+### Cenários alternativos
+
+- usuário possui contas, saldo de abertura e nenhum movimento no intervalo
+- usuário ainda não possui conta financeira
+- período atravessa fevereiro bissexto
+- saldo de fechamento se torna negativo
+- movimentos chegam fora de ordem e são agrupados pelo dia civil
+- RPC retorna inteiros Postgres como strings numéricas
+- snapshot vazio usa uma linha sentinela com colunas de movimento nulas
+
+### Edge cases críticos
+
+- início inclusivo e fim exclusivo
+- movimento anterior ao início ou igual ao fim
+- data civil inexistente
+- tipo desconhecido, valor zero, fracionário ou inseguro
+- overflow do total diário ou saldo acumulado
+- instante inválido ou timezone IANA desconhecido
+- divergência entre valores repetidos do snapshot
+- payload RPC contendo ownership controlado pelo cliente
+- função executável por `PUBLIC`, `anon`, `service_role` ou Auth anônimo
+- limites nulos, invertidos ou acima de 31 dias
+- plano sem os índices existentes de owner e data civil
+
+### Testes criados
+
+Jest:
+- `src/features/financial-analytics/tests/aggregate-financial-evolution.test.ts`
+- `src/features/financial-analytics/tests/resolve-reference-civil-date.test.ts`
+- `src/features/financial-analytics/tests/list-financial-evolution.use-case.test.ts`
+- `src/features/financial-analytics/tests/financial-evolution-snapshot.mapper.test.ts`
+- `src/features/financial-analytics/tests/supabase-financial-analytics-query.repository.test.ts`
+- `src/features/financial-analytics/tests/fixtures/financial-evolution.fixtures.ts`
+
+pgTAP:
+- `supabase/tests/database/financial_evolution_snapshot_schema.test.sql` — 15 asserções
+- `supabase/tests/database/financial_evolution_snapshot_behavior.test.sql` — 14 asserções
+- `supabase/tests/database/financial_evolution_snapshot_performance.test.sql` — 4 asserções
+
+### Resultado RED observado
+
+- 5 suítes Jest falharam antes de executar cenários porque os 7 módulos de produção planejados ainda não existem.
+- type-check apresentou somente 7 erros `TS2307` para os mesmos módulos ausentes.
+- contrato estrutural pgTAP executado transacionalmente no projeto `fin_control`: 9 falhas de 15 pela função ainda ausente.
+- rollback confirmado: função continuou ausente e `pgtap` permaneceu não instalada.
+- rede anterior excluindo somente as cinco suítes novas: 64 suítes e 336 testes verdes.
+- lint: verde, 0 warnings.
+- `git diff --check`: verde, com avisos esperados de normalização LF/CRLF.
+- build não executado porque o type-check vermelho é deliberado.
+
+### Implementação bloqueada até o Dia 3
+
+- `src/features/financial-analytics/domain/types/financial-evolution.types.ts`
+- `src/features/financial-analytics/domain/services/aggregate-financial-evolution.ts`
+- `src/features/financial-analytics/application/services/resolve-reference-civil-date.ts`
+- `src/features/financial-analytics/application/ports/financial-analytics-query.repository.ts`
+- `src/features/financial-analytics/application/use-cases/list-financial-evolution.use-case.ts`
+- `src/features/financial-analytics/infrastructure/supabase/financial-evolution-snapshot.mapper.ts`
+- `src/features/financial-analytics/infrastructure/repositories/supabase-financial-analytics-query.repository.ts`
+- migration `load_financial_evolution_snapshot`, grants e execução dos contratos comportamentais/performance
+- qualquer componente, rota, gráfico, dependência visual ou expansão da UI-003
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## Planejamento TDD da SR-013 — definido no Dia 1
+
+Alvos obrigatórios para o Dia 2:
+- domain: buckets diários completos, vazio, viradas de mês/ano, saldo negativo, totais, ordem, entradas inválidas e overflow
+- application: ator, período, estados `missing_accounts | empty | success`, chamada única ao repository e erro sanitizado
+- timezone: instante explícito em `America/Sao_Paulo`, incluindo viradas UTC/local, sem relógio global
+- infrastructure: mapper do snapshot, limites `gte/lt`, ordenação estável e normalização de falhas
+- database: assinatura da função, grants mínimos, `SECURITY INVOKER`, RLS por usuário, Auth anônimo bloqueado, abertura, intervalo e plano com índices
+- presentation: seletor semanticamente nomeado, tabela com caption/headers, estados e ausência de cálculo financeiro na UI
+
+Nenhum desses testes ou artefatos funcionais pertence ao Dia 1.
+
+## Dia 2 — SR-012 Períodos Financeiros
+
+## Objetivo
+
+Transformar os contratos civis e temporais da SR-012 em testes executáveis antes de criar `CivilDate`, o resolvedor, o predicado de pertencimento ou o caso de uso.
+
+## Prioridade por Camada
+
+1. `domain`: validar datas civis reais, os cinco períodos e limites semiabertos.
+2. `application`: validar o DTO serializável do caso de uso.
+3. `infrastructure`: não aplicável nesta release.
+4. `presentation`: não aplicável enquanto não existir consumidor real.
+
+## Matriz de Testes da SR-012
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `CivilDate` | formato canônico, datas reais, bissexto, ano/mês/dia inválidos e rejeição de timestamp | testes criados |
+| domain | `resolveFinancialPeriod` | cinco kinds, semana seg–dom, quinzenas, janelas móveis e viradas de mês/ano | testes criados |
+| domain | `containsCivilDate` | início incluso, interior, último dia, fim exclusivo, antes do início e candidato inválido | testes criados |
+| application | `ResolveFinancialPeriodUseCase` | DTO plano, serialização, kind inválido e referência inválida | testes criados |
+| infrastructure | não aplicável | nenhuma consulta, migration ou integração autorizada | fora do escopo |
+| presentation | não aplicável | nenhum seletor, rota ou componente autorizado | fora do escopo |
+
+## Cenário Feliz
+
+O caso de uso recebe `rolling_7_days` e a data civil `2026-08-25`, resolve o intervalo `[2026-08-19, 2026-08-26)` e devolve somente strings serializáveis.
+
+## Cenários Alternativos
+
+- semana civil atravessando a virada do ano
+- primeira e segunda quinzenas
+- janela móvel atravessando mês ou ano
+- mês de fevereiro em ano bissexto
+- mês de dezembro terminando em janeiro do ano seguinte
+
+## Edge Cases Críticos
+
+- data inexistente, timestamp ou formato não canônico
+- ano, mês ou dia zero
+- século não bissexto
+- `custom` ou outro kind fora da união aprovada
+- começo inclusivo e fim exclusivo
+- candidato inválido no predicado de pertencimento
+- uso acidental de `Date`, relógio, locale ou timezone nos contratos
+
+## Testes Criados
+
+- `src/features/financial-analytics/tests/civil-date.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.test.ts`
+- `src/features/financial-analytics/tests/resolve-financial-period.use-case.test.ts`
+
+Fixtures compartilhadas não foram criadas: as entradas são primitivas e as tabelas locais mantêm cada resultado esperado explícito.
+
+## Implementação Bloqueada até o Dia 3
+
+- `src/features/financial-analytics/domain/value-objects/civil-date.ts`
+- `src/features/financial-analytics/domain/types/financial-period.types.ts`
+- `src/features/financial-analytics/domain/services/resolve-financial-period.ts`
+- `src/features/financial-analytics/domain/services/contains-civil-date.ts`
+- `src/features/financial-analytics/application/use-cases/resolve-financial-period.use-case.ts`
+
+Não criar `presentation`, `infrastructure`, repository, migration, policy, grant, rota ou dependência nesta release.
+
+## Resultado Observado do Dia 2 — SR-012
+
+- baseline anterior: 61 suítes e 294 testes verdes
+- 3 suítes novas com 37 cenários codificados
+- RED direcionado: 3 suítes falharam antes da execução dos cenários por módulos deliberadamente ausentes
+- type-check: 6 erros `TS2307`, todos limitados aos 5 módulos planejados
+- rede anterior: 61 suítes e 294 testes permaneceram verdes ao excluir a pasta da SR-012
+- lint: verde, 0 warnings
+- `git diff --check`: verde, com avisos esperados de LF/CRLF
+- build não executado porque o type-check vermelho é deliberado
+- nenhum código funcional, UI, infrastructure, migration, integração ou dependência foi criado
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
 ## Matriz Planejada — Trilha FinControl Pulse
 
 Esta matriz orienta os futuros Dias 2 de `UI-001` a `UI-006`. Nenhum teste ou código funcional foi antecipado nesta incorporação de escopo.
@@ -600,3 +843,348 @@ Regras:
 - snapshot visual isolado não é critério de acessibilidade ou comportamento.
 - gráficos futuros exigem testes do view model, alternativa tabular, teclado, tooltip e dados insuficientes.
 - copy dinâmica precisa de cenários positivo, atenção, crítico, sem dados e erro, quando aplicável.
+
+## Dia 2 — UI-002 Shell e Navegação Responsiva
+
+## Objetivo
+
+Converter o ADR 0006 e a matriz aprovada de rotas privadas em contratos executáveis antes de criar configuração, componentes ou integração funcional do shell.
+
+## Prioridade por Camada
+
+1. configuração pura de presentation: destinos, rótulos, alias e resolução exata do pathname
+2. composition root: navegação, estado ativo, ações globais e landmarks
+3. responsividade e acessibilidade: desktop/tablet/mobile, nomes acessíveis e alvos mínimos
+4. regressão: tema, logout, páginas privadas e Proxy já cobertos pelo baseline
+
+## Matriz de Testes da UI-002
+
+| Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- |
+| `PRIVATE_NAVIGATION_ITEMS` | somente `/dashboard`, `/transactions` e `/accounts`; rótulos desktop/mobile | teste criado em RED |
+| `getPrivateNavigationItemForPath` | alias `/`; três destinos canônicos; futuros e paths aninhados não ativam item | testes criados em RED |
+| `PrivateAppShell` | landmarks nomeados, links aprovados, ausência de destinos futuros | teste criado em RED |
+| estado ativo | `aria-current="page"` apenas no item correspondente nas duas navegações | teste criado em RED |
+| ações globais | e-mail, tema, logout e exatamente um `main` pertencente à página | teste criado em RED |
+| mobile | navegação fixa, espaço inferior e largura mínima segura | teste criado em RED |
+
+## Cenário Feliz
+
+Usuário autenticado abre `/accounts`. Sidebar/rail e navegação mobile mostram apenas Visão geral/Início, Transações e Contas; somente Contas recebe `aria-current="page"`; tema, e-mail e logout permanecem acessíveis; o conteúdo conserva seu único landmark `main`.
+
+## Cenários Alternativos
+
+- `/` e `/dashboard` ativam o mesmo destino canônico de Visão geral/Início
+- desktop/tablet usam rótulo “Visão geral”, enquanto mobile usa “Início”
+- `/transactions` e `/accounts` resolvem somente por correspondência exata
+
+## Edge Cases Críticos
+
+- rota futura como `/cards`, `/goals` ou `/settings`
+- path aninhado inexistente como `/transactions/new`
+- botões ou links “Adicionar”, “Mais”, notificações e configurações aparecendo antes dos fluxos
+- navegação mobile cobrindo o conteúdo
+- shell introduzindo um segundo elemento `main`
+- item inativo expondo `aria-current`
+
+## Testes Criados
+
+- `src/app/(private)/tests/private-navigation.test.ts`
+- `src/app/(private)/tests/PrivateAppShell.test.tsx`
+
+## Resultado Observado do Dia 2
+
+- 14 cenários planejados: 10 de configuração pura e 4 de composição.
+- RED direcionado: 2 suítes falharam; 4 testes executáveis falharam pelos elementos ausentes e a suíte pura falhou pelo módulo não implementado.
+- Type-check: somente um `TS2307` para `../navigation/private-navigation`.
+- Rede anterior: 41 suítes e 194 testes verdes ao excluir somente os dois contratos RED.
+- Lint: verde, 0 warnings.
+- Build não executado por causa do RED deliberado; audit não repetido porque não houve mudança de dependências.
+- Implementação funcional permanece bloqueada até `dia 3 da UI-002`.
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## Dia 2 — SR-011 Persistência e RLS de Transações
+
+## Objetivo
+
+Transformar o ADR 0008 em contratos executáveis antes de criar `Transaction.restore`, mapper, repository ou migration.
+
+## Prioridade por Camada
+
+1. `domain`: limites, normalização, data civil, restauração e imutabilidade.
+2. `application`: preservar criação e resumo mensal exclusivamente por contrato.
+3. `infrastructure`: validar mapper, payload, consulta mensal, schema, integridade e RLS.
+4. `presentation`: documentar a composição persistente de `/transactions` para o Dia 4, sem criar UI agora.
+
+## Matriz de Testes da SR-011
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `Transaction.create` | notas normalizadas; descrição até 160; notas até 1000 | 3 cenários RED adicionados |
+| domain | `Transaction.restore` | reidratação; ID/datas inválidos; proteção contra mutação | 6 cenários RED adicionados |
+| application | criação e resumo mensal | cenário feliz, inválidos, falha do repository, mês vazio e fora do período | 7 cenários existentes preservados |
+| infrastructure | mapper | row `date` para UTC; payload mínimo; bigint inseguro | 3 cenários RED criados |
+| infrastructure | repository | insert; owner/período semiaberto; ordem estável; erro sanitizado | 4 cenários RED criados |
+| database | schema/grants | 12 colunas, constraints, FKs, índices, policies, privilégios e ausência de status | 46 asserções pgTAP |
+| database | constraints | valores, defaults, vínculos tenant-safe, `type/kind` e deletes restritos | 21 asserções pgTAP |
+| database | RLS | owner, não owner, anon, Auth anônimo, owner forjado e mutações proibidas | 17 asserções pgTAP |
+| database | performance | initPlan dos helpers Auth e índice mensal por owner | 3 asserções pgTAP |
+| presentation | `/transactions` | dados persistidos, loading, empty, success, error e ausência de `userId` livre | documentado; testes adiados ao Dia 4 |
+
+## Cenário Feliz
+
+Um usuário permanente autenticado registra uma despesa manual usando conta e categoria próprias. O domínio normaliza os dados, o caso de uso persiste por contrato, o mapper envia somente campos aprovados e o repository retorna a linha reidratada. A consulta do mês usa intervalo semiaberto e retorna somente linhas do proprietário em ordem estável.
+
+## Cenários Alternativos
+
+- receita com categoria `income`
+- método `pix`, `cash` ou `debit` em vez do default `manual`
+- notas ausentes
+- mês sem transações
+- mudança de dezembro para janeiro no limite superior da consulta
+- erro do provider convertido em mensagem estável
+
+## Edge Cases Críticos
+
+- descrição vazia, não aparada ou acima de 160 caracteres
+- valor zero, negativo, decimal ou acima do inteiro seguro do JavaScript
+- notas não aparadas ou acima de 1000 caracteres
+- data, ID ou timestamps persistidos inválidos
+- bigint inseguro retornado pelo provider
+- conta ou categoria inexistente
+- conta ou categoria pertencente a outro usuário
+- categoria `income` em despesa ou categoria `expense` em receita
+- owner forjado, `anon` ou usuário anônimo do Supabase Auth
+- tentativa de `UPDATE` ou `DELETE`
+- policy sem initPlan, owner sem índice ou tabela exposta sem grant explícito
+
+## Testes Criados ou Alterados
+
+Jest:
+- `src/features/transactions/tests/fixtures/transaction.fixtures.ts`
+- `src/features/transactions/tests/transaction.entity.test.ts`
+- `src/features/transactions/tests/supabase-transaction.mapper.test.ts`
+- `src/features/transactions/tests/supabase-transaction.repository.test.ts`
+
+pgTAP:
+- `supabase/tests/database/transactions_schema.test.sql`
+- `supabase/tests/database/transactions_constraints.test.sql`
+- `supabase/tests/database/transactions_rls.test.sql`
+- `supabase/tests/database/transactions_rls_performance.test.sql`
+
+## Implementação Bloqueada até o Dia 3
+
+- `Transaction.restore` e novos limites do domínio
+- `transaction.mapper.ts`
+- `supabase-transaction.repository.ts`
+- obrigatoriedade de `TransactionRepository.findByMonth`
+- migration de `public.transactions` e constraints auxiliares
+- qualquer Server Action, rota ou mudança de apresentação
+
+## Resultado Observado do Dia 2 — SR-011
+
+- baseline anterior: 53 suítes e 255 testes verdes
+- type-check e lint da baseline: verdes
+- audit de produção: 0 vulnerabilidades
+- RED direcionado: 3 suítes falharam; 9 testes falharam e 11 testes anteriores permaneceram verdes
+- falhas deliberadas: `Transaction.restore`, normalização/limites, mapper e repository ainda ausentes
+- type-check RED: 5 erros, exclusivamente `TS2307` dos dois módulos ausentes e `TS2339` de `Transaction.restore`
+- lint dos contratos: verde, 0 warnings
+- rede anterior excluindo somente os três contratos RED: 52 suítes e 244 testes verdes
+- planos pgTAP validados mecanicamente: 46 + 21 + 17 + 3 = 87 asserções
+- RED remoto transacional: 1 falha de 1 porque `public.transactions` ainda não existe
+- rollback remoto confirmado: duas tabelas, três migrations e `pgtap` não instalada
+- nenhuma implementação, migration, tabela, grant, policy, fixture persistente ou configuração foi criada
+- build não executado porque o type-check vermelho é deliberado
+
+Estado de saída: `TEST_STRATEGY_READY`. A implementação permanece bloqueada até `dia 3` da SR-011.
+
+## Resultado GREEN do Dia 3 — SR-011
+
+- RED inicial reproduzido: 3 suítes falharam, 9 testes falharam, 11 passaram e type-check teve 5 erros planejados.
+- GREEN direcionado: 5 suítes e 34 testes passaram.
+- `Transaction.restore`, normalização, limites e proteção de datas satisfizeram os contratos do domínio.
+- mapper e repository satisfizeram payload mínimo, data civil, bigint seguro, owner, período, ordenação e sanitização.
+- pgTAP: 46 schema + 21 constraints + 17 RLS + 5 performance = 89 asserções verdes.
+- três cenários RLS falsamente negativos foram corrigidos após registro no contexto; os testes agora alcançam diretamente as policies negadas.
+- duas asserções de índices nasceram em RED após o advisor identificar FKs descobertas e passaram após migration incremental.
+- regressão completa: 55 suítes e 271 testes verdes.
+- type-check, lint, audit com 0 vulnerabilidades e build de produção verdes.
+- nenhuma cobertura foi relaxada, removida ou ignorada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 6 — SR-011
+
+- contratos do formulário passaram a exigir bloqueio de todos os controles durante o envio, foco no primeiro erro local e limpeza do feedback ao corrigir a entrada
+- RED direcionado: 2 testes falharam e 11 passaram
+- GREEN direcionado: 1 suíte e 13 testes passaram
+- regressão completa: 61 suítes e 292 testes passaram
+- browser complementou Jest em desktop, `390 x 844` e `320 x 800`, sem overflow e sem persistir fixtures
+- manifest, idioma, viewport e `theme-color` foram confirmados; nenhuma promessa offline foi adicionada
+- lint, type-check, audit e build permaneceram verdes
+- estado de saída: `QUALITY_VALIDATION`
+
+## Resultado GREEN do Dia 3 — UI-002
+
+- `PRIVATE_NAVIGATION_ITEMS` implementa somente `/dashboard`, `/transactions` e `/accounts`.
+- `getPrivateNavigationItemForPath` resolve `/` como alias e usa correspondência exata para os demais paths.
+- `DesktopPrivateNavigation` entrega sidebar expandida em desktop e rail compacto em tablet.
+- `MobilePrivateNavigation` entrega três destinos com estado ativo e espaço seguro no conteúdo.
+- `PrivateTopbar` preserva marca, título, e-mail, tema e logout.
+- `PrivateAppShell` integra as superfícies sem duplicar o landmark `main`.
+- Primeira passagem direcionada: 2 suítes e 14 testes verdes.
+- Regressão completa: 43 suítes e 208 testes verdes.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção verdes.
+- Nenhum teste foi removido, relaxado ou marcado como ignorado.
+- Nenhuma rota, dependência, integração Supabase ou capacidade futura foi antecipada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 4 — UI-002
+
+- Novos contratos cobriram skip link, alvo focalizável, topbar sticky, logout integrado e fallback de path desconhecido.
+- RED direcionado: 1 teste falhou pela ausência de “Pular para o conteúdo”; 16 testes permaneceram verdes.
+- GREEN direcionado: 2 suítes e 17 testes verdes.
+- O skip link aponta para `#conteudo-principal`, aparece ao foco e o alvo usa `tabIndex={-1}`.
+- A topbar permanece disponível durante rolagem sem alterar os estados reais do logout.
+- Logout local, redirect para `/login` e refresh do router foram validados na composition root.
+- Path desconhecido usa “Área financeira” e não expõe `aria-current` indevido.
+- Type-check detectou assinatura estreita no mock de `signOut`; o erro foi documentado e o harness alinhado ao contrato real.
+- Regressão completa: 43 suítes e 211 testes verdes.
+- Type-check, lint, audit e build verdes.
+- Nenhum teste foi relaxado e nenhum fluxo futuro foi antecipado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 5 — UI-002
+
+- Auditoria mediu os componentes e não identificou monólito; `PrivateNavigation.tsx` tinha 99 linhas antes do hardening.
+- O novo contrato exige que o item móvel ativo seja distinguido por fundo e peso, além de cor e `aria-current`.
+- RED direcionado: 1 teste falhou e 16 permaneceram verdes.
+- GREEN direcionado: 2 suítes e 17 testes passaram.
+- A rota ativa passou a ser resolvida uma única vez por variante de navegação, preservando alias e correspondência exata.
+- Regressão completa: 43 suítes e 211 testes passaram.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção passaram.
+- Nenhuma cobertura foi relaxada e nenhum destino ou fluxo futuro foi antecipado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 6 — UI-002
+
+- Contratos cobriram safe area da navegação inferior e preferência por movimento reduzido.
+- RED direcionado: 2 testes falharam e 17 permaneceram verdes.
+- GREEN direcionado: 3 suítes e 19 testes passaram, incluindo manifest PWA.
+- Conteúdo móvel reserva a altura original mais `env(safe-area-inset-bottom)` e deixa de ser coberto em dispositivos com recorte inferior.
+- Links desktop/tablet/mobile desabilitam transição quando `prefers-reduced-motion` está ativo.
+- Ordem de teclado validada: o skip link é o primeiro destino focalizável do shell.
+- Regressão completa: 43 suítes e 211 testes passaram.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção passaram.
+- Inspeção visual automatizada ficou indisponível por falha ambiental e foi registrada como limitação, sem relaxar contratos automatizados.
+
+Estado de saída: `QUALITY_VALIDATION`.
+
+## Validação final do Dia 7 — UI-002
+
+- Auditoria encontrou divergência entre o fluxo Git para `develop` e o CI limitado a `main`.
+- Novo contrato estático falhou em RED recebendo somente `main` e passou em GREEN após cobrir `main` e `develop` em push e pull request.
+- Suíte direcionada do CI: 1 suíte e 1 teste passaram.
+- Regressão completa: 44 suítes e 212 testes passaram.
+- Type-check, lint, audit com 0 vulnerabilidades e build de produção passaram.
+- Nenhum teste foi relaxado, ignorado ou removido.
+
+Estado de saída: `READY_FOR_RELEASE`.
+
+## Dia 2 — SR-010 Persistência e RLS de Categorias
+
+## Objetivo
+
+Transformar o domínio, os contratos, o schema planejado e o threat model da SR-010 em testes executáveis antes de criar qualquer implementação funcional ou migration.
+
+## Prioridade por Camada
+
+1. `domain`: validar criação, restauração, normalização e kinds de categoria.
+2. `application`: validar criação e listagem exclusivamente por contratos.
+3. `infrastructure`: validar mapper, repository, schema, constraints, grants e RLS.
+4. `presentation`: documentar cenários para o Dia 4 sem criar UI no Dia 2.
+
+## Matriz de Testes da SR-010
+
+| Camada | Alvo | Cenários | Status no Dia 2 |
+| --- | --- | --- | --- |
+| domain | `Category` | `income`/`expense`; normalização; entradas inválidas; restauração e invariantes | 9 cenários criados |
+| application | `CreateCategoryUseCase` | criação normalizada; entrada inválida; falha do repository | 3 cenários criados |
+| application | `ListCategoriesUseCase` | ator normalizado; lista vazia; ator ausente; falha do repository | 4 cenários criados |
+| infrastructure | mapper | row para domínio; payload mínimo de insert | 2 cenários criados |
+| infrastructure | `SupabaseCategoryRepository` | criar; filtrar/ordenar; sanitizar erros de create/list | 4 cenários criados |
+| database | schema/grants | colunas, constraints, índices, policies, privilégios e ausência de campos futuros | 33 asserções pgTAP |
+| database | constraints | kinds, nome normalizado, FK, unicidade e defaults | 12 asserções pgTAP |
+| database | RLS | owner, não owner, anon, Auth anônimo, owner forjado e operações proibidas | 17 asserções pgTAP |
+| database | performance | initPlan dos helpers Auth e índice de ownership | 3 asserções pgTAP |
+| presentation | `/categories` | loading, empty, success, error, formulário e ausência de `userId` livre | documentado; testes adiados ao Dia 4 |
+
+## Cenário Feliz
+
+Um usuário permanente autenticado cria uma categoria de despesa. O domínio normaliza nome e ator, o caso de uso persiste pelo contrato, o mapper envia apenas `user_id`, `name` e `kind`, e o banco permite que o proprietário liste a categoria.
+
+## Cenários Alternativos
+
+- categoria de receita em vez de despesa
+- lista vazia sem categorias inventadas
+- mesmo nome em kinds diferentes
+- mesmo nome e kind para usuários diferentes
+- falha do repository convertida em erro estável
+
+## Edge Cases Críticos
+
+- usuário ou nome vazio
+- nome acima de 80 caracteres
+- espaços externos ou repetidos
+- kind fora de `income | expense`
+- duplicidade case-insensitive por usuário e kind
+- usuário inexistente na FK de Auth
+- leitura e insert de outro proprietário
+- acesso por `anon` ou usuário anônimo do Supabase Auth
+- tentativa de `UPDATE` ou `DELETE` sem grant
+- policy sem initPlan ou coluna de ownership sem índice
+- `color` e `icon` surgindo prematuramente no schema
+
+## Testes Criados
+
+Jest:
+- `src/features/categories/tests/fixtures/category.fixtures.ts`
+- `src/features/categories/tests/category.entity.test.ts`
+- `src/features/categories/tests/create-category.use-case.test.ts`
+- `src/features/categories/tests/list-categories.use-case.test.ts`
+- `src/features/categories/tests/supabase-category.mapper.test.ts`
+- `src/features/categories/tests/supabase-category.repository.test.ts`
+
+pgTAP:
+- `supabase/tests/database/categories_schema.test.sql`
+- `supabase/tests/database/categories_constraints.test.sql`
+- `supabase/tests/database/categories_rls.test.sql`
+- `supabase/tests/database/categories_rls_performance.test.sql`
+
+## Resultado Observado do Dia 2 — SR-010
+
+- Baseline anterior: 44 suítes e 212 testes verdes; type-check e lint verdes; audit com 0 vulnerabilidades.
+- RED Jest direcionado: 5 suítes falharam por módulos de produção ausentes; nenhum teste funcional executou prematuramente.
+- RED do type-check: 11 erros `TS2307`, todos referentes aos módulos planejados ausentes.
+- Lint permaneceu verde com 0 warnings.
+- Rede anterior, excluindo somente `src/features/categories/tests`: 44 suítes e 212 testes verdes.
+- Planos pgTAP validados mecanicamente: 33 + 12 + 17 + 3 = 65 asserções.
+- RED remoto via MCP: contrato mínimo confirmou 1 falha de 1 porque `public.categories` ainda não existe.
+- Rollback remoto confirmado: somente `financial_accounts`, duas migrations e extensão `pgtap` não instalada.
+- Nenhuma implementation, migration, tabela, grant, policy, dado ou configuração foi criada.
+- Build não foi executado porque o type-check deve permanecer vermelho por design.
+
+## Implementação Bloqueada até o Dia 3
+
+- entidade e contrato de categorias
+- casos de uso de criação e listagem
+- mapper e repository Supabase
+- migration `public.categories`
+- qualquer rota, action ou componente de apresentação
+
+Estado de saída: `TEST_STRATEGY_READY`.

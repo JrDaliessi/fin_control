@@ -154,7 +154,7 @@ Próximo passo:
 
 Ordem: SR-007 conta local, SR-008 autenticacao, SR-009 contas com RLS, SR-010 categorias com RLS e SR-011 transacoes com RLS.
 
-Estado atual: Dia 7 da SR-009 concluído em `READY_FOR_RELEASE`; entrega incremental de código pronta, sem deploy executado.
+Estado atual: Dia 7 da SR-011 concluído em `READY_FOR_RELEASE`; a fundação de dados reais de contas, categorias e transações está validada para entrega incremental de código.
 
 Evidência da SR-007: pipeline final verde com 21 suítes e 110 testes, cadastro local acessível e nenhuma persistência real antecipada.
 
@@ -164,13 +164,29 @@ Recorte da SR-008: login por e-mail/senha, logout, identidade validada no servid
 
 Evidência da SR-009: migrations `20260714053335_create_financial_accounts` e `20260714061527_optimize_financial_accounts_rls_auth_initplan`, 70 testes pgTAP verdes, Performance Advisor limpo, 36 suítes/170 testes Jest, audit sem vulnerabilidades e build verde; no Dia 7, os testes SQL transacionais preservaram as duas contas reais existentes, grants/RLS foram confirmados e o threat model e a baseline de observabilidade foram registrados.
 
-Próximo passo: selecionar explicitamente a próxima small release. A SR-010 permanece em `DISCOVERY`; edição, exclusão, categorias, transações e idempotência não foram antecipadas. Deploy público da SR-009 permanece condicionado ao hardening de Auth, observabilidade e borda HTTP registrado no backlog.
+Recorte da SR-010: criar e listar categorias próprias com nome normalizado e `kind` `income | expense`; rota `/categories` como subfluxo de transações, grants mínimos `SELECT/INSERT`, RLS por proprietário e futura integridade composta com transações. Edição, exclusão, personalização visual, seeds e transações persistidas permanecem fora.
+
+Evidência da SR-010: migration `20260717022313_create_categories`, 65 testes pgTAP verdes, Performance Advisor limpo, 53 suítes/255 testes Jest, audit sem vulnerabilidades e build verde; no Dia 7, grants/RLS, threat model e baseline de observabilidade foram confirmados sem persistir fixtures.
+
+Recorte da SR-011: criar e consultar por mês transações manuais próprias, com data civil, FKs compostas para conta/categoria, compatibilidade `type/kind`, grants mínimos `SELECT/INSERT` e RLS por proprietário. Edição, exclusão, status, transferência, cartão, recorrência, importação e dashboard persistente permanecem fora.
+
+Evidência do Dia 3 da SR-011: migrations `20260717070131_create_transactions` e `20260717070559_add_transaction_fk_indexes`, 89 asserções pgTAP verdes, 55 suítes/271 testes Jest, type-check/lint/audit/build verdes e nenhuma fixture persistida. O Security Advisor manteve somente `SEC-AUTH-001`; os únicos avisos de performance são índices recém-criados ainda sem uso porque a tabela está vazia.
+
+Evidência do Dia 4 da SR-011: DTO sem ownership, Server Actions com claims revalidadas, criação e leitura mensal persistentes, estados loading/error/empty/configuração ausente, 61 suítes/289 testes Jest e lint/type-check/audit/build verdes. A rota autenticada foi inspecionada sem erros de console e sem persistir fixtures.
+
+Evidência do Dia 5 da SR-011: `TX-PERF-001` encerrada com uma única leitura mensal, resumo puro reutilizável e mapeadores de IDs persistidos; 61 suítes/292 testes Jest e lint/type-check/audit/build verdes, sem alteração remota.
+
+Evidência do Dia 6 da SR-011: formulário bloqueia todos os campos durante o envio, move foco para erro local e limpa feedback obsoleto; desktop, `390 x 844` e `320 x 800` foram validados sem overflow, manifesto honesto preservado e 61 suítes/292 testes permaneceram verdes.
+
+Evidência do Dia 7 da SR-011: divergência de Anonymous Sign-In no Proxy corrigida em TDD; 61 suítes/294 testes, lint, type-check, audit e build verdes; 89 asserções pgTAP com rollback, migrations alinhadas, Performance Advisor limpo e threat model/observabilidade documentados.
+
+Próximo passo concluído em 2026-08-25: Dia 1 da `SR-012 — Períodos financeiros` concluiu discovery, domínio e arquitetura. Deploy público continua condicionado a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
 
 Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` concluída em 2026-07-15 no estado `READY_FOR_RELEASE`; `UI-002` a `UI-006` permanecem em `DISCOVERY`. O pipeline final, a revisão de segurança e a baseline de observabilidade foram concluídos sem antecipar o shell ou as telas seguintes.
+Status: `UI-001` e `UI-002` concluídas; Dia 3 da `UI-003` concluído em 2026-08-27 no estado `IMPLEMENTATION_IN_PROGRESS`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard Pulse mínimo usa fonte real, composição server-side e resumo responsivo.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -193,7 +209,16 @@ Saída arquitetural da UI-001:
 - primitives limitadas a `Button`, `Card`, `FeedbackMessage` e `ThemeSwitcher`;
 - shell, dashboard, drawers, gráficos, regras financeiras e Supabase permanecem fora do item.
 
-Próximo passo da trilha: selecionar explicitamente a próxima small release. `UI-002` é a sucessora visual recomendada, enquanto `SR-010` continua sendo a próxima fundação de dados; nenhuma delas foi iniciada automaticamente.
+Saída arquitetural da UI-002 no Dia 1:
+
+- rotas navegáveis limitadas a `/dashboard`, `/transactions` e `/accounts`;
+- `/` permanece alias do dashboard e compartilha o estado ativo de Visão geral;
+- sidebar expandida em desktop, rail compacto em tablet e navegação inferior com três destinos em mobile;
+- `PrivateAppShell` permanece composition root visual e conserva autenticação, tema e logout já validados;
+- componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
+- busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
+
+Próximo passo da trilha: executar o Dia 4 da `UI-003` para expansão controlada dos estados e da experiência; gráficos continuam fora até `SP-001` e SR-014.
 
 Integrações posteriores:
 
@@ -213,6 +238,8 @@ Governança:
 ## Marco 9 - Periodos e Evolucao
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
+
+Estado atual: SR-013 concluída e Dia 3 da UI-003 concluído em `IMPLEMENTATION_IN_PROGRESS`. O dashboard já consome apenas o snapshot real da evolução e mantém `SP-001`/SR-014 como incrementos posteriores para gráficos.
 
 ## Marco 10 - Candles Financeiros
 

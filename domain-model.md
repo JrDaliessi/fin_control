@@ -96,8 +96,34 @@ Entidades:
 - `Category`
 
 Regras:
-- categoria pode ser de receita, despesa ou ambas conforme decisão futura
+- toda categoria pertence a um usuário autenticado
+- `kind` aceita somente `income` ou `expense`; categoria híbrida fica fora para evitar ambiguidade na seleção e nos relatórios
+- nome é obrigatório, normalizado com espaços internos simples e limitado a 80 caracteres
+- nomes duplicados para o mesmo usuário e `kind` são rejeitados sem diferenciar maiúsculas e minúsculas
+- o mesmo nome pode existir em `income` e `expense`
 - categoria sugerida por IA deve ser revisável pelo usuário
+
+### SR-010 — Persistência e RLS de Categorias
+
+Escopo aprovado:
+- criar categoria do usuário autenticado
+- listar somente categorias pertencentes ao usuário autenticado
+- reidratar `Category` com `id`, `createdAt` e `updatedAt` atribuídos pela infraestrutura
+- ordenar categorias por `kind`, nome normalizado e ID
+- disponibilizar `/categories` como subfluxo privado de transações sem ampliar a navegação principal
+
+Regras adicionais:
+- o `userId` enviado pelo cliente não é autoridade; a composition root injeta a identidade verificada e a RLS aplica ownership no banco
+- usuários anônimos do Supabase Auth não podem acessar categorias
+- a persistência deve impedir duplicidade de nome por usuário e `kind`
+- a futura SR-011 deve validar que transação e categoria compartilham o mesmo `user_id` por FK composta, além da RLS
+- erro bruto do Supabase não pode chegar à apresentação
+
+Fora da SR-010:
+- editar, excluir, arquivar ou reordenar manualmente categorias
+- cor, ícone, categoria global, seed automático e sugestões por IA
+- persistência de transações, filtros analíticos e orçamento por categoria
+- integração completa da categoria com transações persistidas, reservada à SR-011
 
 ### Transações
 Núcleo inicial do MVP.
@@ -126,6 +152,104 @@ Regras:
 - data da transação é obrigatória
 - transação deve referenciar conta e categoria válidas
 - transferência, cartão e recorrência ficam fora da primeira small release
+
+### SR-011 — Persistência e RLS de Transações
+
+Escopo aprovado:
+- criar transação manual efetiva do usuário autenticado
+- consultar transações próprias por mês
+- reidratar `Transaction` com `id`, `createdAt` e `updatedAt` do banco
+- usar conta e categoria persistidas pertencentes ao mesmo usuário
+- exigir que `Transaction.type` corresponda a `Category.kind`
+
+Regras adicionais:
+- a data informada é uma data civil e será persistida como `date`; o mapper a converte para meia-noite UTC no domínio
+- descrição é aparada e limitada a 160 caracteres
+- notas são opcionais; quando presentes, são aparadas e limitadas a 1000 caracteres
+- valores permanecem positivos em centavos; o tipo determina receita ou despesa
+- `paymentMethod` permanece limitado a `manual`, `pix`, `cash` ou `debit`
+- não existe status persistido nesta SR; toda transação manual criada é efetiva
+- o `userId` da apresentação não é autoridade; a composition root injeta a identidade verificada e a RLS reforça ownership
+- erros de integridade ou Supabase não podem expor detalhes brutos à apresentação
+
+Fora da SR-011:
+- editar, excluir, cancelar ou conciliar transações
+- transferências, cartão, parcelas, recorrências e importação
+- saldo atual persistido ou trigger de saldo
+- integração persistente do dashboard e analytics avançados
+
+### Analytics Financeiros — SR-012 Períodos Financeiros
+
+Conceitos:
+- `CivilDate`: data gregoriana real, canônica e sem horário no formato `YYYY-MM-DD`
+- `FinancialPeriodKind`: `week | rolling_7_days | fortnight | rolling_15_days | month`
+- `FinancialPeriod`: intervalo imutável com `kind`, `referenceOn`, `startOnInclusive` e `endOnExclusive`
+
+Regras:
+- intervalos usam `[startOnInclusive, endOnExclusive)`
+- `referenceOn` deve pertencer ao intervalo
+- semana civil começa na segunda-feira e termina antes da segunda-feira seguinte
+- últimos 7 dias incluem a referência e os seis dias civis anteriores
+- primeira quinzena contém dias 1 a 15; segunda quinzena contém dia 16 ao fim do mês
+- últimos 15 dias incluem a referência e os quatorze dias civis anteriores
+- mês começa no dia 1 e termina antes do primeiro dia do mês seguinte
+- datas inexistentes são inválidas
+- adição e subtração operam por dia civil, sem duração em milissegundos
+- viradas de mês, ano e ano bissexto preservam as invariantes
+- o domínio não lê relógio ou timezone do ambiente
+- uma data financeira persistida como `date` não sofre conversão de fuso
+
+Casos de uso e operações planejados:
+- `resolve-financial-period.use-case.ts`: valida entrada serializável e devolve limites civis
+- `resolveFinancialPeriod`: serviço puro que resolve os cinco tipos
+- `containsCivilDate`: predicado puro de pertencimento ao intervalo
+
+Fora da SR-012:
+- período `custom`
+- período atual derivado automaticamente de relógio/timezone
+- comparação, agregação, consulta persistente, apresentação ou gráfico
+- status, estorno, transferência e saldo consolidado
+- extração prematura de `CivilDate` para `shared`
+
+## Evolução Financeira — SR-013
+
+### Movimento analítico
+
+Uma projeção analítica contém somente `id`, `occurredOn`, `createdAt`, `type` e `amountInCents`. Ela não é a entidade `Transaction`.
+
+Regras:
+- `occurredOn` é uma data civil canônica
+- `createdAt` existe somente para desempate estável na infraestrutura
+- `type` aceita `income` ou `expense`
+- o valor é positivo e inteiro seguro em centavos
+- o movimento deve pertencer ao intervalo agregado
+
+### Ponto diário
+
+Cada ponto representa um dia civil do período e contém:
+- `startOnInclusive`
+- `endOnExclusive`
+- `incomeInCents`
+- `expenseInCents`
+- `netInCents`
+- `closingBalanceInCents`
+- `transactionCount`
+
+Invariantes:
+- todos os dias do período aparecem em ordem crescente
+- não existem lacunas ou sobreposição
+- `net = income - expense`
+- o fechamento do primeiro ponto parte do saldo de abertura
+- os demais partem do fechamento anterior
+- dia sem movimentos carrega o saldo anterior
+- totais e saldos fora do intervalo seguro são rejeitados
+
+### Semântica atual do saldo
+
+- saldo inicial é a linha de base configurada antes dos movimentos do livro financeiro
+- saldo de abertura do período soma essa linha de base e todos os movimentos anteriores ao início
+- o modelo atual não atribui data efetiva ao saldo inicial
+- todos os registros persistidos são efetivos; status, estorno, transferência e agendamento entram somente quando forem modelados explicitamente
 
 ### Cartões de Crédito
 Representa compromissos futuros, faturas e limite.
@@ -202,3 +326,26 @@ Cenários críticos:
 - importação
 - IA
 - Open Finance
+
+## Dashboard Pulse — UI-003
+
+A UI-003 não cria entidade, value object, regra financeira ou caso de uso de domínio.
+
+Ela apenas apresenta contratos já aprovados da SR-013:
+- saldo de abertura do período
+- receitas realizadas
+- despesas realizadas
+- resultado líquido
+- saldo ao fim do período
+- quantidade de movimentos
+- buckets diários contínuos
+
+Semântica proibida neste recorte:
+- “disponível de verdade”
+- valor livre para gastar
+- compromissos futuros
+- previsão de fim do mês
+- tendência ou comparação sem período equivalente
+- lista detalhada recente sem projeção alinhada ao período
+
+Qualquer uma dessas capacidades exige retorno ao domínio/application e nova estratégia TDD antes de aparecer na interface.

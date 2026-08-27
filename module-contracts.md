@@ -32,7 +32,7 @@ Contrato previsto:
 
 ```ts
 export interface TransactionRepository {
-  create(input: CreateTransactionRepositoryInput): Promise<Transaction>;
+  create(input: Transaction): Promise<Transaction>;
   findByMonth(input: FindTransactionsByMonthInput): Promise<Transaction[]>;
 }
 ```
@@ -75,13 +75,39 @@ Resolução de competência da sessão:
 - sessão vazia usa uma data de fallback
 - hooks de dashboard e transações reutilizam o mesmo contrato
 
+### Contrato Persistente da SR-011
+
+Domínio:
+- `Transaction.create()` valida novas transações manuais
+- `Transaction.restore()` reidrata ID, data civil e timestamps persistidos reaplicando invariantes
+- `TransactionRepository.findByMonth` deixa de ser opcional porque passa a ter consumidor persistente real
+
+Infrastructure planejada:
+- `SupabaseTransactionRepository` implementa `create` e `findByMonth`
+- mapper converte `snake_case`, `date`, `bigint` seguro e timestamps para o domínio
+- criação envia somente as colunas aprovadas; ID e timestamps são responsabilidade do banco
+- consulta filtra explicitamente por `user_id` e intervalo mensal semiaberto, com ordem determinística
+- erros de FK, RLS ou provider são sanitizados antes de cruzar a fronteira
+
+Composition root planejada:
+- Server Component de `/transactions` revalida claims e carrega contas, categorias e transações do período
+- Server Action revalida claims, injeta `userId` e chama `CreateTransactionUseCase`
+- apresentação recebe DTOs serializáveis e callbacks; não instancia client Supabase
+
+Banco planejado:
+- `SELECT` e `INSERT` são as únicas operações concedidas a `authenticated`
+- RLS habilitada e forçada, com owner e bloqueio de Auth anônimo
+- FKs compostas impedem conta/categoria cross-tenant e categoria incompatível com o tipo
+- `UPDATE` e `DELETE` permanecem sem grants, policies ou casos de uso
+- migration e testes pgTAP só podem nascer após o RED do Dia 2
+
 ### Infrastructure
-Implementações futuras:
+Implementações planejadas para os Dias 2 e 3:
 - `supabase-transaction.repository.ts`
-- `in-memory-transaction.repository.ts` apenas para testes quando fizer sentido
+- `transaction.mapper.ts`
 
 ### Presentation
-Componentes futuros:
+Componentes existentes ou planejados:
 - `TransactionForm.tsx`
 - `TransactionList.tsx`
 - `MonthlySummaryPanel.tsx`
@@ -226,18 +252,73 @@ Fora da SR-009:
 
 ## Categories
 
-Contrato previsto:
+### Domain
+
+Tipos aprovados para a SR-010:
 
 ```ts
+export type CategoryKind = "income" | "expense";
+
+export type CreateCategoryInput = {
+  userId: string;
+  name: string;
+  kind: CategoryKind;
+};
+
+export type CategoryProps = CreateCategoryInput & {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+```
+
+Invariantes:
+- `userId` obrigatório e normalizado
+- nome obrigatório, espaços normalizados e limite de 80 caracteres
+- `kind` limitado a `income` ou `expense`
+- unicidade case-insensitive por usuário e `kind` reforçada pelo banco
+
+### Application e Repository
+
+Contratos aprovados:
+
+```ts
+export type ListCategoriesByUserInput = {
+  userId: string;
+};
+
 export interface CategoryRepository {
-  findById(input: FindCategoryByIdInput): Promise<Category | null>;
-  listByUser(input: ListCategoriesInput): Promise<Category[]>;
+  create(input: Category): Promise<Category>;
+  listByUser(
+    input: ListCategoriesByUserInput
+  ): Promise<readonly Category[]>;
 }
 ```
 
-Uso inicial:
-- validar categoria de transação
-- alimentar formulário de transação no futuro
+Casos de uso planejados:
+- `CreateCategoryUseCase`: cria a entidade válida e persiste uma única vez
+- `ListCategoriesUseCase`: valida o ator e lista categorias próprias em ordem determinística
+
+Decisões:
+- `findById`, `update` e `delete` não entram sem consumidor real
+- o ator vem da sessão verificada na composition root, não de campo livre da UI
+- duplicidade do banco vira erro estável de aplicação sem expor detalhes do Supabase
+
+### Infrastructure e Composition Root
+
+- `SupabaseCategoryRepository` implementa criação e listagem
+- mapper converte `snake_case` e timestamps para o domínio
+- consulta filtra explicitamente por `user_id` para desempenho sem substituir RLS
+- Server Component de `/categories` lista dados após revalidar claims
+- Server Action cria categoria após revalidar claims e injeta `userId`
+- presentation recebe DTOs serializáveis e callbacks; não instancia client Supabase
+
+### Presentation planejada para o Dia 4
+
+- rota privada `/categories` com formulário pequeno, lista e estados de loading, empty, success e error
+- acesso como subfluxo de `/transactions`, sem novo item na navegação principal
+- categorias persistidas podem substituir opções demonstrativas do formulário local, mas transações continuam efêmeras até a SR-011
+- cor, ícone, edição, exclusão, seeds e IA permanecem fora
 
 ## Dashboard
 
@@ -313,6 +394,152 @@ Regras:
 ### Infrastructure
 
 Nenhuma infraestrutura nova nesta SR. Sem repositórios, sem clients, sem Supabase.
+
+## Financial Analytics — SR-012
+
+### Domain
+
+```ts
+export type FinancialPeriodKind =
+  | "week"
+  | "rolling_7_days"
+  | "fortnight"
+  | "rolling_15_days"
+  | "month";
+
+export type FinancialPeriod = {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+};
+```
+
+`CivilDate` valida e encapsula strings `YYYY-MM-DD`. O domínio expõe:
+
+```ts
+export function resolveFinancialPeriod(input: {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+}): FinancialPeriod;
+
+export function containsCivilDate(
+  period: FinancialPeriod,
+  candidateOn: string,
+): boolean;
+```
+
+Regras:
+- limites são civis e semiabertos
+- nenhuma função lê `new Date()`, timezone ou locale do ambiente
+- `Date`, React, Next.js, Supabase e `Transaction` não são dependências do domínio
+- `custom` não pertence à união da SR-012
+
+### Application
+
+```ts
+export type ResolveFinancialPeriodInput = {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+};
+
+export type FinancialPeriodDto = {
+  kind: FinancialPeriodKind;
+  referenceOn: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+};
+
+export interface ResolveFinancialPeriodUseCase {
+  execute(input: ResolveFinancialPeriodInput): FinancialPeriodDto;
+}
+```
+
+O DTO usa somente strings serializáveis. A conversão futura de um instante para `referenceOn` deverá receber timezone IANA e relógio explicitamente; ela não integra a SR-012.
+
+### Infrastructure e Presentation
+
+- nenhuma implementação nesta release
+- o port de consulta por intervalo nasce somente na SR-013, quando houver consumidor
+- nenhuma rota, seletor, migration, policy, grant ou dependência adicional é autorizada
+
+## Financial Analytics — SR-013
+
+### Domain
+
+```ts
+export type FinancialMovementProjection = Readonly<{
+  id: string;
+  occurredOn: string;
+  createdAt: string;
+  type: "income" | "expense";
+  amountInCents: number;
+}>;
+
+export type FinancialEvolutionPoint = Readonly<{
+  startOnInclusive: string;
+  endOnExclusive: string;
+  incomeInCents: number;
+  expenseInCents: number;
+  netInCents: number;
+  closingBalanceInCents: number;
+  transactionCount: number;
+}>;
+
+export function aggregateFinancialEvolution(input: {
+  period: FinancialPeriod;
+  openingBalanceInCents: number;
+  movements: readonly FinancialMovementProjection[];
+}): readonly FinancialEvolutionPoint[];
+```
+
+### Application
+
+```ts
+export type LoadFinancialEvolutionSnapshotInput = {
+  userId: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+};
+
+export type FinancialEvolutionSnapshot = Readonly<{
+  accountCount: number;
+  openingBalanceInCents: number;
+  movements: readonly FinancialMovementProjection[];
+}>;
+
+export interface FinancialAnalyticsQueryRepository {
+  loadEvolutionSnapshot(
+    input: LoadFinancialEvolutionSnapshotInput,
+  ): Promise<FinancialEvolutionSnapshot>;
+}
+```
+
+`ListFinancialEvolutionUseCase` recebe ator, kind, `referenceInstant` ISO e `timeZone`, deriva `referenceOn`, resolve o período, consulta o snapshot e devolve DTO plano com status `missing_accounts | empty | success`, resumo e pontos diários.
+
+O estado `missing_accounts` não fabrica pontos diários. O estado `empty` preserva todos os buckets e o saldo de abertura quando existem contas, mas nenhum movimento no intervalo.
+
+A borda de período atual recebe `referenceInstant` e `timeZone` explicitamente. A composition root usa temporariamente `America/Sao_Paulo`; nenhuma instância de `Date` atravessa a fronteira RSC.
+
+### Infrastructure
+
+- repository próprio em `financial-analytics/infrastructure`
+- RPC `load_financial_evolution_snapshot(p_start_on date, p_end_on date)` com limites civis, `SECURITY INVOKER` e `search_path` fixo
+- identidade derivada da sessão/RLS, nunca de parâmetro livre da RPC
+- projeção ordenada por `occurred_on`, `created_at` e `id`
+- intervalo máximo de 31 dias; limites nulos ou invertidos são rejeitados no banco
+- retorno contém `account_count`, `opening_balance_in_cents` e colunas nullable do movimento; intervalo vazio preserva uma linha de snapshot
+- consultas incluem filtro explícito por `(select auth.uid())` para selecionar os índices compostos, sem substituir RLS
+- plano será validado com `EXPLAIN (ANALYZE, BUFFERS)` dentro de teste transacional antes da aceitação
+- nenhuma extensão de `TransactionRepository.findByMonth`
+- nenhuma tabela, view, coluna, policy ou índice novo
+
+### Presentation
+
+- `FinancialPeriodSelector` escolhe somente os cinco kinds existentes
+- `FinancialEvolutionTable` renderiza dados reais com caption e cabeçalhos semânticos
+- tabela não calcula período, saldo ou agregação
+- gráficos, comparação, `custom`, calendário histórico e redesign completo do dashboard permanecem fora
 
 ## Sistema Visual — UI-001
 
@@ -396,3 +623,46 @@ export interface OpenFinanceProviderGateway {
 Status:
 - bloqueado para ciclo futuro
 - exige ADR, revisão de segurança e escolha entre Pluggy, Belvo ou alternativa formal
+
+## Dashboard Pulse — UI-003
+
+### App Router / composição
+
+```ts
+export type DashboardRouteProps = Readonly<{
+  searchParams: Promise<Readonly<{
+    period?: string | readonly string[];
+  }>>;
+}>;
+```
+
+- `/` e `/dashboard` delegam a `composeDashboardRoute`.
+- a composição normaliza o kind, carrega a evolução no servidor e monta o painel como slot React.
+- nenhuma identidade, `Date`, classe, função arbitrária ou client provider cruza a fronteira RSC.
+
+### Presentation do dashboard
+
+```ts
+export type DashboardPageProps = Readonly<{
+  children?: React.ReactNode;
+}>;
+```
+
+- `DashboardPage` não conhece o tipo do DTO financeiro e não calcula resumo.
+- o cabeçalho usa “Visão geral” e texto neutro; nome de perfil só poderá entrar quando existir dado consentido próprio.
+- ações estáticas apontam somente para Contas e Transações.
+
+### Presentation de financial-analytics
+
+```ts
+export type FinancialEvolutionPanelProps = Readonly<{
+  result: FinancialEvolutionDto;
+  selectedPeriodKind: FinancialPeriodKind;
+}>;
+```
+
+- `missing_accounts` exibe onboarding para Contas.
+- `empty` preserva saldos e buckets, explicando ausência de movimentos.
+- `success` mostra saldo ao fim do período, receitas, despesas, líquido, contagem e tabela.
+- saldo inicial permanece contexto do cálculo, sem ser rotulado como disponível.
+- comparação, previsão, lista detalhada recente e gráficos não fazem parte deste contrato.

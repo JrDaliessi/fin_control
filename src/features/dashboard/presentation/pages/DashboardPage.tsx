@@ -1,37 +1,26 @@
-"use client";
-
 import Link from "next/link";
 import { Plus, WalletCards } from "lucide-react";
-import { useAuthSession } from "@/features/auth/presentation/providers/AuthSessionProvider";
-import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
-import { useTransactionSession } from "../../../transactions/presentation/providers/TransactionSessionProvider";
-import { DashboardSummaryPanel } from "../components/DashboardSummaryPanel";
-import { DashboardEmptyState } from "../components/DashboardEmptyState";
-import { RecentTransactionsList } from "../components/RecentTransactionsList";
-import { useDashboardSummary } from "../hooks/useDashboardSummary";
+import type { ReactNode } from "react";
 
-export function DashboardPage() {
-  const { user } = useAuthSession();
-  const { transactions } = useTransactionSession();
-  const dashboardState = useDashboardSummary({
-    transactions,
-    userId: user.id
-  });
-  const hasTransactions = Boolean(
-    dashboardState.summary?.recentTransactions.length
-  );
+type DashboardPageProps = Readonly<{
+  children?: ReactNode;
+}>;
 
+export function DashboardPage({ children }: DashboardPageProps = {}) {
   return (
     <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
-      <div className="mx-auto w-full max-w-6xl">
-        <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-12 gap-6">
+        <header className="col-span-12 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
           <div>
             <p className="text-xs font-semibold uppercase text-primary sm:text-sm">
               FinControl
             </p>
             <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
-              Dashboard
+              Visão geral
             </h1>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+              Aqui está o que aconteceu com seu dinheiro no período selecionado.
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -43,44 +32,17 @@ export function DashboardPage() {
               Contas
             </Link>
 
-            {dashboardState.status === "success" && hasTransactions ? (
-              <Link
-                className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
-                href="/transactions"
-              >
-                <Plus aria-hidden="true" size={18} />
-                Nova transação
-              </Link>
-            ) : null}
+            <Link
+              className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              href="/transactions"
+            >
+              <Plus aria-hidden="true" size={18} />
+              Transações
+            </Link>
           </div>
         </header>
 
-        {dashboardState.status === "loading" ? (
-          <p className="text-sm text-muted-foreground" role="status">
-            Carregando dashboard.
-          </p>
-        ) : null}
-
-        {dashboardState.status === "error" ? (
-          <FeedbackMessage className="border border-danger p-4" variant="error">
-            {dashboardState.errorMessage}
-          </FeedbackMessage>
-        ) : null}
-
-        {dashboardState.status === "success" && !hasTransactions ? (
-          <DashboardEmptyState />
-        ) : null}
-
-        {dashboardState.status === "success" && dashboardState.summary && hasTransactions ? (
-          <div className="grid gap-6">
-            <DashboardSummaryPanel
-              summary={dashboardState.summary.monthlySummary}
-            />
-            <RecentTransactionsList
-              transactions={dashboardState.summary.recentTransactions}
-            />
-          </div>
-        ) : null}
+        <div className="col-span-12 min-w-0">{children}</div>
       </div>
     </main>
   );
