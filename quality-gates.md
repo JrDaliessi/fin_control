@@ -1125,6 +1125,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma implementação funcional, dependência, Supabase, migration, persistência, commit, push, PR ou deploy foi executado.
 - estado de saída: `TEST_STRATEGY_READY`.
 
+## Gate do Dia 3 — UI-003
+
+- declaração operacional aprovada antes da implementação.
+- GREEN direcionado: 4 suítes e 17 testes passaram.
+- regressão identificou e corrigiu um contrato transversal obsoleto do design system, sem reintroduzir dependência artificial no dashboard.
+- GREEN ampliado: 5 suítes e 26 testes passaram.
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint local: verde, 0 warnings; type-check: verde.
+- build Next `16.3.3`: verde; `/`, `/dashboard` e `ƒ Proxy (Middleware)` preservados.
+- `DashboardPage` é server-compatible, recebe apenas `ReactNode` e não usa hooks, Auth, sessão de transações, analytics ou infraestrutura.
+- `FinancialEvolutionPanel` mantém DTO plano, seletor GET, três estados e tabela acessível; nenhuma regra financeira foi movida para a UI.
+- revisão pelas skills Next.js e React não encontrou prop não serializável, async Client Component, fetch cliente, effect ou estado derivado duplicado.
+- nenhuma dependência, Supabase, migration, persistência, gráfico, commit, push, PR, merge ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Correção crítica antes do Dia 5 — BUG-001
 
 - `npm run test:ci -- src/features/auth/tests/supabase-proxy.test.ts`: passou, 1 suíte e 6 testes.

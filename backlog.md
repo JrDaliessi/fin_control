@@ -14,10 +14,10 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também de SP-001 e da série temporal visual da SR-014.
 - Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
-- Fase atual: Dia 2 concluído; contratos de arquitetura, apresentação, composição e estados comprovados em RED válido.
+- Fase atual: Dia 3 concluído; fonte real, hierarquia e resumo responsivo implementados com pipeline local verde.
 - Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
 - Small releases: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
-- Próximo passo: executar `dia 3` para implementar o mínimo que satisfaça os 11 testes RED sem expandir o escopo.
+- Próximo passo: executar `dia 4` para expandir estados e experiência de forma controlada sem alterar cálculos ou arquitetura.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

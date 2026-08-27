@@ -863,3 +863,22 @@ Interpretação:
 - nenhuma implementação funcional, migration, integração Supabase ou dependência foi criada.
 - estado final: `TEST_STRATEGY_READY`.
 - próximo comando válido: `dia 3`.
+
+## Dia 3 — UI-003
+
+### GREEN e regressão
+
+- GREEN direcionado: 4 suítes e 17 testes passaram.
+- regressão inicial: 71 suítes e 387 testes passaram; 1 contrato transversal falhou por ainda exigir `FeedbackMessage` no `DashboardPage` server-compatible.
+- o contrato de design system foi realinhado para o `FinancialEvolutionPanel`, sem importar primitive não utilizada.
+- GREEN ampliado: 5 suítes e 26 testes passaram.
+- regressão final: 72 suítes e 388 testes passaram.
+
+### Gates
+
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- nenhuma alteração de Supabase, migration, dependência ou regra financeira foi realizada.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 4`.

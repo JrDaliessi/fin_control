@@ -21,11 +21,36 @@ export function FinancialEvolutionPanel({
   selectedPeriodKind
 }: FinancialEvolutionPanelProps) {
   const summaryItems = [
-    ["Saldo inicial", formatCents(result.summary.openingBalanceInCents)],
-    ["Receitas", formatCents(result.summary.incomeInCents)],
-    ["Despesas", formatCents(result.summary.expenseInCents)],
-    ["Líquido", formatCents(result.summary.netInCents)],
-    ["Saldo final", formatCents(result.summary.closingBalanceInCents)]
+    {
+      label: "Saldo ao fim do período",
+      value: formatCents(result.summary.closingBalanceInCents),
+      className: "col-span-12 p-5 sm:p-6 lg:col-span-6",
+      valueClassName: "text-2xl sm:text-3xl"
+    },
+    {
+      label: "Receitas",
+      value: formatCents(result.summary.incomeInCents),
+      className: "col-span-12 p-4 sm:col-span-6 lg:col-span-3",
+      valueClassName: "text-lg"
+    },
+    {
+      label: "Despesas",
+      value: formatCents(result.summary.expenseInCents),
+      className: "col-span-12 p-4 sm:col-span-6 lg:col-span-3",
+      valueClassName: "text-lg"
+    },
+    {
+      label: "Líquido",
+      value: formatCents(result.summary.netInCents),
+      className: "col-span-12 p-4 sm:col-span-6 lg:col-span-6",
+      valueClassName: "text-lg"
+    },
+    {
+      label: "Saldo inicial",
+      value: formatCents(result.summary.openingBalanceInCents),
+      className: "col-span-12 p-4 sm:col-span-6 lg:col-span-6",
+      valueClassName: "text-lg"
+    }
   ] as const;
 
   return (
@@ -36,7 +61,7 @@ export function FinancialEvolutionPanel({
             className="text-xl font-semibold text-foreground sm:text-2xl"
             id="financial-evolution-title"
           >
-            Evolução financeira
+            Como seu dinheiro evoluiu
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Acompanhe entradas, saídas e saldo consolidado por dia.
@@ -61,22 +86,24 @@ export function FinancialEvolutionPanel({
         <div className="grid gap-4">
           {result.status === "empty" ? (
             <FeedbackMessage variant="status">
-              Nenhuma movimentação neste período. Os saldos diários continuam visíveis.
+              Nenhuma movimentação neste período. Seus saldos continuam visíveis.
             </FeedbackMessage>
           ) : null}
 
-          <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            {summaryItems.map(([label, value]) => (
+          <dl className="grid grid-cols-12 gap-3">
+            {summaryItems.map(({ className, label, value, valueClassName }) => (
               <Card
                 aria-label={`${label}: ${value}`}
-                className="p-4"
+                className={className}
                 key={label}
                 role="group"
               >
                 <dt className="text-xs font-semibold uppercase text-muted-foreground">
                   {label}
                 </dt>
-                <dd className="mt-2 text-lg font-semibold tabular-nums text-foreground">
+                <dd
+                  className={`mt-2 font-semibold tabular-nums text-foreground ${valueClassName}`}
+                >
                   {value}
                 </dd>
               </Card>

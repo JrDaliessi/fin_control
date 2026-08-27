@@ -186,7 +186,7 @@ Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` e `UI-002` concluídas; Dia 2 da `UI-003` concluído em 2026-08-27 no estado `TEST_STRATEGY_READY`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard possui contratos RED para fonte real/hierarquia, resumo responsivo e fronteira server/client.
+Status: `UI-001` e `UI-002` concluídas; Dia 3 da `UI-003` concluído em 2026-08-27 no estado `IMPLEMENTATION_IN_PROGRESS`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard Pulse mínimo usa fonte real, composição server-side e resumo responsivo.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: executar o Dia 3 da `UI-003` para satisfazer os contratos RED com a implementação mínima; gráficos continuam fora até `SP-001` e SR-014.
+Próximo passo da trilha: executar o Dia 4 da `UI-003` para expansão controlada dos estados e da experiência; gráficos continuam fora até `SP-001` e SR-014.
 
 Integrações posteriores:
 
@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013 concluída e Dia 2 da UI-003 concluído em `TEST_STRATEGY_READY`. Os testes exigem o snapshot real da evolução, a remoção do resumo cliente vazio e mantêm `SP-001`/SR-014 como incrementos posteriores para gráficos.
+Estado atual: SR-013 concluída e Dia 3 da UI-003 concluído em `IMPLEMENTATION_IN_PROGRESS`. O dashboard já consome apenas o snapshot real da evolução e mantém `SP-001`/SR-014 como incrementos posteriores para gráficos.
 
 ## Marco 10 - Candles Financeiros
 

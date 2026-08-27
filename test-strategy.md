@@ -525,6 +525,19 @@ Implementação bloqueada até o Dia 3:
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## GREEN do Dia 3 — UI-003
+
+- `DashboardPage` tornou-se server-compatible e deixou de depender de Auth, sessão cliente, hook de resumo e componentes financeiros legados.
+- copy, ações reais, slot React, métrica principal, empty state e grid de 12 colunas satisfizeram os contratos do Dia 2.
+- GREEN direcionado: 4 suítes e 17 testes passaram.
+- um contrato transversal de design system obsoleto foi reproduzido na regressão e realinhado para o `FinancialEvolutionPanel`, que efetivamente usa `Card` e `FeedbackMessage`.
+- GREEN ampliado: 5 suítes e 26 testes passaram.
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint, type-check e build de produção passaram.
+- nenhum teste foi relaxado; o contrato transversal mudou de proprietário junto com a responsabilidade visual.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
 Small release: `SR-013 — Agregação da evolução financeira`.

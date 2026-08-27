@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da UI-003 concluído; contratos essenciais em RED válido e implementação mínima liberada para aprovação
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da UI-003 concluído; implementação mínima do dashboard Pulse validada com pipeline local verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -94,6 +94,7 @@
 - Data de seleção da UI-003 como próximo ciclo: 2026-08-27
 - Data do discovery e arquitetura da UI-003: 2026-08-27
 - Data da estratégia de testes da UI-003: 2026-08-27
+- Data da implementação mínima da UI-003: 2026-08-27
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -946,6 +947,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: o Dia 2 da UI-003 atualizou os contratos específicos do dashboard, mas não revisou o teste transversal que ainda exigia `FeedbackMessage` no `DashboardPage`; a regressão completa só expôs o drift após o GREEN direcionado. Prevenção: toda mudança de responsabilidade entre componentes deve pesquisar e atualizar contratos arquiteturais e de design system transversais no RED, validando a suíte completa imediatamente após o primeiro GREEN sem reintroduzir imports artificiais.
 - Erro: a primeira integração real do repository da SR-013 tipou `rpc` como `Promise`, enquanto o cliente Supabase retorna um builder aguardável (`PromiseLike`), fazendo o type-check falhar apesar do comportamento correto. Prevenção: modelar adapters externos pelo menor contrato aguardável real, validar a implementação concreta no primeiro GREEN integrado e não ampliar o port de application com tipos do provider.
 - Erro: o teste agregado das rotas do Dia 4 da SR-013 importou as páginas estaticamente e o transformador Next/Jest carregou o loader real antes do mock, tentando acessar `cookies()` fora de request scope. Prevenção: em testes de Server Components, registrar o mock antes e carregar página/loader com `jest.requireActual()`/`jest.requireMock()` quando a ordem de avaliação fizer parte do isolamento.
 - Erro: o contrato inicial de performance da SR-013 exigiu um índice específico para a agregação de contas, mas o PostgreSQL 17 escolheu a chave única existente `(user_id, id)`, igualmente válida para o filtro por proprietário. Prevenção: testes de plano devem validar a propriedade arquitetural e uma allowlist de planos seguros, não acoplar o harness a uma única escolha legítima do planner.
@@ -5108,3 +5110,38 @@ Estado de saída:
 - UI-003 permanece `IN_PROGRESS`
 - implementação bloqueada até aprovação explícita do `dia 3`
 - próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Testes da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Implementação mínima:
+- `DashboardPage` deixou de ser Client Component e passou a ser apresentação server-compatible sem Auth, sessão de transações, hook de resumo ou componentes financeiros legados
+- cabeçalho agora usa “Visão geral”, apoio neutro e somente links reais para Contas e Transações
+- slot React permanece como única composição do conteúdo financeiro carregado no servidor
+- `FinancialEvolutionPanel` usa “Como seu dinheiro evoluiu”, “Saldo ao fim do período” e empty copy aprovada
+- resumo usa grid lógico de 12 colunas, com saldo final em maior hierarquia e demais métricas derivadas exclusivamente do DTO da SR-013
+- estados `missing_accounts | empty | success`, seletor e tabela diária foram preservados sem alterar cálculos
+
+TDD e correção de drift:
+- GREEN direcionado inicial: 4 suítes e 17 testes passaram
+- regressão encontrou 1 contrato transversal obsoleto que exigia `FeedbackMessage` no dashboard depois que seus estados locais foram removidos
+- contrato de design system foi corrigido para validar `Card` e `FeedbackMessage` no painel financeiro que efetivamente os utiliza; nenhum import artificial foi adicionado
+- GREEN ampliado: 5 suítes e 26 testes passaram
+
+Evidências finais:
+- regressão completa: 72 suítes e 388 testes passaram
+- lint local passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou; `/` e `/dashboard` permanecem dinâmicos e `ƒ Proxy (Middleware)` foi preservado
+- revisão Next.js/React confirmou Server Component para leitura, `searchParams` assíncrono preservado, props serializáveis, ausência de hooks/effects e redução do bundle cliente
+
+Escopo preservado:
+- nenhuma regra financeira, application, infrastructure, Supabase, migration, RLS, policy, grant, dependência, gráfico, previsão ou comparação foi criada
+- arquivos legados não utilizados não foram removidos no Dia 3; eventual limpeza pertence ao hardening com evidência
+- nenhum commit, push, merge ou deploy foi executado nesta fase
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- UI-003 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`
