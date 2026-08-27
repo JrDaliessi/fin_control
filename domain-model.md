@@ -326,3 +326,26 @@ Cenários críticos:
 - importação
 - IA
 - Open Finance
+
+## Dashboard Pulse — UI-003
+
+A UI-003 não cria entidade, value object, regra financeira ou caso de uso de domínio.
+
+Ela apenas apresenta contratos já aprovados da SR-013:
+- saldo de abertura do período
+- receitas realizadas
+- despesas realizadas
+- resultado líquido
+- saldo ao fim do período
+- quantidade de movimentos
+- buckets diários contínuos
+
+Semântica proibida neste recorte:
+- “disponível de verdade”
+- valor livre para gastar
+- compromissos futuros
+- previsão de fim do mês
+- tendência ou comparação sem período equivalente
+- lista detalhada recente sem projeção alinhada ao período
+
+Qualquer uma dessas capacidades exige retorno ao domínio/application e nova estratégia TDD antes de aparecer na interface.

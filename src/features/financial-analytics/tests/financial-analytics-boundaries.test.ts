@@ -7,7 +7,7 @@ function readSource(...segments: string[]) {
 }
 
 describe("financial analytics presentation boundaries", () => {
-  it("keeps analytics modules outside the client dashboard bundle", () => {
+  it("keeps the dashboard page server-compatible and presentation-only", () => {
     const dashboardPage = readSource(
       "features",
       "dashboard",
@@ -16,8 +16,13 @@ describe("financial analytics presentation boundaries", () => {
       "DashboardPage.tsx"
     );
 
-    expect(dashboardPage).toContain('"use client"');
+    expect(dashboardPage).not.toMatch(/["']use client["']/);
     expect(dashboardPage).not.toContain("financial-analytics");
+    expect(dashboardPage).not.toContain("useAuthSession");
+    expect(dashboardPage).not.toContain("useTransactionSession");
+    expect(dashboardPage).not.toContain("useDashboardSummary");
+    expect(dashboardPage).not.toContain("DashboardSummaryPanel");
+    expect(dashboardPage).not.toContain("RecentTransactionsList");
   });
 
   it("centralizes the server composition shared by both dashboard routes", () => {

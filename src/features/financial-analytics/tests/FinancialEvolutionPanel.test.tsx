@@ -82,6 +82,9 @@ describe("FinancialEvolutionPanel", () => {
       screen.getByRole("link", { name: "Cadastrar conta" })
     ).toHaveAttribute("href", "/accounts");
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("group", { name: /Saldo ao fim do período:/ })
+    ).not.toBeInTheDocument();
   });
 
   it("distinguishes a period without movements and keeps daily balances visible", () => {
@@ -114,7 +117,7 @@ describe("FinancialEvolutionPanel", () => {
     );
 
     expect(screen.getByRole("status")).toHaveTextContent(
-      "Nenhuma movimentação neste período."
+      "Nenhuma movimentação neste período. Seus saldos continuam visíveis."
     );
     expect(
       screen.getByRole("table", { name: "Evolução financeira por dia" })
@@ -147,9 +150,9 @@ describe("FinancialEvolutionPanel", () => {
 
     expect(within(table).getByRole("cell", { name: "01/03/2026" })).toBeInTheDocument();
     expect(within(table).getByRole("cell", { name: /R\$\s*50,00/ })).toBeInTheDocument();
-    expect(screen.getByText("Saldo final").parentElement).toHaveTextContent(
-      /R\$\s*130,00/
-    );
+    expect(
+      screen.getByText("Saldo ao fim do período").parentElement
+    ).toHaveTextContent(/R\$\s*130,00/);
     expect(screen.getByText("2 movimentos")).toBeInTheDocument();
   });
 
@@ -165,8 +168,29 @@ describe("FinancialEvolutionPanel", () => {
       screen.getByRole("group", { name: /Saldo inicial: R\$\s*100,00/ })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("group", { name: /Saldo final: R\$\s*130,00/ })
+      screen.getByRole("group", {
+        name: /Saldo ao fim do período: R\$\s*130,00/
+      })
     ).toBeInTheDocument();
+  });
+
+  it("uses the approved section copy and a mobile-first 12-column summary", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
+    ).toBeInTheDocument();
+
+    const closingBalance = screen.getByRole("group", {
+      name: /Saldo ao fim do período: R\$\s*130,00/
+    });
+    expect(closingBalance.closest("dl")).toHaveClass("grid-cols-12");
+    expect(screen.queryByText(/disponível de verdade/i)).not.toBeInTheDocument();
   });
 
   it("makes the wide daily table discoverable and keyboard scrollable", () => {

@@ -186,7 +186,7 @@ Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` concluída em 2026-07-15; `UI-002` concluída em 2026-07-16 no estado `READY_FOR_RELEASE`; `UI-003` a `UI-006` permanecem em `DISCOVERY`. O shell responsivo possui pipeline, segurança, observabilidade, CI para `develop`/`main` e experiência instalável validados; inspeção visual automatizada permanece como limitação não crítica.
+Status: `UI-001` e `UI-002` concluídas; Dia 3 da `UI-003` concluído em 2026-08-27 no estado `IMPLEMENTATION_IN_PROGRESS`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard Pulse mínimo usa fonte real, composição server-side e resumo responsivo.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: `UI-003` permanece na sequência visual recomendada e agora pode ser refinada sobre a fundação de dados concluída; a seleção continua dependente de comando humano explícito.
+Próximo passo da trilha: executar o Dia 4 da `UI-003` para expansão controlada dos estados e da experiência; gráficos continuam fora até `SP-001` e SR-014.
 
 Integrações posteriores:
 
@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: Dia 7 da SR-013 concluído em `READY_FOR_RELEASE`. Evolução financeira, tabela acessível, RPC protegida e composição server-side foram validadas com 72 suítes/390 testes, 33 asserções pgTAP, audit, build, GitHub Actions e previews Vercel verdes. Próximo passo depende de seleção humana entre refinar `UI-003` e preparar `SP-001`.
+Estado atual: SR-013 concluída e Dia 3 da UI-003 concluído em `IMPLEMENTATION_IN_PROGRESS`. O dashboard já consome apenas o snapshot real da evolução e mantém `SP-001`/SR-014 como incrementos posteriores para gráficos.
 
 ## Marco 10 - Candles Financeiros
 

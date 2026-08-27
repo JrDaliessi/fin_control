@@ -1099,6 +1099,47 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum commit, push, merge, migration, alteração de Auth, fixture ou deploy de produção foi executado.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código; produção pública permanece condicionada aos hardenings documentados.
 
+## Gate do Dia 1 — UI-003
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- dashboard atual confrontado com especificação, arquitetura, contratos, domínio, backlog e código real.
+- fonte financeira aprovada limitada ao `FinancialEvolutionDto` da SR-013.
+- resumo mensal e recentes baseados no `TransactionSessionProvider` vazio identificados como fonte não persistente a remover do dashboard.
+- composição server-side, slot RSC, `searchParams` assíncrono e props serializáveis preservados conforme a skill Next.js.
+- grid de 12 colunas, copy, estados e ações reais definidos sem criar regra financeira.
+- ADR 0011 criado; UI-003 fatiada em fonte/hierarquia, resumo responsivo e hardening visual.
+- nenhum componente, teste, dependência, migration, Supabase, commit, push, PR ou deploy foi criado na fase.
+- lint, type-check e `git diff --check`: verdes.
+- estado de saída: `ARCHITECTURE_READY`.
+
+## Gate do Dia 2 — UI-003
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional revisada e aprovada antes da execução.
+- baseline direcionado: 4 suítes e 21 testes verdes.
+- RED direcionado: 4 suítes falharam; 11 testes falharam e 6 passaram exclusivamente pelos contratos ainda não implementados.
+- contratos cobrem fronteira server/client, copy aprovada, ações reais, slot compartilhado, estados sem dados fabricados, métrica principal e grid de 12 colunas.
+- loading/error do App Router, semântica da tabela, seletor e composição com uma leitura permanecem cobertos pela rede existente.
+- regressão excluindo somente as 4 suítes RED: 68 suítes e 371 testes verdes.
+- lint local: verde, 0 warnings; type-check: verde.
+- wrapper global do npm continua indisponível no ambiente; validação de lint foi executada pelo binário local fixado no projeto.
+- nenhuma implementação funcional, dependência, Supabase, migration, persistência, commit, push, PR ou deploy foi executado.
+- estado de saída: `TEST_STRATEGY_READY`.
+
+## Gate do Dia 3 — UI-003
+
+- declaração operacional aprovada antes da implementação.
+- GREEN direcionado: 4 suítes e 17 testes passaram.
+- regressão identificou e corrigiu um contrato transversal obsoleto do design system, sem reintroduzir dependência artificial no dashboard.
+- GREEN ampliado: 5 suítes e 26 testes passaram.
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint local: verde, 0 warnings; type-check: verde.
+- build Next `16.3.3`: verde; `/`, `/dashboard` e `ƒ Proxy (Middleware)` preservados.
+- `DashboardPage` é server-compatible, recebe apenas `ReactNode` e não usa hooks, Auth, sessão de transações, analytics ou infraestrutura.
+- `FinancialEvolutionPanel` mantém DTO plano, seletor GET, três estados e tabela acessível; nenhuma regra financeira foi movida para a UI.
+- revisão pelas skills Next.js e React não encontrou prop não serializável, async Client Component, fetch cliente, effect ou estado derivado duplicado.
+- nenhuma dependência, Supabase, migration, persistência, gráfico, commit, push, PR, merge ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Correção crítica antes do Dia 5 — BUG-001
 
 - `npm run test:ci -- src/features/auth/tests/supabase-proxy.test.ts`: passou, 1 suíte e 6 testes.

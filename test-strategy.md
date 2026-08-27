@@ -479,6 +479,65 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Matriz Executada no Dia 2 — UI-003
+
+Os testes abaixo foram escritos antes de qualquer alteração funcional nos componentes:
+
+| Camada | Alvo | Contratos essenciais |
+| --- | --- | --- |
+| architecture | `DashboardPage` | server-compatible; sem `use client`, Auth, `TransactionSessionProvider`, hook de resumo ou tipos financeiros |
+| presentation | cabeçalho | “Visão geral”, saudação neutra, Contas e Transações; ausência de nome inferido e capacidades futuras |
+| presentation | painel financeiro | “Saldo ao fim do período”, receitas, despesas, líquido, abertura/contexto e contagem com dados do DTO |
+| presentation | estados | `missing_accounts`, `empty` e `success` distintos; sem zeros ou pontos fabricados |
+| presentation | acessibilidade | um `main`, headings ordenados, `dl/dt/dd`, tabela/caption, foco e alvos de 44 px |
+| route | composição | `searchParams` aguardado, kind normalizado, uma leitura server-side e slot compartilhado por `/` e `/dashboard` |
+| boundary | RSC/bundle | DTO não atravessa para componente cliente; sem RPC, provider ou analytics nos chunks cliente |
+
+Cenário feliz:
+- usuário permanente com conta e movimentos abre o dashboard, seleciona um período e recebe saldo final, receitas, despesas, líquido e tabela diária calculados pela SR-013.
+
+Cenários alternativos:
+- conta existente sem movimentos no período mantém saldos e mensagem vazia
+- ausência de contas mostra onboarding sem métricas fabricadas
+- kind ausente ou inválido usa fallback aprovado
+- falha de carregamento usa error boundary sanitizada e recuperável
+
+Edge cases:
+- saldo negativo
+- receitas ou despesas iguais a zero
+- período atravessando mês/ano
+- texto longo e valores monetários grandes sem overflow
+- viewport de 320 px, teclado, leitor de tela e movimento reduzido
+- ausência explícita de “disponível de verdade”, previsão, comparação, gráfico e movimentações detalhadas
+
+Resultado observado:
+- baseline direcionado antes do RED: 4 suítes e 21 testes verdes
+- RED direcionado: 4 suítes falharam; 11 testes falharam e 6 passaram
+- causas exclusivas: dependências cliente legadas no `DashboardPage`, copy antiga, rótulo “Saldo final”, empty copy incompleta e ausência de `grid-cols-12`
+- rede anterior, excluindo somente as 4 suítes RED: 68 suítes e 371 testes verdes
+- type-check e lint local verdes; nenhuma implementação funcional foi criada
+
+Implementação bloqueada até o Dia 3:
+- tornar `DashboardPage` server-compatible e puramente visual
+- remover o resumo/recentes baseados no provider cliente vazio
+- aplicar copy, ações reais e slot aprovado
+- reorganizar o resumo financeiro no grid de 12 colunas sem alterar cálculos
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## GREEN do Dia 3 — UI-003
+
+- `DashboardPage` tornou-se server-compatible e deixou de depender de Auth, sessão cliente, hook de resumo e componentes financeiros legados.
+- copy, ações reais, slot React, métrica principal, empty state e grid de 12 colunas satisfizeram os contratos do Dia 2.
+- GREEN direcionado: 4 suítes e 17 testes passaram.
+- um contrato transversal de design system obsoleto foi reproduzido na regressão e realinhado para o `FinancialEvolutionPanel`, que efetivamente usa `Card` e `FeedbackMessage`.
+- GREEN ampliado: 5 suítes e 26 testes passaram.
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint, type-check e build de produção passaram.
+- nenhum teste foi relaxado; o contrato transversal mudou de proprietário junto com a responsabilidade visual.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
 Small release: `SR-013 — Agregação da evolução financeira`.

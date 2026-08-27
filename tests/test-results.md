@@ -827,3 +827,58 @@ Interpretação:
 - nenhum log `error` ou `fatal` foi encontrado no deployment atual na janela recente.
 - aviso global de proteção contra senhas vazadas e hardenings de produção permanecem registrados, sem alerta novo da SR-013.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código.
+
+## Dia 1 — UI-003
+
+### Discovery e arquitetura
+
+- nenhuma suíte nova foi criada ou executada antes da estratégia TDD.
+- auditoria identificou que o dashboard legado usa um provider cliente inicializado vazio para resumo e recentes.
+- snapshot da SR-013 aprovado como única fonte financeira real da UI-003.
+- matriz futura do Dia 2 cobre fronteira RSC, copy, estados, acessibilidade, composição e ausência de capacidades bloqueadas.
+
+### Gates documentais
+
+- lint passou com 0 warnings.
+- type-check passou.
+- `git diff --check` passou.
+- nenhum teste foi relaxado, removido ou ignorado.
+- estado final: `ARCHITECTURE_READY`.
+
+## Dia 2 — UI-003
+
+### Baseline e RED
+
+- baseline direcionado antes dos novos contratos: 4 suítes e 21 testes passaram.
+- RED direcionado: 4 suítes falharam; 11 testes falharam e 6 passaram.
+- falhas explicadas por dependências cliente legadas, copy antiga, rótulo “Saldo final”, empty copy incompleta e ausência do grid lógico de 12 colunas.
+- nenhuma falha decorreu de import, configuração, fixture ou módulo ausente.
+
+### Rede de segurança
+
+- regressão excluindo somente as 4 suítes RED: 68 suítes e 371 testes passaram.
+- type-check passou.
+- lint local passou com 0 warnings via `node_modules/.bin/eslint.cmd`.
+- `npm run lint` não foi usado como evidência porque a instalação global do npm procura um `npm-cli.js` ausente; o binário local do projeto executou a mesma configuração.
+- nenhuma implementação funcional, migration, integração Supabase ou dependência foi criada.
+- estado final: `TEST_STRATEGY_READY`.
+- próximo comando válido: `dia 3`.
+
+## Dia 3 — UI-003
+
+### GREEN e regressão
+
+- GREEN direcionado: 4 suítes e 17 testes passaram.
+- regressão inicial: 71 suítes e 387 testes passaram; 1 contrato transversal falhou por ainda exigir `FeedbackMessage` no `DashboardPage` server-compatible.
+- o contrato de design system foi realinhado para o `FinancialEvolutionPanel`, sem importar primitive não utilizada.
+- GREEN ampliado: 5 suítes e 26 testes passaram.
+- regressão final: 72 suítes e 388 testes passaram.
+
+### Gates
+
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- nenhuma alteração de Supabase, migration, dependência ou regra financeira foi realizada.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 4`.

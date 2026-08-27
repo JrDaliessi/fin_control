@@ -221,8 +221,8 @@ describe("FinControl design-system contract", () => {
         ["FeedbackMessage"],
       ],
       [
-        "src/features/dashboard/presentation/pages/DashboardPage.tsx",
-        ["FeedbackMessage"],
+        "src/features/financial-analytics/presentation/components/FinancialEvolutionPanel.tsx",
+        ["Card", "FeedbackMessage"],
       ],
       [
         "src/features/dashboard/presentation/components/DashboardEmptyState.tsx",

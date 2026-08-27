@@ -77,10 +77,10 @@ describe("dashboard routes", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Dashboard" })
+      screen.getByRole("heading", { name: "Visão geral" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Evolução financeira" })
+      screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
     ).toBeInTheDocument();
     expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
   });
@@ -93,10 +93,10 @@ describe("dashboard routes", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Dashboard" })
+      screen.getByRole("heading", { name: "Visão geral" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Evolução financeira" })
+      screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
     ).toBeInTheDocument();
     expect(loadFinancialEvolution).toHaveBeenCalledWith({
       kind: "rolling_15_days"
