@@ -65,16 +65,23 @@ export function FinancialEvolutionPanel({
             </FeedbackMessage>
           ) : null}
 
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             {summaryItems.map(([label, value]) => (
-              <Card className="p-4" key={label}>
-                <p className="text-xs font-semibold uppercase text-muted-foreground">
+              <Card
+                aria-label={`${label}: ${value}`}
+                className="p-4"
+                key={label}
+                role="group"
+              >
+                <dt className="text-xs font-semibold uppercase text-muted-foreground">
                   {label}
-                </p>
-                <p className="mt-2 text-lg font-semibold text-foreground">{value}</p>
+                </dt>
+                <dd className="mt-2 text-lg font-semibold tabular-nums text-foreground">
+                  {value}
+                </dd>
               </Card>
             ))}
-          </div>
+          </dl>
 
           <p className="text-sm text-muted-foreground">
             {movementLabel(result.summary.transactionCount)}

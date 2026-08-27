@@ -59,7 +59,8 @@ describe("FinancialEvolutionPanel", () => {
     );
     expect(
       screen.getByRole("button", { name: "Atualizar período" })
-    ).toHaveClass("min-h-11");
+    ).toHaveClass("min-h-11", "w-full", "sm:w-auto");
+    expect(selector).toHaveClass("w-full");
   });
 
   it("guides users without accounts before rendering financial data", () => {
@@ -150,5 +151,43 @@ describe("FinancialEvolutionPanel", () => {
       /R\$\s*130,00/
     );
     expect(screen.getByText("2 movimentos")).toBeInTheDocument();
+  });
+
+  it("associates each summary value with its financial metric", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    expect(
+      screen.getByRole("group", { name: /Saldo inicial: R\$\s*100,00/ })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: /Saldo final: R\$\s*130,00/ })
+    ).toBeInTheDocument();
+  });
+
+  it("makes the wide daily table discoverable and keyboard scrollable", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    const scrollRegion = screen.getByRole("region", {
+      name: "Evolução financeira por dia"
+    });
+
+    expect(scrollRegion).toHaveAttribute("tabindex", "0");
+    expect(scrollRegion).toHaveAttribute(
+      "aria-describedby",
+      "financial-evolution-table-hint"
+    );
+    expect(
+      screen.getByText("Deslize horizontalmente para consultar todas as colunas.")
+    ).toHaveClass("sm:hidden");
   });
 });

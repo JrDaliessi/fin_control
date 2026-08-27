@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-013 concluído; composição compartilhada e fronteira Server/Client estão endurecidas com comportamento preservado
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SR-013 concluído; painel analítico revisado para mobile, teclado, semântica e PWA sem ampliar o escopo
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -89,6 +89,7 @@
 - Data da implementação mínima da SR-013: 2026-08-26
 - Data da expansão controlada da SR-013: 2026-08-26
 - Data da refatoração e hardening da SR-013: 2026-08-27
+- Data da revisão de UX, acessibilidade e PWA da SR-013: 2026-08-27
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -4915,3 +4916,47 @@ Estado de saída:
 - SR-013 permanece `IN_PROGRESS`
 - Dia 5 concluído sem avanço automático de fase
 - próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-013
+
+Small release: `SR-013 — Agregação da evolução financeira`.
+
+TDD e melhorias aplicadas:
+- três contratos nasceram em RED: controles de período responsivos, associação acessível entre métricas e valores, e região horizontal operável por teclado
+- seletor e botão de período agora ocupam toda a largura no mobile e retornam ao tamanho intrínseco a partir de `sm`
+- resumo passou a usar `dl`, `dt` e `dd`; cada métrica expõe nome e valor como grupo acessível
+- tabela ampla recebeu região nomeada, foco visível, `tabIndex=0`, overscroll contido e instrução mobile para rolagem horizontal
+- valores financeiros e quantidades usam algarismos tabulares para facilitar comparação visual
+- GREEN direcionado: 1 suíte e 6 testes passaram
+
+Revisão de experiência e acessibilidade:
+- hierarquia de headings, caption da tabela, cabeçalhos de coluna, estados `missing_accounts | empty | success`, loading e error foram preservados
+- alvos de ação permanecem com altura mínima de 44 px e foco visível
+- comunicação não depende somente de cor; receitas, despesas, líquido e saldo possuem rótulos textuais explícitos
+- shell mantém skip link, landmarks, safe area da navegação móvel e preferência global de movimento reduzido
+- componentes da SR-013 continuam server-side, sem hooks, effects, fetch client-side ou ampliação da fronteira RSC
+
+PWA e mobile:
+- manifest respondeu HTTP 200 como `application/manifest+json`, com `standalone`, `start_url=/`, atalhos para transações/contas e ícone maskable
+- viewport real de 375×812 não apresentou overflow horizontal na tela pública; campos e ação principal mediram 44 px de altura
+- documento mantém `lang=pt-BR`, vínculo com o manifest e nenhum overlay ou erro de console no navegador
+- nenhum service worker, cache de dados financeiros ou promessa offline foi criado; instalabilidade permanece separada de consistência offline
+
+Evidências de qualidade:
+- recorte de analytics, dashboard, shell, design system e PWA: 6 suítes e 32 testes passaram
+- regressão completa: 72 suítes e 390 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos
+- `git diff --check` passou, com avisos esperados de normalização LF/CRLF
+
+Limitações e escopo preservado:
+- inspeção autenticada ao vivo não foi concluída porque o servidor dev existente estava sem saída de rede para o Supabase; a tela pública e o manifest foram verificados no navegador, e o painel privado permaneceu coberto pelo Testing Library
+- avisos locais de fallback da Geist e `allowedDevOrigins` para `127.0.0.1` pertencem ao ambiente de teste e não afetaram o build de produção
+- nenhuma migration, policy, grant, tabela, índice, configuração remota, dado, dependência, gráfico, offline, deploy, commit, push, PR ou merge foi executado
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SR-013 permanece `IN_PROGRESS`
+- Dia 6 concluído sem avanço automático de fase
+- próximo comando válido: `dia 7`
