@@ -1150,3 +1150,18 @@ Uma release incremental só pode ser considerada pronta quando:
 - Verificação HTTP com a configuração malformada: `/` respondeu `307` para `/login`; `/login` respondeu `200`; nenhum erro 500.
 - Segurança: fallback falha fechado, sem liberar rota privada e sem expor valores de ambiente.
 - Risco remanescente: autenticação real permanece indisponível enquanto `NEXT_PUBLIC_SUPABASE_URL` não for substituída pela Project URL HTTPS correta em `.env.local`.
+
+## Gate do Dia 4 — UI-003
+
+- declaração operacional aprovada antes da implementação.
+- TDD RED: 3 falhas comportamentais em 2 suítes e 1 falha transversal de design system.
+- GREEN direcionado: 3 suítes e 17 testes passaram.
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint local: verde, 0 warnings; type-check: verde.
+- build Next `16.3.3`: verde; `/`, `/dashboard` e `ƒ Proxy (Middleware)` preservados.
+- ações reais agrupadas em navegação nomeada, responsiva, com alvo mínimo e foco visível.
+- loading preserva contexto e estado ocupado; error boundary possui relações acessíveis e recuperação pela primitive `Button`.
+- revisão Next.js/React confirmou fronteiras server/client mínimas, props serializáveis e ausência de novo fetch, hook, effect ou estado cliente.
+- estados financeiros existentes foram preservados sem dados fabricados ou alteração de cálculo.
+- nenhuma dependência, Supabase, migration, persistência, regra financeira, gráfico, commit, push, PR, merge ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

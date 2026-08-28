@@ -99,6 +99,10 @@ describe("dashboard route boundaries", () => {
     render(<DashboardLoading />);
 
     expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
+    expect(
+      screen.getByRole("heading", { name: "Visão geral", level: 1 })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
     expect(screen.getByRole("status")).toHaveTextContent(
       "Carregando evolução financeira..."
     );
@@ -115,7 +119,16 @@ describe("dashboard route boundaries", () => {
       />
     );
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveAttribute(
+      "aria-labelledby",
+      "dashboard-error-title"
+    );
+    expect(alert).toHaveAttribute(
+      "aria-describedby",
+      "dashboard-error-description"
+    );
+    expect(alert).toHaveTextContent(
       "Não foi possível carregar sua evolução financeira."
     );
     expect(
