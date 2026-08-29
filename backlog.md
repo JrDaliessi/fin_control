@@ -6,19 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### UI-003 — Dashboard FinControl Pulse
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
-- Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
-- Valor esperado: visão rápida sem promessas ou indicadores fictícios.
-- Prioridade: Alta
-- Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também de SP-001 e da série temporal visual da SR-014.
-- Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
-- Fase atual: Dia 6 concluído; dashboard endurecido para viewport móvel, contraste AA automatizado, tabela rolável por toque/teclado e PWA honesto validado.
-- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
-- Small releases: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
-- Próximo passo: executar `dia 7` para qualidade final, segurança, observabilidade e preparação da entrega incremental.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -469,7 +457,31 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Critério de pronto: `checkout` e `setup-node` fixados por SHA e Dependabot/Renovate configurado para atualização controlada.
 - Status: DISCOVERY
 
+### CI-VERCEL-002 — Alinhar vínculo local e runtime da Vercel
+- Tipo: Dívida Técnica / Hardening
+- Descrição objetiva: o `.vercel/project.json` local referencia um projeto antigo, enquanto o projeto ativo `fin-control` usa outro ID; o projeto declara Node 24, o `package.json` força Node 22 e a imagem de build usa npm 10 apesar do engine npm 11.
+- Objetivo de negócio: tornar inspeções, previews e futuras promoções por CLI determinísticas e direcionadas ao projeto correto.
+- Valor esperado: remover avisos de engine e reduzir risco de operar no projeto Vercel incorreto.
+- Prioridade: Média
+- Dependências: autorização para relink local e ajuste das configurações do projeto Vercel.
+- Risco: Médio antes de operação direta por CLI ou promoção de produção; baixo para o preview atual já validado.
+- Severidade: MÉDIA
+- Fase recomendada: próximo hardening de CI/deploy, antes do primeiro deploy público.
+- Critério de pronto: vínculo local aponta para `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`, Node/npm estão alinhados entre Vercel, `package.json` e CI, build passa sem `EBADENGINE` e preview continua associado ao repositório correto.
+- Status: DISCOVERY
+
 ## DONE
+
+### UI-003 — Dashboard FinControl Pulse
+- Tipo: Small Release / UX Improvement
+- Resultado: dashboard reorganizado com fonte financeira real, composição server-side, grid responsivo, estados honestos, ações disponíveis e experiência acessível/PWA sem promessa offline.
+- Escopo concluído: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
+- Quality gates: 71 suítes/386 testes, lint, type-check, auditoria com 0 vulnerabilidades, assinaturas/attestations npm, build, GitHub Actions e Vercel Preview verdes.
+- Segurança: UI sem acesso direto ao Supabase; RLS/grants/RPC revalidados; nenhum segredo, migration, configuração Auth ou dado foi alterado.
+- Observabilidade: preview atual sem erro de runtime e logs recentes de Supabase sem erro/fatal/5xx; baseline externa sanitizada permanece rastreada.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- Fora do escopo preservado: gráficos, comparações, projeções, IA, analytics, service worker, offline e novas regras financeiras.
+- Status: DONE
 
 ### SR-013 — Agregação da evolução financeira
 - Tipo: Small Release

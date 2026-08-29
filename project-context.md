@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UI-003 concluído; responsividade, acessibilidade essencial e experiência PWA validadas sem promessa offline
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UI-003 concluído; pipeline, segurança, observabilidade e release readiness validados para entrega incremental de código
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -98,6 +98,7 @@
 - Data da expansão controlada da UI-003: 2026-08-28
 - Data da refatoração e hardening da UI-003: 2026-08-29
 - Data da revisão de UX, acessibilidade e PWA da UI-003: 2026-08-29
+- Data da validação final e preparação de release da UI-003: 2026-08-29
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5262,3 +5263,53 @@ Estado de saída:
 - `QUALITY_VALIDATION`
 - UI-003 permanece `IN_PROGRESS` até o Dia 7
 - próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Integração e branch da fase:
+- PR #15 do Dia 6 foi mesclado por squash no `develop` com commit `38430ecdb11c8c5882991d2dfbe3235778d5b862`
+- branch `codex/ui-003-day7-release-readiness` foi criada a partir do `develop` atualizado
+- commit validado da implementação: `7f1cd31d008e96f70065753abf45f47817aa4a33`
+
+Pipeline e cadeia de suprimentos:
+- regressão completa: 71 suítes e 386 testes passaram
+- lint passou com 0 warnings; type-check passou
+- build Next `16.3.3` passou e preservou `/`, `/dashboard` e `ƒ Proxy (Middleware)`
+- auditoria npm de produção passou com 0 vulnerabilidades
+- 697 pacotes tiveram assinaturas de registro verificadas e 102 tiveram attestations verificadas
+- GitHub Actions e Vercel Preview concluíram com sucesso no commit validado
+
+Segurança e Supabase:
+- as três tabelas públicas financeiras mantêm RLS habilitada e forçada, grants mínimos para `authenticated`, nenhum grant para `anon` e policies de ownership com bloqueio de Auth anônimo
+- a RPC `load_financial_evolution_snapshot` permanece `SECURITY INVOKER`, com search path vazio e execução limitada a `authenticated`
+- nenhum `SECURITY DEFINER` público, tabela pública em publicação Realtime ou segredo versionado foi encontrado
+- migrations locais/remotas permanecem alinhadas nas seis versões esperadas
+- Security Advisor manteve somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`
+- Performance Advisor manteve três índices ainda não usados como informação, sem evidência para remoção antecipada
+- logs recentes de Auth, API e Postgres não apresentaram erro, fatal ou resposta 5xx
+
+Vercel e observabilidade:
+- preview `dpl_FjFhZDd3P7aYtjy8gJRazK6BqSRj` está `READY`, associado à PR #15 e ao commit exato da fase
+- não houve erro de runtime no preview atual; um erro histórico de evolução financeira ficou restrito a deployment de produção anterior
+- o preview protegido redireciona para Vercel SSO, portanto nenhuma sessão autenticada ou bypass foi criado durante a auditoria
+- projeto Vercel atual usa `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`; o vínculo local aponta para projeto antigo e foi registrado em `CI-VERCEL-002`
+- configuração do projeto declara Node 24, mas `package.json` força Node 22; o build usa Node 22 e apresenta aviso porque o npm 10 da imagem não satisfaz o npm 11 declarado
+- no plano Hobby, a baseline permanece em build logs, runtime errors e logs/advisors do Supabase; captura externa sanitizada continua em `HARD-OBS-001`
+
+Threat model e hardening:
+- autorização continua derivada de claims validados no servidor e RLS, sem confiar em metadata de usuário para permissão
+- ownership, Auth anônimo, escalada por `service_role`, exposição de dados e segredos permanecem bloqueados pelas fronteiras existentes
+- a aplicação ainda não define CSP, frame policy, referrer policy ou permissions policy em `next.config.mjs`; validação e adoção permanecem em `SEC-HARD-001`
+- produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
+- `CI-VERCEL-002` é dívida MÉDIA e não bloqueia merge de código, mas deve ser resolvida antes de operação direta por CLI ou promoção de produção
+
+Escopo preservado:
+- nenhuma feature, regra financeira, dependência, migration, policy, grant, configuração Auth, dado, analytics, bypass de preview ou deploy de produção foi criado ou alterado
+- `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- UI-003 concluída como entrega incremental de código
+- próximo passo recomendado: seleção humana do `SP-001 — Biblioteca de gráficos`, sem iniciar automaticamente outro ciclo

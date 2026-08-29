@@ -950,3 +950,28 @@ Interpretação:
 - nenhuma regra financeira, Supabase, migration, dependência, gráfico, service worker ou promessa offline foi criada.
 - estado final: `QUALITY_VALIDATION`.
 - próximo comando válido: `dia 7`.
+
+## Dia 7 — UI-003
+
+### Pipeline final
+
+- regressão completa: 71 suítes e 386 testes passaram.
+- lint passou com 0 warnings; type-check passou.
+- auditoria npm de produção passou com 0 vulnerabilidades.
+- auditoria de cadeia de suprimentos verificou assinaturas de 697 pacotes e attestations de 102 pacotes.
+- build Next `16.3.3` passou; `/`, `/dashboard` e `ƒ Proxy (Middleware)` permaneceram preservados.
+- GitHub Actions Quality Gates #60 e Vercel Preview passaram no commit `7f1cd31`.
+
+### Segurança, banco e observabilidade
+
+- seis migrations permaneceram alinhadas; RLS forçada, grants mínimos, policies de ownership e RPC invoker foram confirmados por inspeção somente leitura.
+- Security Advisor manteve somente `SEC-AUTH-001`; os três índices ainda não usados permaneceram informativos.
+- nenhum segredo real, logging direto, `SECURITY DEFINER` público ou tabela financeira em publicação Realtime foi encontrado.
+- preview Vercel atual está `READY` e sem erro de runtime recente; logs recentes do Supabase não apresentaram erro/fatal/5xx.
+- nenhuma migration, configuração Auth, mutação de dados, bypass de preview ou promoção de produção foi executada.
+
+### Resultado
+
+- UI-003 está `READY_FOR_RELEASE` como entrega incremental de código.
+- produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
+- `CI-VERCEL-002` registra o vínculo local antigo e o desalinhamento Node/npm antes de operação direta por CLI ou promoção.
