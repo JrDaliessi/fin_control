@@ -538,6 +538,26 @@ Estado de saída: `TEST_STRATEGY_READY`.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## RED/GREEN do Dia 4 — UI-003
+
+Contratos adicionados antes da implementação:
+- grupo de ações exposto como navegação “Ações rápidas” e adaptável entre mobile e `sm`
+- links reais com alvo mínimo de 44 px e foco visível
+- loading contextualizado por “Visão geral” e marcado como ocupado
+- alerta de erro associado programaticamente ao título e à descrição
+- recuperação de erro usando a primitive compartilhada `Button`
+
+RED observado:
+- 2 suítes de apresentação confirmaram 3 falhas comportamentais
+- 1 suíte transversal confirmou 1 falha de design system
+
+GREEN observado:
+- execução direcionada: 3 suítes e 17 testes passaram
+- regressão completa: 72 suítes e 388 testes passaram
+- nenhum teste foi relaxado, ignorado ou removido
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
 Small release: `SR-013 — Agregação da evolução financeira`.

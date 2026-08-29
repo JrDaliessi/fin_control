@@ -882,3 +882,22 @@ Interpretação:
 - nenhuma alteração de Supabase, migration, dependência ou regra financeira foi realizada.
 - estado final: `IMPLEMENTATION_IN_PROGRESS`.
 - próximo comando válido: `dia 4`.
+
+## Dia 4 — UI-003
+
+### RED e GREEN direcionados
+
+- RED de apresentação: 2 suítes falharam com 3 contratos comportamentais ainda não satisfeitos.
+- RED transversal: 1 suíte falhou ao exigir a primitive `Button` no error boundary.
+- GREEN direcionado após a implementação mínima: 3 suítes e 17 testes passaram.
+
+### Regressão e gates
+
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- navegação de ações, loading ocupado e erro recuperável foram refinados sem alterar dados ou cálculos.
+- nenhuma alteração de Supabase, migration, dependência, rota ou regra financeira foi realizada.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 5`.

@@ -706,7 +706,7 @@ Não criar todos antecipadamente. Cada componente nasce com uma necessidade real
 | 9 | SR-023 | FinControl IA | cálculos determinísticos, consentimento e privacidade |
 | 10 | features futuras | cartões, orçamentos, relatórios, importação e configurações | domínios específicos |
 
-`UI-001` e `UI-002` estão concluídas. `UI-003` concluiu o Dia 3 em 2026-08-27 com implementação mínima verde; `UI-004` a `UI-006` permanecem em `DISCOVERY`.
+`UI-001` e `UI-002` estão concluídas. `UI-003` concluiu o Dia 4 em 2026-08-28 com expansão controlada e pipeline local verdes; `UI-004` a `UI-006` permanecem em `DISCOVERY`.
 
 ### 21.1. Recorte aprovado da UI-001
 

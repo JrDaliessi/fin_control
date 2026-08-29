@@ -23,9 +23,12 @@ export function DashboardPage({ children }: DashboardPageProps = {}) {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <nav
+            aria-label="Ações rápidas"
+            className="flex w-full flex-wrap gap-2 sm:w-auto"
+          >
             <Link
-              className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:flex-none"
               href="/accounts"
             >
               <WalletCards aria-hidden="true" size={18} />
@@ -33,13 +36,13 @@ export function DashboardPage({ children }: DashboardPageProps = {}) {
             </Link>
 
             <Link
-              className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:flex-none"
               href="/transactions"
             >
               <Plus aria-hidden="true" size={18} />
               Transações
             </Link>
-          </div>
+          </nav>
         </header>
 
         <div className="col-span-12 min-w-0">{children}</div>

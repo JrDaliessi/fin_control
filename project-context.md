@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UI-003 concluído; implementação mínima do dashboard Pulse validada com pipeline local verde
+- Fase atual: Dia 4 da UI-003 concluído; expansão controlada dos estados e da navegação validada com pipeline local verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -95,6 +95,7 @@
 - Data do discovery e arquitetura da UI-003: 2026-08-27
 - Data da estratégia de testes da UI-003: 2026-08-27
 - Data da implementação mínima da UI-003: 2026-08-27
+- Data da expansão controlada da UI-003: 2026-08-28
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5145,3 +5146,32 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - UI-003 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+TDD e expansão incremental:
+- testes foram escritos antes das alterações de apresentação
+- RED direcionado confirmou 3 falhas comportamentais em 2 suítes e 1 falha no contrato transversal de design system
+- as ações reais de Contas e Transações passaram a compor uma navegação nomeada, responsiva, com alvos mínimos de toque e foco visível
+- o loading do App Router agora preserva o contexto “Visão geral”, anuncia ocupação com `aria-busy` e mantém feedback vivo
+- o error boundary associa título e descrição ao alerta e reutiliza a primitive compartilhada `Button` para recuperação
+- os estados `missing_accounts`, `empty` e `success` existentes foram preservados sem criar zeros, métricas, mensagens financeiras ou regras novas
+
+Evidências finais:
+- GREEN direcionado: 3 suítes e 17 testes passaram
+- regressão completa: 72 suítes e 388 testes passaram
+- lint local passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou; `/` e `/dashboard` permanecem dinâmicos e `ƒ Proxy (Middleware)` foi preservado
+- revisão Next.js/React confirmou `error.tsx` cliente somente pela API `reset`, dashboard/loading server-compatible, props serializáveis, ausência de fetch/hooks/estado cliente novos e reutilização do design system
+
+Escopo preservado:
+- nenhuma regra financeira, rota, API, Supabase, migration, RLS, policy, grant, persistência, dependência, gráfico, previsão ou comparação foi criada
+- nenhum commit, push, merge, PR ou deploy foi executado nesta fase
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- UI-003 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`
