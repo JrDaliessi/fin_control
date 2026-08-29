@@ -1165,3 +1165,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - estados financeiros existentes foram preservados sem dados fabricados ou alteração de cálculo.
 - nenhuma dependência, Supabase, migration, persistência, regra financeira, gráfico, commit, push, PR, merge ou deploy foi executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 5 — UI-003
+
+- PR #13 mesclado com checks verdes antes da criação da branch isolada do Dia 5.
+- baseline: 5 suítes/28 testes direcionados e 72 suítes/388 testes completos, todos verdes.
+- três ciclos RED/GREEN comprovaram código morto, provider cliente global sem consumidor e duplicação da primitive `Button`.
+- cinco arquivos de produção do dashboard legado, seu teste exclusivo, o provider de sessão em memória e seu teste exclusivo foram removidos.
+- layout privado preserva Auth e shell, mas não envia mais estado de transações vazio para todas as rotas.
+- `FinancialPeriodSelector` reutiliza `Button` sem alterar submissão GET, alvo mínimo ou foco.
+- regressão final: 70 suítes e 378 testes passaram.
+- lint local: verde, 0 warnings; type-check: verde.
+- build Next `16.3.3`: verde; `/`, `/dashboard` e `ƒ Proxy (Middleware)` preservados.
+- revisão Next.js/React: `error.tsx` cliente somente por `reset`; demais superfícies server-compatible; nenhum hook, effect, fetch cliente, prop não serializável ou cálculo financeiro novo.
+- `git diff --check` verde; artefato gerado `next-env.d.ts` restaurado.
+- nenhuma dependência, Supabase, migration, persistência, regra financeira, gráfico, commit, push, PR adicional ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

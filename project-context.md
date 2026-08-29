@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UI-003 concluído; expansão controlada dos estados e da navegação validada com pipeline local verde
+- Fase atual: Dia 5 da UI-003 concluído; estado cliente legado removido e consistência do design system reforçada com pipeline verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -96,6 +96,7 @@
 - Data da estratégia de testes da UI-003: 2026-08-27
 - Data da implementação mínima da UI-003: 2026-08-27
 - Data da expansão controlada da UI-003: 2026-08-28
+- Data da refatoração e hardening da UI-003: 2026-08-29
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5175,3 +5176,42 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - UI-003 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Checkpoint e baseline:
+- PR #13 do Dia 4 foi mesclado por merge commit após todos os checks verdes
+- branch `codex/ui-003-day5-hardening` foi criada a partir de `develop` atualizado
+- baseline direcionado: 5 suítes e 28 testes passaram
+- baseline completo: 72 suítes e 388 testes passaram; lint, type-check e build passaram
+- a primeira tentativa de build falhou somente porque o sandbox não alcançou o Google Fonts; a repetição autorizada com rede passou sem mudança de código
+
+Refatoração guiada por testes:
+- RED arquitetural comprovou que a antiga cadeia cliente do dashboard ainda existia sem consumidores de produção
+- foram removidos `GetDashboardSummaryUseCase`, `useDashboardSummary`, `DashboardSummaryPanel`, `RecentTransactionsList` e `DashboardEmptyState`, além do teste exclusivo do caso de uso obsoleto
+- segundo RED comprovou que `TransactionSessionProvider` permanecia no layout privado sem qualquer consumidor; provider e teste exclusivo foram removidos e o layout deixou de enviar esse estado vazio para todas as rotas
+- terceiro RED registrou a inconsistência do botão manual do seletor; `FinancialPeriodSelector` agora reutiliza a primitive compartilhada `Button`
+- contratos arquiteturais impedem o retorno da cadeia legada e do provider global sem consumidor
+
+Evidências finais:
+- GREEN direcionado da limpeza inicial: 4 suítes e 20 testes
+- GREEN direcionado da fronteira cliente: 4 suítes e 21 testes
+- GREEN do design system: 2 suítes e 16 testes
+- regressão final: 70 suítes e 378 testes passaram
+- a redução líquida de 2 suítes e 10 testes decorre somente da remoção de código morto; 2 novos testes arquiteturais preservam a não regressão
+- lint passou com 0 warnings; type-check e build Next `16.3.3` passaram
+- `/`, `/dashboard` e `ƒ Proxy (Middleware)` permanecem dinâmicos/preservados
+- revisão Next.js/React confirmou menos JavaScript cliente, nenhuma prop não serializável, hook, effect, fetch cliente ou cálculo financeiro novo
+
+Escopo preservado:
+- nenhum comportamento financeiro, copy, rota, Supabase, migration, RLS, policy, grant, persistência, dependência ou gráfico foi alterado
+- nenhuma abstração nova foi criada; links permaneceram links porque `Button` não possui composição polimórfica aprovada
+- `rewrite-msgs.sh` permaneceu fora do escopo
+- nenhum commit, push, PR, merge adicional ou deploy foi executado após o início técnico do Dia 5
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- UI-003 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 6`

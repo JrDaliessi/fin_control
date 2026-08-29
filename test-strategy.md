@@ -558,6 +558,32 @@ GREEN observado:
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## RED/GREEN do Dia 5 — UI-003
+
+Baseline pré-refatoração:
+- 5 suítes direcionadas e 28 testes passaram
+- regressão completa com 72 suítes e 388 testes
+- lint, type-check e build verdes
+
+Contratos arquiteturais adicionados antes da remoção:
+- arquivos da antiga cadeia cliente do dashboard não podem voltar a existir
+- layout privado não pode compor `TransactionSessionProvider` sem consumidor
+- seletor de período deve reutilizar a primitive `Button`
+
+RED observado:
+- cadeia legada: 1 suíte falhou com 1 teste vermelho e 2 verdes
+- provider global: 1 suíte falhou com 2 testes vermelhos e 2 verdes
+- design system: 1 suíte falhou com 1 teste vermelho e 8 verdes
+
+GREEN observado:
+- limpeza inicial: 4 suítes e 20 testes passaram
+- fronteira cliente: 4 suítes e 21 testes passaram
+- design system: 2 suítes e 16 testes passaram
+- regressão final: 70 suítes e 378 testes passaram
+- duas suítes obsoletas foram removidas com seus únicos alvos de produção; dois contratos arquiteturais novos preservam a não regressão
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
 Small release: `SR-013 — Agregação da evolução financeira`.

@@ -324,66 +324,33 @@ Decisões:
 
 ### Domain
 
-Nesta SR, o dashboard não introduz novas entidades de domínio. Consome tipos existentes de transactions:
-- `MonthlySummary` de `list-monthly-summary.use-case.ts`
-- `CreateTransactionInput` de `transaction.entity.ts`
+O dashboard não introduz entidade nem regra financeira própria. A semântica do período e da evolução pertence a `financial-analytics`.
 
 ### Application
 
-Caso de uso:
-- `get-dashboard-summary.use-case.ts`
-
-Contrato:
-
-```ts
-export type DashboardSummaryInput = {
-  userId: string;
-  monthRef: string;
-  transactions: CreateTransactionInput[];
-};
-
-export type DashboardSummary = {
-  monthlySummary: MonthlySummary;
-  recentTransactions: CreateTransactionInput[];
-};
-```
-
-Regras:
-- orquestra resumo mensal via `listSessionMonthlySummary`, que reutiliza `ListMonthlySummaryUseCase`
-- seleciona as N transações mais recentes da sessão
-- não acessa repositórios diretamente
-- `userId` e `monthRef` validados antes de execução
-- transações recentes são filtradas pelo `userId` solicitado antes da ordenação e do limite
+O dashboard não mantém caso de uso paralelo. A composition root usa `ListFinancialEvolutionUseCase` por meio de `loadFinancialEvolution` e recebe `FinancialEvolutionDto` serializável.
 
 ### Presentation
 
 Componentes:
-- `DashboardPage.tsx` — composição macro da tela
-- `DashboardSummaryPanel.tsx` — exibe o resumo mensal retornado pela aplicação
-- `RecentTransactionsList.tsx` — lista compacta das últimas transações
-- `DashboardEmptyState.tsx` — call-to-action quando não há dados
-
-Hooks:
-- `useDashboardSummary.ts` — estado assíncrono do cálculo do resumo
+- `DashboardPage.tsx` — composição macro server-compatible, ações reais e slot React
+- `FinancialEvolutionPanel.tsx` — resumo, estados e tabela pertencentes a `financial-analytics`
+- `FinancialPeriodSelector.tsx` — seleção GET com kind aprovado e primitive `Button`
 
 Regras:
-- componente não calcula regra financeira
-- componente não importa Supabase
-- estados visuais anunciáveis por semântica acessível
-- navegação mínima entre dashboard e registro de transação
-- `DashboardPage` consome a sessão local por `useTransactionSession`
-- `useDashboardSummary` coordena loading, success e error sobre `GetDashboardSummaryUseCase`
+- `DashboardPage` não usa `use client`, Auth, sessão de transações, hooks financeiros, Supabase ou infraestrutura
+- a apresentação formata valores já calculados e não recalcula regras financeiras
+- `missing_accounts`, `empty` e `success` vêm do DTO da aplicação
+- loading e error permanecem arquivos especiais do App Router
+- navegação fica limitada a Contas e Transações
 
-### Sessão Local de Apresentação
+### Composição Server-side
 
-- `TransactionSessionProvider` pertence à apresentação de `transactions`
-- o provider é composto em `src/app/layout.tsx`
-- transações existem apenas em memória durante a navegação
-- recarregar a aplicação reinicia a sessão
-- o provider não substitui repositório, Supabase, autenticação ou RLS
-- o provider clona a transação e sua data na entrada para impedir mutação externa da sessão
-- contratos de leitura expõem coleções readonly
-- `formatCents` e `formatMonthRef` ficam em `src/shared/utils` por serem usados em mais de uma feature
+- `compose-dashboard-route.tsx` é compartilhado por `/` e `/dashboard`
+- `searchParams` é aguardado e normalizado antes da leitura
+- dados são carregados no servidor sem Route Handler ou fetch cliente
+- `TransactionSessionProvider` foi removido por não possuir consumidor de produção
+- `AuthSessionProvider` permanece porque autenticação e logout ainda o utilizam
 
 ### Rotas
 
@@ -393,7 +360,7 @@ Regras:
 
 ### Infrastructure
 
-Nenhuma infraestrutura nova nesta SR. Sem repositórios, sem clients, sem Supabase.
+O dashboard não implementa infraestrutura. O acesso real permanece isolado no repository de `financial-analytics`, composto no servidor.
 
 ## Financial Analytics — SR-012
 

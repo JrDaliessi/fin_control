@@ -674,8 +674,8 @@ Não criar todos antecipadamente. Cada componente nasce com uma necessidade real
 
 - `PrivateAppShell.tsx`: composition root visual com sidebar, topbar, main e navegação mobile; autenticação continua delegada aos casos de uso/gateway.
 - `DashboardPage.tsx`: composição em grid de 12 colunas, sem regra financeira.
-- `DashboardSummaryPanel.tsx`: evolução incremental para hero e métricas após contratos reais.
-- `RecentTransactionsList.tsx`: categoria, conta, agrupamento e ações somente após persistência correspondente.
+- resumo do dashboard: permanece em `FinancialEvolutionPanel` enquanto a fonte real for o snapshot da evolução.
+- movimentações recentes: componente futuro somente após existir projeção server-side alinhada ao período, sem restaurar sessão cliente em memória.
 - `globals.css`: tokens semânticos, tipografia, temas e preferências de movimento.
 - `tailwind.config.ts`: mapear classes aos tokens; não duplicar cores literais.
 - gráficos: nenhuma biblioteca antes do `SP-001`; o spike compara Recharts, Chart.js e alternativas para candles por acessibilidade, peso e SSR.
@@ -706,7 +706,7 @@ Não criar todos antecipadamente. Cada componente nasce com uma necessidade real
 | 9 | SR-023 | FinControl IA | cálculos determinísticos, consentimento e privacidade |
 | 10 | features futuras | cartões, orçamentos, relatórios, importação e configurações | domínios específicos |
 
-`UI-001` e `UI-002` estão concluídas. `UI-003` concluiu o Dia 4 em 2026-08-28 com expansão controlada e pipeline local verdes; `UI-004` a `UI-006` permanecem em `DISCOVERY`.
+`UI-001` e `UI-002` estão concluídas. `UI-003` concluiu o Dia 5 em 2026-08-29 com remoção do estado cliente legado e pipeline local verde; `UI-004` a `UI-006` permanecem em `DISCOVERY`.
 
 ### 21.1. Recorte aprovado da UI-001
 
