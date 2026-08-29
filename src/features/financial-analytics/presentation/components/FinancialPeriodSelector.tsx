@@ -16,7 +16,7 @@ export function FinancialPeriodSelector({
           Período da evolução financeira
         </label>
         <select
-          className="min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+          className="min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:text-sm"
           defaultValue={selectedPeriodKind}
           id="period"
           name="period"

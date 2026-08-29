@@ -6,7 +6,7 @@ describe("DashboardPage", () => {
   it("presents the approved dashboard hierarchy and neutral supporting copy", () => {
     render(<DashboardPage />);
 
-    expect(screen.getByRole("main")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
     expect(
       screen.getByRole("heading", { name: "Visão geral", level: 1 })
     ).toBeInTheDocument();

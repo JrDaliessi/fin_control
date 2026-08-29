@@ -14,10 +14,10 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também de SP-001 e da série temporal visual da SR-014.
 - Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
-- Fase atual: Dia 5 concluído; cadeia cliente obsoleta removida, provider global sem consumidor eliminado e design system consolidado com pipeline verde.
+- Fase atual: Dia 6 concluído; dashboard endurecido para viewport móvel, contraste AA automatizado, tabela rolável por toque/teclado e PWA honesto validado.
 - Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
 - Small releases: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
-- Próximo passo: executar `dia 6` para UX, acessibilidade e PWA sem antecipar gráficos ou offline.
+- Próximo passo: executar `dia 7` para qualidade final, segurança, observabilidade e preparação da entrega incremental.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

@@ -76,7 +76,7 @@ export function FinancialEvolutionPanel({
             Cadastre uma conta para acompanhar sua evolução financeira.
           </p>
           <Link
-            className="inline-flex min-h-11 w-fit items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:w-fit"
             href="/accounts"
           >
             Cadastrar conta
@@ -94,7 +94,7 @@ export function FinancialEvolutionPanel({
             {summaryItems.map(({ className, label, value, valueClassName }) => (
               <Card
                 aria-label={`${label}: ${value}`}
-                className={className}
+                className={`min-w-0 ${className}`}
                 key={label}
                 role="group"
               >
@@ -102,7 +102,7 @@ export function FinancialEvolutionPanel({
                   {label}
                 </dt>
                 <dd
-                  className={`mt-2 font-semibold tabular-nums text-foreground ${valueClassName}`}
+                  className={`mt-2 break-words font-semibold tabular-nums text-foreground ${valueClassName}`}
                 >
                   {value}
                 </dd>

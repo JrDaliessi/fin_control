@@ -1181,3 +1181,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - `git diff --check` verde; artefato gerado `next-env.d.ts` restaurado.
 - nenhuma dependência, Supabase, migration, persistência, regra financeira, gráfico, commit, push, PR adicional ou deploy foi executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 6 — UI-003
+
+- PR #14 mesclado antes da criação da branch isolada do Dia 6; baseline direcionado de 5 suítes/28 testes e completo de 70 suítes/378 testes, todos verdes.
+- TDD RED: 5 falhas em contratos de viewport dinâmico, controles móveis, CTA, contenção de valores e orientação da tabela.
+- GREEN direcionado: 3 suítes e 19 testes passaram.
+- contraste WCAG AA: 8 combinações automatizadas; texto normal >= 4,5:1 e foco/não texto >= 3:1.
+- regressão completa: 71 suítes e 386 testes passaram.
+- lint local: verde, 0 warnings; type-check: verde.
+- build Next `16.3.3`: verde; `/`, `/dashboard` e `ƒ Proxy (Middleware)` preservados.
+- browser real: 320 x 720 e 1366 x 768 sem overflow horizontal; inputs móveis com 16 px; botão principal com 44 px; console sem warning/error.
+- rota privada sem sessão redireciona para `/login`; credenciais não foram transmitidas pelo agente e o dashboard autenticado permaneceu coberto por testes determinísticos.
+- manifesto servido com HTTP 200 e `application/manifest+json`; nenhuma promessa offline, cache ou service worker introduzido.
+- revisão Next.js/React: Server Components e fronteiras existentes preservados; nenhum hook, effect, fetch cliente, dependência ou regra financeira nova.
+- `git diff --check` verde; artefatos gerados pelo Next restaurados/removidos; `rewrite-msgs.sh` preservado fora do escopo.
+- estado de saída: `QUALITY_VALIDATION`.
