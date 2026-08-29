@@ -22,3 +22,4 @@ Formato recomendado:
 - `0009-financial-periods-civil-date-boundaries.md` — períodos financeiros, datas civis e fronteiras de timezone
 - `0010-financial-evolution-snapshot-and-daily-buckets.md` — snapshot, saldo de abertura e agregação diária da evolução
 - `0011-dashboard-pulse-real-data-composition.md` — fonte real, composição server-side e limites do dashboard Pulse
+- `0012-chart-library-presentation-adapter.md` — Apache ECharts modular, ilha cliente e adapter de presentation

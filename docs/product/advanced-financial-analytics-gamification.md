@@ -256,5 +256,6 @@ Trading, indicadores tecnicos, ranking publico, recompensa monetaria, classes to
 
 ## 14. Decisoes pendentes
 
-Biblioteca de graficos, timezone, status/estorno/transferencia, saldo inicial consolidado, preferencias, provedor de IA e observabilidade de producao.
+A biblioteca de gráficos foi resolvida pelo `SP-001` no ADR 0012: Apache ECharts modular, SVG e adapter de presentation, ainda condicionado aos testes e ao experimento incremental.
 
+Permanecem pendentes: timezone, status/estorno/transferencia, saldo inicial consolidado, preferencias, provedor de IA e observabilidade de producao.

@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UI-003 concluído; pipeline, segurança, observabilidade e release readiness validados para entrega incremental de código
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 do SP-001 concluído; Apache ECharts modular e adapter de presentation definidos sem instalar dependência
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -99,6 +99,8 @@
 - Data da refatoração e hardening da UI-003: 2026-08-29
 - Data da revisão de UX, acessibilidade e PWA da UI-003: 2026-08-29
 - Data da validação final e preparação de release da UI-003: 2026-08-29
+- Data de seleção do SP-001 como próximo ciclo: 2026-08-29
+- Data do discovery e arquitetura do SP-001: 2026-08-29
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5313,3 +5315,67 @@ Estado de saída:
 - `READY_FOR_RELEASE`
 - UI-003 concluída como entrega incremental de código
 - próximo passo recomendado: seleção humana do `SP-001 — Biblioteca de gráficos`, sem iniciar automaticamente outro ciclo
+
+## Próximo Ciclo Selecionado — SP-001 Biblioteca de Gráficos
+
+Spike selecionado: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Objetivo:
+- reduzir a incerteza técnica antes da SR-014, comparando opções adequadas a linha financeira, candles futuros, responsividade e acessibilidade
+- definir uma fronteira de adapter exclusiva da presentation, sem acoplar domain ou application a uma biblioteca visual
+- preservar a tabela acessível como representação equivalente e obrigatória dos dados
+
+Dependências confirmadas:
+- SR-013 e UI-003 concluídas em `READY_FOR_RELEASE`
+- `FinancialEvolutionDto` já fornece buckets diários serializáveis e sem dependência visual
+- PR #16 incorporada ao `develop` com Quality Gates verdes
+
+Escopo da seleção:
+- branch `codex/sp-001-chart-library-spike` criada a partir do `develop` atualizado
+- nenhuma biblioteca foi instalada e nenhum gráfico de produção foi criado
+- comparação, critérios, experimento limitado e ADR pertencem ao Dia 1; implementação da SR-014 permanece separada
+
+Estado de entrada:
+- máquina de estados permanece `READY_FOR_RELEASE`
+- SP-001 está `IN_PROGRESS` apenas como ciclo selecionado
+- próximo comando válido: `dia 1`
+
+## Dia 1 — Contexto, Discovery e Arquitetura do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Diagnóstico:
+- o snapshot da SR-013 entrega até 31 buckets diários como objetos planos com datas civis e valores inteiros em centavos
+- `composeDashboardRoute` e `FinancialEvolutionPanel` permanecem server-side; somente a futura superfície interativa precisa ser cliente
+- a tabela diária já é a representação acessível e não pode ser removida pelo gráfico
+- SR-014 exige linha; SR-015 exige OHLC financeiro sem semântica de trading
+
+Comparação ponderada:
+- Apache ECharts 6.1: `4,10/5`; linha e candlestick nativos, SVG/Canvas, ARIA/decal, TypeScript e imports modulares
+- Recharts 3.10: `3,90/5`; melhor ergonomia React/SVG, mas candle depende de composição manual com `Bar` e `ErrorBar`
+- Lightweight Charts 5.2: `3,90/5`; foco financeiro e bundle enxuto, mas Canvas, acessibilidade própria e atribuição TradingView obrigatória
+
+Decisão:
+- adotar `echarts@6.1.0` diretamente e sem wrapper React, condicionado ao experimento e aos testes das próximas fases
+- usar importações tree-shakeable e `SVGRenderer`; nenhum import total de `echarts` será permitido
+- criar adapter específico em `financial-analytics/presentation/charts/echarts`, sem `ChartPort` genérico prematuro
+- preservar o DTO e os centavos; mapper de presentation produzirá view model plano e serializável
+- manter `FinancialEvolutionPanel` como Server Component e limitar `use client` ao componente de lifecycle do gráfico
+- manter a tabela sempre renderizada; ARIA/decal, descrição, teclado, contraste e movimento reduzido complementam a alternativa textual
+
+Contratos planejados:
+- `FinancialEvolutionDto -> toFinancialEvolutionChartModel -> FinancialEvolutionChartModel -> FinancialEvolutionChart.client -> buildEChartsOption`
+- domain, application, infrastructure, Supabase e App Router não importam ECharts
+- temas chegam como tokens resolvidos pela ilha cliente; nenhuma regra financeira é recalculada na biblioteca
+- lifecycle deve cobrir init, resize, update e dispose sem listeners órfãos
+
+Evidências e limites:
+- documentação oficial de ECharts, Recharts, Lightweight Charts e Next.js foi confrontada com o código e o roadmap atuais
+- ADR `0012-chart-library-presentation-adapter.md` registra matriz, decisão, estrutura e alternativas
+- nenhuma dependência, implementação, teste funcional, migration, dado, commit, push, PR ou deploy foi criado nesta fase
+- `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 2`

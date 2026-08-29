@@ -1214,3 +1214,15 @@ Uma release incremental só pode ser considerada pronta quando:
 - observabilidade: logs recentes de Supabase sem erro/fatal/5xx; preview protegido por SSO não recebeu bypass; captura externa sanitizada permanece em `HARD-OBS-001`.
 - hardening: ausência de headers definidos pela aplicação permanece em `SEC-HARD-001`; vínculo/runtime/npm divergentes da Vercel foram registrados em `CI-VERCEL-002`.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código; produção pública permanece bloqueada pelos hardenings documentados.
+
+## Gate do Dia 1 — SP-001
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- código real, DTO, composição server-side, tabela acessível, roadmap e ADRs anteriores confrontados.
+- comparação oficial cobriu Apache ECharts 6.1, Recharts 3.10 e Lightweight Charts 5.2 por linha/candles, acessibilidade, Next.js/React, bundle, mobile, TypeScript e licença.
+- Apache ECharts escolhido com import modular, SVG, ARIA/decal e sem wrapper React adicional.
+- fronteira definida: mapper puro e option builder em presentation; ilha cliente mínima; domain/application/infrastructure/App Router sem import da biblioteca.
+- tabela acessível, centavos, datas civis, movimento reduzido, contraste e ausência de semântica de trading permanecem obrigatórios.
+- nenhuma dependência, gráfico, teste funcional, Supabase, migration, dado, commit, push, PR ou deploy foi criado.
+- lint, type-check e build não foram repetidos porque somente documentação foi alterada; `git diff --check` é o gate aplicável da fase.
+- estado de saída: `ARCHITECTURE_READY`.

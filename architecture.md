@@ -386,6 +386,18 @@ O projeto deve ter:
 - Gráficos permanecem bloqueados até `SP-001` e SR-014; a tabela acessível continua obrigatória mesmo após gráficos.
 - Decisão completa: `adr/0011-dashboard-pulse-real-data-composition.md`.
 
+## Adapter de gráficos financeiros — SP-001
+
+- Apache ECharts `6.1.0` é a biblioteca visual escolhida para validação incremental nas SR-014/SR-015.
+- A dependência fica confinada a `financial-analytics/presentation/charts/echarts`; domain, application, infrastructure e App Router não importam ECharts.
+- `FinancialEvolutionPanel` permanece Server Component. Apenas o lifecycle do gráfico forma uma ilha cliente estreita com props planas e serializáveis.
+- Importações usam `echarts/core`, charts/componentes necessários, `AriaComponent` e `SVGRenderer`; import total e wrapper React adicional são proibidos.
+- O adapter mantém datas civis e inteiros em centavos. Formatação de moeda pertence a eixo, tooltip e descrição, não altera cálculos.
+- A tabela acessível permanece presente e equivalente. ARIA/decal do gráfico é complementar; cor ou tooltip nunca são a única forma de transmitir informação.
+- Movimento reduzido, resize, dispose, temas e delta de bundle devem ser comprovados por testes e experimento antes do gráfico de produção.
+- Não existe `ChartPort` genérico nesta fase; nova abstração depende de segundo consumidor real.
+- Decisão completa: `adr/0012-chart-library-presentation-adapter.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações

@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo recomendado: selecionar humanamente o `SP-001 — Biblioteca de gráficos` para discovery técnico; gráficos e a série temporal visual continuam fora até a conclusão do spike e da SR-014.
+Próximo ciclo em andamento: Dia 1 do `SP-001 — Biblioteca de gráficos` concluído. Apache ECharts modular foi escolhido atrás de adapter de presentation; o próximo comando válido é `dia 2`, e gráficos de produção continuam fora até a SR-014.
 
 Integrações posteriores:
 
@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013 e UI-003 concluídas em `READY_FOR_RELEASE`. O dashboard consome somente o snapshot real, preserva composição server-side e passou por validação final; `SP-001`/SR-014 permanecem como incrementos posteriores e separados para gráficos.
+Estado atual: SR-013 e UI-003 concluídas; SP-001 em `ARCHITECTURE_READY` após comparar ECharts, Recharts e Lightweight Charts. A decisão favorece ECharts 6.1 modular com SVG e tabela acessível preservada; instalação e gráfico permanecem bloqueados até as próximas fases.
 
 ## Marco 10 - Candles Financeiros
 

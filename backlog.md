@@ -6,7 +6,18 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SP-001 — Avaliar biblioteca de gráficos
+- Tipo: Spike
+- Descrição objetiva: comparar opções de visualização para linha financeira e candles futuros, com foco em bundle, responsividade, acessibilidade e isolamento arquitetural.
+- Objetivo de negócio: reduzir risco técnico antes da SR-014 e evitar dependência visual inadequada para mobile e acessibilidade.
+- Valor esperado: decisão auditável de biblioteca e contrato de adapter sem antecipar gráfico de produção.
+- Prioridade: Alta
+- Dependências: view model da SR-013 e UI-003 concluída.
+- Risco: Médio
+- Fase atual: Dia 1 concluído; Apache ECharts modular, SVG e adapter específico de presentation definidos no ADR 0012.
+- Critério de pronto: ADR comparando opções, critérios objetivos, adapter de presentation definido e experimento limitado quando necessário; nenhum gráfico de produção.
+- Próximo passo: executar `dia 2` para contratos testáveis do mapper, option builder, fronteira arquitetural, lifecycle e acessibilidade.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -177,17 +188,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SP-001 - Avaliar biblioteca de graficos
-- Tipo: Spike
-- Objetivo de negocio: reduzir risco tecnico de linha e candles.
-- Valor esperado: menor dependencia com mobile e acessibilidade.
-- Prioridade: Alta
-- Dependencias: view model da SR-013.
-- Risco: Medio
-- Fase recomendada: investigacao limitada antes da SR-014.
-- Criterio de pronto: ADR comparando opcoes e definindo adapter; sem grafico de producao.
 - Status: DISCOVERY
 
 ### SR-014 - Grafico de linha da evolucao

@@ -479,6 +479,20 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Matriz planejada do Dia 2 — SP-001
+
+O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:
+
+- mapper puro: preserva ordem, datas civis, centavos, saldo negativo e pontos vazios;
+- option builder: linha de fechamento, eixo/tooltip em moeda, SVG, ARIA e ausência de mutação do modelo;
+- arquitetura: ECharts restrito a `presentation/charts/echarts` e ao componente cliente aprovado;
+- RSC: painel continua server-compatible e envia somente props serializáveis à ilha cliente;
+- lifecycle: init, resize, update, dispose e remoção de listeners com adapter mockado;
+- acessibilidade: tabela permanece presente, descrição associada, informação não depende apenas de cor e movimento reduzido desativa animação;
+- bundle: baseline e delta documentados com imports modulares; import total de `echarts` falha o contrato.
+
+Nenhum desses testes foi criado no Dia 1. A instalação de `echarts@6.1.0` e qualquer implementação permanecem bloqueadas até RED válido e aprovação do Dia 3.
+
 ## Matriz Executada no Dia 2 — UI-003
 
 Os testes abaixo foram escritos antes de qualquer alteração funcional nos componentes:
