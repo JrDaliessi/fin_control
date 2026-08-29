@@ -1,4 +1,5 @@
 import type { FinancialPeriodKind } from "../../domain/types/financial-period.types";
+import { Button } from "@/shared/components/ui/Button";
 import { financialPeriodOptions } from "../config/financial-period-options";
 
 type FinancialPeriodSelectorProps = Readonly<{
@@ -27,12 +28,9 @@ export function FinancialPeriodSelector({
           ))}
         </select>
       </div>
-      <button
-        className="min-h-11 w-full rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:w-auto"
-        type="submit"
-      >
+      <Button className="w-full sm:w-auto" type="submit">
         Atualizar período
-      </button>
+      </Button>
     </form>
   );
 }

@@ -224,11 +224,11 @@ describe("FinControl design-system contract", () => {
         "src/features/financial-analytics/presentation/components/FinancialEvolutionPanel.tsx",
         ["Card", "FeedbackMessage"],
       ],
-      ["src/app/(private)/dashboard/error.tsx", ["Button"]],
       [
-        "src/features/dashboard/presentation/components/DashboardEmptyState.tsx",
-        ["Card"],
+        "src/features/financial-analytics/presentation/components/FinancialPeriodSelector.tsx",
+        ["Button"],
       ],
+      ["src/app/(private)/dashboard/error.tsx", ["Button"]],
     ]);
 
     for (const [path, primitives] of expectedImports) {

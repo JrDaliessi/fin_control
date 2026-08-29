@@ -15,7 +15,6 @@ jest.mock("@/app/(private)/dashboard/load-financial-evolution", () => ({
 }));
 
 import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
-import { TransactionSessionProvider } from "../../transactions/presentation/providers/TransactionSessionProvider";
 
 const { loadTransactionsPageAction } = jest.requireMock<
   typeof import("@/app/(private)/transactions/actions")
@@ -38,7 +37,7 @@ function renderRoute(route: React.ReactNode) {
     <AuthSessionProvider
       user={{ id: "user-1", email: "usuario@example.com" }}
     >
-      <TransactionSessionProvider>{route}</TransactionSessionProvider>
+      {route}
     </AuthSessionProvider>
   );
 }

@@ -376,7 +376,7 @@ O projeto deve ter:
 - A rota aguarda `searchParams`, normaliza o período e carrega `FinancialEvolutionDto` diretamente no servidor; não cria Route Handler nem fetch de leitura no cliente.
 - `DashboardPage` deve ser apresentação pura e server-compatible, recebendo composição por slot React sem importar Auth, transações, analytics, Supabase ou infraestrutura.
 - `FinancialEvolutionPanel` permanece na feature dona da semântica financeira e recebe somente DTO plano e kind aprovado.
-- A UI-003 elimina do dashboard o resumo baseado no `TransactionSessionProvider`, porque o provider começa vazio e não representa a persistência real.
+- A UI-003 elimina o resumo cliente em memória e remove `TransactionSessionProvider` do layout privado, porque não havia consumidor de produção e o estado vazio não representava a persistência real.
 - A única fonte financeira deste recorte é o snapshot da SR-013: abertura, receitas, despesas, líquido, fechamento, contagem e buckets diários.
 - O grid é lógico de 12 colunas e mobile first. Layout não altera cálculos nem replica valores em estado cliente.
 - Loading e error permanecem em arquivos especiais do App Router; `missing_accounts`, `empty` e `success` pertencem ao DTO da aplicação.

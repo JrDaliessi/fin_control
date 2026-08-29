@@ -901,3 +901,30 @@ Interpretação:
 - nenhuma alteração de Supabase, migration, dependência, rota ou regra financeira foi realizada.
 - estado final: `IMPLEMENTATION_IN_PROGRESS`.
 - próximo comando válido: `dia 5`.
+
+## Dia 5 — UI-003
+
+### Baseline e RED
+
+- baseline direcionado: 5 suítes e 28 testes passaram.
+- baseline completo: 72 suítes e 388 testes passaram.
+- RED da cadeia cliente legada: 1 falha e 2 testes verdes.
+- RED do provider global sem consumidor: 2 falhas e 2 testes verdes.
+- RED do design system: 1 falha e 8 testes verdes.
+
+### GREEN e regressão
+
+- limpeza inicial: 4 suítes e 20 testes passaram.
+- remoção da fronteira cliente global: 4 suítes e 21 testes passaram.
+- consolidação do seletor com `Button`: 2 suítes e 16 testes passaram.
+- regressão final: 70 suítes e 378 testes passaram.
+- a redução líquida corresponde somente a testes exclusivos de código removido; dois novos contratos arquiteturais foram adicionados.
+
+### Gates
+
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- nenhuma regra financeira, Supabase, migration, dependência, rota ou comportamento foi alterado.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 6`.
