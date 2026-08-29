@@ -60,7 +60,7 @@ describe("FinancialEvolutionPanel", () => {
     expect(
       screen.getByRole("button", { name: "Atualizar período" })
     ).toHaveClass("min-h-11", "w-full", "sm:w-auto");
-    expect(selector).toHaveClass("w-full");
+    expect(selector).toHaveClass("w-full", "text-base", "sm:text-sm");
   });
 
   it("guides users without accounts before rendering financial data", () => {
@@ -80,7 +80,7 @@ describe("FinancialEvolutionPanel", () => {
     );
     expect(
       screen.getByRole("link", { name: "Cadastrar conta" })
-    ).toHaveAttribute("href", "/accounts");
+    ).toHaveClass("w-full", "sm:w-fit");
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("group", { name: /Saldo ao fim do período:/ })
@@ -190,6 +190,8 @@ describe("FinancialEvolutionPanel", () => {
       name: /Saldo ao fim do período: R\$\s*130,00/
     });
     expect(closingBalance.closest("dl")).toHaveClass("grid-cols-12");
+    expect(closingBalance).toHaveClass("min-w-0");
+    expect(closingBalance.querySelector("dd")).toHaveClass("break-words");
     expect(screen.queryByText(/disponível de verdade/i)).not.toBeInTheDocument();
   });
 
@@ -206,12 +208,15 @@ describe("FinancialEvolutionPanel", () => {
     });
 
     expect(scrollRegion).toHaveAttribute("tabindex", "0");
+    expect(scrollRegion).toHaveClass("touch-pan-x");
     expect(scrollRegion).toHaveAttribute(
       "aria-describedby",
       "financial-evolution-table-hint"
     );
     expect(
-      screen.getByText("Deslize horizontalmente para consultar todas as colunas.")
-    ).toHaveClass("sm:hidden");
+      screen.getByText(
+        "Deslize horizontalmente ou use as setas do teclado para consultar todas as colunas."
+      )
+    ).toHaveClass("sm:sr-only");
   });
 });

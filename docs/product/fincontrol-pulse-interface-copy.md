@@ -882,3 +882,16 @@ Dia 7 concluído em 2026-07-15:
 - threat model cobre preferência de tema, hidratação, storage, autenticação e supply chain;
 - observabilidade permanece baseada nos gates de CI e testes determinísticos, sem adicionar rastreamento ou analytics;
 - `UI-001` está `DONE` e `READY_FOR_RELEASE`; `UI-002` a `UI-006` continuam em `DISCOVERY`.
+
+## 26. Estado incremental da UI-003
+
+Dia 6 concluído em 2026-08-29:
+
+- dashboard usa altura dinâmica do viewport e mantém composição server-side com dados reais;
+- seletor evita zoom automático no mobile, CTA contextual ocupa largura segura e valores longos não causam overflow;
+- tabela diária comunica rolagem horizontal para toque, teclado e tecnologia assistiva;
+- contraste essencial foi automatizado com limiares WCAG AA para texto e indicadores de foco;
+- manifesto instalado permanece `standalone`, com ícones e atalhos reais, sem service worker ou promessa offline;
+- telas públicas foram verificadas em 320 px e 1366 px sem overflow horizontal e sem erros de console;
+- gráficos, novas métricas, Supabase, migrations, dependências e regras financeiras permaneceram fora do recorte;
+- `UI-003` entra em `QUALITY_VALIDATION`; o próximo comando válido é `dia 7`.

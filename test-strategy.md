@@ -584,6 +584,23 @@ GREEN observado:
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## RED/GREEN do Dia 6 — UI-003
+
+- baseline direcionado: 5 suítes e 28 testes verdes; baseline completo: 70 suítes e 378 testes verdes
+- RED: 3 suítes executadas, 2 falharam e 1 passou; 5 testes falharam e 14 passaram por contratos responsivos ainda ausentes
+- GREEN direcionado: 3 suítes e 19 testes passaram após a implementação mínima
+- contraste: 8 combinações verificadas automaticamente, com limiares WCAG AA de 4,5:1 para texto normal e 3:1 para foco/não texto
+- dashboard: altura dinâmica do viewport coberta por teste
+- seletor: fonte móvel de 16 px coberta para evitar zoom automático
+- estado sem contas: CTA responsivo e largura segura cobertos
+- resumo: valores longos e cards estreitos protegidos contra overflow
+- tabela: gesto horizontal, teclado, orientação persistente para tecnologia assistiva e ocultação apenas visual em `sm`
+- regressão completa: 71 suítes e 386 testes passaram
+- lint: verde com 0 warnings; type-check: verde; build Next `16.3.3`: verde
+- browser: 320 x 720 e 1366 x 768 sem overflow horizontal; console sem erro; manifesto HTTP 200
+- nenhum teste ou implementação promete offline, cria service worker ou altera cálculo financeiro
+- estado de saída: `QUALITY_VALIDATION`
+
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
 Small release: `SR-013 — Agregação da evolução financeira`.

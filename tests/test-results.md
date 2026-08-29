@@ -928,3 +928,25 @@ Interpretação:
 - nenhuma regra financeira, Supabase, migration, dependência, rota ou comportamento foi alterado.
 - estado final: `IMPLEMENTATION_IN_PROGRESS`.
 - próximo comando válido: `dia 6`.
+
+## Dia 6 — UI-003
+
+### Baseline, RED e GREEN
+
+- baseline direcionado: 5 suítes e 28 testes passaram.
+- baseline completo: 70 suítes e 378 testes passaram.
+- RED: 3 suítes executadas, 2 falharam e 1 passou; 5 testes falharam e 14 passaram.
+- GREEN direcionado: 3 suítes e 19 testes passaram.
+- teste transversal de contraste: 1 suíte e 8 casos passou.
+
+### Regressão, browser e gates
+
+- regressão completa: 71 suítes e 386 testes passaram.
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- inspeção visual em 320 x 720 e 1366 x 768 passou sem overflow horizontal e sem erros no console.
+- manifesto respondeu HTTP 200 com `application/manifest+json`.
+- nenhuma regra financeira, Supabase, migration, dependência, gráfico, service worker ou promessa offline foi criada.
+- estado final: `QUALITY_VALIDATION`.
+- próximo comando válido: `dia 7`.

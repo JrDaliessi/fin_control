@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UI-003 concluído; estado cliente legado removido e consistência do design system reforçada com pipeline verde
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UI-003 concluído; responsividade, acessibilidade essencial e experiência PWA validadas sem promessa offline
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -97,6 +97,7 @@
 - Data da implementação mínima da UI-003: 2026-08-27
 - Data da expansão controlada da UI-003: 2026-08-28
 - Data da refatoração e hardening da UI-003: 2026-08-29
+- Data da revisão de UX, acessibilidade e PWA da UI-003: 2026-08-29
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5215,3 +5216,49 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - UI-003 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Checkpoint e baseline:
+- PR #14 do Dia 5 foi mesclado por merge commit `32d8343a478ef31ab47863664e48ff33eaaba64b`
+- branch `codex/ui-003-day6-accessibility-pwa` foi criada a partir de `develop` atualizado
+- baseline direcionado: 5 suítes e 28 testes passaram
+- baseline completo: 70 suítes e 378 testes passaram; lint, type-check e build passaram
+
+TDD e melhorias aplicadas:
+- RED direcionado: 3 suítes executadas, 2 falharam, 1 passou; 5 testes falharam e 14 passaram
+- o dashboard passou a respeitar a altura dinâmica do viewport com `min-h-dvh`
+- o seletor de período usa 16 px no mobile para evitar zoom automático em navegadores móveis e retorna ao tamanho compacto em `sm`
+- CTA do estado sem contas ocupa a largura disponível no mobile e volta ao tamanho intrínseco em telas maiores
+- cards e valores financeiros aceitam conteúdo estreito sem overflow; valores longos podem quebrar linha
+- a tabela diária preserva rolagem horizontal explícita, habilita gesto de toque e mantém a orientação disponível para leitores de tela e teclado
+- novo teste transversal verifica oito combinações de cores: texto normal com razão mínima 4,5:1 e foco/não texto com razão mínima 3:1
+- GREEN direcionado: 3 suítes e 19 testes passaram
+
+PWA, responsividade e navegador:
+- manifesto existente permaneceu honesto: `standalone`, `pt-BR`, ícones raster/maskable, atalhos reais e nenhuma promessa de offline
+- `manifest.webmanifest` respondeu HTTP 200 com `application/manifest+json`
+- inspeção real em 320 x 720 e 1366 x 768 confirmou ausência de overflow horizontal, inputs móveis com 16 px, botão principal com 44 px e console sem warnings ou erros
+- rota privada sem sessão redirecionou corretamente de `/dashboard` para `/login`
+- credenciais não foram transmitidas pelo agente no navegador; a superfície autenticada permaneceu validada pelos testes determinísticos de dashboard, shell, analytics e rotas
+- nenhum service worker, cache ou comportamento offline foi criado
+
+Evidências finais:
+- regressão completa: 71 suítes e 386 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou; `/`, `/dashboard` e `ƒ Proxy (Middleware)` permanecem dinâmicos/preservados
+- revisão Next.js/React confirmou Server Components preservados, ausência de hooks/effects/fetch cliente novos e nenhuma ampliação do bundle financeiro
+- `git diff --check` passou; artefatos gerados por `next dev`/`next build` foram restaurados ou removidos
+
+Escopo preservado:
+- nenhuma regra financeira, métrica, gráfico, rota, dependência, Supabase, migration, RLS, policy, persistência, analytics, service worker ou promessa offline foi adicionada
+- `rewrite-msgs.sh` permaneceu fora do escopo
+- nenhum commit, push, PR ou deploy foi executado após o início técnico do Dia 6
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- UI-003 permanece `IN_PROGRESS` até o Dia 7
+- próximo comando válido: `dia 7`
