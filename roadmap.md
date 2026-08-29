@@ -186,7 +186,7 @@ Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` e `UI-002` concluídas; Dia 6 da `UI-003` concluído em 2026-08-29 no estado `QUALITY_VALIDATION`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard Pulse usa fonte real, composição server-side e passou por hardening responsivo, acessível e PWA sem promessa offline.
+Status: `UI-001`, `UI-002` e `UI-003` concluídas; Dia 7 da `UI-003` encerrou em 2026-08-29 no estado `READY_FOR_RELEASE`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard Pulse usa fonte real, composição server-side e passou por pipeline, segurança, observabilidade, hardening responsivo, acessível e PWA sem promessa offline.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: executar o Dia 7 da `UI-003` para qualidade final, segurança, observabilidade e release readiness; gráficos continuam fora até `SP-001` e SR-014.
+Próximo passo recomendado: selecionar humanamente o `SP-001 — Biblioteca de gráficos` para discovery técnico; gráficos e a série temporal visual continuam fora até a conclusão do spike e da SR-014.
 
 Integrações posteriores:
 
@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013 concluída e Dia 6 da UI-003 concluído em `QUALITY_VALIDATION`. O dashboard consome somente o snapshot real, preserva composição server-side, passou por validação responsiva/acessível/PWA e mantém `SP-001`/SR-014 como incrementos posteriores para gráficos.
+Estado atual: SR-013 e UI-003 concluídas em `READY_FOR_RELEASE`. O dashboard consome somente o snapshot real, preserva composição server-side e passou por validação final; `SP-001`/SR-014 permanecem como incrementos posteriores e separados para gráficos.
 
 ## Marco 10 - Candles Financeiros
 

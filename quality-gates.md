@@ -1197,3 +1197,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - revisão Next.js/React: Server Components e fronteiras existentes preservados; nenhum hook, effect, fetch cliente, dependência ou regra financeira nova.
 - `git diff --check` verde; artefatos gerados pelo Next restaurados/removidos; `rewrite-msgs.sh` preservado fora do escopo.
 - estado de saída: `QUALITY_VALIDATION`.
+
+## Gate do Dia 7 — UI-003
+
+- PR #15 mesclado por squash no `develop` com commit `38430ecdb11c8c5882991d2dfbe3235778d5b862`; branch isolada do Dia 7 criada após sincronização.
+- regressão completa: 71 suítes e 386 testes passaram.
+- lint: verde, 0 warnings; type-check: verde.
+- auditoria npm de produção: verde, 0 vulnerabilidades; 697 pacotes com assinaturas de registro e 102 com attestations verificadas.
+- build Next `16.3.3`: verde; `/`, `/dashboard` e `ƒ Proxy (Middleware)` preservados.
+- `git diff --check`: verde; `rewrite-msgs.sh` preservado fora do escopo.
+- GitHub Actions: workflow Quality Gates #60 verde no commit `7f1cd31`; status Vercel no GitHub também verde.
+- Supabase: seis migrations alinhadas; três tabelas públicas com RLS habilitada/forçada, grants mínimos e policies de ownership; RPC invoker limitada a `authenticated`.
+- Security Advisor: somente `auth_leaked_password_protection`, rastreado em `SEC-AUTH-001`; três índices sem uso permanecem informativos.
+- segredos: apenas `.env.example` rastreado, com `SUPABASE_SERVICE_ROLE_KEY` vazio; nenhum logging direto encontrado em `src`.
+- Vercel: preview `dpl_FjFhZDd3P7aYtjy8gJRazK6BqSRj` `READY`, sem erro de runtime atual; produção permanece em deployment anterior e não foi promovida.
+- observabilidade: logs recentes de Supabase sem erro/fatal/5xx; preview protegido por SSO não recebeu bypass; captura externa sanitizada permanece em `HARD-OBS-001`.
+- hardening: ausência de headers definidos pela aplicação permanece em `SEC-HARD-001`; vínculo/runtime/npm divergentes da Vercel foram registrados em `CI-VERCEL-002`.
+- estado final: `READY_FOR_RELEASE` para entrega incremental de código; produção pública permanece bloqueada pelos hardenings documentados.
