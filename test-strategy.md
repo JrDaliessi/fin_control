@@ -702,6 +702,19 @@ Implementação bloqueada até o Dia 3:
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## RED/GREEN do Dia 5 — SR-014 / UX-CHART-001
+
+- Baseline direcionado: 3 suítes e 33 testes verdes.
+- Risco reproduzido: recolher o frame enquanto `requestFullscreen()` permanecia pendente permitia aquisição nativa tardia sem diálogo correspondente.
+- RED: 1 suíte com 1 falha esperada e 9 testes verdes; `exitFullscreen()` recebeu zero chamadas.
+- GREEN da primitive: 1 suíte e 10 testes verdes após invalidar tentativas obsoletas.
+- GREEN direcionado: 3 suítes e 34 testes verdes.
+- Regressão completa: 76 suítes e 429 testes verdes.
+- O teste preserva overlay CSS, foco, scroll, Escape, cleanup, múltiplos frames e a mesma instância do renderer.
+- Nenhum teste foi removido, relaxado ou ignorado; nenhuma regra financeira ou fronteira de dados mudou.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.
+
 ## GREEN do Dia 3 — SR-014
 
 - `FinancialEvolutionPanel` permaneceu server-side, passou a executar o mapper e compôs a ilha cliente com view model plano.

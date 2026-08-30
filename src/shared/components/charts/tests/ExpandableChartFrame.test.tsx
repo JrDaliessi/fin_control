@@ -192,6 +192,46 @@ describe("ExpandableChartFrame", () => {
     ).toBeInTheDocument();
   });
 
+  it("exits native fullscreen when a stale request resolves after collapse", async () => {
+    const user = userEvent.setup();
+    let resolveFullscreenRequest: (() => void) | undefined;
+
+    enableNativeFullscreen();
+    requestFullscreen.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveFullscreenRequest = resolve;
+        })
+    );
+    exitFullscreen.mockImplementation(async () => {
+      fullscreenElement = null;
+    });
+    renderFrame();
+    const frame = screen
+      .getByRole("button", { name: "Expandir gráfico: Evolução do saldo" })
+      .closest("[data-chart-frame]");
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Expandir gráfico: Evolução do saldo"
+      })
+    );
+    await user.click(
+      screen.getByRole("button", {
+        name: "Recolher gráfico: Evolução do saldo"
+      })
+    );
+
+    fullscreenElement = frame;
+    await act(async () => {
+      resolveFullscreenRequest?.();
+      await Promise.resolve();
+    });
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(exitFullscreen).toHaveBeenCalledTimes(1);
+  });
+
   it("synchronizes when the browser leaves native fullscreen", async () => {
     const user = userEvent.setup();
     enableNativeFullscreen();

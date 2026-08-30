@@ -22,6 +22,7 @@ O gráfico de evolução da SR-014 é o primeiro gráfico de produção. O roadm
 8. A tabela equivalente continuará fora do frame, visível no fluxo normal e disponível novamente ao fechar a expansão.
 9. Orientação de tela não será forçada e nenhuma dependência será adicionada.
 10. O gráfico de evolução será o primeiro consumidor e os gráficos futuros deverão adotar o mesmo contrato em suas próprias small releases.
+11. Cada solicitação nativa terá identidade de tentativa; recolher ou desmontar o frame torna a tentativa obsoleta, e uma aquisição tardia deve ser encerrada sem reabrir a UI.
 
 ## Estados
 
@@ -31,6 +32,7 @@ O gráfico de evolução da SR-014 é o primeiro gráfico de produção. O roadm
 | expandido com API nativa | elemento ocupa a tela e o navegador confirma por `fullscreenchange` |
 | expandido sem API nativa | overlay CSS ocupa o viewport disponível |
 | solicitação nativa rejeitada | overlay permanece funcional e o erro técnico não expõe dados |
+| solicitação nativa resolve após recolhimento | fullscreen adquirido tardiamente é encerrado e a UI permanece recolhida |
 | saída por botão ou `Escape` | scroll e foco são restaurados |
 
 ## Contratos TDD
@@ -42,6 +44,7 @@ O gráfico de evolução da SR-014 é o primeiro gráfico de produção. O roadm
 - scroll e foco são restaurados;
 - listeners e estilos globais são limpos no unmount;
 - dois frames preservam estado independente;
+- solicitação obsoleta não deixa fullscreen nativo ativo nem atualiza UI recolhida;
 - o gráfico de evolução reutiliza o frame sem duplicar dados ou instância.
 
 ## Alternativas rejeitadas

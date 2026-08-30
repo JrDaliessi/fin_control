@@ -1400,5 +1400,26 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma dependência, Supabase, migration, regra financeira, orientação forçada ou gráfico futuro foi criado.
 - validação visual/browser e acessibilidade aprofundada permanecem para o Dia 6.
 - `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- `git diff --check`: verde.
 - nenhum commit, push, deploy ou atualização de PR foi executado nesta fase.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — SR-014 / UX-CHART-001
+
+- contexto central, workflow do Dia 5 e skill `vercel:react-best-practices` consultados; declaração aprovada antes da execução.
+- inventário: primitive com 200 linhas e ilha com 189; nenhuma extração ampla ou abstração adicional foi justificada.
+- baseline direcionado: 3 suítes e 33 testes verdes.
+- RED test-first: 1 suíte com 1 falha esperada e 9 testes verdes para resolução tardia de `requestFullscreen()`.
+- GREEN da primitive: 1 suíte e 10 testes; GREEN direcionado: 3 suítes e 34 testes.
+- tentativas nativas agora possuem identidade monotônica; tentativas obsoletas encerram fullscreen adquirido tardiamente.
+- rejeição de `exitFullscreen()` é observada sem impedir o recolhimento do overlay.
+- regressão completa: 76 suítes e 429 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3`: verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; chunk com 503.929 bytes brutos e 171.551 bytes gzip, delta de +255/+285 bytes sobre o Dia 4.
+- nenhuma dependência, regra financeira, Supabase, migration, dado, orientação forçada ou gráfico futuro foi criado.
+- validação browser/mobile e acessibilidade aprofundada permanecem reservadas ao Dia 6.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- `git diff --check`: verde.
+- nenhum commit, push, deploy ou atualização de PR foi executado nesta fase.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável; próximo comando válido: `dia 6`.

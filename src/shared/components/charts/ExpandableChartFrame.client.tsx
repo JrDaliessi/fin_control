@@ -36,6 +36,7 @@ export function ExpandableChartFrame({
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const previousBodyOverflowRef = useRef<string | null>(null);
   const nativeFullscreenActiveRef = useRef(false);
+  const fullscreenRequestIdRef = useRef(0);
   const titleId = useId();
 
   const restoreBodyScroll = useCallback(() => {
@@ -50,6 +51,7 @@ export function ExpandableChartFrame({
   }, []);
 
   const collapse = useCallback(() => {
+    fullscreenRequestIdRef.current += 1;
     nativeFullscreenActiveRef.current = false;
     setIsExpanded(false);
     openerRef.current?.focus();
@@ -66,6 +68,8 @@ export function ExpandableChartFrame({
     previousBodyOverflowRef.current = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     setIsExpanded(true);
+    const fullscreenRequestId = fullscreenRequestIdRef.current + 1;
+    fullscreenRequestIdRef.current = fullscreenRequestId;
 
     if (!document.fullscreenEnabled || typeof frame.requestFullscreen !== "function") {
       return;
@@ -74,7 +78,23 @@ export function ExpandableChartFrame({
     void frame
       .requestFullscreen()
       .then(() => {
-        nativeFullscreenActiveRef.current = true;
+        const requestIsCurrent =
+          fullscreenRequestIdRef.current === fullscreenRequestId &&
+          frameRef.current === frame;
+
+        if (!requestIsCurrent) {
+          if (
+            document.fullscreenElement === frame &&
+            typeof document.exitFullscreen === "function"
+          ) {
+            void document.exitFullscreen().catch(() => undefined);
+          }
+
+          return;
+        }
+
+        nativeFullscreenActiveRef.current =
+          document.fullscreenElement === frame;
       })
       .catch(() => {
         nativeFullscreenActiveRef.current = false;
@@ -89,7 +109,7 @@ export function ExpandableChartFrame({
       document.fullscreenElement === frame &&
       typeof document.exitFullscreen === "function"
     ) {
-      void document.exitFullscreen().finally(collapse);
+      void document.exitFullscreen().then(collapse, collapse);
       return;
     }
 

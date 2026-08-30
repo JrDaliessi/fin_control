@@ -416,6 +416,7 @@ O projeto deve ter:
 - `ExpandableChartFrame.client.tsx` é uma primitive de presentation compartilhada; não conhece ECharts, DTOs ou regras financeiras.
 - O frame preserva o mesmo elemento e a mesma instância do gráfico ao alternar entre fluxo normal e overlay de viewport.
 - Fullscreen nativo é melhoria progressiva; overlay CSS, botão de saída, `Escape`, foco e scroll formam o contrato mínimo.
+- Solicitações nativas assíncronas recebem identidade de tentativa; resoluções obsoletas encerram qualquer fullscreen adquirido sem reabrir a UI.
 - Componentes de gráficos futuros compõem a primitive dentro de suas ilhas cliente, sem ampliar a fronteira de dados Server → Client.
 - A tabela equivalente permanece fora do frame e não pode ser removida pelo modo expandido.
 - Nenhuma dependência, orientação forçada ou abstração de domínio é introduzida.

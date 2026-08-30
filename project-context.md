@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-014 concluído; integração mínima server/client do gráfico em GREEN, com tabela e isolamento de bundle preservados
+- Fase atual: Dia 5 da SR-014 concluído; fullscreen assíncrono endurecido em TDD, com arquitetura e isolamento de bundle preservados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -112,6 +112,7 @@
 - Data da estratégia de testes e RED controlado da SR-014: 2026-08-30
 - Data da implementação mínima orientada por teste da SR-014: 2026-08-30
 - Data da expansão controlada e fullscreen universal da SR-014: 2026-08-30
+- Data da refatoração e hardening interno da SR-014: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5918,3 +5919,47 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até hardening e validação final
 - próximo comando válido: `dia 5`
+
+## Dia 5 — Diagnóstico de Refatoração e Hardening da SR-014
+
+Diagnóstico inicial:
+- baseline direcionado permaneceu verde com 3 suítes e 33 testes
+- `ExpandableChartFrame.client.tsx` concentra 200 linhas, mas suas responsabilidades ainda pertencem ao mesmo frame; nenhuma extração ampla está justificada sem evidência adicional
+- a revisão assíncrona encontrou uma corrida real entre recolher o overlay e a resolução tardia de `requestFullscreen()`
+- no comportamento do Dia 4, uma solicitação nativa pendente pode resolver após o frame já ter sido recolhido, deixando o navegador em fullscreen sem o diálogo correspondente
+
+Regra preventiva adicionada:
+- toda solicitação assíncrona de fullscreen deve ter identidade de tentativa e ser invalidada ao recolher ou desmontar o frame
+- se uma tentativa obsoleta adquirir fullscreen tardiamente, o componente deve encerrá-lo sem reabrir a UI, sem atualizar estado desmontado e sem rejeição não tratada
+- a correção deve nascer de teste de regressão RED e preservar o overlay CSS como baseline
+
+Incidente operacional desta fase:
+- o wrapper npm global inválido foi acionado na primeira tentativa do baseline e não encontrou `npm-cli.js`
+- a execução foi retomada com a runtime Node empacotada do workspace; o incidente não representa falha do projeto
+
+Plano aplicado e resultado:
+- nenhuma extração de hook, adapter ou helper genérico foi realizada: o componente permanece coeso e ainda não existe evidência para ampliar a abstração
+- cada tentativa de `requestFullscreen()` passou a receber uma identidade monotônica invalidada ao recolher o frame
+- uma tentativa obsoleta que adquire fullscreen tardiamente encerra o modo nativo sem reabrir a UI
+- a saída nativa trata resolução e rejeição sem deixar promessa rejeitada sem observação
+- foco, scroll, overlay CSS, `Escape`, `fullscreenchange`, focus trap, mesma instância ECharts e múltiplos frames permaneceram protegidos
+
+TDD e quality gates:
+- baseline direcionado: 3 suítes e 33 testes verdes
+- RED de regressão: 1 suíte com 1 falha esperada e 9 testes verdes; a tentativa tardia não chamava `exitFullscreen()`
+- GREEN da primitive: 1 suíte e 10 testes verdes
+- GREEN direcionado: 3 suítes e 34 testes verdes
+- regressão completa: 76 suítes e 429 testes verdes
+- lint global com 0 warnings, type-check e build Next.js `16.3.3` verdes
+- analyzer verde; ECharts/ZRender permanece somente em `/` e `/dashboard`
+- chunk do Dia 5: 503.929 bytes brutos e 171.551 bytes gzip; delta sobre o Dia 4: +255 bytes brutos e +285 bytes gzip
+- `next-env.d.ts` gerado pelo build foi restaurado; `rewrite-msgs.sh` permaneceu fora do escopo
+
+Fronteiras preservadas:
+- nenhum domain, application, infrastructure, DTO, mapper, repository, Supabase, migration, policy, grant, dado ou dependência mudou
+- nenhuma validação visual/browser, alteração de UX ampla, commit, push, PR ou deploy foi executado
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em fluxo estável após o hardening
+- SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até UX/acessibilidade e quality gate final
+- próximo comando válido: `dia 6`
