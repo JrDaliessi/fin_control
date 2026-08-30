@@ -23,3 +23,4 @@ Formato recomendado:
 - `0010-financial-evolution-snapshot-and-daily-buckets.md` — snapshot, saldo de abertura e agregação diária da evolução
 - `0011-dashboard-pulse-real-data-composition.md` — fonte real, composição server-side e limites do dashboard Pulse
 - `0012-chart-library-presentation-adapter.md` — Apache ECharts modular, ilha cliente e adapter de presentation
+- `0013-financial-evolution-line-chart-integration.md` — integração server/client do gráfico de saldo com tabela acessível

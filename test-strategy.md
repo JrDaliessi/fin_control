@@ -630,6 +630,154 @@ Contratos adiados deliberadamente para a SR-014:
 
 Critério observado: o SP-001 está `DONE`; a dependência foi aceita para uso controlado e a SR-014 deve iniciar novamente pelo Dia 1 antes de qualquer integração.
 
+## Matriz planejada no Dia 1 — SR-014
+
+Objetivo: integrar o gráfico aprovado ao painel real sem criar código funcional antes dos testes essenciais.
+
+| Camada | Alvo | Contratos a materializar em RED no Dia 2 |
+| --- | --- | --- |
+| application/domain | `FinancialEvolutionDto` e pontos | nenhuma regra nova; datas civis, ordem, centavos, saldo negativo e linha plana permanecem cobertos pelas suítes existentes |
+| presentation server | `FinancialEvolutionPanel` | permanece sem `use client`; mapeia DTO; renderiza heading, gráfico e tabela em `success`/`empty`; omite ambos em `missing_accounts` |
+| presentation client | `FinancialEvolutionChart` | recebe somente model plano; fallback local não remove a tabela; lifecycle herdado continua verde |
+| route | `/` e `/dashboard` | mesma composition root, uma única chamada de `loadFinancialEvolution` e nenhuma leitura cliente adicional |
+| arquitetura | fronteiras | ECharts confinado; sem Supabase/fetch/storage na ilha; sem import do pacote em Server Components |
+| bundle | chunks por rota | ECharts presente apenas em `/` e `/dashboard`; baseline e delta documentados após o GREEN |
+| acessibilidade | gráfico + tabela | heading de nível 3, imagem nomeada/descrita, tabela visível e equivalente, movimento reduzido e alto contraste preservados |
+
+Cenário feliz:
+- um usuário com contas e movimentos abre o dashboard; o servidor carrega um DTO, o painel mostra resumo, linha do saldo e tabela diária a partir desse mesmo resultado.
+
+Cenários alternativos:
+- conta sem movimentos no período gera linha plana, feedback honesto e tabela de saldos;
+- ausência de contas mantém apenas o onboarding existente;
+- falha de inicialização do ECharts mostra fallback e preserva a tabela;
+- saldo negativo permanece inteiro e visualmente identificável sem depender apenas de cor.
+
+Edge cases:
+- um único ponto e até 31 pontos;
+- datas atravessando mês ou ano;
+- valor zero e saldo negativo;
+- viewport de 320 px e valores monetários longos;
+- movimento reduzido, forced colors e troca de tema;
+- ECharts vazando para rotas não relacionadas;
+- suite server-side carregando ESM real antes do mock da ilha.
+
+Estratégia de harness:
+- mockar a ilha cliente antes de carregar `FinancialEvolutionPanel` nos testes de composição, evitando executar ESM do ECharts no Jest server-side;
+- reutilizar as suítes do SP-001 para lifecycle/option builder sem duplicar seus contratos;
+- adicionar somente contratos de integração, rota, acessibilidade conjunta e bundle que ainda não existem.
+
+Implementação bloqueada até o Dia 3:
+- importar mapper ou ilha em `FinancialEvolutionPanel`;
+- criar card/heading do gráfico;
+- alterar layout, estados ou composição da rota;
+- qualquer mudança em Supabase, DTO, domínio, application ou infrastructure.
+
+Estado planejado após o Dia 2: `TEST_STRATEGY_READY`.
+
+## Matriz Executada no Dia 2 — SR-014
+
+Os contratos abaixo foram escritos antes de qualquer alteração funcional no painel:
+
+| Camada | Alvo | Contratos essenciais |
+| --- | --- | --- |
+| presentation server | `FinancialEvolutionPanel` | `success` compõe heading, gráfico e tabela a partir do mesmo DTO; `empty` mantém linha plana e tabela; `missing_accounts` não chama a ilha |
+| presentation client | `FinancialEvolutionChart` como mock de fronteira | recebe o model plano produzido no servidor; uma falha local conserva fallback textual e tabela |
+| arquitetura | `FinancialEvolutionPanel.tsx` | painel possui mapper e ilha; permanece sem `next/dynamic` e sem import direto de ECharts |
+| regressão | suíte anterior | regras financeiras, mapper, lifecycle da ilha, rotas e demais features permanecem cobertos pelas 73 suítes não alteradas |
+
+Resultado observado:
+- baseline completa antes do RED: 75 suítes e 413 testes verdes
+- 4 testes novos adicionados em 2 suítes de integração/arquitetura
+- RED direcionado: 2 suítes falharam; 4 testes falharam e 17 passaram, total de 21 testes
+- falhas exclusivas: mapper, ilha, heading e fallback local ainda não estão compostos pelo painel
+- regressão anterior, excluindo somente as 2 suítes intencionalmente RED: 73 suítes e 396 testes verdes
+- lint dos arquivos alterados e type-check verdes
+
+Implementação bloqueada até o Dia 3:
+- importar e executar `toFinancialEvolutionChartModel` no Server Component
+- compor `FinancialEvolutionChart` em card próprio com heading de nível 3
+- preservar a tabela para `success`, `empty` e falha local da ilha
+- qualquer alteração funcional além do mínimo necessário para satisfazer estes quatro contratos
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## RED/GREEN do Dia 5 — SR-014 / UX-CHART-001
+
+- Baseline direcionado: 3 suítes e 33 testes verdes.
+- Risco reproduzido: recolher o frame enquanto `requestFullscreen()` permanecia pendente permitia aquisição nativa tardia sem diálogo correspondente.
+- RED: 1 suíte com 1 falha esperada e 9 testes verdes; `exitFullscreen()` recebeu zero chamadas.
+- GREEN da primitive: 1 suíte e 10 testes verdes após invalidar tentativas obsoletas.
+- GREEN direcionado: 3 suítes e 34 testes verdes.
+- Regressão completa: 76 suítes e 429 testes verdes.
+- O teste preserva overlay CSS, foco, scroll, Escape, cleanup, múltiplos frames e a mesma instância do renderer.
+- Nenhum teste foi removido, relaxado ou ignorado; nenhuma regra financeira ou fronteira de dados mudou.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.
+
+## RED/GREEN do Dia 6 — SR-014 / UX-CHART-001
+
+- Baseline direcionado: 4 suítes e 36 testes verdes.
+- Primeiro RED: 3 suítes falharam com 4 contratos ausentes e 30 testes anteriores verdes para safe areas e altura expandida adaptável.
+- Primeiro GREEN: frame usa named group e safe areas; viewport mantém altura mínima normal e libera `min-height` expandido.
+- O navegador revelou overflow móvel de 1.367 px após transição desktop → mobile, causado por largura intrínseca do SVG.
+- Segundo RED: 2 suítes falharam com 2 contratos ausentes e 22 testes anteriores verdes para `min-width: 0`.
+- GREEN direcionado final: 5 suítes e 45 testes verdes.
+- Regressão completa: 76 suítes e 429 testes verdes.
+- Desktop, `390 x 844` e `844 x 390` foram validados sem overflow; safe areas, foco, scroll, alvos e renderer permaneceram coerentes.
+- Manifesto, movimento reduzido, alto contraste, tabela equivalente e ausência de promessa offline permaneceram verdes.
+- Nenhum teste foi removido, relaxado ou ignorado; nenhuma regra financeira ou fronteira de dados mudou.
+
+Estado de saída: `QUALITY_VALIDATION`.
+
+## GREEN do Dia 3 — SR-014
+
+- `FinancialEvolutionPanel` permaneceu server-side, passou a executar o mapper e compôs a ilha cliente com view model plano.
+- `success` e `empty` exibem o gráfico antes da tabela; `missing_accounts` não chama a ilha.
+- fallback local do gráfico e tabela permanecem simultaneamente disponíveis.
+- GREEN direcionado inicial: 2 suítes e 21 testes passaram.
+- a regressão reproduziu um carregamento indevido do ESM real de ECharts no harness de rotas; o teste passou a mockar a ilha antes de carregar as páginas, sem mudar comportamento de produção.
+- GREEN direcionado ampliado: 3 suítes e 25 testes passaram.
+- regressão completa: 75 suítes e 417 testes passaram.
+- lint global, type-check e build Next.js `16.3.3` passaram.
+- análise de bundle confirmou ECharts/ZRender somente em `/` e `/dashboard`; o chunk identificado mede 500.653 bytes brutos e 170.071 bytes em gzip.
+- nenhum teste foi removido, ignorado ou relaxado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Matriz Adicional Aprovada para o Dia 4 — UX-CHART-001
+
+| Área | Contratos antes da implementação |
+| --- | --- |
+| estado | normal, expandido, API nativa indisponível e solicitação rejeitada |
+| teclado | botão acessível, `Escape` no fallback e saída nativa sincronizada por `fullscreenchange` |
+| foco | foco movido ao controle de saída e restaurado ao controle de abertura |
+| scroll | scroll do documento bloqueado somente durante expansão e restaurado no fechamento/unmount |
+| lifecycle | listeners removidos, mesma instância do gráfico e `ResizeObserver` acionado pelo novo tamanho |
+| independência | dois frames não compartilham estado |
+| integração | gráfico de evolução usa a primitive sem duplicar model, ECharts ou fonte de dados |
+| arquitetura | primitive compartilhada não importa ECharts, Supabase, domain ou application |
+
+Implementação bloqueada até a reprodução dos contratos essenciais em RED.
+
+## RED/GREEN do Dia 4 — UX-CHART-001
+
+RED inicial:
+- 3 suítes falharam; 2 testes falharam e 22 passaram
+- a nova suíte da primitive não carregou porque o componente ainda não existia
+- gráfico atual não oferecia controle de expansão e o contrato arquitetural não encontrou o frame
+
+GREEN e refino:
+- primeiro GREEN: 31/32 testes; regressão estática de classe-base corrigida sem relaxar contrato
+- revisão React originou novo RED para focus trap: 1 falha e 8 testes verdes na suíte da primitive
+- GREEN direcionado final: 3 suítes e 33 testes verdes
+- regressão completa: 76 suítes e 428 testes verdes
+- lint global, type-check, build e analyzer verdes
+- expansão preserva o mesmo nó e uma única instância ECharts
+- overlay, API nativa, rejeição, `Escape`, `fullscreenchange`, foco, scroll, cleanup e independência estão cobertos
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

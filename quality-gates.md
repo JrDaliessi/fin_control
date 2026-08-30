@@ -1333,3 +1333,137 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma integração no dashboard, SR-014, Supabase, migration, dado, promoção, merge, commit, push ou novo PR foi executado.
 - `git diff --check` verde; `next-env.d.ts` restaurado e `rewrite-msgs.sh` preservado fora do escopo.
 - estado final: `READY_FOR_RELEASE`; SP-001 marcado como `DONE`.
+
+## Gate do Dia 1 — SR-014
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- PR #17 confirmado como squash merge em `develop` no commit `f741e680234f3182bfe6f6d8bc9201bb2baf9927`.
+- `develop` sincronizada por fast-forward e branch `codex/sr-014-financial-evolution-chart` criada da base integrada.
+- DTO, loader, composition root, painel, tabela, mapper, ilha cliente, adapter, testes e ADRs anteriores foram confrontados.
+- escopo limitado a uma linha do saldo de fechamento diário em `/` e `/dashboard`, sem nova fonte de dados ou regra financeira.
+- painel permanece Server Component; mapper roda no servidor; ilha recebe somente view model plano e serializável.
+- estados `success`, `empty`, `missing_accounts`, erro da rota e erro local do chart foram definidos sem inventar loading cliente.
+- tabela visível e equivalente, heading, descrição, alto contraste, movimento reduzido e responsividade permanecem obrigatórios.
+- estratégia de bundle exige ECharts somente nos chunks do dashboard e documenta delta real antes do encerramento.
+- `next/dynamic`, wrapper adicional, múltiplas séries, candles, comparação, previsão, analytics e offline foram excluídos sem evidência/contrato.
+- erro de quoting do PowerShell foi documentado em Erros Recorrentes antes da leitura corrigida com `-LiteralPath`.
+- ADR 0013, arquitetura, backlog, roadmap, estratégia de testes e especificação de produto atualizados.
+- nenhum código funcional, teste executável, dependência, Supabase, migration, dado, commit, push, PR ou deploy foi criado.
+- lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2`.
+
+## Gate do Dia 2 — SR-014
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline completa antes do RED: 75 suítes e 413 testes verdes; type-check e lint verdes.
+- 4 contratos novos criados em 2 suítes, sem código funcional.
+- RED direcionado confirmado: 2 suítes falharam; 4 testes falharam e 17 passaram, total de 21 testes.
+- falhas correspondem somente à integração ainda ausente do mapper, da ilha, do heading e do fallback local no painel.
+- regressão anterior, excluindo apenas as 2 suítes intencionalmente RED: 73 suítes e 396 testes verdes.
+- testes alterados passaram por lint com 0 warnings; type-check permaneceu verde.
+- nenhum teste foi removido, ignorado ou relaxado; domain, application, infrastructure e rotas permaneceram intactos.
+- build, bundle e browser não se aplicam enquanto a implementação funcional permanece bloqueada.
+- três falhas operacionais da IA foram registradas no contexto antes das respectivas correções; nenhuma representa defeito do projeto.
+- nenhum Supabase, migration, dado, dependência, commit, push, PR ou deploy foi executado.
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — SR-014
+
+- contexto central, workflow do Dia 3 e referências RSC/bundling da skill `vercel:nextjs` consultados após aprovação operacional.
+- produção alterada somente em `FinancialEvolutionPanel.tsx`: mapper server-side, card, heading e ilha cliente antes da tabela.
+- GREEN direcionado inicial: 2 suítes e 21 testes passaram.
+- falha de isolamento no harness de rotas registrada antes da correção; GREEN ampliado com 3 suítes e 25 testes.
+- regressão completa: 75 suítes e 417 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3` com Turbopack: verde; rotas e Proxy preservados.
+- analyzer de produção: verde; chunk ECharts/ZRender de 500.653 bytes brutos e 170.071 bytes gzip somente em `/` e `/dashboard`.
+- `/login`, `/accounts`, `/categories` e `/transactions` não referenciam o chunk do gráfico.
+- nenhum teste relaxado; nenhum domain, application, infrastructure, Supabase, migration, dado ou dependência alterado.
+- `next-env.d.ts` restaurado e `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma validação visual, deploy, commit, push ou atualização de PR foi executada.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — SR-014 / UX-CHART-001
+
+- mudança de escopo documentada em contexto, arquitetura, roadmap, backlog, estratégia e ADR 0014 antes do código.
+- testes essenciais criados em RED antes da primitive e da integração.
+- `ExpandableChartFrame.client.tsx` não importa ECharts, Supabase, domain ou application.
+- fallback CSS, API nativa, rejeição, saída, foco, scroll, focus trap, cleanup e múltiplos frames cobertos.
+- integração mantém a mesma instância ECharts e o `ResizeObserver` existente.
+- GREEN direcionado final: 3 suítes e 33 testes.
+- regressão completa: 76 suítes e 428 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3`: verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; delta de +3.021 bytes brutos e +1.195 bytes gzip.
+- revisão `vercel:react-best-practices`: callbacks estáveis, listeners condicionais, cleanup explícito e sem duplicação de dados/renderers.
+- nenhuma dependência, Supabase, migration, regra financeira, orientação forçada ou gráfico futuro foi criado.
+- validação visual/browser e acessibilidade aprofundada permanecem para o Dia 6.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- `git diff --check`: verde.
+- nenhum commit, push, deploy ou atualização de PR foi executado nesta fase.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — SR-014 / UX-CHART-001
+
+- contexto central, workflow do Dia 5 e skill `vercel:react-best-practices` consultados; declaração aprovada antes da execução.
+- inventário: primitive com 200 linhas e ilha com 189; nenhuma extração ampla ou abstração adicional foi justificada.
+- baseline direcionado: 3 suítes e 33 testes verdes.
+- RED test-first: 1 suíte com 1 falha esperada e 9 testes verdes para resolução tardia de `requestFullscreen()`.
+- GREEN da primitive: 1 suíte e 10 testes; GREEN direcionado: 3 suítes e 34 testes.
+- tentativas nativas agora possuem identidade monotônica; tentativas obsoletas encerram fullscreen adquirido tardiamente.
+- rejeição de `exitFullscreen()` é observada sem impedir o recolhimento do overlay.
+- regressão completa: 76 suítes e 429 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3`: verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; chunk com 503.929 bytes brutos e 171.551 bytes gzip, delta de +255/+285 bytes sobre o Dia 4.
+- nenhuma dependência, regra financeira, Supabase, migration, dado, orientação forçada ou gráfico futuro foi criado.
+- validação browser/mobile e acessibilidade aprofundada permanecem reservadas ao Dia 6.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- `git diff --check`: verde.
+- nenhum commit, push, deploy ou atualização de PR foi executado nesta fase.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — SR-014 / UX-CHART-001
+
+- contexto central, workflow e skills de browser consultados; declaração aprovada antes da execução.
+- baseline direcionado: 4 suítes e 36 testes verdes.
+- primeiro RED: 3 suítes com 4 falhas esperadas e 30 testes verdes para safe areas e altura adaptável.
+- segundo RED: 2 suítes com 2 falhas esperadas e 22 testes verdes para `min-width: 0` após overflow real no browser.
+- GREEN direcionado final: 5 suítes e 45 testes verdes.
+- regressão completa: 76 suítes e 429 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3`: verde; rotas e Proxy preservados; falha inicial foi exclusivamente o download bloqueado da Geist e passou com rede autorizada.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; chunk com 504.020 bytes brutos e 171.587 bytes gzip, delta de +91/+36 bytes sobre o Dia 5.
+- browser: conteúdo e gráfico reais, sem overlay, warning ou erro; desktop e mobile `390 x 844`/`844 x 390` sem overflow.
+- expansão: safe areas computadas em 16/24 px, botão 52 x 44 px, foco e scroll preservados, SVG igual ao viewport disponível.
+- auditoria básica: `pt-BR`, viewport, theme colors, manifest, nomes acessíveis e IDs únicos confirmados; temas alternaram sem erro.
+- `Escape` físico não foi propagado pela superfície de automação; o contrato permanece verde em Jest e não foi contabilizado como validação browser.
+- PWA permanece instalável e honesta, sem orientação forçada, service worker, cache financeiro ou promessa offline.
+- nenhum domain, application, infrastructure, Supabase, migration, dado, dependência ou regra financeira mudou.
+- `next-env.d.ts` restaurado; `AGENTS.md`/`CLAUDE.md` automáticos removidos; `rewrite-msgs.sh` preservado fora do escopo.
+- `git diff --check`: verde.
+- nenhum commit, push, deploy ou atualização de PR foi executado.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — SR-014 / UX-CHART-001
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- skills `vercel:deployments-cicd`, `vercel:observability` e `vercel:vercel-api` aplicadas em modo de leitura; nenhum deploy ou promoção foi disparado.
+- lint global: verde com zero warnings.
+- type-check: verde.
+- regressão completa: 76 suítes e 429 testes verdes; zero snapshots e nenhum teste ignorado.
+- auditoria de dependências: `npm audit --audit-level=high` verde com zero vulnerabilidades.
+- build Next.js `16.3.3` com Turbopack: verde; `/`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e Proxy preservados.
+- analyzer de produção: verde; chunk ECharts/ZRender com 504.020 bytes brutos e referência somente nos manifests cliente de `/` e `/dashboard`.
+- revisão de segurança do diff: sem Supabase, Auth, RLS, migration, variável pública, storage, HTML arbitrário, rede, regra financeira, dependência ou segredo novo.
+- PR #18: aberto, não draft, `MERGEABLE`, base `develop`; checks `validate`, Vercel e Vercel Preview Comments verdes no commit `ff4bb73`.
+- Vercel: deployment `dpl_2qV1zdyc8bdLpJqVYxfEw3trT6K4` em `READY`; `/login` respondeu HTTP 200 com HSTS e `noindex`.
+- observabilidade Vercel: nenhum cluster de erro de runtime e nenhum log preview `error`/`fatal` nas últimas 24 horas; nenhum comentário Toolbar não resolvido na branch.
+- plano Hobby sem drains: runtime logs/dashboard são a baseline disponível; captura externa sanitizada continua rastreada em `HARD-OBS-001`.
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública, mas não a entrega incremental deste código.
+- `CI-VERCEL-002` permanece dívida MÉDIA: vínculo local aponta para projeto antigo e há drift Node/npm entre Vercel, `package.json` e CI; preview atual não é afetado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; nenhum arquivo funcional foi alterado no Dia 7.
+- `git diff --check`: verde; somente `backlog.md`, `project-context.md`, `quality-gates.md` e `roadmap.md` foram alterados nesta fase.
+- nenhum commit, push, merge ou deploy de produção foi executado nesta fase.
+- estado final: `READY_FOR_RELEASE`; SR-014 e UX-CHART-001 marcadas como `DONE`.

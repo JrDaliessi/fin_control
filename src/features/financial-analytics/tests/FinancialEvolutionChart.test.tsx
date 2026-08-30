@@ -7,6 +7,7 @@ import {
   jest
 } from "@jest/globals";
 import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { FinancialEvolutionChartModel } from "../presentation/charts/financial-evolution-chart.model";
 
 jest.mock(
@@ -155,7 +156,13 @@ describe("FinancialEvolutionChart", () => {
     const descriptionId = graphic.getAttribute("aria-describedby");
     expect(descriptionId).toBeTruthy();
     expect(description).toHaveAttribute("id", descriptionId);
-    expect(graphic).toHaveClass("min-h-72", "w-full");
+    expect(graphic).toHaveClass(
+      "min-h-72",
+      "min-w-0",
+      "w-full",
+      "group-data-[expanded=true]/chart-frame:min-h-0"
+    );
+    expect(graphic.parentElement).toHaveClass("min-w-0");
     expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
     const [initializedContainer, initializationOptions] =
       initializeFinancialEvolutionChart.mock.calls[0];
@@ -188,6 +195,32 @@ describe("FinancialEvolutionChart", () => {
 
     expect(disconnect).toHaveBeenCalledTimes(1);
     expect(dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it("expands without recreating the chart instance", async () => {
+    const user = userEvent.setup();
+    render(<FinancialEvolutionChart model={model} />);
+    const graphic = screen.getByRole("img", {
+      name: "Evolução do saldo por dia"
+    });
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Expandir gráfico: Evolução do saldo"
+      })
+    );
+    act(() => {
+      notifyResize([], {} as ResizeObserver);
+    });
+
+    expect(
+      screen.getByRole("dialog", { name: "Evolução do saldo" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Evolução do saldo por dia" })
+    ).toBe(graphic);
+    expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
+    expect(resize).toHaveBeenCalledTimes(1);
   });
 
   it("disposes the chart and shows the fallback when resize setup fails", () => {

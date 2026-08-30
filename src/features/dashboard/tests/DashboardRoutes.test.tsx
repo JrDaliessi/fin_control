@@ -14,6 +14,13 @@ jest.mock("@/app/(private)/dashboard/load-financial-evolution", () => ({
   loadFinancialEvolution: jest.fn()
 }));
 
+jest.mock(
+  "../../financial-analytics/presentation/components/FinancialEvolutionChart.client",
+  () => ({
+    FinancialEvolutionChart: () => null
+  })
+);
+
 import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
 
 const { loadTransactionsPageAction } = jest.requireMock<

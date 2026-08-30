@@ -179,17 +179,6 @@ Nenhum item em andamento no momento.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
 - Status: DISCOVERY
 
-### SR-014 - Grafico de linha da evolucao
-- Tipo: Small Release
-- Objetivo de negocio: tornar tendencia financeira visual.
-- Valor esperado: leitura rapida sem perder tabela acessivel.
-- Prioridade: Alta
-- Dependencias: SR-013 e SP-001, ambas concluídas.
-- Risco: Medio
-- Fase recomendada: Dia 1 para refinar o recorte de integração, sem reutilizar automaticamente o escopo do spike.
-- Criterio de pronto: responsivo, acessivel, estados tratados e testes de componente.
-- Status: DISCOVERY
-
 ### SR-015 - Candles financeiros
 - Tipo: Small Release
 - Objetivo de negocio: mostrar abertura, maxima, minima e fechamento do saldo.
@@ -460,6 +449,27 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-014 — Gráfico de linha da evolução
+- Tipo: Small Release
+- Resultado: linha do saldo de fechamento diário integrada ao painel real em `/` e `/dashboard`, junto da tabela acessível e com uma única leitura server-side.
+- Arquitetura: Server Component, mapper serializável, ilha ECharts e adapter específico preservam as fronteiras; ECharts permanece ausente das rotas não relacionadas.
+- Experiência: estados vazio/erro, tema, movimento reduzido, alto contraste, responsividade e expansão progressiva validados em TDD e navegador real.
+- Quality gates: 76 suítes/429 testes, lint, type-check, auditoria com zero vulnerabilidades, build, analyzer, GitHub Actions e Vercel Preview verdes.
+- Segurança: sem alteração em Supabase, Auth, RLS, migrations, dados, regras financeiras, secrets ou dependências.
+- Observabilidade: deployment `ff4bb73` em `READY`, `/login` HTTP 200, sem erro/fatal ou cluster de runtime nas últimas 24 horas e sem comentário Vercel pendente.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
+- Status: DONE
+
+### UX-CHART-001 — Expansão universal de gráficos
+- Tipo: Small Release / UX Improvement transversal
+- Resultado: primitive reutilizável com overlay CSS, Fullscreen API progressiva, safe areas e adaptação a mobile retrato/paisagem.
+- Acessibilidade: diálogo nomeado, controle acessível, focus trap, restauração de foco e scroll, `Escape` testado e tabela equivalente preservada.
+- Robustez: mesma instância ECharts, resize por observer, múltiplos frames independentes e resolução tardia de fullscreen protegida.
+- Quality gates: coberta pela regressão de 429 testes, browser real, lint, type-check, build e preview verdes da SR-014.
+- ADR: `adr/0014-expandable-chart-frame.md`.
+- Status: DONE
 
 ### SP-001 — Avaliar biblioteca de gráficos
 - Tipo: Spike

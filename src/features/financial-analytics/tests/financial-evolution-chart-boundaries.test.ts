@@ -99,6 +99,61 @@ describe("financial evolution chart architecture", () => {
     expect(panel).toContain("FinancialEvolutionTable");
   });
 
+  it("requires the server panel to own the approved chart integration", () => {
+    const panel = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialEvolutionPanel.tsx"
+      ),
+      "utf-8"
+    );
+
+    expect(panel).toContain("toFinancialEvolutionChartModel");
+    expect(panel).toContain("FinancialEvolutionChart");
+    expect(panel).toContain("Evolução do saldo");
+    expect(panel).not.toContain("next/dynamic");
+    expect(panel).not.toMatch(/from ["']echarts(?:\/|["'])/);
+  });
+
+  it("requires chart islands to use the provider-neutral expandable frame", () => {
+    const chartIsland = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialEvolutionChart.client.tsx"
+      ),
+      "utf-8"
+    );
+    const expandableFrame = readFileSync(
+      join(
+        process.cwd(),
+        "src",
+        "shared",
+        "components",
+        "charts",
+        "ExpandableChartFrame.client.tsx"
+      ),
+      "utf-8"
+    );
+    const globalStyles = readFileSync(
+      join(process.cwd(), "src", "app", "globals.css"),
+      "utf-8"
+    );
+
+    expect(chartIsland).toContain("ExpandableChartFrame");
+    expect(expandableFrame).not.toMatch(/echarts|supabase/i);
+    expect(expandableFrame).not.toContain("FinancialEvolution");
+    expect(expandableFrame).toContain("group/chart-frame");
+    expect(expandableFrame).toContain("chart-frame-expanded");
+    expect(globalStyles).toContain(".chart-frame-expanded");
+    ["top", "right", "bottom", "left"].forEach((edge) => {
+      expect(globalStyles).toContain(`safe-area-inset-${edge}`);
+    });
+  });
+
   it("keeps the client island independent from data sources and offline claims", () => {
     const clientIsland = readFileSync(
       join(
@@ -113,6 +168,8 @@ describe("financial evolution chart architecture", () => {
     expect(clientIsland).not.toMatch(
       /fetch\s*\(|supabase|localStorage|indexedDB|serviceWorker/i
     );
-    expect(clientIsland).toContain('className="min-h-72 w-full"');
+    expect(clientIsland).toContain(
+      'className="min-h-72 min-w-0 w-full group-data-[expanded=true]/chart-frame:min-h-0"'
+    );
   });
 });

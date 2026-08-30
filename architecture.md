@@ -398,6 +398,32 @@ O projeto deve ter:
 - Não existe `ChartPort` genérico nesta fase; nova abstração depende de segundo consumidor real.
 - Decisão completa: `adr/0012-chart-library-presentation-adapter.md`.
 
+## Gráfico de linha da evolução — SR-014
+
+- `composeDashboardRoute` continua sendo a composition root server-side compartilhada por `/` e `/dashboard` e realiza uma única leitura financeira.
+- `FinancialEvolutionPanel` permanece Server Component e converte `FinancialEvolutionDto` por `toFinancialEvolutionChartModel` antes da fronteira cliente.
+- `FinancialEvolutionChart.client.tsx` recebe somente um view model plano com datas civis e saldos de fechamento em centavos; não recebe identidade, token, funções, classes ou objetos `Date`.
+- O painel integra diretamente a ilha cliente aprovada. Um segundo wrapper com `next/dynamic` e `ssr: false` só pode surgir se build ou medição de bundle demonstrarem necessidade concreta.
+- O gráfico renderiza nos estados `success` e `empty`; `missing_accounts` continua sem gráfico ou tabela. Falha de dados usa o error boundary da rota, enquanto falha de ECharts preserva a tabela e exibe fallback local.
+- A linha representa apenas saldo de fechamento diário. Receitas, despesas, comparação, previsão, candles, zoom, exportação e semântica de trading permanecem fora.
+- O gráfico fica em card próprio com heading de nível 3 e descrição; a tabela diária continua visível, equivalente e navegável por teclado.
+- ECharts permanece confinado ao adapter de presentation e deve aparecer somente nos chunks cliente de `/` e `/dashboard`; qualquer vazamento para rotas não relacionadas bloqueia a release.
+- Não há nova leitura cliente, Route Handler, Server Action, Suspense artificial, cache, Supabase, migration ou mudança de regra financeira.
+- Decisão completa: `adr/0013-financial-evolution-line-chart-integration.md`.
+
+## Expansão universal de gráficos — UX-CHART-001
+
+- `ExpandableChartFrame.client.tsx` é uma primitive de presentation compartilhada; não conhece ECharts, DTOs ou regras financeiras.
+- O frame preserva o mesmo elemento e a mesma instância do gráfico ao alternar entre fluxo normal e overlay de viewport.
+- Fullscreen nativo é melhoria progressiva; overlay CSS, botão de saída, `Escape`, foco e scroll formam o contrato mínimo.
+- Solicitações nativas assíncronas recebem identidade de tentativa; resoluções obsoletas encerram qualquer fullscreen adquirido sem reabrir a UI.
+- O overlay respeita `safe-area-inset-*` nos quatro lados e não força orientação.
+- Wrappers e viewports de renderer em grid/flex usam `min-width: 0`; a altura mínima normal é liberada somente durante a expansão.
+- Componentes de gráficos futuros compõem a primitive dentro de suas ilhas cliente, sem ampliar a fronteira de dados Server → Client.
+- A tabela equivalente permanece fora do frame e não pode ser removida pelo modo expandido.
+- Nenhuma dependência, orientação forçada ou abstração de domínio é introduzida.
+- Decisão completa: `adr/0014-expandable-chart-frame.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações

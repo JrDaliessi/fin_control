@@ -1,7 +1,30 @@
-import { describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render, screen, within } from "@testing-library/react";
+import type { ReactNode } from "react";
 import type { FinancialEvolutionDto } from "../application/use-cases/list-financial-evolution.use-case";
-import { FinancialEvolutionPanel } from "../presentation/components/FinancialEvolutionPanel";
+import type { FinancialEvolutionChartModel } from "../presentation/charts/financial-evolution-chart.model";
+
+jest.mock(
+  "../presentation/components/FinancialEvolutionChart.client",
+  () => ({
+    FinancialEvolutionChart: jest.fn(() => null)
+  })
+);
+
+type FinancialEvolutionChartStub = (props: {
+  model: FinancialEvolutionChartModel;
+}) => ReactNode;
+
+const { FinancialEvolutionChart: mockFinancialEvolutionChart } =
+  jest.requireMock(
+    "../presentation/components/FinancialEvolutionChart.client"
+  ) as {
+    FinancialEvolutionChart: jest.MockedFunction<FinancialEvolutionChartStub>;
+  };
+
+const { FinancialEvolutionPanel } = jest.requireActual<
+  typeof import("../presentation/components/FinancialEvolutionPanel")
+>("../presentation/components/FinancialEvolutionPanel");
 
 const successResult: FinancialEvolutionDto = {
   status: "success",
@@ -40,6 +63,11 @@ function makeResult(
 }
 
 describe("FinancialEvolutionPanel", () => {
+  beforeEach(() => {
+    mockFinancialEvolutionChart.mockReset();
+    mockFinancialEvolutionChart.mockImplementation(() => null);
+  });
+
   it("offers the five supported periods and preserves the selected period", () => {
     render(
       <FinancialEvolutionPanel
@@ -85,6 +113,7 @@ describe("FinancialEvolutionPanel", () => {
     expect(
       screen.queryByRole("group", { name: /Saldo ao fim do período:/ })
     ).not.toBeInTheDocument();
+    expect(mockFinancialEvolutionChart).not.toHaveBeenCalled();
   });
 
   it("distinguishes a period without movements and keeps daily balances visible", () => {
@@ -218,5 +247,107 @@ describe("FinancialEvolutionPanel", () => {
         "Deslize horizontalmente ou use as setas do teclado para consultar todas as colunas."
       )
     ).toHaveClass("sm:sr-only");
+  });
+
+  it("renders the balance chart and table from the same success result", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Evolução do saldo" })
+    ).toBeInTheDocument();
+    expect(mockFinancialEvolutionChart).toHaveBeenCalledTimes(1);
+    expect(mockFinancialEvolutionChart.mock.calls[0]?.[0].model).toEqual({
+      startOnInclusive: "2026-03-01",
+      endOnExclusive: "2026-03-08",
+      points: [
+        {
+          civilDate: "2026-03-01",
+          closingBalanceInCents: 13_000
+        }
+      ]
+    });
+    expect(
+      screen.getByRole("table", { name: "Evolução financeira por dia" })
+    ).toBeInTheDocument();
+  });
+
+  it("keeps a flat balance chart and the table for a period without movements", () => {
+    const emptyResult = makeResult({
+      status: "empty",
+      summary: {
+        openingBalanceInCents: 2_500,
+        incomeInCents: 0,
+        expenseInCents: 0,
+        netInCents: 0,
+        closingBalanceInCents: 2_500,
+        transactionCount: 0
+      },
+      points: [
+        {
+          startOnInclusive: "2026-03-01",
+          endOnExclusive: "2026-03-02",
+          incomeInCents: 0,
+          expenseInCents: 0,
+          netInCents: 0,
+          closingBalanceInCents: 2_500,
+          transactionCount: 0
+        },
+        {
+          startOnInclusive: "2026-03-02",
+          endOnExclusive: "2026-03-03",
+          incomeInCents: 0,
+          expenseInCents: 0,
+          netInCents: 0,
+          closingBalanceInCents: 2_500,
+          transactionCount: 0
+        }
+      ]
+    });
+
+    render(
+      <FinancialEvolutionPanel
+        result={emptyResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Nenhuma movimentação neste período. Seus saldos continuam visíveis."
+    );
+    expect(mockFinancialEvolutionChart.mock.calls[0]?.[0].model.points).toEqual([
+      { civilDate: "2026-03-01", closingBalanceInCents: 2_500 },
+      { civilDate: "2026-03-02", closingBalanceInCents: 2_500 }
+    ]);
+    expect(
+      screen.getByRole("table", { name: "Evolução financeira por dia" })
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the table available when the chart reports a local failure", () => {
+    mockFinancialEvolutionChart.mockImplementationOnce(() => (
+      <p role="status">
+        Não foi possível carregar o gráfico. Consulte a tabela de evolução
+        financeira.
+      </p>
+    ));
+
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Não foi possível carregar o gráfico. Consulte a tabela de evolução financeira."
+    );
+    expect(
+      screen.getByRole("table", { name: "Evolução financeira por dia" })
+    ).toBeInTheDocument();
   });
 });
