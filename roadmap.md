@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo recomendado: selecionar humanamente o `SP-001 — Biblioteca de gráficos` para discovery técnico; gráficos e a série temporal visual continuam fora até a conclusão do spike e da SR-014.
+Último ciclo concluído: Dia 7 do `SP-001 — Biblioteca de gráficos` encerrou em `READY_FOR_RELEASE`. ECharts `6.1.0` e o adapter isolado foram aceitos, com pipeline, segurança e Preview verdes; gráficos de produção continuam fora até a SR-014.
 
 Integrações posteriores:
 
@@ -239,7 +239,9 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013 e UI-003 concluídas em `READY_FOR_RELEASE`. O dashboard consome somente o snapshot real, preserva composição server-side e passou por validação final; `SP-001`/SR-014 permanecem como incrementos posteriores e separados para gráficos.
+Estado atual: SR-013, UI-003 e SP-001 concluídos. O SP-001 encerrou em `READY_FOR_RELEASE` com ECharts 6.1 modular, alto contraste, responsividade, movimento reduzido, PWA honesta, segurança básica, CI e Preview verdes. A análise de bundle confirma ausência do pacote nas rotas atuais; a integração de produção, o delta real de bundle e a validação visual end-to-end pertencem à SR-014.
+
+Próximo passo recomendado: refinar a `SR-014 — Gráfico de linha da evolução` no Dia 1, por aprovação humana explícita, mantendo a tabela acessível e sem antecipar candles.
 
 ## Marco 10 - Candles Financeiros
 

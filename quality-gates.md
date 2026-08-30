@@ -1214,3 +1214,122 @@ Uma release incremental só pode ser considerada pronta quando:
 - observabilidade: logs recentes de Supabase sem erro/fatal/5xx; preview protegido por SSO não recebeu bypass; captura externa sanitizada permanece em `HARD-OBS-001`.
 - hardening: ausência de headers definidos pela aplicação permanece em `SEC-HARD-001`; vínculo/runtime/npm divergentes da Vercel foram registrados em `CI-VERCEL-002`.
 - estado final: `READY_FOR_RELEASE` para entrega incremental de código; produção pública permanece bloqueada pelos hardenings documentados.
+
+## Gate do Dia 1 — SP-001
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- código real, DTO, composição server-side, tabela acessível, roadmap e ADRs anteriores confrontados.
+- comparação oficial cobriu Apache ECharts 6.1, Recharts 3.10 e Lightweight Charts 5.2 por linha/candles, acessibilidade, Next.js/React, bundle, mobile, TypeScript e licença.
+- Apache ECharts escolhido com import modular, SVG, ARIA/decal e sem wrapper React adicional.
+- fronteira definida: mapper puro e option builder em presentation; ilha cliente mínima; domain/application/infrastructure/App Router sem import da biblioteca.
+- tabela acessível, centavos, datas civis, movimento reduzido, contraste e ausência de semântica de trading permanecem obrigatórios.
+- nenhuma dependência, gráfico, teste funcional, Supabase, migration, dado, commit, push, PR ou deploy foi criado.
+- lint, type-check e build não foram repetidos porque somente documentação foi alterada; `git diff --check` é o gate aplicável da fase.
+- estado de saída: `ARCHITECTURE_READY`.
+
+## Gate do Dia 2 — SP-001
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline completo antes do RED: 71 suítes e 386 testes verdes.
+- domain/application relevantes permaneceram verdes: 3 suítes e 38 testes.
+- quatro suítes test-first foram criadas para mapper, option builder, lifecycle e fronteiras arquiteturais.
+- RED direcionado final: 4 suítes vermelhas; 7 falhas arquiteturais esperadas, 2 invariantes existentes verdes e 3 suítes bloqueadas por módulos planejados ausentes.
+- type-check RED contém somente 7 erros `TS2307` dos módulos funcionais planejados.
+- lint dos quatro testes novos passou com 0 warnings.
+- regressão anterior, excluindo somente as quatro suítes RED, permaneceu em 71 suítes e 386 testes verdes.
+- falso positivo do scanner e assinatura incorreta do mock DOM foram registrados no contexto e corrigidos antes da aceitação do RED.
+- nenhuma implementação, instalação, gráfico de produção, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `TEST_STRATEGY_READY`.
+
+## Gate do Dia 3 — SP-001
+
+- RED reconfirmado antes da implementação: 4 suítes vermelhas por módulos/dependência ausentes.
+- `echarts@6.1.0` instalado com versão exata; licença Apache-2.0 e dependências `tslib`/`zrender` verificadas.
+- cinco arquivos funcionais mínimos criados somente em presentation: model, mapper, option builder, adapter modular SVG e ilha cliente.
+- primeiro GREEN parcial: 3 suítes e 15 testes; desvio ESM/Jest registrado antes da correção do harness.
+- GREEN direcionado final: 4 suítes e 20 testes verdes.
+- regressão completa: 75 suítes e 406 testes verdes.
+- type-check: verde; lint global: verde, 0 warnings.
+- audit de produção: verde, 0 vulnerabilidades.
+- build Next.js 16.3.3: verde; todas as rotas e `ƒ Proxy (Middleware)` preservados.
+- `next experimental-analyze --output`: nenhum módulo ECharts nas rotas/chunks atuais; delta de bundle de produção igual a zero enquanto a ilha não é importada.
+- `FinancialEvolutionPanel` continua server-side com tabela acessível e sem import do experimento.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 4 — SP-001
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da execução.
+- baseline direcionado: 4 suítes e 20 testes verdes.
+- RED test-first: 1 suíte com 2 falhas esperadas e 5 testes verdes para estado vazio e mudança de tema.
+- GREEN do componente: 1 suíte e 7 testes verdes; GREEN direcionado: 4 suítes e 22 testes verdes.
+- estado vazio não inicializa ECharts; tema dinâmico reaplica opções sem recriar a instância e desconecta o observer no unmount.
+- fallback, resize, reduced motion, atualização de modelo e cleanup existentes permaneceram verdes.
+- regressão completa: 75 suítes e 408 testes verdes.
+- type-check: verde; lint global: verde, 0 warnings.
+- audit de produção: verde, 0 vulnerabilidades.
+- build Next.js 16.3.3: verde; todas as rotas e `ƒ Proxy (Middleware)` preservados.
+- `next experimental-analyze --output`: nenhum módulo ECharts nas rotas/chunks atuais.
+- loading não se aplica sem operação assíncrona; validação em navegador não se aplica sem rota de experimento aprovada.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 5 — SP-001
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução.
+- diagnóstico confirmou cinco arquivos de produção coesos, sem monólito, duplicação relevante ou abstração genérica necessária.
+- baseline direcionado: 4 suítes e 22 testes verdes.
+- RED test-first: 1 suíte com 3 falhas planejadas e 7 testes anteriores verdes.
+- GREEN do componente: 1 suíte e 10 testes verdes; GREEN direcionado: 4 suítes e 25 testes verdes.
+- `useId`, listener de redução de movimento e aquisição transacional do lifecycle foram adicionados sem mudar regras financeiras.
+- regressão completa: 75 suítes e 411 testes verdes.
+- type-check: verde; lint global: verde, 0 warnings.
+- audit de produção: verde, 0 vulnerabilidades.
+- build Next.js 16.3.3: verde; todas as rotas e `ƒ Proxy (Middleware)` preservados.
+- `next experimental-analyze --output`: nenhum módulo ECharts nas rotas/chunks atuais.
+- datas civis, centavos inteiros, imports modulares, RSC e tabela acessível permaneceram protegidos.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 6 — SP-001
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional aprovada antes da execução.
+- baseline direcionado: 4 suítes e 25 testes verdes.
+- contraste auditado: mínimos de `5,12:1` no tema claro e `6,92:1` no tema escuro para texto secundário; linha principal acima de `5,47:1`.
+- RED test-first: 2 suítes com 1 falha planejada e 20 testes verdes para alto contraste.
+- GREEN de componente/fronteira: 2 suítes e 21 testes; GREEN com manifesto PWA: 5 suítes e 29 testes.
+- `forced-colors` usa cores semânticas do sistema, atualiza a instância existente e remove o listener no unmount.
+- largura fluida, altura mínima, resize, nomes/descrições, estados textuais e tabela equivalente permaneceram protegidos.
+- manifesto instalável, ícones e atalhos reais permanecem verdes; nenhum service worker, cache financeiro ou promessa offline foi criado.
+- regressão completa: 75 suítes e 413 testes verdes.
+- type-check: verde; lint global: verde, 0 warnings.
+- audit de produção: verde, 0 vulnerabilidades.
+- build Next.js 16.3.3: verde; todas as rotas e `ƒ Proxy (Middleware)` preservados.
+- `next experimental-analyze --output`: nenhum módulo ECharts nas rotas/chunks atuais.
+- validação visual em navegador permanece condicionada à rota real da SR-014 e não foi simulada artificialmente.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `QUALITY_VALIDATION`.
+
+## Gate do Dia 7 — SP-001
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 75 suítes e 413 testes passaram.
+- lint: verde, 0 warnings; type-check: verde.
+- auditoria npm completa: verde, 0 vulnerabilidades; 701 pacotes com assinaturas de registro e 102 com attestations verificadas.
+- ECharts `6.1.0`, ZRender `6.1.0`, dependências transitivas imediatas e licença Apache-2.0 inspecionados.
+- build Next.js `16.3.3`: verde; rotas atuais e `ƒ Proxy (Middleware)` preservados.
+- análise de bundle: nenhum módulo ECharts ou arquivo do experimento presente nos chunks das rotas atuais.
+- revisão estática do adapter: sem rede, Supabase, storage, service worker, `eval`, HTML arbitrário ou logging de dados financeiros.
+- segredos: somente `.env.example` rastreado, com valores vazios; nenhum arquivo de ambiente sensível adicionado.
+- GitHub Actions Quality Gates #69 e status Vercel verdes no commit `ce41b301120c44db91b451d530ac0d2d9b25ef6e`.
+- Preview Vercel `dpl_2JyLQ9bTgP8S4T7hTybUB5Sp8nZj` `READY`; `/login` respondeu HTTP 200, sem erro/fatal nem runtime error na janela disponível de 1 hora.
+- nenhum risco crítico específico do SP-001 identificado; bundle real e validação visual end-to-end permanecem obrigatórios na SR-014.
+- telemetria de produto não foi criada sem rota real; baseline futura proíbe PII, identidade e conteúdo financeiro em eventos/logs.
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, promoção, merge, commit, push ou novo PR foi executado.
+- `git diff --check` verde; `next-env.d.ts` restaurado e `rewrite-msgs.sh` preservado fora do escopo.
+- estado final: `READY_FOR_RELEASE`; SP-001 marcado como `DONE`.

@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UI-003 concluído; pipeline, segurança, observabilidade e release readiness validados para entrega incremental de código
+- Fase atual: Dia 7 do SP-001 concluído; ECharts 6.1.0 e o adapter isolado foram aceitos para a futura SR-014, sem integrar o experimento às rotas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -99,6 +99,14 @@
 - Data da refatoração e hardening da UI-003: 2026-08-29
 - Data da revisão de UX, acessibilidade e PWA da UI-003: 2026-08-29
 - Data da validação final e preparação de release da UI-003: 2026-08-29
+- Data de seleção do SP-001 como próximo ciclo: 2026-08-29
+- Data do discovery e arquitetura do SP-001: 2026-08-29
+- Data da estratégia de testes do SP-001: 2026-08-29
+- Data da implementação mínima do SP-001: 2026-08-29
+- Data da expansão controlada do SP-001: 2026-08-30
+- Data da refatoração e hardening do SP-001: 2026-08-30
+- Data da revisão de UX, acessibilidade e PWA do SP-001: 2026-08-30
+- Data da validação final e preparação de release do SP-001: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -951,6 +959,14 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: na auditoria inicial do Dia 6 do SP-001, a IA tentou ler `src/app/manifest.ts` apesar de a descoberta no mesmo comando apontar `public/manifest.webmanifest` como manifesto real. Prevenção: separar descoberta e leitura de artefatos opcionais; somente abrir caminhos confirmados por `rg --files`, sem presumir convenções alternativas do Next.js.
+- Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
+- Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
+- Erro: o primeiro adapter ECharts importou `use` com o nome original e o ESLint o classificou como React Hook chamado no topo do módulo. Prevenção: APIs externas homônimas a hooks devem receber alias sem prefixo `use`, deixando explícita sua função de registro e evitando falsos positivos sem desabilitar regras.
+- Erro: o primeiro fallback da ilha ECharts chamou `setInitializationFailed` sincronamente dentro de `useEffect`, violando o gate React 19 de `set-state-in-effect`. Prevenção: inicialização estritamente ligada ao elemento deve usar callback ref estável com cleanup de ref do React 19; effects permanecem apenas para sincronizar opções após a instância existir.
+- Erro: no primeiro GREEN do SP-001, `FinancialEvolutionChart.test.tsx` importou estaticamente o componente e os adapters antes de registrar os mocks; o transformador Next/Jest carregou o ESM real de `echarts/charts` e falhou em `export` antes de executar os testes. Prevenção: testes de ilhas cliente com dependências ESM devem registrar `jest.mock()` antes do carregamento e obter componente/adapters com `jest.requireActual()`/`jest.requireMock()`, mantendo a biblioteca real reservada aos testes de integração/build.
+- Erro: o primeiro mock de `MediaQueryList` do Dia 2 do SP-001 usou `jest.fn()` sem retorno para `dispatchEvent`, mas o contrato DOM exige booleano; a primeira correção nomeou um argumento não utilizado e gerou warning de lint. Prevenção: mocks de APIs do browser devem satisfazer explicitamente as assinaturas nativas com a menor função compatível, sem bindings artificiais, para que type-check e lint contenham somente sinais funcionais planejados.
+- Erro: o primeiro contrato arquitetural RED do SP-001 varreu a própria pasta `tests` e interpretou a expressão usada para detectar imports de ECharts como uma violação real. Prevenção: scanners estáticos de fronteira devem limitar a coleta a arquivos de produção ou excluir explicitamente fixtures e testes antes de avaliar padrões de import; a suíte deve ser repetida após a correção do harness, sem alterar o contrato de produção.
 - Erro: o Dia 2 da UI-003 atualizou os contratos específicos do dashboard, mas não revisou o teste transversal que ainda exigia `FeedbackMessage` no `DashboardPage`; a regressão completa só expôs o drift após o GREEN direcionado. Prevenção: toda mudança de responsabilidade entre componentes deve pesquisar e atualizar contratos arquiteturais e de design system transversais no RED, validando a suíte completa imediatamente após o primeiro GREEN sem reintroduzir imports artificiais.
 - Erro: a primeira integração real do repository da SR-013 tipou `rpc` como `Promise`, enquanto o cliente Supabase retorna um builder aguardável (`PromiseLike`), fazendo o type-check falhar apesar do comportamento correto. Prevenção: modelar adapters externos pelo menor contrato aguardável real, validar a implementação concreta no primeiro GREEN integrado e não ampliar o port de application com tipos do provider.
 - Erro: o teste agregado das rotas do Dia 4 da SR-013 importou as páginas estaticamente e o transformador Next/Jest carregou o loader real antes do mock, tentando acessar `cookies()` fora de request scope. Prevenção: em testes de Server Components, registrar o mock antes e carregar página/loader com `jest.requireActual()`/`jest.requireMock()` quando a ordem de avaliação fizer parte do isolamento.
@@ -5313,3 +5329,328 @@ Estado de saída:
 - `READY_FOR_RELEASE`
 - UI-003 concluída como entrega incremental de código
 - próximo passo recomendado: seleção humana do `SP-001 — Biblioteca de gráficos`, sem iniciar automaticamente outro ciclo
+
+## Próximo Ciclo Selecionado — SP-001 Biblioteca de Gráficos
+
+Spike selecionado: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Objetivo:
+- reduzir a incerteza técnica antes da SR-014, comparando opções adequadas a linha financeira, candles futuros, responsividade e acessibilidade
+- definir uma fronteira de adapter exclusiva da presentation, sem acoplar domain ou application a uma biblioteca visual
+- preservar a tabela acessível como representação equivalente e obrigatória dos dados
+
+Dependências confirmadas:
+- SR-013 e UI-003 concluídas em `READY_FOR_RELEASE`
+- `FinancialEvolutionDto` já fornece buckets diários serializáveis e sem dependência visual
+- PR #16 incorporada ao `develop` com Quality Gates verdes
+
+Escopo da seleção:
+- branch `codex/sp-001-chart-library-spike` criada a partir do `develop` atualizado
+- nenhuma biblioteca foi instalada e nenhum gráfico de produção foi criado
+- comparação, critérios, experimento limitado e ADR pertencem ao Dia 1; implementação da SR-014 permanece separada
+
+Estado de entrada:
+- máquina de estados permanece `READY_FOR_RELEASE`
+- SP-001 está `IN_PROGRESS` apenas como ciclo selecionado
+- próximo comando válido: `dia 1`
+
+## Dia 1 — Contexto, Discovery e Arquitetura do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Diagnóstico:
+- o snapshot da SR-013 entrega até 31 buckets diários como objetos planos com datas civis e valores inteiros em centavos
+- `composeDashboardRoute` e `FinancialEvolutionPanel` permanecem server-side; somente a futura superfície interativa precisa ser cliente
+- a tabela diária já é a representação acessível e não pode ser removida pelo gráfico
+- SR-014 exige linha; SR-015 exige OHLC financeiro sem semântica de trading
+
+Comparação ponderada:
+- Apache ECharts 6.1: `4,10/5`; linha e candlestick nativos, SVG/Canvas, ARIA/decal, TypeScript e imports modulares
+- Recharts 3.10: `3,90/5`; melhor ergonomia React/SVG, mas candle depende de composição manual com `Bar` e `ErrorBar`
+- Lightweight Charts 5.2: `3,90/5`; foco financeiro e bundle enxuto, mas Canvas, acessibilidade própria e atribuição TradingView obrigatória
+
+Decisão:
+- adotar `echarts@6.1.0` diretamente e sem wrapper React, condicionado ao experimento e aos testes das próximas fases
+- usar importações tree-shakeable e `SVGRenderer`; nenhum import total de `echarts` será permitido
+- criar adapter específico em `financial-analytics/presentation/charts/echarts`, sem `ChartPort` genérico prematuro
+- preservar o DTO e os centavos; mapper de presentation produzirá view model plano e serializável
+- manter `FinancialEvolutionPanel` como Server Component e limitar `use client` ao componente de lifecycle do gráfico
+- manter a tabela sempre renderizada; ARIA/decal, descrição, teclado, contraste e movimento reduzido complementam a alternativa textual
+
+Contratos planejados:
+- `FinancialEvolutionDto -> toFinancialEvolutionChartModel -> FinancialEvolutionChartModel -> FinancialEvolutionChart.client -> buildEChartsOption`
+- domain, application, infrastructure, Supabase e App Router não importam ECharts
+- temas chegam como tokens resolvidos pela ilha cliente; nenhuma regra financeira é recalculada na biblioteca
+- lifecycle deve cobrir init, resize, update e dispose sem listeners órfãos
+
+Evidências e limites:
+- documentação oficial de ECharts, Recharts, Lightweight Charts e Next.js foi confrontada com o código e o roadmap atuais
+- ADR `0012-chart-library-presentation-adapter.md` registra matriz, decisão, estrutura e alternativas
+- nenhuma dependência, implementação, teste funcional, migration, dado, commit, push, PR ou deploy foi criado nesta fase
+- `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Escopo testável aprovado:
+- mapper puro entre `FinancialEvolutionDto` e um view model gráfico com datas civis e saldos inteiros em centavos
+- option builder puro para linha de saldo, rótulos/tooltip formatados apenas na borda, ARIA/decal e movimento reduzido
+- ilha cliente estreita com inicialização SVG, `ResizeObserver`, atualização e descarte do chart
+- contrato arquitetural que limita ECharts ao adapter de presentation, fixa `echarts@6.1.0` e proíbe wrapper React/import total
+- preservação do Server Component e da tabela acessível já existentes
+
+Cobertura por camada:
+- domain: nenhum contrato novo; `civil-date` e agregação existentes continuam sendo a fonte das invariantes financeiras
+- application: nenhum caso de uso novo; `ListFinancialEvolutionUseCase` continua responsável pelo DTO serializável consumido pelo mapper
+- presentation pura: mapper e option builder possuem cenários de ordem, centavos, saldo negativo, vazio, imutabilidade, moeda, ARIA e movimento reduzido
+- presentation cliente: lifecycle cobre SVG, nome/descrição acessíveis, `setOption`, atualização sem reinicialização, resize, preferência de movimento, cleanup e fallback de erro orientado à tabela
+- arquitetura/bundle: cinco arquivos permitidos, dependência exata, ausência de wrapper e imports modulares são contratos executáveis
+
+Evidências RED:
+- baseline antes dos novos testes: 71 suítes e 386 testes verdes
+- rede de segurança direcionada de domain/application: 3 suítes e 38 testes verdes
+- quatro novas suítes foram criadas antes de qualquer implementação funcional
+- RED direcionado final: 4 suítes vermelhas; o contrato arquitetural executou 9 testes, com 7 falhas esperadas e 2 invariantes existentes verdes; as outras 3 suítes pararam exclusivamente nos módulos planejados ausentes
+- type-check RED: 7 erros `TS2307`, todos referentes aos cinco módulos planejados ainda ausentes
+- lint dos quatro novos arquivos: verde, 0 warnings
+- regressão anterior excluindo somente as quatro suítes RED: 71 suítes e 386 testes verdes
+- o primeiro scanner e o primeiro mock DOM produziram ruído de harness; ambos foram registrados em erros recorrentes e corrigidos antes de aceitar o RED
+- o `npm` global estava quebrado no host; os gates foram executados com o runtime Node empacotado, sem alterar dependências
+
+Implementação bloqueada até o Dia 3:
+- instalar `echarts@6.1.0`
+- criar model, mapper, option builder, adapter ECharts ou ilha cliente
+- integrar qualquer gráfico ao dashboard ou iniciar a SR-014
+- alterar domain, application, infrastructure, Supabase, migrations ou dados
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Testes do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Implementação mínima:
+- `echarts@6.1.0` instalado diretamente e fixado no lockfile, sem wrapper React
+- view model plano com datas civis e saldos inteiros em centavos
+- mapper puro de `FinancialEvolutionDto` para o view model, sem mutação ou formatação monetária antecipada
+- option builder puro com linha de saldo, tokens de tema resolvidos, ARIA/decal, moeda na borda e movimento reduzido
+- adapter ECharts modular com `LineChart`, `AriaComponent`, `GridComponent`, `TooltipComponent` e `SVGRenderer`
+- ilha cliente síncrona com props serializáveis, callback ref/cleanup do React 19, `ResizeObserver`, update sem reinicialização e fallback acessível orientado à tabela
+
+Fronteiras preservadas:
+- `FinancialEvolutionPanel` continua Server Component e não importa a ilha experimental
+- nenhuma rota ou chunk de produção importa ECharts nesta etapa
+- domain, application, infrastructure, App Router e Supabase permanecem inalterados
+- nenhum gráfico de produção foi criado; integração continua reservada à SR-014
+- nenhuma abstração genérica de chart foi introduzida
+
+Evidências GREEN:
+- RED reconfirmado antes da implementação: 4 suítes vermelhas, 7 falhas arquiteturais esperadas e 2 invariantes verdes
+- primeiro GREEN parcial: 3 suítes verdes e 15 testes; a suíte cliente expôs carregamento ESM anterior ao mock
+- correções de harness e integração foram documentadas em erros recorrentes antes de serem aplicadas
+- GREEN direcionado final: 4 suítes e 20 testes verdes
+- regressão completa: 75 suítes e 406 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde, rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais; delta efetivo de bundle das rotas de produção igual a zero
+- pacote auditado localmente: licença Apache-2.0; dependências diretas do pacote limitadas a `tslib` e `zrender`
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Influência da skill `vercel:nextjs`:
+- manteve a ilha cliente não assíncrona e concentrou hooks/APIs de browser nela
+- preservou o painel server-side e a passagem exclusiva de objetos, arrays, strings e números serializáveis
+- confirmou que uma biblioteca client-only não deve entrar em rotas antes de existir integração funcional aprovada
+
+Riscos e próximos controles:
+- o npm disponível no host é 10.9.2, abaixo do npm 11 declarado; a instalação foi executada pelo CLI local e o desvio continua relacionado ao hardening `CI-VERCEL-002`
+- o bundle precisa ser medido novamente quando a SR-014 importar a ilha em uma rota real
+- tema dinâmico, integração painel+tabela e experiência visual real pertencem às fases seguintes, não a este GREEN mínimo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Expansão test-first:
+- baseline do experimento antes dos novos cenários: 4 suítes e 20 testes verdes
+- dois testes foram escritos antes da implementação para estado vazio e alteração de `data-theme`
+- RED observado: 1 suíte executada, 2 falhas esperadas e 5 testes verdes; a ilha ainda renderizava/inicializava o gráfico vazio e não observava o tema
+- GREEN do componente: 1 suíte e 7 testes verdes
+- GREEN direcionado final: 4 suítes e 22 testes verdes
+
+Comportamentos consolidados:
+- modelo sem pontos apresenta status textual explícito e não inicializa ECharts nem constrói opções
+- alteração do atributo raiz `data-theme` reaplica os tokens CSS na instância existente, sem recriar o gráfico
+- o `MutationObserver` observa somente `data-theme` e é desconectado no cleanup
+- sucesso continua expondo gráfico nomeado e descrição associada; falha de inicialização continua orientando o usuário à tabela acessível
+- resize, atualização de modelo, movimento reduzido e descarte da instância permanecem cobertos
+- estado de loading não foi criado porque o experimento não possui operação assíncrona; simular espera seria um estado falso
+
+Fronteiras preservadas:
+- `FinancialEvolutionPanel` e as rotas continuam sem importar a ilha experimental
+- nenhuma integração com dashboard ou SR-014 foi antecipada
+- domain, application, infrastructure, Supabase, migrations e dados permaneceram inalterados
+- nenhuma abstração genérica, candle ou nova regra financeira foi adicionada
+- validação visual em navegador não se aplica nesta fase porque o componente ainda não possui rota aprovada
+
+Quality Gates:
+- regressão completa: 75 suítes e 408 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Diagnóstico estrutural:
+- os cinco arquivos de produção permanecem pequenos e coesos; o maior, `FinancialEvolutionChart.client.tsx`, possui 165 linhas após o hardening
+- nenhum arquivo monolítico, duplicação relevante ou abstração genérica necessária foi identificado
+- a suíte cliente possui 371 linhas e dez cenários de lifecycle; permanece coesa e não justifica fragmentação enquanto o adapter continuar isolado
+- domain, application e infrastructure continuam sem dependência de ECharts; datas civis e centavos inteiros não foram alterados
+- a fronteira Server/Client continua mínima, síncrona e com props planas serializáveis
+
+Hardening test-first:
+- baseline: 4 suítes e 22 testes verdes
+- três contratos foram adicionados antes da implementação: IDs únicos por instância, reação dinâmica a redução de movimento e descarte transacional quando `ResizeObserver` falha
+- RED observado: 1 suíte, 3 falhas planejadas e 7 testes anteriores verdes
+- GREEN do componente: 1 suíte e 10 testes verdes
+- GREEN direcionado final: 4 suítes e 25 testes verdes
+
+Melhorias aplicadas:
+- `useId` substitui o ID global fixo e preserva relações `aria-describedby` únicas quando há múltiplos gráficos
+- mudanças de `prefers-reduced-motion` reaplicam opções na instância existente e removem o listener no unmount
+- inicialização ECharts e configuração de `ResizeObserver` formam uma aquisição transacional: falha intermediária desconecta recursos, descarta a instância e mostra o fallback existente
+- callbacks de resize e cleanup operam sobre a instância local adquirida, evitando interferência com uma referência posterior
+- nenhum novo arquivo, helper genérico, dependência, regra financeira ou estado visual foi criado
+
+Influência da skill `vercel:nextjs`:
+- manteve browser APIs e hooks exclusivamente na ilha cliente
+- preservou o componente cliente como função síncrona e o view model como prop serializável
+- confirmou novamente ausência de ECharts no bundle das rotas enquanto não existe integração aprovada
+
+Quality Gates:
+- regressão completa: 75 suítes e 411 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Riscos remanescentes:
+- o custo real de bundle precisa ser medido quando a SR-014 importar a ilha em uma rota
+- validação visual, responsividade e acessibilidade em navegador pertencem ao Dia 6; não existe rota de experimento autorizada nesta fase
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Auditoria de experiência:
+- container do gráfico permanece mobile first com `w-full`, altura mínima estável e `ResizeObserver`
+- estados vazio e erro usam status textual; o gráfico possui nome e descrição únicos; a tabela server-side permanece como representação equivalente
+- a série única não depende de distinção entre múltiplas cores e o option builder mantém ARIA/decal e movimento reduzido
+- contraste medido entre tokens principais: `5,47:1` e `5,12:1` no tema claro; `9,53:1` e `6,92:1` no tema escuro
+- não há interação por teclado a adicionar porque a superfície é uma imagem informativa, sem controles próprios
+
+Melhoria test-first:
+- baseline: 4 suítes e 25 testes verdes
+- contratos adicionais preservam classes responsivas e impedem fetch, Supabase, storage ou promessa offline dentro da ilha cliente
+- RED direcionado: 2 suítes executadas, 1 falha planejada e 20 testes verdes; faltavam tokens e assinatura de `forced-colors`
+- GREEN de componente/fronteira: 2 suítes e 21 testes verdes
+- GREEN com manifesto PWA: 5 suítes e 29 testes verdes
+- alto contraste agora usa `Canvas`, `CanvasText` e `Highlight`, acompanha mudanças do sistema e remove o listener no cleanup
+
+Experiência PWA:
+- manifesto real em `public/manifest.webmanifest` continua válido, instalável, em `pt-BR`, com ícones raster/maskable e atalhos apenas para fluxos existentes
+- a ilha é determinística a partir de props serializáveis e não acessa fonte de dados, storage, service worker ou rede
+- nenhum service worker ou cache financeiro foi criado; o produto não promete funcionamento offline sem estratégia de consistência
+- o erro inicial de leitura do caminho do manifesto foi registrado em erros recorrentes antes da correção da auditoria
+
+Limites preservados:
+- nenhuma rota, dashboard ou integração SR-014 foi criada
+- validação visual end-to-end em navegador não se aplica ao spike isolado; deverá ocorrer quando a SR-014 fornecer uma rota real
+- domain, application, infrastructure, Supabase, migrations, dados e dependências permaneceram inalterados
+
+Quality Gates:
+- regressão completa: 75 suítes e 413 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Decisão final:
+- Apache ECharts `6.1.0` foi aceita para a SR-014 e para a futura SR-015, atrás do adapter específico de presentation registrado no ADR 0012
+- o experimento demonstrou import modular, `SVGRenderer`, lifecycle controlado, alto contraste, movimento reduzido, responsividade e fallback acessível sem contaminar domain, application ou infrastructure
+- a tabela server-side continua obrigatória; o gráfico será uma representação complementar, nunca a única fonte da informação financeira
+- nenhuma abstração `ChartPort`, wrapper React ou integração com rota foi antecipada
+
+Quality Gates finais:
+- regressão completa: 75 suítes e 413 testes verdes
+- type-check e lint global: verdes, com 0 warnings
+- build Next.js `16.3.3`: verde; `/`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e `ƒ Proxy (Middleware)` preservados
+- auditoria npm completa: 0 vulnerabilidades; 701 pacotes com assinaturas de registro e 102 com attestations verificadas
+- ECharts `6.1.0`, ZRender `6.1.0` e suas licenças/dependências foram inspecionados; não há vulnerabilidade conhecida reportada pelo lockfile
+- análise de bundle confirmou que ECharts e o experimento não entram nos chunks das rotas atuais; o delta real deverá ser medido quando a SR-014 importar a ilha
+- GitHub Actions Quality Gates #69 e status Vercel passaram no commit `ce41b301120c44db91b451d530ac0d2d9b25ef6e`
+- Preview Vercel `dpl_2JyLQ9bTgP8S4T7hTybUB5Sp8nZj` está `READY`; `/login` respondeu HTTP 200 e não houve erro/fatal nem runtime error na janela disponível de 1 hora
+- `git diff --check` permaneceu verde; `next-env.d.ts` foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Revisão básica de segurança:
+- o adapter não usa rede, Supabase, storage, service worker, `eval`, HTML arbitrário ou logging de dados financeiros
+- nenhum segredo ou arquivo de ambiente sensível foi adicionado; somente `.env.example`, com valores vazios, permanece rastreado
+- a superfície nova recebe view model serializável com datas civis e centavos inteiros; não recebe identidade, token, repository ou payload de infraestrutura
+- falhas de inicialização descartam recursos e expõem fallback textual acessível
+- nenhum risco crítico específico do SP-001 foi identificado
+
+Baseline de observabilidade:
+- como o experimento não pertence a uma rota, instrumentação de produto e telemetria cliente permanecem bloqueadas nesta fase
+- na SR-014, métricas técnicas poderão registrar apenas sucesso/falha de inicialização, faixa de duração, renderer, faixa de pontos, rota, release e ambiente
+- datas, valores, saldos, categorias, contas, e-mail, UUID, tokens e payloads financeiros são proibidos em logs ou eventos
+- o plano Hobby limita a retenção operacional disponível e não oferece drains; a captura externa sanitizada permanece rastreada em `HARD-OBS-001` antes de produção pública
+
+Riscos e bloqueios remanescentes:
+- o custo real de bundle, a renderização visual end-to-end e o comportamento da rota só podem ser comprovados na SR-014
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando promoção pública de produção, mas não a entrega incremental deste código
+- `CI-VERCEL-002` continua como dívida MÉDIA: o vínculo local `.vercel/project.json` aponta para projeto antigo e deve ser corrigido antes de operação direta por CLI ou promoção
+- o erro histórico `financial evolution unavailable` pertence a deployment de produção anterior, não ao Preview atual nem ao experimento sem rota
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- SP-001 está `DONE`
+- próximo passo recomendado: refinar e iniciar humanamente a `SR-014 — Gráfico de linha da evolução`, começando pelo Dia 1; nenhuma nova fase foi iniciada automaticamente
