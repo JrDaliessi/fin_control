@@ -1351,3 +1351,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, teste executável, dependência, Supabase, migration, dado, commit, push, PR ou deploy foi criado.
 - lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
 - estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2`.
+
+## Gate do Dia 2 — SR-014
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline completa antes do RED: 75 suítes e 413 testes verdes; type-check e lint verdes.
+- 4 contratos novos criados em 2 suítes, sem código funcional.
+- RED direcionado confirmado: 2 suítes falharam; 4 testes falharam e 17 passaram, total de 21 testes.
+- falhas correspondem somente à integração ainda ausente do mapper, da ilha, do heading e do fallback local no painel.
+- regressão anterior, excluindo apenas as 2 suítes intencionalmente RED: 73 suítes e 396 testes verdes.
+- testes alterados passaram por lint com 0 warnings; type-check permaneceu verde.
+- nenhum teste foi removido, ignorado ou relaxado; domain, application, infrastructure e rotas permaneceram intactos.
+- build, bundle e browser não se aplicam enquanto a implementação funcional permanece bloqueada.
+- três falhas operacionais da IA foram registradas no contexto antes das respectivas correções; nenhuma representa defeito do projeto.
+- nenhum Supabase, migration, dado, dependência, commit, push, PR ou deploy foi executado.
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.

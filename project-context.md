@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-014 concluído; integração server/client do gráfico de linha definida sem alterar código funcional
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-014 concluído; contratos essenciais de integração materializados em RED controlado, sem código funcional
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -109,6 +109,7 @@
 - Data da validação final e preparação de release do SP-001: 2026-08-30
 - Data de seleção da SR-014 como próximo ciclo: 2026-08-30
 - Data do discovery e arquitetura da SR-014: 2026-08-30
+- Data da estratégia de testes e RED controlado da SR-014: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -961,6 +962,9 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: ao retomar o RED direcionado do Dia 2 da SR-014, a IA enviou caminhos Windows em uma string JavaScript comum, fazendo sequências como `\n`, `\b`, `\f` e `\t` corromperem o comando antes da criação do processo. Prevenção: ao orquestrar PowerShell pelo executor JavaScript, usar `String.raw` para comandos e caminhos Windows com barras invertidas, validando que o processo realmente iniciou antes de interpretar o resultado como evidência do projeto.
+- Erro: após detectar o npm global quebrado no Dia 2 da SR-014, a IA chamou o alias descontinuado `codex_app__load_workspace_dependencies`; a ferramenta orientou usar o endpoint MCP atual e não executou ação. Prevenção: neste host, descobrir runtimes empacotadas exclusivamente por `mcp__codex_app__load_workspace_dependencies`, ignorando o alias legado ainda exposto no catálogo.
+- Erro: ao iniciar a baseline do Dia 2 da SR-014, a IA executou `npm run test:ci` apesar de o contexto já registrar que o wrapper global do npm está quebrado; o comando falhou antes de carregar Jest. Prevenção: antes de qualquer gate Node neste host, consultar a runtime empacotada do workspace e invocar seus executáveis/binários locais, sem tentar primeiro o npm global conhecido como inválido.
 - Erro: na inspeção inicial do Dia 1 da SR-014, a IA passou `src/app/(private)/dashboard/compose-dashboard-route.tsx` ao PowerShell sem `-LiteralPath`, e o shell interpretou `(private)` como expressão, interrompendo somente essa leitura. Prevenção: caminhos Windows com parênteses ou outros metacaracteres devem ser passados com `Get-Content -LiteralPath` e aspas, mesmo quando já foram confirmados por `rg --files`.
 - Erro: na auditoria inicial do Dia 6 do SP-001, a IA tentou ler `src/app/manifest.ts` apesar de a descoberta no mesmo comando apontar `public/manifest.webmanifest` como manifesto real. Prevenção: separar descoberta e leitura de artefatos opcionais; somente abrir caminhos confirmados por `rg --files`, sem presumir convenções alternativas do Next.js.
 - Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
@@ -5742,3 +5746,47 @@ Estado de saída:
 - `ARCHITECTURE_READY`
 - SR-014 está `IN_PROGRESS`
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-014
+
+Small release: `SR-014A — Integração mínima do gráfico de evolução`.
+
+Critérios de entrada confirmados:
+- Dia 1 da SR-014 concluído em `ARCHITECTURE_READY`
+- DTO, mapper, ilha ECharts, tabela e contratos de composição já existentes e delimitados
+- regra financeira inalterada; a fase exige somente contratos novos de integração na presentation
+- declaração operacional aprovada antes da execução
+
+Matriz executada:
+- `FinancialEvolutionPanel` deve renderizar heading de nível 3, gráfico e tabela a partir do mesmo resultado `success`
+- o estado `empty` deve preservar feedback, linha plana e tabela
+- o estado `missing_accounts` deve continuar sem gráfico ou tabela
+- falha local do gráfico deve manter fallback textual e tabela consultável
+- o Server Component deve possuir o mapper e a composição da ilha sem `next/dynamic` e sem importar ECharts diretamente
+- props da ilha permanecem restritas ao view model plano e serializável já coberto pelas suítes do SP-001
+
+TDD observado:
+- baseline completa anterior ao RED: 75 suítes e 413 testes verdes
+- 4 novos contratos foram adicionados em 2 suítes, sem alteração funcional
+- RED direcionado: 2 suítes falharam; 4 testes falharam e 17 passaram, totalizando 21 testes
+- causas exclusivas do RED: painel ainda não usa o mapper, não compõe a ilha, não apresenta o heading aprovado e não expõe o fallback local do chart
+- rede anterior, excluindo somente as 2 suítes RED: 73 suítes e 396 testes verdes
+- lint dos testes alterados e type-check permaneceram verdes
+
+Fronteiras preservadas:
+- nenhum arquivo de production code foi alterado
+- domain, application, infrastructure, App Router, Supabase, migrations, RLS, policies, grants e dados permaneceram inalterados
+- nenhum teste existente foi removido, ignorado ou relaxado
+- build, bundle e browser permanecem reservados às fases posteriores ao GREEN funcional
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo
+
+Incidentes operacionais registrados antes da correção:
+- wrapper npm global conhecido como inválido foi chamado antes da runtime empacotada
+- alias legado de descoberta da runtime foi chamado antes do endpoint MCP atual
+- retomada do Jest usou string JavaScript sem `String.raw` e corrompeu caminhos Windows antes de iniciar o processo
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-014 permanece `IN_PROGRESS`
+- implementação funcional permanece bloqueada até aprovação explícita do Dia 3
+- próximo comando válido: `dia 3`

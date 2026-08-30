@@ -14,10 +14,10 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-013, UI-003 e SP-001 concluídos.
 - Risco: Médio por bundle cliente, hidratação e acessibilidade de visualização financeira.
-- Fase atual: Dia 1 concluído; escopo, contratos, estados e estratégia de bundle definidos.
+- Fase atual: Dia 2 concluído; 4 contratos essenciais de integração estão em RED controlado e a rede anterior permanece verde.
 - Small releases internas: `SR-014A` integração mínima test-first; `SR-014B` UX, bundle, browser e hardening.
 - Critério de pronto: gráfico e tabela simultâneos em `/` e `/dashboard`; estados tratados; RSC e uma leitura preservados; props serializáveis; ECharts ausente de rotas não relacionadas; testes, browser, bundle e pipeline verdes.
-- Próximo passo: executar `dia 2` para materializar os contratos de integração em RED antes de alterar o painel.
+- Próximo passo: executar `dia 3` para implementar o mínimo necessário e tornar verdes os contratos de mapper, ilha, heading e fallback, sem expandir o escopo.
 - ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
 - Status: IN_PROGRESS
 

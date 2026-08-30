@@ -99,6 +99,24 @@ describe("financial evolution chart architecture", () => {
     expect(panel).toContain("FinancialEvolutionTable");
   });
 
+  it("requires the server panel to own the approved chart integration", () => {
+    const panel = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialEvolutionPanel.tsx"
+      ),
+      "utf-8"
+    );
+
+    expect(panel).toContain("toFinancialEvolutionChartModel");
+    expect(panel).toContain("FinancialEvolutionChart");
+    expect(panel).toContain("Evolução do saldo");
+    expect(panel).not.toContain("next/dynamic");
+    expect(panel).not.toMatch(/from ["']echarts(?:\/|["'])/);
+  });
+
   it("keeps the client island independent from data sources and offline claims", () => {
     const clientIsland = readFileSync(
       join(

@@ -675,6 +675,33 @@ Implementação bloqueada até o Dia 3:
 
 Estado planejado após o Dia 2: `TEST_STRATEGY_READY`.
 
+## Matriz Executada no Dia 2 — SR-014
+
+Os contratos abaixo foram escritos antes de qualquer alteração funcional no painel:
+
+| Camada | Alvo | Contratos essenciais |
+| --- | --- | --- |
+| presentation server | `FinancialEvolutionPanel` | `success` compõe heading, gráfico e tabela a partir do mesmo DTO; `empty` mantém linha plana e tabela; `missing_accounts` não chama a ilha |
+| presentation client | `FinancialEvolutionChart` como mock de fronteira | recebe o model plano produzido no servidor; uma falha local conserva fallback textual e tabela |
+| arquitetura | `FinancialEvolutionPanel.tsx` | painel possui mapper e ilha; permanece sem `next/dynamic` e sem import direto de ECharts |
+| regressão | suíte anterior | regras financeiras, mapper, lifecycle da ilha, rotas e demais features permanecem cobertos pelas 73 suítes não alteradas |
+
+Resultado observado:
+- baseline completa antes do RED: 75 suítes e 413 testes verdes
+- 4 testes novos adicionados em 2 suítes de integração/arquitetura
+- RED direcionado: 2 suítes falharam; 4 testes falharam e 17 passaram, total de 21 testes
+- falhas exclusivas: mapper, ilha, heading e fallback local ainda não estão compostos pelo painel
+- regressão anterior, excluindo somente as 2 suítes intencionalmente RED: 73 suítes e 396 testes verdes
+- lint dos arquivos alterados e type-check verdes
+
+Implementação bloqueada até o Dia 3:
+- importar e executar `toFinancialEvolutionChartModel` no Server Component
+- compor `FinancialEvolutionChart` em card próprio com heading de nível 3
+- preservar a tabela para `success`, `empty` e falha local da ilha
+- qualquer alteração funcional além do mínimo necessário para satisfazer estes quatro contratos
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:
