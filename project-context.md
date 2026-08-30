@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 do SP-001 concluído; alto contraste, responsividade e compatibilidade PWA estão validados sem integrar o experimento às rotas
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 do SP-001 concluído; ECharts 6.1.0 e o adapter isolado foram aceitos para a futura SR-014, sem integrar o experimento às rotas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -106,6 +106,7 @@
 - Data da expansão controlada do SP-001: 2026-08-30
 - Data da refatoração e hardening do SP-001: 2026-08-30
 - Data da revisão de UX, acessibilidade e PWA do SP-001: 2026-08-30
+- Data da validação final e preparação de release do SP-001: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5608,3 +5609,48 @@ Estado de saída:
 - `QUALITY_VALIDATION`
 - SP-001 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Decisão final:
+- Apache ECharts `6.1.0` foi aceita para a SR-014 e para a futura SR-015, atrás do adapter específico de presentation registrado no ADR 0012
+- o experimento demonstrou import modular, `SVGRenderer`, lifecycle controlado, alto contraste, movimento reduzido, responsividade e fallback acessível sem contaminar domain, application ou infrastructure
+- a tabela server-side continua obrigatória; o gráfico será uma representação complementar, nunca a única fonte da informação financeira
+- nenhuma abstração `ChartPort`, wrapper React ou integração com rota foi antecipada
+
+Quality Gates finais:
+- regressão completa: 75 suítes e 413 testes verdes
+- type-check e lint global: verdes, com 0 warnings
+- build Next.js `16.3.3`: verde; `/`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e `ƒ Proxy (Middleware)` preservados
+- auditoria npm completa: 0 vulnerabilidades; 701 pacotes com assinaturas de registro e 102 com attestations verificadas
+- ECharts `6.1.0`, ZRender `6.1.0` e suas licenças/dependências foram inspecionados; não há vulnerabilidade conhecida reportada pelo lockfile
+- análise de bundle confirmou que ECharts e o experimento não entram nos chunks das rotas atuais; o delta real deverá ser medido quando a SR-014 importar a ilha
+- GitHub Actions Quality Gates #69 e status Vercel passaram no commit `ce41b301120c44db91b451d530ac0d2d9b25ef6e`
+- Preview Vercel `dpl_2JyLQ9bTgP8S4T7hTybUB5Sp8nZj` está `READY`; `/login` respondeu HTTP 200 e não houve erro/fatal nem runtime error na janela disponível de 1 hora
+- `git diff --check` permaneceu verde; `next-env.d.ts` foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Revisão básica de segurança:
+- o adapter não usa rede, Supabase, storage, service worker, `eval`, HTML arbitrário ou logging de dados financeiros
+- nenhum segredo ou arquivo de ambiente sensível foi adicionado; somente `.env.example`, com valores vazios, permanece rastreado
+- a superfície nova recebe view model serializável com datas civis e centavos inteiros; não recebe identidade, token, repository ou payload de infraestrutura
+- falhas de inicialização descartam recursos e expõem fallback textual acessível
+- nenhum risco crítico específico do SP-001 foi identificado
+
+Baseline de observabilidade:
+- como o experimento não pertence a uma rota, instrumentação de produto e telemetria cliente permanecem bloqueadas nesta fase
+- na SR-014, métricas técnicas poderão registrar apenas sucesso/falha de inicialização, faixa de duração, renderer, faixa de pontos, rota, release e ambiente
+- datas, valores, saldos, categorias, contas, e-mail, UUID, tokens e payloads financeiros são proibidos em logs ou eventos
+- o plano Hobby limita a retenção operacional disponível e não oferece drains; a captura externa sanitizada permanece rastreada em `HARD-OBS-001` antes de produção pública
+
+Riscos e bloqueios remanescentes:
+- o custo real de bundle, a renderização visual end-to-end e o comportamento da rota só podem ser comprovados na SR-014
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando promoção pública de produção, mas não a entrega incremental deste código
+- `CI-VERCEL-002` continua como dívida MÉDIA: o vínculo local `.vercel/project.json` aponta para projeto antigo e deve ser corrigido antes de operação direta por CLI ou promoção
+- o erro histórico `financial evolution unavailable` pertence a deployment de produção anterior, não ao Preview atual nem ao experimento sem rota
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- SP-001 está `DONE`
+- próximo passo recomendado: refinar e iniciar humanamente a `SR-014 — Gráfico de linha da evolução`, começando pelo Dia 1; nenhuma nova fase foi iniciada automaticamente

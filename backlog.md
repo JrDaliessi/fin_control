@@ -6,18 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SP-001 — Avaliar biblioteca de gráficos
-- Tipo: Spike
-- Descrição objetiva: comparar opções de visualização para linha financeira e candles futuros, com foco em bundle, responsividade, acessibilidade e isolamento arquitetural.
-- Objetivo de negócio: reduzir risco técnico antes da SR-014 e evitar dependência visual inadequada para mobile e acessibilidade.
-- Valor esperado: decisão auditável de biblioteca e contrato de adapter sem antecipar gráfico de produção.
-- Prioridade: Alta
-- Dependências: view model da SR-013 e UI-003 concluída.
-- Risco: Médio
-- Fase atual: Dia 6 concluído; alto contraste, responsividade, movimento reduzido e compatibilidade PWA estão GREEN sem integração nas rotas.
-- Critério de pronto: ADR comparando opções, critérios objetivos, adapter de presentation definido e experimento limitado quando necessário; nenhum gráfico de produção.
-- Próximo passo: executar `dia 7` para qualidade final, segurança, observabilidade e fechamento auditável do spike sem antecipar a SR-014.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -195,9 +184,9 @@ Nenhum item pronto aguardando início no momento.
 - Objetivo de negocio: tornar tendencia financeira visual.
 - Valor esperado: leitura rapida sem perder tabela acessivel.
 - Prioridade: Alta
-- Dependencias: SR-013 e SP-001.
+- Dependencias: SR-013 e SP-001, ambas concluídas.
 - Risco: Medio
-- Fase recomendada: apos spike.
+- Fase recomendada: Dia 1 para refinar o recorte de integração, sem reutilizar automaticamente o escopo do spike.
 - Criterio de pronto: responsivo, acessivel, estados tratados e testes de componente.
 - Status: DISCOVERY
 
@@ -471,6 +460,18 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SP-001 — Avaliar biblioteca de gráficos
+- Tipo: Spike
+- Resultado: Apache ECharts `6.1.0` aceita por decisão auditável, com adapter modular específico de presentation e experimento isolado das rotas.
+- Arquitetura: domain, application, infrastructure e App Router permanecem sem dependência de ECharts; a ilha cliente recebe somente view model plano e serializável.
+- Acessibilidade e experiência: tabela server-side obrigatória, nomes e descrições únicos, estados vazio/erro, alto contraste, movimento reduzido, responsividade e PWA sem promessa offline validados.
+- Quality gates: 75 suítes/413 testes, lint, type-check, auditoria com 0 vulnerabilidades, assinaturas/attestations npm, build, GitHub Actions e Vercel Preview verdes.
+- Segurança: sem Supabase, rede, storage, HTML arbitrário, logging financeiro, secrets, migrations ou dados; nenhum risco crítico específico identificado.
+- Observabilidade: Preview respondeu HTTP 200 e não mostrou erro/fatal na janela disponível; telemetria financeira permanece proibida e a instrumentação técnica só será considerada com rota real.
+- Riscos residuais: bundle e validação visual end-to-end deverão ser medidos na SR-014; hardenings globais `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001` e `CI-VERCEL-002` permanecem rastreados.
+- Fora do escopo preservado: integração no dashboard, gráfico de produção, candles, analytics, Supabase, migrations, dados, promoção e merge.
+- Status: DONE
 
 ### UI-003 — Dashboard FinControl Pulse
 - Tipo: Small Release / UX Improvement

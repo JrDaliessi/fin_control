@@ -1313,3 +1313,23 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
 - nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
 - estado de saída: `QUALITY_VALIDATION`.
+
+## Gate do Dia 7 — SP-001
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 75 suítes e 413 testes passaram.
+- lint: verde, 0 warnings; type-check: verde.
+- auditoria npm completa: verde, 0 vulnerabilidades; 701 pacotes com assinaturas de registro e 102 com attestations verificadas.
+- ECharts `6.1.0`, ZRender `6.1.0`, dependências transitivas imediatas e licença Apache-2.0 inspecionados.
+- build Next.js `16.3.3`: verde; rotas atuais e `ƒ Proxy (Middleware)` preservados.
+- análise de bundle: nenhum módulo ECharts ou arquivo do experimento presente nos chunks das rotas atuais.
+- revisão estática do adapter: sem rede, Supabase, storage, service worker, `eval`, HTML arbitrário ou logging de dados financeiros.
+- segredos: somente `.env.example` rastreado, com valores vazios; nenhum arquivo de ambiente sensível adicionado.
+- GitHub Actions Quality Gates #69 e status Vercel verdes no commit `ce41b301120c44db91b451d530ac0d2d9b25ef6e`.
+- Preview Vercel `dpl_2JyLQ9bTgP8S4T7hTybUB5Sp8nZj` `READY`; `/login` respondeu HTTP 200, sem erro/fatal nem runtime error na janela disponível de 1 hora.
+- nenhum risco crítico específico do SP-001 identificado; bundle real e validação visual end-to-end permanecem obrigatórios na SR-014.
+- telemetria de produto não foi criada sem rota real; baseline futura proíbe PII, identidade e conteúdo financeiro em eventos/logs.
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, promoção, merge, commit, push ou novo PR foi executado.
+- `git diff --check` verde; `next-env.d.ts` restaurado e `rewrite-msgs.sh` preservado fora do escopo.
+- estado final: `READY_FOR_RELEASE`; SP-001 marcado como `DONE`.

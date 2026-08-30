@@ -342,7 +342,7 @@ O projeto deve ter:
 - Primitives genéricas ficam em `src/shared/components/ui`; componentes com semântica financeira permanecem na feature dona do contrato.
 - Rotas, CTAs, indicadores, gráficos e copy só podem aparecer quando o caso de uso correspondente existir.
 - Domínio e aplicação não dependem de tokens, copy, React ou biblioteca visual.
-- Gráficos continuam bloqueados até o `SP-001`, com adapter de presentation e alternativa tabular acessível.
+- Gráficos de produção dependem do `SP-001` concluído e de uma small release própria, com adapter de presentation e alternativa tabular acessível.
 - Preferência de tema é dado de apresentação; não autoriza persistência de dados financeiros no navegador.
 - A copy segue `informar → explicar → sugerir`, sem culpa, promessa de resultado, IA antecipada ou dado fictício apresentado como real.
 - Na `UI-001`, Geist será entregue por `next/font/google`, com variável CSS e fallback de sistema; não haverá pacote de fonte ou requisição do navegador a um CDN de fontes.
@@ -383,7 +383,7 @@ O projeto deve ter:
 - “Saldo ao fim do período” é a métrica principal. “Disponível de verdade”, comparação, tendência e previsão continuam bloqueados até contratos próprios.
 - Links ficam restritos a `/accounts` e `/transactions`; lista detalhada recente permanece fora até existir projeção server-side alinhada ao período selecionado.
 - Nenhuma mudança de domínio, application financeira, infrastructure, Supabase, migration, RLS, policy, grant ou dependência pertence à UI-003.
-- Gráficos permanecem bloqueados até `SP-001` e SR-014; a tabela acessível continua obrigatória mesmo após gráficos.
+- O SP-001 está concluído; gráficos de produção permanecem bloqueados até a SR-014, e a tabela acessível continua obrigatória mesmo após a integração.
 - Decisão completa: `adr/0011-dashboard-pulse-real-data-composition.md`.
 
 ## Adapter de gráficos financeiros — SP-001

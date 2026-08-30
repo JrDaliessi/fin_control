@@ -610,6 +610,26 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
 Estado de saída: `QUALITY_VALIDATION`.
 
+## Validação Final — SP-001
+
+Objetivo: confirmar que o experimento de Apache ECharts pode ser aceito como decisão técnica sem integrar um gráfico às rotas antes da SR-014.
+
+Evidências finais:
+- quatro suítes específicas do spike cobrem mapper, option builder, lifecycle cliente e fronteiras arquiteturais;
+- os cenários cobrem ordem e precisão dos dados, centavos, datas civis, SVG modular, ARIA/decal, tema, alto contraste, movimento reduzido, resize, cleanup, múltiplas instâncias, empty state e fallback transacional;
+- regressão completa: 75 suítes e 413 testes verdes;
+- lint, type-check, audit e build verdes;
+- análise de bundle confirma ausência de ECharts nas rotas atuais.
+
+Contratos adiados deliberadamente para a SR-014:
+- integração real com `FinancialEvolutionPanel` e a rota do dashboard;
+- presença simultânea do gráfico e da tabela no DOM de produção;
+- teste visual end-to-end nos temas e viewports reais;
+- medição do delta de JavaScript da rota após o dynamic boundary;
+- observabilidade técnica sanitizada da inicialização/fallback, se houver necessidade operacional comprovada.
+
+Critério observado: o SP-001 está `DONE`; a dependência foi aceita para uso controlado e a SR-014 deve iniciar novamente pelo Dia 1 antes de qualquer integração.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

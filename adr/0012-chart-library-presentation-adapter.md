@@ -79,6 +79,19 @@ O nome e a divisão final só serão criados após os testes do Dia 2 comprovare
 - prova mobile e contraste nos temas claro/escuro;
 - auditoria de licença e dependências.
 
+## Resultado da validação do spike
+
+Em 2026-08-30, o SP-001 foi concluído com:
+
+- 75 suítes e 413 testes verdes;
+- lint, type-check, audit e build verdes;
+- ECharts `6.1.0` e ZRender `6.1.0` inspecionados, sem vulnerabilidades reportadas pelo lockfile;
+- import modular, SVG, lifecycle, resize, cleanup, movimento reduzido, alto contraste, estados vazio/erro e fallback acessível cobertos;
+- fronteira arquitetural preservada e nenhum módulo do experimento presente nos chunks das rotas atuais;
+- GitHub Actions e Vercel Preview verdes.
+
+A dependência está aceita para integração controlada na SR-014. O delta real de bundle, a presença simultânea da tabela na rota e a validação visual end-to-end permanecem critérios obrigatórios dessa small release, pois não existe rota de experimento no spike.
+
 ## Alternativas rejeitadas
 
 ### Recharts
