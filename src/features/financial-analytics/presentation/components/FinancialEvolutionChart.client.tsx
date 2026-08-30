@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { FinancialEvolutionChartModel } from "../charts/financial-evolution-chart.model";
 import {
   buildFinancialEvolutionOption,
@@ -16,7 +16,6 @@ type FinancialEvolutionChartProps = Readonly<{
 }>;
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-const DESCRIPTION_ID = "financial-evolution-chart-description";
 
 function resolveCssColor(name: string, fallback: string) {
   const channels = getComputedStyle(document.documentElement)
@@ -41,6 +40,7 @@ export function FinancialEvolutionChart({
 }: FinancialEvolutionChartProps) {
   const chartRef = useRef<FinancialEvolutionChartInstance | null>(null);
   const [initializationFailed, setInitializationFailed] = useState(false);
+  const descriptionId = useId();
   const hasPoints = model.points.length > 0;
 
   const attachChart = useCallback((container: HTMLDivElement | null) => {
@@ -48,28 +48,41 @@ export function FinancialEvolutionChart({
       return;
     }
 
-    let chart: FinancialEvolutionChartInstance;
+    let chart: FinancialEvolutionChartInstance | undefined;
+    let resizeObserver: ResizeObserver | undefined;
 
     try {
       chart = initializeFinancialEvolutionChart(container, {
         renderer: "svg"
       });
+      chartRef.current = chart;
+
+      resizeObserver = new ResizeObserver(() => {
+        chart?.resize();
+      });
+      resizeObserver.observe(container);
     } catch {
+      resizeObserver?.disconnect();
+      chart?.dispose();
+
+      if (chartRef.current === chart) {
+        chartRef.current = null;
+      }
+
       setInitializationFailed(true);
       return;
     }
 
-    chartRef.current = chart;
-
-    const resizeObserver = new ResizeObserver(() => {
-      chartRef.current?.resize();
-    });
-    resizeObserver.observe(container);
+    const initializedChart = chart;
+    const initializedResizeObserver = resizeObserver;
 
     return () => {
-      resizeObserver.disconnect();
-      chartRef.current?.dispose();
-      chartRef.current = null;
+      initializedResizeObserver.disconnect();
+      initializedChart.dispose();
+
+      if (chartRef.current === initializedChart) {
+        chartRef.current = null;
+      }
     };
   }, []);
 
@@ -98,14 +111,24 @@ export function FinancialEvolutionChart({
       return;
     }
 
+    const reducedMotionQuery = window.matchMedia(REDUCED_MOTION_QUERY);
+    const handleReducedMotionChange = () => {
+      applyCurrentOption();
+    };
     const themeObserver = new MutationObserver(applyCurrentOption);
     themeObserver.observe(document.documentElement, {
       attributeFilter: ["data-theme"],
       attributes: true
     });
 
+    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+
     return () => {
       themeObserver.disconnect();
+      reducedMotionQuery.removeEventListener(
+        "change",
+        handleReducedMotionChange
+      );
     };
   }, [applyCurrentOption, hasPoints]);
 
@@ -119,7 +142,7 @@ export function FinancialEvolutionChart({
 
   return (
     <div className="grid gap-2">
-      <p className="sr-only" id={DESCRIPTION_ID}>
+      <p className="sr-only" id={descriptionId}>
         Visualização complementar. Os mesmos valores permanecem disponíveis na
         tabela de evolução financeira.
       </p>
@@ -130,7 +153,7 @@ export function FinancialEvolutionChart({
         </p>
       ) : (
         <div
-          aria-describedby={DESCRIPTION_ID}
+          aria-describedby={descriptionId}
           aria-label="Evolução do saldo por dia"
           className="min-h-72 w-full"
           ref={attachChart}

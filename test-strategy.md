@@ -584,6 +584,19 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## RED/GREEN do Dia 5 — SP-001
+
+- baseline direcionado: 4 suítes e 22 testes verdes.
+- RED test-first: 1 suíte, 3 falhas planejadas e 7 testes anteriores verdes.
+- contratos novos cobrem IDs de descrição únicos, mudança de `prefers-reduced-motion` com cleanup e descarte da instância quando a configuração de resize falha.
+- GREEN do componente: 1 suíte e 10 testes verdes.
+- GREEN direcionado: 4 suítes e 25 testes verdes.
+- regressão completa: 75 suítes e 411 testes verdes.
+- integridade de datas civis e centavos, builder puro, imports modulares e painel server-side permaneceram protegidos.
+- nenhum teste foi removido, relaxado ou ignorado; nenhuma rota, dependência ou integração de produção foi criada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

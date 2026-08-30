@@ -61,6 +61,23 @@ const dispose = jest.fn<() => void>();
 const observe = jest.fn();
 const disconnect = jest.fn();
 let notifyResize: ResizeObserverCallback;
+type MediaQueryChangeListener = (event: MediaQueryListEvent) => void;
+const mediaQueryListeners = new Set<MediaQueryChangeListener>();
+const addMediaEventListener = jest.fn(
+  (type: string, listener: MediaQueryChangeListener) => {
+    if (type === "change") {
+      mediaQueryListeners.add(listener);
+    }
+  }
+);
+const removeMediaEventListener = jest.fn(
+  (type: string, listener: MediaQueryChangeListener) => {
+    if (type === "change") {
+      mediaQueryListeners.delete(listener);
+    }
+  }
+);
+let reducedMotionMatches = false;
 
 class ResizeObserverMock {
   constructor(callback: ResizeObserverCallback) {
@@ -73,24 +90,38 @@ class ResizeObserverMock {
 }
 
 function setReducedMotion(matches: boolean) {
+  reducedMotionMatches = matches;
   Object.defineProperty(window, "matchMedia", {
     configurable: true,
-    value: jest.fn().mockReturnValue({
-      matches,
+    value: jest.fn().mockImplementation(() => ({
+      get matches() {
+        return reducedMotionMatches;
+      },
       media: "(prefers-reduced-motion: reduce)",
       onchange: null,
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
+      addEventListener: addMediaEventListener,
+      removeEventListener: removeMediaEventListener,
       addListener: jest.fn(),
       removeListener: jest.fn(),
       dispatchEvent: jest.fn(() => true)
-    } satisfies MediaQueryList)
+    }) as unknown as MediaQueryList)
   });
+}
+
+function notifyReducedMotion(matches: boolean) {
+  reducedMotionMatches = matches;
+  const event = {
+    matches,
+    media: "(prefers-reduced-motion: reduce)"
+  } as MediaQueryListEvent;
+
+  mediaQueryListeners.forEach((listener) => listener(event));
 }
 
 describe("FinancialEvolutionChart", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mediaQueryListeners.clear();
     document.documentElement.removeAttribute("data-theme");
     Object.defineProperty(globalThis, "ResizeObserver", {
       configurable: true,
@@ -121,14 +152,9 @@ describe("FinancialEvolutionChart", () => {
       "Visualização complementar. Os mesmos valores permanecem disponíveis na tabela de evolução financeira."
     );
 
-    expect(description).toHaveAttribute(
-      "id",
-      "financial-evolution-chart-description"
-    );
-    expect(graphic).toHaveAttribute(
-      "aria-describedby",
-      "financial-evolution-chart-description"
-    );
+    const descriptionId = graphic.getAttribute("aria-describedby");
+    expect(descriptionId).toBeTruthy();
+    expect(description).toHaveAttribute("id", descriptionId);
     expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
     const [initializedContainer, initializationOptions] =
       initializeFinancialEvolutionChart.mock.calls[0];
@@ -161,6 +187,25 @@ describe("FinancialEvolutionChart", () => {
 
     expect(disconnect).toHaveBeenCalledTimes(1);
     expect(dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it("disposes the chart and shows the fallback when resize setup fails", () => {
+    class FailingResizeObserver {
+      constructor() {
+        throw new Error("resize observer unavailable");
+      }
+    }
+
+    Object.defineProperty(globalThis, "ResizeObserver", {
+      configurable: true,
+      value: FailingResizeObserver
+    });
+
+    expect(() => render(<FinancialEvolutionChart model={model} />)).not.toThrow();
+    expect(dispose).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Não foi possível carregar o gráfico. Consulte a tabela de evolução financeira."
+    );
   });
 
   it("updates the option without creating a second chart instance", () => {
@@ -274,5 +319,53 @@ describe("FinancialEvolutionChart", () => {
     });
 
     expect(buildFinancialEvolutionOption).toHaveBeenCalledTimes(2);
+  });
+
+  it("reacts to reduced-motion changes and removes the listener", () => {
+    const view = render(<FinancialEvolutionChart model={model} />);
+
+    expect(addMediaEventListener).toHaveBeenCalledWith(
+      "change",
+      expect.any(Function)
+    );
+    expect(buildFinancialEvolutionOption.mock.calls[0][0].reducedMotion).toBe(
+      false
+    );
+
+    act(() => {
+      notifyReducedMotion(true);
+    });
+
+    expect(buildFinancialEvolutionOption).toHaveBeenCalledTimes(2);
+    expect(buildFinancialEvolutionOption.mock.calls[1][0].reducedMotion).toBe(
+      true
+    );
+
+    const listener = addMediaEventListener.mock.calls[0][1];
+    view.unmount();
+
+    expect(removeMediaEventListener).toHaveBeenCalledWith("change", listener);
+  });
+
+  it("generates a unique description relationship for each chart", () => {
+    render(
+      <>
+        <FinancialEvolutionChart model={model} />
+        <FinancialEvolutionChart model={model} />
+      </>
+    );
+
+    const graphics = screen.getAllByRole("img", {
+      name: "Evolução do saldo por dia"
+    });
+    const descriptionIds = graphics.map((graphic) =>
+      graphic.getAttribute("aria-describedby")
+    );
+
+    expect(descriptionIds.every(Boolean)).toBe(true);
+    expect(new Set(descriptionIds)).toHaveProperty("size", 2);
+    descriptionIds.forEach((descriptionId) => {
+      expect(document.getElementById(descriptionId ?? "")).not.toBeNull();
+    });
   });
 });

@@ -1275,3 +1275,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
 - nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 5 — SP-001
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução.
+- diagnóstico confirmou cinco arquivos de produção coesos, sem monólito, duplicação relevante ou abstração genérica necessária.
+- baseline direcionado: 4 suítes e 22 testes verdes.
+- RED test-first: 1 suíte com 3 falhas planejadas e 7 testes anteriores verdes.
+- GREEN do componente: 1 suíte e 10 testes verdes; GREEN direcionado: 4 suítes e 25 testes verdes.
+- `useId`, listener de redução de movimento e aquisição transacional do lifecycle foram adicionados sem mudar regras financeiras.
+- regressão completa: 75 suítes e 411 testes verdes.
+- type-check: verde; lint global: verde, 0 warnings.
+- audit de produção: verde, 0 vulnerabilidades.
+- build Next.js 16.3.3: verde; todas as rotas e `ƒ Proxy (Middleware)` preservados.
+- `next experimental-analyze --output`: nenhum módulo ECharts nas rotas/chunks atuais.
+- datas civis, centavos inteiros, imports modulares, RSC e tabela acessível permaneceram protegidos.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

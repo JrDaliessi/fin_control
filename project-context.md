@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 do SP-001 concluído; estado vazio e tema dinâmico estão GREEN e o experimento permanece fora das rotas de produção
+- Fase atual: Dia 5 do SP-001 concluído; lifecycle, preferências visuais e relações acessíveis estão endurecidos sem integrar o experimento às rotas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -104,6 +104,7 @@
 - Data da estratégia de testes do SP-001: 2026-08-29
 - Data da implementação mínima do SP-001: 2026-08-29
 - Data da expansão controlada do SP-001: 2026-08-30
+- Data da refatoração e hardening do SP-001: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5515,3 +5516,50 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - SP-001 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Diagnóstico estrutural:
+- os cinco arquivos de produção permanecem pequenos e coesos; o maior, `FinancialEvolutionChart.client.tsx`, possui 165 linhas após o hardening
+- nenhum arquivo monolítico, duplicação relevante ou abstração genérica necessária foi identificado
+- a suíte cliente possui 371 linhas e dez cenários de lifecycle; permanece coesa e não justifica fragmentação enquanto o adapter continuar isolado
+- domain, application e infrastructure continuam sem dependência de ECharts; datas civis e centavos inteiros não foram alterados
+- a fronteira Server/Client continua mínima, síncrona e com props planas serializáveis
+
+Hardening test-first:
+- baseline: 4 suítes e 22 testes verdes
+- três contratos foram adicionados antes da implementação: IDs únicos por instância, reação dinâmica a redução de movimento e descarte transacional quando `ResizeObserver` falha
+- RED observado: 1 suíte, 3 falhas planejadas e 7 testes anteriores verdes
+- GREEN do componente: 1 suíte e 10 testes verdes
+- GREEN direcionado final: 4 suítes e 25 testes verdes
+
+Melhorias aplicadas:
+- `useId` substitui o ID global fixo e preserva relações `aria-describedby` únicas quando há múltiplos gráficos
+- mudanças de `prefers-reduced-motion` reaplicam opções na instância existente e removem o listener no unmount
+- inicialização ECharts e configuração de `ResizeObserver` formam uma aquisição transacional: falha intermediária desconecta recursos, descarta a instância e mostra o fallback existente
+- callbacks de resize e cleanup operam sobre a instância local adquirida, evitando interferência com uma referência posterior
+- nenhum novo arquivo, helper genérico, dependência, regra financeira ou estado visual foi criado
+
+Influência da skill `vercel:nextjs`:
+- manteve browser APIs e hooks exclusivamente na ilha cliente
+- preservou o componente cliente como função síncrona e o view model como prop serializável
+- confirmou novamente ausência de ECharts no bundle das rotas enquanto não existe integração aprovada
+
+Quality Gates:
+- regressão completa: 75 suítes e 411 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Riscos remanescentes:
+- o custo real de bundle precisa ser medido quando a SR-014 importar a ilha em uma rota
+- validação visual, responsividade e acessibilidade em navegador pertencem ao Dia 6; não existe rota de experimento autorizada nesta fase
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 6`
