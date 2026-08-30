@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { act, render, screen } from "@testing-library/react";
-import { FinancialEvolutionChart } from "../presentation/components/FinancialEvolutionChart.client";
-import { buildFinancialEvolutionOption } from "../presentation/charts/echarts/build-financial-evolution-option";
-import { initializeFinancialEvolutionChart } from "../presentation/charts/echarts/echarts-client";
 import type { FinancialEvolutionChartModel } from "../presentation/charts/financial-evolution-chart.model";
 
 jest.mock(
@@ -13,6 +10,35 @@ jest.mock("../presentation/charts/echarts/echarts-client", () => ({
   initializeFinancialEvolutionChart: jest.fn()
 }));
 
+type ChartOptionStub = Readonly<{ animation: boolean }>;
+type BuildOptionStub = (input: Readonly<{
+  model: FinancialEvolutionChartModel;
+  reducedMotion: boolean;
+  theme: Readonly<Record<string, string>>;
+}>) => ChartOptionStub;
+type InitializeChartStub = (
+  container: HTMLElement,
+  options: Readonly<{ renderer: "svg" }>
+) => Readonly<{
+  setOption: (option: ChartOptionStub) => void;
+  resize: () => void;
+  dispose: () => void;
+}>;
+
+const { buildFinancialEvolutionOption } = jest.requireMock(
+  "../presentation/charts/echarts/build-financial-evolution-option"
+) as {
+  buildFinancialEvolutionOption: jest.MockedFunction<BuildOptionStub>;
+};
+const { initializeFinancialEvolutionChart } = jest.requireMock(
+  "../presentation/charts/echarts/echarts-client"
+) as {
+  initializeFinancialEvolutionChart: jest.MockedFunction<InitializeChartStub>;
+};
+const { FinancialEvolutionChart } = jest.requireActual<
+  typeof import("../presentation/components/FinancialEvolutionChart.client")
+>("../presentation/components/FinancialEvolutionChart.client");
+
 const model: FinancialEvolutionChartModel = {
   startOnInclusive: "2026-03-01",
   endOnExclusive: "2026-03-03",
@@ -22,9 +48,9 @@ const model: FinancialEvolutionChartModel = {
   ]
 };
 
-const setOption = jest.fn();
-const resize = jest.fn();
-const dispose = jest.fn();
+const setOption = jest.fn<(option: ChartOptionStub) => void>();
+const resize = jest.fn<() => void>();
+const dispose = jest.fn<() => void>();
 const observe = jest.fn();
 const disconnect = jest.fn();
 let notifyResize: ResizeObserverCallback;
@@ -91,9 +117,11 @@ describe("FinancialEvolutionChart", () => {
       "aria-describedby",
       "financial-evolution-chart-description"
     );
-    expect(initializeFinancialEvolutionChart).toHaveBeenCalledWith(graphic, {
-      renderer: "svg"
-    });
+    expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
+    const [initializedContainer, initializationOptions] =
+      initializeFinancialEvolutionChart.mock.calls[0];
+    expect(initializedContainer).toBe(graphic);
+    expect(initializationOptions).toEqual({ renderer: "svg" });
     expect(setOption).toHaveBeenCalledWith({ animation: true });
     expect(observe).toHaveBeenCalledWith(graphic);
   });

@@ -1240,3 +1240,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - falso positivo do scanner e assinatura incorreta do mock DOM foram registrados no contexto e corrigidos antes da aceitação do RED.
 - nenhuma implementação, instalação, gráfico de produção, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
 - estado de saída: `TEST_STRATEGY_READY`.
+
+## Gate do Dia 3 — SP-001
+
+- RED reconfirmado antes da implementação: 4 suítes vermelhas por módulos/dependência ausentes.
+- `echarts@6.1.0` instalado com versão exata; licença Apache-2.0 e dependências `tslib`/`zrender` verificadas.
+- cinco arquivos funcionais mínimos criados somente em presentation: model, mapper, option builder, adapter modular SVG e ilha cliente.
+- primeiro GREEN parcial: 3 suítes e 15 testes; desvio ESM/Jest registrado antes da correção do harness.
+- GREEN direcionado final: 4 suítes e 20 testes verdes.
+- regressão completa: 75 suítes e 406 testes verdes.
+- type-check: verde; lint global: verde, 0 warnings.
+- audit de produção: verde, 0 vulnerabilidades.
+- build Next.js 16.3.3: verde; todas as rotas e `ƒ Proxy (Middleware)` preservados.
+- `next experimental-analyze --output`: nenhum módulo ECharts nas rotas/chunks atuais; delta de bundle de produção igual a zero enquanto a ilha não é importada.
+- `FinancialEvolutionPanel` continua server-side com tabela acessível e sem import do experimento.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

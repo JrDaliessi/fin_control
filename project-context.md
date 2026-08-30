@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 do SP-001 concluído; contratos RED do mapper, option builder, lifecycle e fronteiras arquiteturais preparados
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 do SP-001 concluído; experimento mínimo ECharts está GREEN e permanece fora das rotas de produção
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -102,6 +102,7 @@
 - Data de seleção do SP-001 como próximo ciclo: 2026-08-29
 - Data do discovery e arquitetura do SP-001: 2026-08-29
 - Data da estratégia de testes do SP-001: 2026-08-29
+- Data da implementação mínima do SP-001: 2026-08-29
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -954,6 +955,10 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
+- Erro: o primeiro adapter ECharts importou `use` com o nome original e o ESLint o classificou como React Hook chamado no topo do módulo. Prevenção: APIs externas homônimas a hooks devem receber alias sem prefixo `use`, deixando explícita sua função de registro e evitando falsos positivos sem desabilitar regras.
+- Erro: o primeiro fallback da ilha ECharts chamou `setInitializationFailed` sincronamente dentro de `useEffect`, violando o gate React 19 de `set-state-in-effect`. Prevenção: inicialização estritamente ligada ao elemento deve usar callback ref estável com cleanup de ref do React 19; effects permanecem apenas para sincronizar opções após a instância existir.
+- Erro: no primeiro GREEN do SP-001, `FinancialEvolutionChart.test.tsx` importou estaticamente o componente e os adapters antes de registrar os mocks; o transformador Next/Jest carregou o ESM real de `echarts/charts` e falhou em `export` antes de executar os testes. Prevenção: testes de ilhas cliente com dependências ESM devem registrar `jest.mock()` antes do carregamento e obter componente/adapters com `jest.requireActual()`/`jest.requireMock()`, mantendo a biblioteca real reservada aos testes de integração/build.
 - Erro: o primeiro mock de `MediaQueryList` do Dia 2 do SP-001 usou `jest.fn()` sem retorno para `dispatchEvent`, mas o contrato DOM exige booleano; a primeira correção nomeou um argumento não utilizado e gerou warning de lint. Prevenção: mocks de APIs do browser devem satisfazer explicitamente as assinaturas nativas com a menor função compatível, sem bindings artificiais, para que type-check e lint contenham somente sinais funcionais planejados.
 - Erro: o primeiro contrato arquitetural RED do SP-001 varreu a própria pasta `tests` e interpretou a expressão usada para detectar imports de ECharts como uma violação real. Prevenção: scanners estáticos de fronteira devem limitar a coleta a arquivos de produção ou excluir explicitamente fixtures e testes antes de avaliar padrões de import; a suíte deve ser repetida após a correção do harness, sem alterar o contrato de produção.
 - Erro: o Dia 2 da UI-003 atualizou os contratos específicos do dashboard, mas não revisou o teste transversal que ainda exigia `FeedbackMessage` no `DashboardPage`; a regressão completa só expôs o drift após o GREEN direcionado. Prevenção: toda mudança de responsabilidade entre componentes deve pesquisar e atualizar contratos arquiteturais e de design system transversais no RED, validando a suíte completa imediatamente após o primeiro GREEN sem reintroduzir imports artificiais.
@@ -5422,3 +5427,50 @@ Estado de saída:
 - `TEST_STRATEGY_READY`
 - SP-001 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Testes do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Implementação mínima:
+- `echarts@6.1.0` instalado diretamente e fixado no lockfile, sem wrapper React
+- view model plano com datas civis e saldos inteiros em centavos
+- mapper puro de `FinancialEvolutionDto` para o view model, sem mutação ou formatação monetária antecipada
+- option builder puro com linha de saldo, tokens de tema resolvidos, ARIA/decal, moeda na borda e movimento reduzido
+- adapter ECharts modular com `LineChart`, `AriaComponent`, `GridComponent`, `TooltipComponent` e `SVGRenderer`
+- ilha cliente síncrona com props serializáveis, callback ref/cleanup do React 19, `ResizeObserver`, update sem reinicialização e fallback acessível orientado à tabela
+
+Fronteiras preservadas:
+- `FinancialEvolutionPanel` continua Server Component e não importa a ilha experimental
+- nenhuma rota ou chunk de produção importa ECharts nesta etapa
+- domain, application, infrastructure, App Router e Supabase permanecem inalterados
+- nenhum gráfico de produção foi criado; integração continua reservada à SR-014
+- nenhuma abstração genérica de chart foi introduzida
+
+Evidências GREEN:
+- RED reconfirmado antes da implementação: 4 suítes vermelhas, 7 falhas arquiteturais esperadas e 2 invariantes verdes
+- primeiro GREEN parcial: 3 suítes verdes e 15 testes; a suíte cliente expôs carregamento ESM anterior ao mock
+- correções de harness e integração foram documentadas em erros recorrentes antes de serem aplicadas
+- GREEN direcionado final: 4 suítes e 20 testes verdes
+- regressão completa: 75 suítes e 406 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde, rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais; delta efetivo de bundle das rotas de produção igual a zero
+- pacote auditado localmente: licença Apache-2.0; dependências diretas do pacote limitadas a `tslib` e `zrender`
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Influência da skill `vercel:nextjs`:
+- manteve a ilha cliente não assíncrona e concentrou hooks/APIs de browser nela
+- preservou o painel server-side e a passagem exclusiva de objetos, arrays, strings e números serializáveis
+- confirmou que uma biblioteca client-only não deve entrar em rotas antes de existir integração funcional aprovada
+
+Riscos e próximos controles:
+- o npm disponível no host é 10.9.2, abaixo do npm 11 declarado; a instalação foi executada pelo CLI local e o desvio continua relacionado ao hardening `CI-VERCEL-002`
+- o bundle precisa ser medido novamente quando a SR-014 importar a ilha em uma rota real
+- tema dinâmico, integração painel+tabela e experiência visual real pertencem às fases seguintes, não a este GREEN mínimo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`

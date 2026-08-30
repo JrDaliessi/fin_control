@@ -554,6 +554,22 @@ O DTO server-side é mapeado sem mutação para pontos com data civil e saldo em
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Resultado GREEN do Dia 3 — SP-001
+
+- `echarts@6.1.0` foi instalado diretamente, sem wrapper React.
+- mapper e option builder permanecem funções puras e preservam datas civis, ordem, centavos e imutabilidade.
+- adapter registra somente linha, ARIA, grid, tooltip e renderer SVG.
+- ilha cliente recebe view model serializável, inicializa uma única instância, atualiza opções, observa resize, respeita movimento reduzido, libera recursos e mantém fallback acessível.
+- primeiro GREEN parcial: 3 suítes e 15 testes verdes; o teste cliente expôs carregamento ESM anterior ao mock.
+- GREEN direcionado final: 4 suítes e 20 testes verdes.
+- regressão completa: 75 suítes e 406 testes verdes.
+- type-check, lint global, audit com 0 vulnerabilidades e build de produção verdes.
+- análise oficial do Next.js não encontrou ECharts nos chunks/rotas atuais, pois a ilha continua isolada do dashboard; delta atual de produção igual a zero.
+- nenhum teste foi removido, relaxado ou ignorado.
+- nenhuma rota, Supabase, migration, regra financeira ou gráfico de produção foi alterado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

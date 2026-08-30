@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: view model da SR-013 e UI-003 concluída.
 - Risco: Médio
-- Fase atual: Dia 2 concluído; quatro suítes RED cobrem mapper, option builder, lifecycle, acessibilidade, dependência e fronteiras arquiteturais.
+- Fase atual: Dia 3 concluído; ECharts modular, mapper, option builder, adapter SVG e ilha cliente experimental estão GREEN sem integração nas rotas.
 - Critério de pronto: ADR comparando opções, critérios objetivos, adapter de presentation definido e experimento limitado quando necessário; nenhum gráfico de produção.
-- Próximo passo: executar `dia 3` para instalar ECharts e implementar somente o mínimo necessário para satisfazer os contratos RED.
+- Próximo passo: executar `dia 4` para expandir controladamente o experimento, validar tema/microestados e fechar critérios do spike sem antecipar a SR-014.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
