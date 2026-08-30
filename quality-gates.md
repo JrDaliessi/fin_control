@@ -1518,3 +1518,23 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum Supabase, RPC, migration, RLS, dado, dependência, recurso de trading, deploy, commit, push ou PR executado.
 - `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; `git diff --check` verde.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — SR-015
+
+- contexto central, workflow e skill `vercel:react-best-practices` consultados; declaração operacional aprovada antes dos testes.
+- RED direcionado: 3 suítes, 2 falhas esperadas e 12 testes verdes para tooltip financeiro e relação semântica do seletor.
+- nova suíte da ilha cobre inicialização SVG, descrição, resize, cleanup, atualização, expansão, falha e vazio.
+- GREEN direcionado final: 3 suítes e 15 testes verdes.
+- tooltip contém data, OHLC, direção textual, volume e quantidade; índice inválido possui fallback estável.
+- botões e região ativa estão ligados por `aria-controls`/`aria-labelledby`; apenas um renderer e sua tabela permanecem montados.
+- falha local do renderer mantém a tabela OHLC disponível.
+- ruído tipado inicial do harness foi documentado antes da correção; expectativas funcionais permaneceram intactas.
+- regressão completa: 84 suítes e 479 testes verdes; zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; 525.841 bytes brutos e 179.310 bytes gzip, delta de +824/+286 bytes.
+- revisão React: estado mínimo, valores derivados no render, condicionais explícitas, hooks estáveis e ausência de rede/persistência cliente.
+- nenhum domain, application, infrastructure, Supabase, migration, dado, dependência, período ou recurso de trading alterado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado; `git diff --check` verde.
+- nenhum deploy, commit, push ou atualização de PR executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.

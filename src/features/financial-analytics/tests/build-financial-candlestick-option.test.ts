@@ -37,7 +37,12 @@ type FinancialCandlestickOptionContract = Readonly<{
     enabled: boolean;
     decal: Readonly<{ show: boolean }>;
   }>;
-  tooltip: Readonly<{ trigger: string }>;
+  tooltip: Readonly<{
+    trigger: string;
+    formatter: (
+      parameters: readonly Readonly<{ dataIndex: number }>[]
+    ) => string;
+  }>;
   xAxis: Readonly<{
     type: string;
     boundaryGap: boolean;
@@ -119,6 +124,18 @@ describe("buildFinancialCandlestickOption", () => {
     expect(option.yAxis.axisLabel.formatter(-2_500)).toMatch(/-.*25,00/);
     expect(option.tooltip.trigger).toBe("axis");
     expect(model).toEqual(before);
+  });
+
+  it("explains the active candle with financial labels and textual direction", () => {
+    const formatter = build(false).tooltip.formatter;
+
+    expect(formatter([{ dataIndex: 0 }])).toMatch(
+      /01\/03\/2026.*Abertura:.*100,00.*Máxima:.*150,00.*Mínima:.*90,00.*Fechamento:.*130,00.*Variação: Alta.*Volume:.*70,00.*2 movimentos/
+    );
+    expect(formatter([{ dataIndex: 1 }])).toMatch(
+      /02\/03\/2026.*Variação: Queda.*1 movimento/
+    );
+    expect(formatter([])).toBe("Dados indisponíveis.");
   });
 
   it("enables the accessibility complement and honors reduced motion", () => {

@@ -82,6 +82,17 @@ type SwitcherProps = Readonly<{
   }>[];
 }>;
 
+type FinancialCandlestickChartStub = (props: Readonly<{
+  model: SwitcherProps["candlestickModel"];
+}>) => ReactNode;
+
+const { FinancialCandlestickChart: mockFinancialCandlestickChart } =
+  jest.requireMock(
+    "../presentation/components/FinancialCandlestickChart.client"
+  ) as {
+    FinancialCandlestickChart: jest.MockedFunction<FinancialCandlestickChartStub>;
+  };
+
 const { FinancialVisualizationSwitcher } = jest.requireActual<{
   FinancialVisualizationSwitcher: (props: SwitcherProps) => ReactNode;
 }>("../presentation/components/FinancialVisualizationSwitcher.client");
@@ -167,5 +178,49 @@ describe("FinancialVisualizationSwitcher", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("financial-candles-table")).toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("associates both controls with one clearly named active region", async () => {
+    const user = userEvent.setup();
+    render(<FinancialVisualizationSwitcher {...props} />);
+    const evolutionButton = screen.getByRole("button", {
+      name: "Evolução do saldo"
+    });
+    const candlestickButton = screen.getByRole("button", {
+      name: "Variação do saldo"
+    });
+    const contentId = evolutionButton.getAttribute("aria-controls");
+
+    expect(contentId).toBeTruthy();
+    expect(candlestickButton).toHaveAttribute("aria-controls", contentId);
+    expect(
+      screen.getByRole("region", { name: "Evolução do saldo" })
+    ).toHaveAttribute("id", contentId);
+
+    await user.click(candlestickButton);
+
+    expect(
+      screen.getByRole("region", { name: "Variação do saldo" })
+    ).toHaveAttribute("id", contentId);
+  });
+
+  it("keeps the OHLC table available when the active renderer fails", async () => {
+    const user = userEvent.setup();
+    mockFinancialCandlestickChart.mockImplementationOnce(() => (
+      <p role="status">
+        Não foi possível carregar o gráfico. Consulte a tabela de variação
+        financeira.
+      </p>
+    ));
+
+    render(<FinancialVisualizationSwitcher {...props} />);
+    await user.click(
+      screen.getByRole("button", { name: "Variação do saldo" })
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Não foi possível carregar o gráfico. Consulte a tabela de variação financeira."
+    );
+    expect(screen.getByTestId("financial-candles-table")).toBeInTheDocument();
   });
 });

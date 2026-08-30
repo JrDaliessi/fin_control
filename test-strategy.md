@@ -1639,3 +1639,15 @@ Estado de saída: `TEST_STRATEGY_READY`.
 - lint, type-check, build e analyzer verdes.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Expansão TDD executada no Dia 4 — SR-015
+
+- RED: duas falhas específicas para formatter financeiro e região controlada; 12 contratos existentes já verdes;
+- GREEN: três suítes e 15 testes;
+- nova suíte caracteriza ciclo de vida, expansão e estados da ilha candlestick;
+- tooltip testa rótulos OHLC, direção, volume, singular/plural e fallback sem índice;
+- seletor testa uma região ativa nomeada, IDs únicos e tabela preservada após falha do renderer;
+- regressão completa: 84 suítes e 479 testes verdes;
+- type-check, lint, build e analyzer verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.

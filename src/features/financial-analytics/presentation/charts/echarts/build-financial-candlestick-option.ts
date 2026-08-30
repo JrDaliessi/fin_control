@@ -35,6 +35,30 @@ function formatCivilDate(civilDate: string) {
   return `${day}/${month}`;
 }
 
+function formatFullCivilDate(civilDate: string) {
+  const [year, month, day] = civilDate.split("-");
+  return `${day}/${month}/${year}`;
+}
+
+function describeVariation(
+  openInCents: number,
+  closeInCents: number
+) {
+  if (closeInCents > openInCents) {
+    return "Alta";
+  }
+
+  if (closeInCents < openInCents) {
+    return "Queda";
+  }
+
+  return "Estável";
+}
+
+function movementLabel(count: number) {
+  return `${count} ${count === 1 ? "movimento" : "movimentos"}`;
+}
+
 export function buildFinancialCandlestickOption({
   model,
   reducedMotion,
@@ -56,6 +80,30 @@ export function buildFinancialCandlestickOption({
     tooltip: {
       backgroundColor: theme.surface,
       borderColor: theme.border,
+      formatter: (parameters) => {
+        const parameter = Array.isArray(parameters)
+          ? parameters[0]
+          : parameters;
+        const point = model.points[parameter?.dataIndex ?? -1];
+
+        if (!point) {
+          return "Dados indisponíveis.";
+        }
+
+        return [
+          `<strong>${formatFullCivilDate(point.civilDate)}</strong>`,
+          `Abertura: ${formatCents(point.openInCents)}`,
+          `Máxima: ${formatCents(point.highInCents)}`,
+          `Mínima: ${formatCents(point.lowInCents)}`,
+          `Fechamento: ${formatCents(point.closeInCents)}`,
+          `Variação: ${describeVariation(
+            point.openInCents,
+            point.closeInCents
+          )}`,
+          `Volume: ${formatCents(point.volumeInCents)}`,
+          movementLabel(point.transactionCount)
+        ].join("<br />");
+      },
       textStyle: { color: theme.foreground },
       trigger: "axis"
     },

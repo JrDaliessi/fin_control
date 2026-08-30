@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import type { FinancialCandle, FinancialEvolutionPoint } from "../../domain/types/financial-evolution.types";
+import { useId, useState } from "react";
+import type {
+  FinancialCandle,
+  FinancialEvolutionPoint
+} from "../../domain/types/financial-evolution.types";
 import { Card } from "@/shared/components/ui/Card";
 import type { FinancialCandlestickChartModel } from "../charts/financial-candlestick-chart.model";
 import type { FinancialEvolutionChartModel } from "../charts/financial-evolution-chart.model";
@@ -27,6 +30,12 @@ export function FinancialVisualizationSwitcher({
 }: FinancialVisualizationSwitcherProps) {
   const [mode, setMode] = useState<VisualizationMode>("evolution");
   const showsEvolution = mode === "evolution";
+  const evolutionButtonId = useId();
+  const candlestickButtonId = useId();
+  const contentId = useId();
+  const activeButtonId = showsEvolution
+    ? evolutionButtonId
+    : candlestickButtonId;
 
   return (
     <div className="grid gap-4">
@@ -36,16 +45,20 @@ export function FinancialVisualizationSwitcher({
         role="group"
       >
         <button
+          aria-controls={contentId}
           aria-pressed={showsEvolution}
           className="min-h-11 rounded-lg px-4 py-2 text-sm font-semibold text-foreground transition-colors aria-pressed:bg-surface aria-pressed:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          id={evolutionButtonId}
           onClick={() => setMode("evolution")}
           type="button"
         >
           Evolução do saldo
         </button>
         <button
+          aria-controls={contentId}
           aria-pressed={!showsEvolution}
           className="min-h-11 rounded-lg px-4 py-2 text-sm font-semibold text-foreground transition-colors aria-pressed:bg-surface aria-pressed:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          id={candlestickButtonId}
           onClick={() => setMode("candlestick")}
           type="button"
         >
@@ -53,8 +66,14 @@ export function FinancialVisualizationSwitcher({
         </button>
       </div>
 
-      {showsEvolution ? (
-        <>
+      <div
+        aria-labelledby={activeButtonId}
+        className="grid gap-4"
+        id={contentId}
+        role="region"
+      >
+        {showsEvolution ? (
+          <>
           <Card className="grid gap-3">
             <div className="grid gap-1">
               <h3 className="text-lg font-semibold text-foreground">
@@ -67,9 +86,9 @@ export function FinancialVisualizationSwitcher({
             <FinancialEvolutionChart model={evolutionModel} />
           </Card>
           <FinancialEvolutionTable points={evolutionPoints} />
-        </>
-      ) : (
-        <>
+          </>
+        ) : (
+          <>
           <Card className="grid gap-3">
             <div className="grid gap-1">
               <h3 className="text-lg font-semibold text-foreground">
@@ -82,8 +101,9 @@ export function FinancialVisualizationSwitcher({
             <FinancialCandlestickChart model={candlestickModel} />
           </Card>
           <FinancialCandlesTable candles={candles} />
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

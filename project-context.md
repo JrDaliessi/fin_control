@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SR-015 concluído; agregação OHLC, DTO, seletor, gráfico e tabela estão integrados com pipeline local verde
+- Fase atual: Dia 4 da SR-015 concluído; tooltip financeiro, estados do renderer e semântica do seletor estão cobertos com pipeline local verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -119,6 +119,7 @@
 - Data do discovery e arquitetura da SR-015: 2026-08-30
 - Data da estratégia de testes e RED controlado da SR-015: 2026-08-30
 - Data da implementação mínima orientada por teste da SR-015: 2026-08-30
+- Data da expansão controlada da SR-015: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -971,6 +972,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
 - Erro: o Dia 2 da SR-015 adicionou os novos contratos específicos, mas não atualizou fixtures tipadas, mocks server-side e o boundary transversal da SR-014 para a responsabilidade aprovada do `FinancialVisualizationSwitcher`; a regressão ampliada encontrou o drift somente no Dia 3. Prevenção: ao introduzir uma nova fronteira cliente ou mover a composição entre componentes, pesquisar e adaptar no RED todos os consumidores, fixtures e scanners arquiteturais existentes antes de considerar a estratégia de testes concluída.
 - Erro: os contratos TDD criados no Dia 2 da SR-015 usaram `structuredClone` e espionaram `globalThis.fetch`, mas o ambiente `jest-environment-jsdom` do projeto não expunha essas APIs, produzindo quatro falsos negativos após o primeiro GREEN funcional. Prevenção: quando um teste depender de APIs globais do runtime, confirmar sua presença no ambiente Jest durante o RED e centralizar polyfills determinísticos em `tests/setupTests.ts`, sem mascarar chamadas de rede inesperadas.
 - Erro: na inspeção inicial do Dia 1 da SR-015, a IA presumiu nomes inexistentes para um ADR e para um DTO antes de confirmar a árvore real; as leituras falharam sem alterar o projeto. Prevenção: resolver caminhos com `rg --files` antes de abrir artefatos cuja localização não foi confirmada, especialmente após retomadas por contexto resumido.
@@ -6240,3 +6242,42 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - SR-015 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-015
+
+Objetivo executado:
+- tornar a visualização de candles mais explicável, resiliente e semanticamente navegável sem alterar o contrato OHLC, o snapshot ou as fronteiras aprovadas.
+
+TDD e implementação:
+- RED direcionado: três suítes com duas falhas esperadas e 12 testes verdes;
+- falhas planejadas: tooltip ainda sem formatter financeiro e controles sem relação semântica com a região ativa;
+- GREEN final direcionado: três suítes e 15 testes verdes;
+- `FinancialCandlestickChart.test.tsx` protege inicialização SVG, descrição acessível, resize, cleanup, atualização sem nova instância, expansão, fallback e vazio;
+- tooltip passa a explicar data, abertura, máxima, mínima, fechamento, direção textual, volume e quantidade de movimentos;
+- formatter retorna mensagem estável quando ECharts não fornece um índice válido;
+- ambos os botões usam `aria-controls` e a região ativa é nomeada pelo controle selecionado com IDs únicos do React;
+- seletor mantém somente o modo como estado, deriva a seleção durante o render e continua montando apenas um renderer/tabela;
+- falha local do candlestick preserva a tabela OHLC ativa.
+
+Quality gates:
+- regressão completa: 84 suítes e 479 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- analyzer verde; único chunk ECharts/ZRender com 525.841 bytes brutos e 179.310 bytes gzip;
+- delta sobre o Dia 3: +824 bytes brutos e +286 bytes gzip;
+- chunk permanece somente nos manifests cliente de `/` e `/dashboard`;
+- `git diff --check` verde e `next-env.d.ts` restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices` confirmou hooks estáveis, renderização condicional explícita, ausência de fetch/persistência cliente e uma única visualização montada.
+
+Erros, riscos e escopo preservado:
+- ruído inicial de tipos no harness foi documentado em Erros Recorrentes antes da correção;
+- validação browser, mobile, contraste e tecnologia assistiva aprofundada permanece reservada ao Dia 6;
+- `TECH-CHART-002` permanece para decisão no Dia 5, sem refatoração antecipada;
+- nenhum domain, application, infrastructure, Supabase, RPC, migration, RLS, dado, dependência, período, recurso de trading, deploy, commit, push ou PR foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-015 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`

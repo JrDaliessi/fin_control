@@ -241,15 +241,17 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`. O Dia 3 da SR-015 está concluído em `IMPLEMENTATION_IN_PROGRESS`, com OHLC, seletor, gráfico e tabela integrados e 83 suítes/470 testes verdes.
+Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`. O Dia 4 da SR-015 está concluído em `IMPLEMENTATION_IN_PROGRESS`, com tooltip financeiro, estados do renderer e semântica do seletor validados em 84 suítes/479 testes.
 
-Próximo passo recomendado: executar o Dia 4 da SR-015 para expandir estados, interação e composição de forma controlada, sem alterar o contrato financeiro aprovado.
+Próximo passo recomendado: executar o Dia 5 da SR-015 para avaliar duplicação, consistência e hardening interno sem mudar comportamento.
 
 ## Marco 10 - Candles Financeiros
 
 SR-015 entrega OHLC diário de saldo, intervalos vazios, tabela/tooltip acessíveis, volume e seletor Linha/Candles sobre o mesmo snapshot server-side, sem recursos de trading. A primeira release cobre somente os períodos atuais de até 31 dias; granularidades longas dependem de ciclo próprio.
 
 Evidência do Dia 3: agregador determinístico, DTO e mapper, registro modular de Candlestick, seletor local, tabela textual e frame expansível estão integrados; lint, type-check, build, analyzer e 83 suítes/470 testes estão verdes. O chunk ECharts permanece exclusivo de `/` e `/dashboard`, com delta gzip de 7.437 bytes.
+
+Evidência do Dia 4: tooltip rotulado, direção textual, fallback com tabela, vazio, lifecycle, expansão e região ativa nomeada estão cobertos; lint, type-check, build, analyzer e 84 suítes/479 testes permanecem verdes, com delta de apenas 286 bytes gzip.
 
 ## Marco 11 - Distribuicao de Frequencia
 
