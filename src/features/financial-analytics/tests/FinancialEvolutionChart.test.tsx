@@ -156,7 +156,13 @@ describe("FinancialEvolutionChart", () => {
     const descriptionId = graphic.getAttribute("aria-describedby");
     expect(descriptionId).toBeTruthy();
     expect(description).toHaveAttribute("id", descriptionId);
-    expect(graphic).toHaveClass("min-h-72", "w-full");
+    expect(graphic).toHaveClass(
+      "min-h-72",
+      "min-w-0",
+      "w-full",
+      "group-data-[expanded=true]/chart-frame:min-h-0"
+    );
+    expect(graphic.parentElement).toHaveClass("min-w-0");
     expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
     const [initializedContainer, initializationOptions] =
       initializeFinancialEvolutionChart.mock.calls[0];

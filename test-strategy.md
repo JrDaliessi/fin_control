@@ -715,6 +715,21 @@ Estado de saída: `TEST_STRATEGY_READY`.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.
 
+## RED/GREEN do Dia 6 — SR-014 / UX-CHART-001
+
+- Baseline direcionado: 4 suítes e 36 testes verdes.
+- Primeiro RED: 3 suítes falharam com 4 contratos ausentes e 30 testes anteriores verdes para safe areas e altura expandida adaptável.
+- Primeiro GREEN: frame usa named group e safe areas; viewport mantém altura mínima normal e libera `min-height` expandido.
+- O navegador revelou overflow móvel de 1.367 px após transição desktop → mobile, causado por largura intrínseca do SVG.
+- Segundo RED: 2 suítes falharam com 2 contratos ausentes e 22 testes anteriores verdes para `min-width: 0`.
+- GREEN direcionado final: 5 suítes e 45 testes verdes.
+- Regressão completa: 76 suítes e 429 testes verdes.
+- Desktop, `390 x 844` e `844 x 390` foram validados sem overflow; safe areas, foco, scroll, alvos e renderer permaneceram coerentes.
+- Manifesto, movimento reduzido, alto contraste, tabela equivalente e ausência de promessa offline permaneceram verdes.
+- Nenhum teste foi removido, relaxado ou ignorado; nenhuma regra financeira ou fronteira de dados mudou.
+
+Estado de saída: `QUALITY_VALIDATION`.
+
 ## GREEN do Dia 3 — SR-014
 
 - `FinancialEvolutionPanel` permaneceu server-side, passou a executar o mapper e compôs a ilha cliente com view model plano.

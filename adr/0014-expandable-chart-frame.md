@@ -23,6 +23,7 @@ O gráfico de evolução da SR-014 é o primeiro gráfico de produção. O roadm
 9. Orientação de tela não será forçada e nenhuma dependência será adicionada.
 10. O gráfico de evolução será o primeiro consumidor e os gráficos futuros deverão adotar o mesmo contrato em suas próprias small releases.
 11. Cada solicitação nativa terá identidade de tentativa; recolher ou desmontar o frame torna a tentativa obsoleta, e uma aquisição tardia deve ser encerrada sem reabrir a UI.
+12. O overlay respeitará safe areas nos quatro lados e os consumidores liberarão largura/altura mínimas intrínsecas somente no contexto expandido, sem forçar orientação.
 
 ## Estados
 
@@ -45,6 +46,7 @@ O gráfico de evolução da SR-014 é o primeiro gráfico de produção. O roadm
 - listeners e estilos globais são limpos no unmount;
 - dois frames preservam estado independente;
 - solicitação obsoleta não deixa fullscreen nativo ativo nem atualiza UI recolhida;
+- safe areas, mobile retrato/paisagem e ausência de overflow horizontal são contratos obrigatórios;
 - o gráfico de evolução reutiliza o frame sem duplicar dados ou instância.
 
 ## Alternativas rejeitadas

@@ -177,9 +177,9 @@ export function ExpandableChartFrame({
       aria-labelledby={isExpanded ? titleId : undefined}
       aria-modal={isExpanded ? true : undefined}
       className={clsx(
-        "relative grid gap-2",
+        "group/chart-frame relative grid gap-2",
         isExpanded &&
-          "fixed inset-0 z-[100] grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-background p-4 text-foreground sm:p-6"
+          "chart-frame-expanded fixed inset-0 z-[100] grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-background text-foreground"
       )}
       data-chart-frame=""
       data-expanded={isExpanded ? "true" : "false"}

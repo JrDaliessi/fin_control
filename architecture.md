@@ -417,6 +417,8 @@ O projeto deve ter:
 - O frame preserva o mesmo elemento e a mesma instância do gráfico ao alternar entre fluxo normal e overlay de viewport.
 - Fullscreen nativo é melhoria progressiva; overlay CSS, botão de saída, `Escape`, foco e scroll formam o contrato mínimo.
 - Solicitações nativas assíncronas recebem identidade de tentativa; resoluções obsoletas encerram qualquer fullscreen adquirido sem reabrir a UI.
+- O overlay respeita `safe-area-inset-*` nos quatro lados e não força orientação.
+- Wrappers e viewports de renderer em grid/flex usam `min-width: 0`; a altura mínima normal é liberada somente durante a expansão.
 - Componentes de gráficos futuros compõem a primitive dentro de suas ilhas cliente, sem ampliar a fronteira de dados Server → Client.
 - A tabela equivalente permanece fora do frame e não pode ser removida pelo modo expandido.
 - Nenhuma dependência, orientação forçada ou abstração de domínio é introduzida.

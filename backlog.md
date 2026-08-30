@@ -14,10 +14,10 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-013, UI-003 e SP-001 concluídos.
 - Risco: Médio por bundle cliente, hidratação e acessibilidade de visualização financeira.
-- Fase atual: Dia 5 concluído; integração, expansão universal e corrida assíncrona do fullscreen estão endurecidas em TDD.
+- Fase atual: Dia 6 concluído; integração, expansão, acessibilidade, safe areas e responsividade estão validadas em TDD e navegador real.
 - Small releases internas: `SR-014A` integração mínima test-first; `SR-014B` expansão universal, UX, bundle, browser e hardening.
 - Critério de pronto: gráfico e tabela simultâneos em `/` e `/dashboard`; estados tratados; RSC e uma leitura preservados; props serializáveis; ECharts ausente de rotas não relacionadas; testes, browser, bundle e pipeline verdes.
-- Próximo passo: executar `dia 6` para validação de UX, acessibilidade, responsividade e PWA.
+- Próximo passo: executar `dia 7` para qualidade final, segurança, observabilidade e entrega incremental.
 - ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
 - Status: IN_PROGRESS
 
@@ -29,7 +29,7 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SP-001 concluído e SR-014A funcional.
 - Risco: Médio por foco, scroll, fullscreen assíncrono, cleanup e resize do renderer.
-- Fase atual: Dia 5 concluído; primitive endurecida contra resolução tardia da Fullscreen API, com pipeline e bundle validados.
+- Fase atual: Dia 6 concluído; primitive e primeiro consumidor validados em desktop, mobile retrato/paisagem e PWA honesta.
 - Critério de pronto: expandir/recolher, fallback sem API nativa, `Escape`, foco e scroll restaurados, mesma instância do gráfico, contratos acessíveis e pipeline verde.
 - ADR: `adr/0014-expandable-chart-frame.md`.
 - Status: IN_PROGRESS até hardening, browser e quality gate final

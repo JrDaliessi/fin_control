@@ -170,7 +170,7 @@ export function FinancialEvolutionChart({
 
   return (
     <ExpandableChartFrame title="Evolução do saldo">
-      <div className="grid h-full min-h-0 gap-2">
+      <div className="grid h-full min-h-0 min-w-0 gap-2">
         <p className="sr-only" id={descriptionId}>
           Visualização complementar. Os mesmos valores permanecem disponíveis na
           tabela de evolução financeira.
@@ -178,7 +178,7 @@ export function FinancialEvolutionChart({
         <div
           aria-describedby={descriptionId}
           aria-label="Evolução do saldo por dia"
-          className="min-h-72 w-full"
+          className="min-h-72 min-w-0 w-full group-data-[expanded=true]/chart-frame:min-h-0"
           ref={attachChart}
           role="img"
           style={{ height: "100%" }}

@@ -138,10 +138,20 @@ describe("financial evolution chart architecture", () => {
       ),
       "utf-8"
     );
+    const globalStyles = readFileSync(
+      join(process.cwd(), "src", "app", "globals.css"),
+      "utf-8"
+    );
 
     expect(chartIsland).toContain("ExpandableChartFrame");
     expect(expandableFrame).not.toMatch(/echarts|supabase/i);
     expect(expandableFrame).not.toContain("FinancialEvolution");
+    expect(expandableFrame).toContain("group/chart-frame");
+    expect(expandableFrame).toContain("chart-frame-expanded");
+    expect(globalStyles).toContain(".chart-frame-expanded");
+    ["top", "right", "bottom", "left"].forEach((edge) => {
+      expect(globalStyles).toContain(`safe-area-inset-${edge}`);
+    });
   });
 
   it("keeps the client island independent from data sources and offline claims", () => {
@@ -158,6 +168,8 @@ describe("financial evolution chart architecture", () => {
     expect(clientIsland).not.toMatch(
       /fetch\s*\(|supabase|localStorage|indexedDB|serviceWorker/i
     );
-    expect(clientIsland).toContain('className="min-h-72 w-full"');
+    expect(clientIsland).toContain(
+      'className="min-h-72 min-w-0 w-full group-data-[expanded=true]/chart-frame:min-h-0"'
+    );
   });
 });

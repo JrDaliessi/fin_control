@@ -1423,3 +1423,25 @@ Uma release incremental só pode ser considerada pronta quando:
 - `git diff --check`: verde.
 - nenhum commit, push, deploy ou atualização de PR foi executado nesta fase.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — SR-014 / UX-CHART-001
+
+- contexto central, workflow e skills de browser consultados; declaração aprovada antes da execução.
+- baseline direcionado: 4 suítes e 36 testes verdes.
+- primeiro RED: 3 suítes com 4 falhas esperadas e 30 testes verdes para safe areas e altura adaptável.
+- segundo RED: 2 suítes com 2 falhas esperadas e 22 testes verdes para `min-width: 0` após overflow real no browser.
+- GREEN direcionado final: 5 suítes e 45 testes verdes.
+- regressão completa: 76 suítes e 429 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3`: verde; rotas e Proxy preservados; falha inicial foi exclusivamente o download bloqueado da Geist e passou com rede autorizada.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; chunk com 504.020 bytes brutos e 171.587 bytes gzip, delta de +91/+36 bytes sobre o Dia 5.
+- browser: conteúdo e gráfico reais, sem overlay, warning ou erro; desktop e mobile `390 x 844`/`844 x 390` sem overflow.
+- expansão: safe areas computadas em 16/24 px, botão 52 x 44 px, foco e scroll preservados, SVG igual ao viewport disponível.
+- auditoria básica: `pt-BR`, viewport, theme colors, manifest, nomes acessíveis e IDs únicos confirmados; temas alternaram sem erro.
+- `Escape` físico não foi propagado pela superfície de automação; o contrato permanece verde em Jest e não foi contabilizado como validação browser.
+- PWA permanece instalável e honesta, sem orientação forçada, service worker, cache financeiro ou promessa offline.
+- nenhum domain, application, infrastructure, Supabase, migration, dado, dependência ou regra financeira mudou.
+- `next-env.d.ts` restaurado; `AGENTS.md`/`CLAUDE.md` automáticos removidos; `rewrite-msgs.sh` preservado fora do escopo.
+- `git diff --check`: verde.
+- nenhum commit, push, deploy ou atualização de PR foi executado.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.

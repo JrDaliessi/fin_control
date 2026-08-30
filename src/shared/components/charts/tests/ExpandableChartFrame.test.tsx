@@ -71,6 +71,7 @@ describe("ExpandableChartFrame", () => {
     });
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(dialog).toHaveAttribute("data-expanded", "true");
+    expect(dialog).toHaveClass("chart-frame-expanded", "group/chart-frame");
     expect(screen.getByTestId("chart-content")).toBe(chartContent);
     expect(document.body).toHaveStyle({ overflow: "hidden" });
     expect(requestFullscreen).not.toHaveBeenCalled();

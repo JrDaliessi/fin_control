@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-014 concluído; fullscreen assíncrono endurecido em TDD, com arquitetura e isolamento de bundle preservados
+- Fase atual: Dia 6 da SR-014 concluído; UX, acessibilidade, responsividade e PWA validadas, projeto preparado para QUALITY_VALIDATION
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -113,6 +113,7 @@
 - Data da implementação mínima orientada por teste da SR-014: 2026-08-30
 - Data da expansão controlada e fullscreen universal da SR-014: 2026-08-30
 - Data da refatoração e hardening interno da SR-014: 2026-08-30
+- Data da revisão de UX, acessibilidade e PWA da SR-014: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -5963,3 +5964,71 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` em fluxo estável após o hardening
 - SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até UX/acessibilidade e quality gate final
 - próximo comando válido: `dia 6`
+
+## Dia 6 — Diagnóstico de UX, Acessibilidade e PWA da SR-014
+
+Baseline e experiência PWA:
+- baseline direcionado: 4 suítes e 36 testes verdes
+- manifesto permanece instalável, sem orientação forçada, service worker, cache financeiro ou promessa offline
+- movimento reduzido, alto contraste, descrição acessível, tabela equivalente e alvos mínimos já possuem cobertura anterior
+
+Falhas de responsividade identificadas antes da correção:
+- o overlay expandido usa padding fixo e não reserva `safe-area-inset-*`, podendo aproximar título e controle de recortes físicos em PWA/mobile
+- o viewport ECharts mantém `min-h-72` mesmo dentro do frame expandido; em mobile paisagem ou viewport de baixa altura, essa altura mínima pode exceder o espaço útil e ser recortada pelo container
+
+Regras preventivas adicionadas:
+- o frame expandido deve aplicar safe areas nos quatro lados, preservando espaçamento mínimo do design system
+- o consumidor deve manter `min-h-72` no fluxo normal e liberar `min-height` somente quando estiver dentro do frame expandido
+- orientação não será forçada; o layout deve se adaptar à altura e à largura disponíveis
+- correções devem nascer em RED e preservar a mesma instância ECharts, a tabela equivalente e o overlay CSS
+
+Incidente operacional desta fase:
+- uma busca `rg` recebeu wildcard incompatível com PowerShell/Windows e retornou erro de sintaxe para `*.config.*`
+- buscas posteriores devem usar caminhos explícitos ou descoberta prévia com `rg --files`; o incidente não representa falha do projeto
+- o Next dev gerou `AGENTS.md` e `CLAUDE.md` na raiz por configuração automática; ambos foram removidos por estarem fora do escopo e `next-env.d.ts` foi restaurado ao conteúdo versionado
+
+Falha visual real identificada no navegador:
+- após expandir em desktop, recolher e reduzir para `390 x 844`, a página passou a medir 1.367 px de largura para 375 px úteis
+- a primitive e os cards estavam limitados, mas o viewport ECharts e sua grade interna não tinham `min-width: 0`
+- o SVG preservou 1.334 px como tamanho intrínseco, ampliou os grids ancestrais e criou overflow horizontal
+
+Regra preventiva adicionada:
+- todo viewport de renderer dentro de grid/flex responsivo deve declarar `min-width: 0` em si e no wrapper interno que contém o renderer
+- a correção deve ser protegida por teste antes do código e revalidada no navegador após HMR/reload
+
+Implementação e TDD:
+- o frame expandido recebeu safe areas nos quatro lados, com espaçamento mínimo de 1 rem em mobile e 1,5 rem a partir de 640 px
+- o frame tornou-se um named group; o viewport mantém `min-h-72` no fluxo normal e usa `min-h-0` somente quando expandido
+- a grade interna e o viewport ECharts receberam `min-w-0`, permitindo resize real sem largura intrínseca residual do SVG
+- primeiro RED: 3 suítes falharam, com 4 falhas esperadas e 30 testes anteriores verdes
+- segundo RED do overflow real: 2 suítes falharam, com 2 falhas esperadas e 22 testes anteriores verdes
+- GREEN direcionado final: 5 suítes e 45 testes verdes
+
+Validação real no navegador:
+- dashboard autenticado carregou com conteúdo real, sem tela vazia, overlay de erro, warning ou erro de console
+- desktop padrão não apresentou overflow; expansão preservou diálogo nomeado, foco no controle, scroll bloqueado, renderer e padding de 24 px
+- mobile retrato `390 x 844`: largura útil de 375 px, sem overflow; expandido com viewport do gráfico de 358 x 760 px e padding de 16 px
+- mobile paisagem `844 x 390`: sem overflow; gráfico expandido com 796 x 290 px e padding de 24 px
+- botão expandir/recolher manteve 52 x 44 px; foco permaneceu preso no único controle e foi restaurado ao fechar pelo botão
+- a superfície de automação não propagou `Escape` físico; o fechamento por `Escape` permanece coberto pelo teste executável da primitive e não foi declarado como validação browser
+- temas claro, escuro e sistema alternaram sem erros; a preferência `system` foi restaurada
+- `lang=pt-BR`, viewport responsivo, dois `theme-color`, manifest, nomes acessíveis e ausência de IDs duplicados foram confirmados
+
+PWA e quality gates:
+- manifesto continua `standalone`, sem orientação forçada, promessa offline ou service worker
+- regressão completa: 76 suítes e 429 testes verdes
+- lint global com 0 warnings e type-check verdes
+- build Next.js `16.3.3` verde após repetir com rede para obter Geist; a primeira falha foi exclusivamente ambiental no download da fonte
+- analyzer verde; ECharts/ZRender permanece somente em `/` e `/dashboard`
+- chunk do Dia 6: 504.020 bytes brutos e 171.587 bytes gzip; delta sobre o Dia 5: +91 bytes brutos e +36 bytes gzip
+- `next-env.d.ts` foi restaurado, artefatos automáticos foram removidos e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Fronteiras preservadas:
+- nenhum domain, application, infrastructure, DTO, mapper, repository, Supabase, migration, policy, grant, dado ou dependência mudou
+- nenhuma orientação foi forçada e nenhuma capacidade offline foi prometida
+- nenhum commit, push, PR ou deploy foi executado
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até o gate final
+- próximo comando válido: `dia 7`
