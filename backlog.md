@@ -6,33 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-014 — Gráfico de linha da evolução
-- Tipo: Small Release
-- Descrição objetiva: integrar a linha do saldo de fechamento diário ao painel financeiro real, mantendo a tabela acessível e a leitura server-side existentes.
-- Objetivo de negócio: tornar a evolução do saldo visualmente legível sem esconder os valores detalhados.
-- Valor esperado: leitura rápida de trajetória, inclusive saldo negativo e períodos sem movimentos, com fonte financeira única e auditável.
-- Prioridade: Alta
-- Dependências: SR-013, UI-003 e SP-001 concluídos.
-- Risco: Médio por bundle cliente, hidratação e acessibilidade de visualização financeira.
-- Fase atual: Dia 6 concluído; integração, expansão, acessibilidade, safe areas e responsividade estão validadas em TDD e navegador real.
-- Small releases internas: `SR-014A` integração mínima test-first; `SR-014B` expansão universal, UX, bundle, browser e hardening.
-- Critério de pronto: gráfico e tabela simultâneos em `/` e `/dashboard`; estados tratados; RSC e uma leitura preservados; props serializáveis; ECharts ausente de rotas não relacionadas; testes, browser, bundle e pipeline verdes.
-- Próximo passo: executar `dia 7` para qualidade final, segurança, observabilidade e entrega incremental.
-- ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
-- Status: IN_PROGRESS
-
-### UX-CHART-001 — Expansão universal de gráficos
-- Tipo: Small Release / UX Improvement transversal
-- Descrição objetiva: permitir ampliar qualquer gráfico por uma primitive cliente reutilizável, com overlay CSS e Fullscreen API progressiva.
-- Objetivo de negócio: facilitar leitura detalhada de séries financeiras em telas pequenas e densas.
-- Valor esperado: comportamento consistente no gráfico de linha e nos futuros candles e histogramas.
-- Prioridade: Alta
-- Dependências: SP-001 concluído e SR-014A funcional.
-- Risco: Médio por foco, scroll, fullscreen assíncrono, cleanup e resize do renderer.
-- Fase atual: Dia 6 concluído; primitive e primeiro consumidor validados em desktop, mobile retrato/paisagem e PWA honesta.
-- Critério de pronto: expandir/recolher, fallback sem API nativa, `Escape`, foco e scroll restaurados, mesma instância do gráfico, contratos acessíveis e pipeline verde.
-- ADR: `adr/0014-expandable-chart-frame.md`.
-- Status: IN_PROGRESS até hardening, browser e quality gate final
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -475,6 +449,27 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-014 — Gráfico de linha da evolução
+- Tipo: Small Release
+- Resultado: linha do saldo de fechamento diário integrada ao painel real em `/` e `/dashboard`, junto da tabela acessível e com uma única leitura server-side.
+- Arquitetura: Server Component, mapper serializável, ilha ECharts e adapter específico preservam as fronteiras; ECharts permanece ausente das rotas não relacionadas.
+- Experiência: estados vazio/erro, tema, movimento reduzido, alto contraste, responsividade e expansão progressiva validados em TDD e navegador real.
+- Quality gates: 76 suítes/429 testes, lint, type-check, auditoria com zero vulnerabilidades, build, analyzer, GitHub Actions e Vercel Preview verdes.
+- Segurança: sem alteração em Supabase, Auth, RLS, migrations, dados, regras financeiras, secrets ou dependências.
+- Observabilidade: deployment `ff4bb73` em `READY`, `/login` HTTP 200, sem erro/fatal ou cluster de runtime nas últimas 24 horas e sem comentário Vercel pendente.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
+- Status: DONE
+
+### UX-CHART-001 — Expansão universal de gráficos
+- Tipo: Small Release / UX Improvement transversal
+- Resultado: primitive reutilizável com overlay CSS, Fullscreen API progressiva, safe areas e adaptação a mobile retrato/paisagem.
+- Acessibilidade: diálogo nomeado, controle acessível, focus trap, restauração de foco e scroll, `Escape` testado e tabela equivalente preservada.
+- Robustez: mesma instância ECharts, resize por observer, múltiplos frames independentes e resolução tardia de fullscreen protegida.
+- Quality gates: coberta pela regressão de 429 testes, browser real, lint, type-check, build e preview verdes da SR-014.
+- ADR: `adr/0014-expandable-chart-frame.md`.
+- Status: DONE
 
 ### SP-001 — Avaliar biblioteca de gráficos
 - Tipo: Spike

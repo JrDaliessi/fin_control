@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Novo ciclo em andamento: Dia 6 da `SR-014 — Gráfico de linha da evolução` concluído em `QUALITY_VALIDATION`. O gráfico está integrado, expansível e responsivo em desktop/mobile, com safe areas, fullscreen progressivo e tabela acessível preservados.
+Ciclo concluído: Dia 7 da `SR-014 — Gráfico de linha da evolução` encerrou em `READY_FOR_RELEASE`. O gráfico está integrado, expansível e responsivo em desktop/mobile, com safe areas, fullscreen progressivo, tabela acessível e pipeline verde.
 
 Mudança transversal entregue no Dia 4: `UX-CHART-001` criou um frame expansível reutilizável com overlay CSS e Fullscreen API progressiva. O gráfico de evolução é o primeiro consumidor; candles e histogramas futuros deverão adotar o mesmo contrato em suas próprias releases.
 
@@ -241,9 +241,9 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003 e SP-001 concluídos; Dia 6 da SR-014 concluído. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`, sem duplicação de dados ou renderer.
+Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`, sem duplicação de dados ou renderer.
 
-Próximo passo recomendado: executar o Dia 7 da SR-014 para qualidade final, segurança, observabilidade e preparação da entrega incremental.
+Próximo passo recomendado: concluir o commit/push do Dia 7, confirmar novamente os checks do PR #18 e realizar squash merge em `develop`; depois, refinar a SR-015 antes de iniciar seu Dia 1.
 
 ## Marco 10 - Candles Financeiros
 

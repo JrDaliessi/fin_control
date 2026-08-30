@@ -1445,3 +1445,25 @@ Uma release incremental só pode ser considerada pronta quando:
 - `git diff --check`: verde.
 - nenhum commit, push, deploy ou atualização de PR foi executado.
 - estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — SR-014 / UX-CHART-001
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- skills `vercel:deployments-cicd`, `vercel:observability` e `vercel:vercel-api` aplicadas em modo de leitura; nenhum deploy ou promoção foi disparado.
+- lint global: verde com zero warnings.
+- type-check: verde.
+- regressão completa: 76 suítes e 429 testes verdes; zero snapshots e nenhum teste ignorado.
+- auditoria de dependências: `npm audit --audit-level=high` verde com zero vulnerabilidades.
+- build Next.js `16.3.3` com Turbopack: verde; `/`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e Proxy preservados.
+- analyzer de produção: verde; chunk ECharts/ZRender com 504.020 bytes brutos e referência somente nos manifests cliente de `/` e `/dashboard`.
+- revisão de segurança do diff: sem Supabase, Auth, RLS, migration, variável pública, storage, HTML arbitrário, rede, regra financeira, dependência ou segredo novo.
+- PR #18: aberto, não draft, `MERGEABLE`, base `develop`; checks `validate`, Vercel e Vercel Preview Comments verdes no commit `ff4bb73`.
+- Vercel: deployment `dpl_2qV1zdyc8bdLpJqVYxfEw3trT6K4` em `READY`; `/login` respondeu HTTP 200 com HSTS e `noindex`.
+- observabilidade Vercel: nenhum cluster de erro de runtime e nenhum log preview `error`/`fatal` nas últimas 24 horas; nenhum comentário Toolbar não resolvido na branch.
+- plano Hobby sem drains: runtime logs/dashboard são a baseline disponível; captura externa sanitizada continua rastreada em `HARD-OBS-001`.
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública, mas não a entrega incremental deste código.
+- `CI-VERCEL-002` permanece dívida MÉDIA: vínculo local aponta para projeto antigo e há drift Node/npm entre Vercel, `package.json` e CI; preview atual não é afetado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; nenhum arquivo funcional foi alterado no Dia 7.
+- `git diff --check`: verde; somente `backlog.md`, `project-context.md`, `quality-gates.md` e `roadmap.md` foram alterados nesta fase.
+- nenhum commit, push, merge ou deploy de produção foi executado nesta fase.
+- estado final: `READY_FOR_RELEASE`; SR-014 e UX-CHART-001 marcadas como `DONE`.

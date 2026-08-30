@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 6 da SR-014 concluído; UX, acessibilidade, responsividade e PWA validadas, projeto preparado para QUALITY_VALIDATION
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-014 concluído; qualidade, segurança, observabilidade e preview validados para entrega incremental de código
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -114,6 +114,7 @@
 - Data da expansão controlada e fullscreen universal da SR-014: 2026-08-30
 - Data da refatoração e hardening interno da SR-014: 2026-08-30
 - Data da revisão de UX, acessibilidade e PWA da SR-014: 2026-08-30
+- Data da validação final e preparação de release da SR-014: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -966,6 +967,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no Dia 7 da SR-014, após consultar as dependências empacotadas, a IA presumiu que o diretório Node informado também continha `node_modules/npm/bin/npm-cli.js`; o bundle atual expõe Node 24 e não possui esse arquivo, enquanto o projeto exige Node 22. Prevenção: tratar os caminhos retornados como artefatos independentes, validar existência e versão antes de invocar e resolver explicitamente uma runtime compatível com `engines`, sem derivar o caminho do npm a partir do caminho do Node.
 - Erro: após tipar `this` nos doubles de fullscreen do Dia 4 da SR-014, o harness continuou violando `@typescript-eslint/no-this-alias` ao atribuir o receptor a uma variável externa. Prevenção: testes de APIs DOM devem capturar explicitamente o elemento renderizado e fechá-lo no mock, evitando dependência implícita de `this` quando a identidade do alvo já pode ser consultada de forma acessível.
 - Erro: os primeiros doubles de `requestFullscreen()` do Dia 4 da SR-014 dependeram do `this` fornecido pela chamada de método, mas não declararam seu tipo, fazendo o type-check falhar com `TS2683` apesar do GREEN comportamental. Prevenção: mocks de métodos nativos que inspecionam o receptor devem declarar explicitamente `this: HTMLElement` (ou o elemento compatível) na implementação, mantendo o contrato DOM e `noImplicitThis` verdes.
 - Erro: no primeiro GREEN do Dia 4 da SR-014, a integração do frame expansível acrescentou `h-full` ao atributo de classes do container ECharts e rompeu o marcador estático existente que protege `min-h-72 w-full`, embora o comportamento visual pretendido fosse compatível. Prevenção: antes de alterar classes protegidas, pesquisar contratos estáticos transversais; preservar a classe-base aprovada e expressar o preenchimento contextual por estilo ou container externo, sem relaxar a asserção existente.
@@ -6032,3 +6034,38 @@ Estado de saída:
 - `QUALITY_VALIDATION`
 - SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até o gate final
 - próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-014
+
+Quality gates locais:
+- lint global verde com zero warnings
+- type-check verde
+- regressão completa verde com 76 suítes e 429 testes; nenhum teste ignorado ou snapshot pendente
+- `npm audit --audit-level=high` consultou o registry e retornou zero vulnerabilidades
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados
+- `next experimental-analyze --output` verde; o único chunk com ECharts/ZRender possui 504.020 bytes brutos e permanece referenciado somente por `/` e `/dashboard`
+- `next-env.d.ts` gerado pelo build foi restaurado ao conteúdo versionado e `rewrite-msgs.sh` permaneceu fora do escopo
+- `git diff --check` verde; somente os quatro artefatos de governança da fase foram alterados
+
+Segurança e fronteiras:
+- a revisão do diff não encontrou acesso novo a Supabase, autenticação, autorização, RLS, migrations, variáveis públicas, storage, rede, HTML arbitrário ou persistência local
+- a primitive compartilhada manipula somente fullscreen, foco, listeners e scroll, com cleanup, rejeições e corrida assíncrona cobertos por testes
+- nenhuma regra financeira, DTO, mapper, repository, dado, dependência ou segredo foi alterado
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública, mas não o merge incremental desta release
+
+CI, deploy e observabilidade:
+- PR #18 está aberto, não é draft, está `MERGEABLE` e aponta de `codex/sr-014-financial-evolution-chart` para `develop`
+- GitHub `validate`, Vercel e Vercel Preview Comments estão verdes no commit `ff4bb73`
+- deployment `dpl_2qV1zdyc8bdLpJqVYxfEw3trT6K4` está `READY`, associado ao commit e ao PR corretos
+- `/login` respondeu HTTP 200 no preview, com HSTS, `noindex`, manifest e metadados PWA esperados
+- a consulta Vercel das últimas 24 horas não encontrou clusters de erro de runtime nem logs `error`/`fatal` do ambiente preview; não existem comentários não resolvidos na Toolbar da branch
+- o plano Hobby não oferece drains; runtime logs e dashboard permanecem a baseline disponível, enquanto captura externa sanitizada continua em `HARD-OBS-001`
+- o vínculo local `.vercel/project.json` ainda aponta para um projeto antigo; o projeto ativo é `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`
+- a Vercel respeitou `engines.node` e executou Node 22, mas o projeto remoto continua configurado como 24.x e o install remoto usa npm 10.9.8 apesar do npm 11 declarado; o drift permanece classificado em `CI-VERCEL-002`
+
+Estado de saída:
+- `READY_FOR_RELEASE` para entrega incremental de código
+- SR-014 e UX-CHART-001 concluídas e movidas para `DONE`
+- merge recomendado: squash do PR #18 em `develop` após commit/push desta documentação e nova confirmação dos checks
+- produção pública e promoção manual permanecem fora do escopo e bloqueadas pelos hardenings documentados
+- próximo ciclo recomendado: refinar humanamente a `SR-015 — Candles financeiros` antes de iniciar seu Dia 1
