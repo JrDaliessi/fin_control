@@ -1564,3 +1564,33 @@ pgTAP:
 - qualquer rota, action ou componente de apresentação
 
 Estado de saída: `TEST_STRATEGY_READY`.
+
+## Matriz planejada no Dia 1 — SR-015 Candles Financeiros
+
+Objetivo do próximo Dia 2: criar testes executáveis em RED para `SR-015A` antes de qualquer agregador, DTO ou componente funcional.
+
+| Camada | Alvo | Cenários essenciais planejados |
+| --- | --- | --- |
+| domain | agregador de candles | OHLC com receita/despesa intercaladas; abertura/fechamento; extremos intermediários; volume e quantidade |
+| domain | continuidade diária | dias vazios antes, entre e depois de movimentos; mês civil; saldo inicial negativo e zero |
+| domain | ordem determinística | input embaralhado; `occurredOn`, `createdAt` e `id`; empate de timestamp; imutabilidade |
+| domain | validação numérica | data/instant inválido, movimento fora do período, valor não positivo/não inteiro e overflow de inteiro seguro |
+| application | `ListFinancialEvolutionUseCase` | evolução e candles derivados de um único snapshot e uma única chamada ao repository |
+| presentation | mapper de candles | datas civis e centavos preservados; view model plano, serializável e sem identidade |
+| presentation | seletor e estados | Linha padrão; alternância; `empty`; `missing_accounts`; falha do renderer com tabela preservada |
+| presentation | equivalência acessível | tabela contém OHLC/volume/quantidade do modo ativo; alta/queda não depende somente de cor |
+| arquitetura | fronteiras | ECharts somente em presentation; ilha sem Supabase/rede; Server Component preservado |
+| integração | bundle e renderer | `CandlestickChart` modular; um modo ativo; ECharts somente em `/` e `/dashboard` |
+
+Fixtures mínimas planejadas:
+- saldo de abertura positivo com receita, despesa e nova receita no mesmo dia;
+- movimentos recebidos fora de ordem e dois movimentos com o mesmo `createdAt` desempatable por `id`;
+- sequência de três dias com o dia central vazio;
+- saldo negativo que cruza zero;
+- período sem movimentos;
+- valores próximos ao limite seguro para reproduzir overflow.
+
+Critério RED do Dia 2:
+- os testes novos falham somente pelos módulos/contratos da SR-015 ainda ausentes;
+- a regressão anterior permanece verde quando as novas suítes são excluídas;
+- nenhum código funcional, adapter ECharts ou mudança de DTO é criado antes dessa evidência.

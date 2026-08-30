@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-014 concluído; qualidade, segurança, observabilidade e preview validados para entrega incremental de código
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SR-015 concluído; contexto, domínio, contratos e arquitetura dos candles financeiros aprovados para TDD
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -115,6 +115,8 @@
 - Data da refatoração e hardening interno da SR-014: 2026-08-30
 - Data da revisão de UX, acessibilidade e PWA da SR-014: 2026-08-30
 - Data da validação final e preparação de release da SR-014: 2026-08-30
+- Data de seleção da SR-015 como próximo ciclo: 2026-08-30
+- Data do discovery e arquitetura da SR-015: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -932,7 +934,7 @@ Sequencia aprovada:
 Regra operacional:
 - cada SR percorre integralmente Dias 1 a 7
 - nenhuma implementacao funcional foi autorizada nesta analise
-- SR-007 foi selecionada e teve o Dia 1 concluído; o próximo comando válido é `dia 2`
+- SR-015 foi selecionada e teve o Dia 1 concluído; o próximo comando válido é `dia 2`
 
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
@@ -967,6 +969,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: na inspeção inicial do Dia 1 da SR-015, a IA presumiu nomes inexistentes para um ADR e para um DTO antes de confirmar a árvore real; as leituras falharam sem alterar o projeto. Prevenção: resolver caminhos com `rg --files` antes de abrir artefatos cuja localização não foi confirmada, especialmente após retomadas por contexto resumido.
 - Erro: no Dia 7 da SR-014, após consultar as dependências empacotadas, a IA presumiu que o diretório Node informado também continha `node_modules/npm/bin/npm-cli.js`; o bundle atual expõe Node 24 e não possui esse arquivo, enquanto o projeto exige Node 22. Prevenção: tratar os caminhos retornados como artefatos independentes, validar existência e versão antes de invocar e resolver explicitamente uma runtime compatível com `engines`, sem derivar o caminho do npm a partir do caminho do Node.
 - Erro: após tipar `this` nos doubles de fullscreen do Dia 4 da SR-014, o harness continuou violando `@typescript-eslint/no-this-alias` ao atribuir o receptor a uma variável externa. Prevenção: testes de APIs DOM devem capturar explicitamente o elemento renderizado e fechá-lo no mock, evitando dependência implícita de `this` quando a identidade do alvo já pode ser consultada de forma acessível.
 - Erro: os primeiros doubles de `requestFullscreen()` do Dia 4 da SR-014 dependeram do `this` fornecido pela chamada de método, mas não declararam seu tipo, fazendo o type-check falhar com `TS2683` apesar do GREEN comportamental. Prevenção: mocks de métodos nativos que inspecionam o receptor devem declarar explicitamente `this: HTMLElement` (ou o elemento compatível) na implementação, mantendo o contrato DOM e `noImplicitThis` verdes.
@@ -6069,3 +6072,67 @@ Estado de saída:
 - merge recomendado: squash do PR #18 em `develop` após commit/push desta documentação e nova confirmação dos checks
 - produção pública e promoção manual permanecem fora do escopo e bloqueadas pelos hardenings documentados
 - próximo ciclo recomendado: refinar humanamente a `SR-015 — Candles financeiros` antes de iniciar seu Dia 1
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-015
+
+Small release: `SR-015 — Candles financeiros`.
+
+Objetivo aprovado:
+- permitir alternar entre “Evolução do saldo” e “Variação do saldo” no painel financeiro;
+- representar abertura, máxima, mínima e fechamento do saldo por dia, sem semântica de preço ou trading;
+- manter volume, receitas, despesas e quantidade de transações como informação financeira explicável;
+- preservar tabela textual equivalente, expansão universal e os estados existentes do dashboard.
+
+Escopo fechado para o primeiro incremento:
+- todos os cinco períodos atuais (`week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`) usam buckets diários, pois o contrato vigente limita o intervalo a no máximo 31 dias;
+- `open` é o saldo no início do dia; `close` é o saldo após o último lançamento ordenado daquele dia;
+- `high` e `low` incluem o saldo de abertura e cada saldo intermediário;
+- `volumeInCents` é a soma absoluta dos valores efetivados, equivalente a receitas mais despesas no domínio atual;
+- dia vazio mantém `open = high = low = close`, com receita, despesa, volume e quantidade iguais a zero;
+- dentro da mesma data civil, a ordem determinística é `createdAt` ascendente e depois `id` ascendente;
+- como o modelo atual não registra horário bancário do evento, máximas e mínimas intradiárias descrevem a ordem de registro no FinControl, não uma linha temporal bancária inferida.
+
+Contratos de camada:
+- `domain`: um agregador puro recebe período, saldo de abertura e movimentos, valida entradas, ordena deterministicamente e devolve candles diários contínuos em centavos seguros;
+- `application`: `ListFinancialEvolutionUseCase` reutiliza o único `FinancialEvolutionSnapshot` já carregado e acrescenta `candles` ao DTO, sem segundo repository call;
+- `infrastructure`: o RPC existente já fornece saldo de abertura e movimentos necessários; nenhuma migration, policy, grant ou nova consulta foi aprovada;
+- `presentation`: um seletor cliente controla somente o modo visual, recebe modelos planos e serializáveis e monta apenas o gráfico/tabela ativos, sem buscar dados;
+- ECharts continua isolado em `financial-analytics/presentation/charts/echarts`, agora com `CandlestickChart` modular além de `LineChart`;
+- linha e candles reutilizam `ExpandableChartFrame`; não há renderer, fonte de dados ou instância simultânea duplicada;
+- a tabela OHLC apresenta a mesma informação do tooltip e permanece utilizável sem depender de cor, hover ou sucesso do renderer.
+
+Estados e comportamento:
+- `success`: seletor, modo ativo, tabela equivalente e resumo existentes;
+- `empty`: candles planos por dia e volume zero, com feedback já existente;
+- `missing_accounts`: nenhum seletor, gráfico ou tabela financeira;
+- erro da leitura: error boundary sanitizada da rota;
+- erro local de ECharts: fallback textual e tabela ativa preservada;
+- loading continua pertencendo à rota, sem spinner cliente artificial.
+
+Small releases internas:
+- `SR-015A`: testes RED e implementação mínima do agregador OHLC, DTO e mapper do modelo de candles a partir do snapshot único;
+- `SR-015B`: seletor Linha/Candles, gráfico ECharts, tabela OHLC, expansão, estados, acessibilidade, bundle e validação visual.
+
+Decisões e exclusões:
+- granularidade semanal/mensal, período customizado, zoom, brush, indicadores técnicos, previsão e exportação permanecem fora;
+- nenhum `ChartPort` genérico será criado; o segundo tipo visual compartilha somente primitives e adapters concretos que já possuem uso real;
+- nenhuma nova dependência é necessária;
+- a decisão completa está no ADR 0015.
+
+Riscos:
+- ALTO: interpretar máxima/mínima como horário real da transação; mitigado por copy explícita sobre ordem de registro e por testes de desempate;
+- MÉDIO: crescimento do chunk ECharts ao registrar candlestick; deve ser medido contra a baseline de 504.020 bytes brutos no Dia 3 e novamente no Dia 7;
+- MÉDIO: tabela larga em mobile; responsividade, navegação e leitura por tecnologia assistiva são gates do Dia 4 ao Dia 6;
+- os bloqueios pré-produção `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001` e a dívida `CI-VERCEL-002` permanecem inalterados.
+
+Artefatos e validação do Dia 1:
+- contexto, backlog, roadmap, arquitetura, especificação de produto, estratégia planejada e quality gate atualizados;
+- ADR 0015 criado e índice de ADRs corrigido para incluir 0014 e 0015;
+- erro de caminhos presumidos registrado antes da correção;
+- nenhum código funcional, teste executável, dependência, Supabase, migration, dado, commit, push, PR ou deploy foi criado;
+- lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-015 está `IN_PROGRESS`
+- próximo comando válido: `dia 2`

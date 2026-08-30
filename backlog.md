@@ -6,7 +6,20 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SR-015 - Candles financeiros
+- Tipo: Small Release
+- Descrição objetiva: alternar entre linha do saldo de fechamento e candles OHLC diários calculados sobre o mesmo snapshot financeiro.
+- Objetivo de negocio: mostrar abertura, maxima, minima e fechamento do saldo sem simular preço de ativo.
+- Valor esperado: leitura avançada, explicável e acessível da variação diária do saldo.
+- Prioridade: Media
+- Dependencias: SR-013, SR-014, saldo inicial, ordenacao estavel e ADRs 0010 a 0015.
+- Risco: Alto; máxima/mínima usam ordem de registro dentro da data civil e não horário bancário inexistente.
+- Fase recomendada: ciclo atual; Dia 1 concluído, próximo passo Dia 2.
+- Critério de pronto: OHLC e vazios testados; uma leitura por request; seletor Linha/Candles; tabela/tooltip equivalentes; expansão, acessibilidade, mobile, bundle e pipeline verdes; nenhum recurso de trading.
+- Feature backlog:
+  - `SR-015A`: agregador puro, cenários RED de ordem/overflow/vazios, DTO e mapper a partir do snapshot único.
+  - `SR-015B`: seletor, candlestick modular, tabela OHLC, estados, frame expansível e gates de UX/bundle.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -177,17 +190,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SR-015 - Candles financeiros
-- Tipo: Small Release
-- Objetivo de negocio: mostrar abertura, maxima, minima e fechamento do saldo.
-- Valor esperado: leitura avancada inspirada em exchanges sem trading.
-- Prioridade: Media
-- Dependencias: SR-013, SR-014, saldo inicial e ordenacao estavel.
-- Risco: Alto
-- Fase recomendada: apos grafico simples.
-- Criterio de pronto: OHLC e vazios testados, tooltip acessivel e sem recursos de trading.
 - Status: DISCOVERY
 
 ### SR-016 - Distribuicao de frequencia continua

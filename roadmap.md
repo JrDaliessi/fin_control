@@ -241,13 +241,13 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`, sem duplicação de dados ou renderer.
+Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`, sem duplicação de dados ou renderer. O Dia 1 da SR-015 está concluído em `ARCHITECTURE_READY`.
 
-Próximo passo recomendado: concluir o commit/push do Dia 7, confirmar novamente os checks do PR #18 e realizar squash merge em `develop`; depois, refinar a SR-015 antes de iniciar seu Dia 1.
+Próximo passo recomendado: executar o Dia 2 da SR-015 para materializar em RED os contratos OHLC antes da implementação.
 
 ## Marco 10 - Candles Financeiros
 
-SR-015 entrega OHLC de saldo, intervalos vazios, tooltip acessivel, volume e seletor Linha/Candles, sem recursos de trading.
+SR-015 entrega OHLC diário de saldo, intervalos vazios, tabela/tooltip acessíveis, volume e seletor Linha/Candles sobre o mesmo snapshot server-side, sem recursos de trading. A primeira release cobre somente os períodos atuais de até 31 dias; granularidades longas dependem de ciclo próprio.
 
 ## Marco 11 - Distribuicao de Frequencia
 

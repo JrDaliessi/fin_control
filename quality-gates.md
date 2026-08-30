@@ -1467,3 +1467,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - `git diff --check`: verde; somente `backlog.md`, `project-context.md`, `quality-gates.md` e `roadmap.md` foram alterados nesta fase.
 - nenhum commit, push, merge ou deploy de produção foi executado nesta fase.
 - estado final: `READY_FOR_RELEASE`; SR-014 e UX-CHART-001 marcadas como `DONE`.
+
+## Gate do Dia 1 — SR-015
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- branch `codex/sr-015-financial-candles` criada da `develop` integrada no commit `503d037`.
+- períodos, snapshot/RPC, movimentos, agregador diário, caso de uso, DTO, painel, tabela, adapter ECharts e ADRs anteriores confrontados.
+- contrato limitado a candles diários para os cinco períodos atuais de até 31 dias.
+- OHLC, volume, vazios, ordem por data civil/registro e ressalva semântica sobre ausência de horário bancário documentados.
+- uma única leitura server-side preservada; nenhuma nova consulta, migration, RLS ou dependência aprovada.
+- ilha cliente limitada ao seletor e visualização; modelos planos, tabela equivalente, frame expansível e imports modulares permanecem obrigatórios.
+- matriz TDD planejada para domain, application, presentation, arquitetura e bundle; nenhum teste executável criado no Dia 1.
+- erro de caminhos presumidos registrado em Erros Recorrentes antes da correção.
+- ADR 0015, contexto, arquitetura, backlog, roadmap, estratégia de testes e especificação de produto atualizados.
+- nenhum código funcional, Supabase, migration, dado, commit, push, PR ou deploy executado.
+- lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2`.

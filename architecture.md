@@ -424,6 +424,22 @@ O projeto deve ter:
 - Nenhuma dependência, orientação forçada ou abstração de domínio é introduzida.
 - Decisão completa: `adr/0014-expandable-chart-frame.md`.
 
+## Candles financeiros — SR-015
+
+- O candle representa saldo financeiro diário, nunca preço de ativo, ordem de mercado ou recomendação de trading.
+- Um agregador puro do domínio recebe o período resolvido, o saldo de abertura e os movimentos do snapshot; ele não depende de React, Next.js, Supabase ou ECharts.
+- Os movimentos são ordenados por `occurredOn`, `createdAt` e `id`. Como `occurredOn` é data civil, a ordem intradiária representa a ordem de registro no sistema e deve ser explicada na interface.
+- Cada candle inclui `open`, `high`, `low`, `close`, receita, despesa, volume e quantidade em inteiros seguros de centavos. Dias vazios preservam o último saldo com volume zero.
+- `ListFinancialEvolutionUseCase` calcula evolução e candles a partir do mesmo `FinancialEvolutionSnapshot`; a SR-015 não cria segunda consulta, Route Handler, Server Action, RPC ou migration.
+- O DTO adiciona uma coleção `candles` plana e serializável. Domain e application permanecem independentes da visualização.
+- `FinancialEvolutionPanel` continua Server Component. Uma ilha cliente estreita recebe os modelos de linha e candles e controla somente o seletor visual e a montagem do modo ativo.
+- A ilha não acessa Supabase, Auth, repository ou rede. Apenas um gráfico e uma tabela equivalentes ficam ativos por vez.
+- O adapter ECharts registra `CandlestickChart` por import modular e preserva SVG, ARIA, tema, movimento reduzido, resize, dispose e isolamento de bundle das rotas não financeiras.
+- Linha e candles reutilizam `ExpandableChartFrame`; expansão não duplica renderer nem dados.
+- A tabela OHLC é a alternativa do tooltip e comunica alta/queda também por texto e valores, nunca somente por cor.
+- O primeiro recorte usa buckets diários nos cinco períodos atuais, todos limitados a 31 dias. Semana/mês para intervalos longos e período customizado permanecem fora.
+- Decisão completa: `adr/0015-financial-balance-candles.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações
