@@ -1226,3 +1226,17 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma dependência, gráfico, teste funcional, Supabase, migration, dado, commit, push, PR ou deploy foi criado.
 - lint, type-check e build não foram repetidos porque somente documentação foi alterada; `git diff --check` é o gate aplicável da fase.
 - estado de saída: `ARCHITECTURE_READY`.
+
+## Gate do Dia 2 — SP-001
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline completo antes do RED: 71 suítes e 386 testes verdes.
+- domain/application relevantes permaneceram verdes: 3 suítes e 38 testes.
+- quatro suítes test-first foram criadas para mapper, option builder, lifecycle e fronteiras arquiteturais.
+- RED direcionado final: 4 suítes vermelhas; 7 falhas arquiteturais esperadas, 2 invariantes existentes verdes e 3 suítes bloqueadas por módulos planejados ausentes.
+- type-check RED contém somente 7 erros `TS2307` dos módulos funcionais planejados.
+- lint dos quatro testes novos passou com 0 warnings.
+- regressão anterior, excluindo somente as quatro suítes RED, permaneceu em 71 suítes e 386 testes verdes.
+- falso positivo do scanner e assinatura incorreta do mock DOM foram registrados no contexto e corrigidos antes da aceitação do RED.
+- nenhuma implementação, instalação, gráfico de produção, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `TEST_STRATEGY_READY`.

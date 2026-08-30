@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 do SP-001 concluído; Apache ECharts modular e adapter de presentation definidos sem instalar dependência
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 do SP-001 concluído; contratos RED do mapper, option builder, lifecycle e fronteiras arquiteturais preparados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -101,6 +101,7 @@
 - Data da validação final e preparação de release da UI-003: 2026-08-29
 - Data de seleção do SP-001 como próximo ciclo: 2026-08-29
 - Data do discovery e arquitetura do SP-001: 2026-08-29
+- Data da estratégia de testes do SP-001: 2026-08-29
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -953,6 +954,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: o primeiro mock de `MediaQueryList` do Dia 2 do SP-001 usou `jest.fn()` sem retorno para `dispatchEvent`, mas o contrato DOM exige booleano; a primeira correção nomeou um argumento não utilizado e gerou warning de lint. Prevenção: mocks de APIs do browser devem satisfazer explicitamente as assinaturas nativas com a menor função compatível, sem bindings artificiais, para que type-check e lint contenham somente sinais funcionais planejados.
+- Erro: o primeiro contrato arquitetural RED do SP-001 varreu a própria pasta `tests` e interpretou a expressão usada para detectar imports de ECharts como uma violação real. Prevenção: scanners estáticos de fronteira devem limitar a coleta a arquivos de produção ou excluir explicitamente fixtures e testes antes de avaliar padrões de import; a suíte deve ser repetida após a correção do harness, sem alterar o contrato de produção.
 - Erro: o Dia 2 da UI-003 atualizou os contratos específicos do dashboard, mas não revisou o teste transversal que ainda exigia `FeedbackMessage` no `DashboardPage`; a regressão completa só expôs o drift após o GREEN direcionado. Prevenção: toda mudança de responsabilidade entre componentes deve pesquisar e atualizar contratos arquiteturais e de design system transversais no RED, validando a suíte completa imediatamente após o primeiro GREEN sem reintroduzir imports artificiais.
 - Erro: a primeira integração real do repository da SR-013 tipou `rpc` como `Promise`, enquanto o cliente Supabase retorna um builder aguardável (`PromiseLike`), fazendo o type-check falhar apesar do comportamento correto. Prevenção: modelar adapters externos pelo menor contrato aguardável real, validar a implementação concreta no primeiro GREEN integrado e não ampliar o port de application com tipos do provider.
 - Erro: o teste agregado das rotas do Dia 4 da SR-013 importou as páginas estaticamente e o transformador Next/Jest carregou o loader real antes do mock, tentando acessar `cookies()` fora de request scope. Prevenção: em testes de Server Components, registrar o mock antes e carregar página/loader com `jest.requireActual()`/`jest.requireMock()` quando a ordem de avaliação fizer parte do isolamento.
@@ -5379,3 +5382,43 @@ Estado de saída:
 - `ARCHITECTURE_READY`
 - SP-001 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Escopo testável aprovado:
+- mapper puro entre `FinancialEvolutionDto` e um view model gráfico com datas civis e saldos inteiros em centavos
+- option builder puro para linha de saldo, rótulos/tooltip formatados apenas na borda, ARIA/decal e movimento reduzido
+- ilha cliente estreita com inicialização SVG, `ResizeObserver`, atualização e descarte do chart
+- contrato arquitetural que limita ECharts ao adapter de presentation, fixa `echarts@6.1.0` e proíbe wrapper React/import total
+- preservação do Server Component e da tabela acessível já existentes
+
+Cobertura por camada:
+- domain: nenhum contrato novo; `civil-date` e agregação existentes continuam sendo a fonte das invariantes financeiras
+- application: nenhum caso de uso novo; `ListFinancialEvolutionUseCase` continua responsável pelo DTO serializável consumido pelo mapper
+- presentation pura: mapper e option builder possuem cenários de ordem, centavos, saldo negativo, vazio, imutabilidade, moeda, ARIA e movimento reduzido
+- presentation cliente: lifecycle cobre SVG, nome/descrição acessíveis, `setOption`, atualização sem reinicialização, resize, preferência de movimento, cleanup e fallback de erro orientado à tabela
+- arquitetura/bundle: cinco arquivos permitidos, dependência exata, ausência de wrapper e imports modulares são contratos executáveis
+
+Evidências RED:
+- baseline antes dos novos testes: 71 suítes e 386 testes verdes
+- rede de segurança direcionada de domain/application: 3 suítes e 38 testes verdes
+- quatro novas suítes foram criadas antes de qualquer implementação funcional
+- RED direcionado final: 4 suítes vermelhas; o contrato arquitetural executou 9 testes, com 7 falhas esperadas e 2 invariantes existentes verdes; as outras 3 suítes pararam exclusivamente nos módulos planejados ausentes
+- type-check RED: 7 erros `TS2307`, todos referentes aos cinco módulos planejados ainda ausentes
+- lint dos quatro novos arquivos: verde, 0 warnings
+- regressão anterior excluindo somente as quatro suítes RED: 71 suítes e 386 testes verdes
+- o primeiro scanner e o primeiro mock DOM produziram ruído de harness; ambos foram registrados em erros recorrentes e corrigidos antes de aceitar o RED
+- o `npm` global estava quebrado no host; os gates foram executados com o runtime Node empacotado, sem alterar dependências
+
+Implementação bloqueada até o Dia 3:
+- instalar `echarts@6.1.0`
+- criar model, mapper, option builder, adapter ECharts ou ilha cliente
+- integrar qualquer gráfico ao dashboard ou iniciar a SR-014
+- alterar domain, application, infrastructure, Supabase, migrations ou dados
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 3`

@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: view model da SR-013 e UI-003 concluída.
 - Risco: Médio
-- Fase atual: Dia 1 concluído; Apache ECharts modular, SVG e adapter específico de presentation definidos no ADR 0012.
+- Fase atual: Dia 2 concluído; quatro suítes RED cobrem mapper, option builder, lifecycle, acessibilidade, dependência e fronteiras arquiteturais.
 - Critério de pronto: ADR comparando opções, critérios objetivos, adapter de presentation definido e experimento limitado quando necessário; nenhum gráfico de produção.
-- Próximo passo: executar `dia 2` para contratos testáveis do mapper, option builder, fronteira arquitetural, lifecycle e acessibilidade.
+- Próximo passo: executar `dia 3` para instalar ECharts e implementar somente o mínimo necessário para satisfazer os contratos RED.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

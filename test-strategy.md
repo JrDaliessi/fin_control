@@ -479,7 +479,82 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
-## Matriz planejada do Dia 2 — SP-001
+## Dia 2 — SP-001 Biblioteca de Gráficos
+
+## Objetivo
+
+Converter a decisão arquitetural do ADR 0012 em contratos executáveis antes de instalar ECharts ou criar qualquer implementação de gráfico.
+
+## Prioridade por Camada
+
+1. `domain`: preservar datas civis, ordem e valores monetários inteiros; nenhuma regra nova foi introduzida pelo spike.
+2. `application`: preservar o `FinancialEvolutionDto` serializável como entrada estável; nenhum caso de uso novo foi autorizado.
+3. `presentation` pura: testar mapper e option builder sem DOM ou biblioteca carregada.
+4. `presentation` cliente: testar lifecycle por adapter mockado, movimento reduzido e acessibilidade mínima.
+5. `arquitetura/bundle`: impedir import total, wrapper React e vazamento de ECharts para outras camadas.
+
+## Matriz de Testes do SP-001
+
+| Camada | Alvo | Cenários essenciais | Estado no Dia 2 |
+| --- | --- | --- | --- |
+| domain | datas civis e agregação | limites civis, ordem, centavos e saldo negativo | contratos existentes: 2 suítes verdes |
+| application | `FinancialEvolutionDto` | DTO serializável, vazio e ausência de contas | contrato existente: 1 suíte verde |
+| presentation pura | mapper | ordem, datas civis, centavos, saldo negativo, vazio e imutabilidade | 3 cenários RED por módulo ausente |
+| presentation pura | option builder | linha, eixos, tooltip, moeda na borda, imutabilidade, ARIA/decal e movimento reduzido | 3 cenários RED por módulo ausente |
+| presentation cliente | ilha ECharts | SVG, nome/descrição acessíveis, `setOption`, atualização sem reinicialização, reduced motion, resize, dispose e fallback de erro | 5 cenários RED por módulo ausente |
+| arquitetura | fronteiras e bundle | cinco arquivos permitidos, versão fixa, sem wrapper/import total, RSC e tabela preservados | 9 contratos: 7 RED e 2 verdes |
+
+## Cenário Feliz
+
+O DTO server-side é mapeado sem mutação para pontos com data civil e saldo em centavos. O builder cria uma série de linha acessível, a ilha inicializa o renderer SVG, aplica a opção, reage ao resize e libera recursos no unmount.
+
+## Cenários Alternativos
+
+- período sem pontos permanece como série vazia
+- saldo negativo permanece inteiro e é formatado somente no eixo/tooltip
+- preferência por movimento reduzido desativa animação
+- tokens de tema entram como dados resolvidos, sem regra financeira ou acesso direto a CSS dentro do builder puro
+
+## Edge Cases Críticos
+
+- conversão indevida de centavos para ponto flutuante
+- reordenação ou transformação das datas civis
+- mutação do DTO/view model
+- import direto de `echarts` ou uso de `echarts-for-react`
+- import de ECharts fora de `presentation/charts/echarts`
+- Canvas adotado apesar do renderer SVG aprovado
+- observer/listener órfão ou instância sem `dispose`
+- animação ignorando `prefers-reduced-motion`
+- gráfico tratado como substituto da tabela acessível
+
+## Testes Criados
+
+- `src/features/financial-analytics/tests/to-financial-evolution-chart-model.test.ts`
+- `src/features/financial-analytics/tests/build-financial-evolution-option.test.ts`
+- `src/features/financial-analytics/tests/FinancialEvolutionChart.test.tsx`
+- `src/features/financial-analytics/tests/financial-evolution-chart-boundaries.test.ts`
+
+## Resultado Observado do Dia 2 — SP-001
+
+- baseline: 71 suítes e 386 testes verdes
+- domain/application direcionados: 3 suítes e 38 testes verdes
+- RED direcionado: 4 suítes vermelhas; 7 testes arquiteturais falharam como esperado, 2 invariantes existentes passaram e as 3 suítes comportamentais pararam por módulos ausentes
+- type-check RED: 7 `TS2307`, exclusivamente para os módulos planejados ausentes
+- lint dos quatro arquivos novos: verde, 0 warnings
+- rede anterior sem as quatro suítes RED: 71 suítes e 386 testes verdes
+- nenhuma implementação, dependência, integração no dashboard, migration, dado ou configuração foi criada
+
+## Implementação Bloqueada até o Dia 3
+
+- `echarts@6.1.0`
+- model e mapper de presentation
+- option builder e client modular ECharts
+- ilha cliente experimental
+- qualquer integração de produção pertencente à SR-014
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:
 
@@ -491,7 +566,7 @@ O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instal
 - acessibilidade: tabela permanece presente, descrição associada, informação não depende apenas de cor e movimento reduzido desativa animação;
 - bundle: baseline e delta documentados com imports modulares; import total de `echarts` falha o contrato.
 
-Nenhum desses testes foi criado no Dia 1. A instalação de `echarts@6.1.0` e qualquer implementação permanecem bloqueadas até RED válido e aprovação do Dia 3.
+Nenhum desses testes foi criado no Dia 1. A seção executada acima registra sua materialização em RED no Dia 2; a instalação de `echarts@6.1.0` e qualquer implementação permanecem bloqueadas até aprovação do Dia 3.
 
 ## Matriz Executada no Dia 2 — UI-003
 
