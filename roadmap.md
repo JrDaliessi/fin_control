@@ -241,9 +241,9 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`, sem duplicação de dados ou renderer. O Dia 1 da SR-015 está concluído em `ARCHITECTURE_READY`.
+Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`, sem duplicação de dados ou renderer. O Dia 2 da SR-015 está concluído em `TEST_STRATEGY_READY`, com sete suítes novas em RED controlado e a regressão anterior verde.
 
-Próximo passo recomendado: executar o Dia 2 da SR-015 para materializar em RED os contratos OHLC antes da implementação.
+Próximo passo recomendado: executar o Dia 3 da SR-015 para implementar o mínimo necessário até o GREEN, sem ampliar o contrato aprovado.
 
 ## Marco 10 - Candles Financeiros
 

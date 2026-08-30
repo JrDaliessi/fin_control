@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SR-015 concluído; contexto, domínio, contratos e arquitetura dos candles financeiros aprovados para TDD
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SR-015 concluído; sete suítes e fixtures definem o RED controlado antes da implementação OHLC
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -117,6 +117,7 @@
 - Data da validação final e preparação de release da SR-014: 2026-08-30
 - Data de seleção da SR-015 como próximo ciclo: 2026-08-30
 - Data do discovery e arquitetura da SR-015: 2026-08-30
+- Data da estratégia de testes e RED controlado da SR-015: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -934,7 +935,7 @@ Sequencia aprovada:
 Regra operacional:
 - cada SR percorre integralmente Dias 1 a 7
 - nenhuma implementacao funcional foi autorizada nesta analise
-- SR-015 foi selecionada e teve o Dia 1 concluído; o próximo comando válido é `dia 2`
+- SR-015 teve o Dia 2 concluído em RED controlado; o próximo comando válido é `dia 3`
 
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
@@ -6136,3 +6137,56 @@ Estado de saída:
 - `ARCHITECTURE_READY`
 - SR-015 está `IN_PROGRESS`
 - próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-015
+
+Small release prioritária: `SR-015A — Agregação OHLC, DTO e mapper`.
+
+Baseline anterior ao RED:
+- Node `22.14.0` compatível com `engines`; binários locais usados porque o wrapper global do npm permanece quebrado;
+- regressão completa verde com 76 suítes e 429 testes;
+- type-check verde;
+- lint global verde com zero warnings.
+
+Matriz executável criada:
+- domain: OHLC, volume, continuidade diária, ordem por `createdAt`/`id`, imutabilidade, saldo negativo, calendário, validação e overflow;
+- application: pontos e candles derivados do mesmo snapshot, uma única chamada ao repository, `missing_accounts` e `empty`;
+- presentation mapper: datas civis, centavos inteiros, dados de tooltip, imutabilidade e série ausente;
+- adapter: tupla ECharts `[open, close, low, high]`, estilos de alta/queda, formatação na borda, ARIA e movimento reduzido;
+- tabela: equivalência OHLC, scroll por teclado, direção textual e explicação sobre ordem de registro;
+- seletor: linha como padrão, troca para candles, um modo ativo e ausência de rede;
+- arquitetura: artefatos aprovados, ECharts confinado ao adapter, painel server-side e ilha cliente sem fonte de dados.
+
+Fixtures acrescentadas:
+- receita posterior no mesmo dia para provar novo extremo após queda intermediária;
+- despesa e receita com o mesmo `createdAt`, desempatadas por IDs estáveis;
+- cenários locais cobrem vazio, saldo negativo, cruzamento de zero, data inválida e limites de inteiro seguro.
+
+RED observado:
+- sete suítes novas executadas; sete falharam como esperado;
+- Jest materializou 14 contratos antes de a resolução de módulos interromper cinco suítes: 13 falharam e um contrato arquitetural já passou;
+- falhas funcionais: `candles` ainda ausente no DTO nos estados `success`, `empty` e `missing_accounts`;
+- falhas estruturais: agregador, mapper, model, builder, tabela, chart, switcher e registro `CandlestickChart` ainda inexistentes;
+- type-check contém somente cinco `TS2307` correspondentes aos módulos de produção deliberadamente ausentes;
+- lint direcionado dos oito arquivos de teste/fixture está verde com zero warnings;
+- regressão anterior, excluindo apenas as sete suítes RED, permaneceu verde com 76 suítes e 429 testes;
+- `git diff --check` verde.
+
+Arquivos de teste criados:
+- `aggregate-financial-candles.test.ts`;
+- `list-financial-candles.use-case.test.ts`;
+- `to-financial-candlestick-chart-model.test.ts`;
+- `build-financial-candlestick-option.test.ts`;
+- `FinancialCandlesTable.test.tsx`;
+- `FinancialVisualizationSwitcher.test.tsx`;
+- `financial-candles-boundaries.test.ts`.
+
+Restrições preservadas:
+- nenhum código funcional, tipo de produção, DTO, adapter, componente ou dependência foi criado;
+- nenhum Supabase, RPC, migration, RLS, dado, commit, push, PR ou deploy foi executado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-015 permanece `IN_PROGRESS`
+- implementação permanece bloqueada até aprovação explícita do `dia 3`

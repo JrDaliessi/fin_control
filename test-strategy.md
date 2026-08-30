@@ -1594,3 +1594,35 @@ Critério RED do Dia 2:
 - os testes novos falham somente pelos módulos/contratos da SR-015 ainda ausentes;
 - a regressão anterior permanece verde quando as novas suítes são excluídas;
 - nenhum código funcional, adapter ECharts ou mudança de DTO é criado antes dessa evidência.
+
+## Matriz executada no Dia 2 — SR-015 Candles Financeiros
+
+| Camada | Suíte | Contratos declarados | RED observado |
+| --- | --- | ---: | --- |
+| domain | `aggregate-financial-candles.test.ts` | 15 | módulo do agregador ausente |
+| application | `list-financial-candles.use-case.test.ts` | 3 | `candles` ausente nos três estados |
+| presentation mapper | `to-financial-candlestick-chart-model.test.ts` | 3 | módulo do mapper ausente |
+| adapter ECharts | `build-financial-candlestick-option.test.ts` | 4 | model e builder ausentes |
+| presentation table | `FinancialCandlesTable.test.tsx` | 3 | tabela ausente |
+| presentation interaction | `FinancialVisualizationSwitcher.test.tsx` | 2 | switcher ausente |
+| arquitetura | `financial-candles-boundaries.test.ts` | 11 | sete artefatos, registro modular e integração ainda ausentes; confinamento atual já verde |
+
+Total planejado após os módulos carregarem: 41 contratos em sete suítes.
+
+Resultado observado:
+- baseline: 76 suítes e 429 testes verdes; type-check e lint verdes;
+- RED direcionado: sete suítes falharam, com 13 testes falhos e um teste verde entre os 14 que Jest conseguiu materializar antes das falhas de resolução;
+- os cinco módulos importados diretamente ainda ausentes geraram somente cinco `TS2307` no type-check;
+- nenhum erro implícito, warning de lint ou falha de harness permaneceu;
+- regressão anterior, excluindo exclusivamente as sete suítes novas, continuou verde com 76 suítes e 429 testes;
+- nenhuma expectativa anterior foi relaxada, ignorada ou removida.
+
+Implementação bloqueada até o Dia 3:
+- `FinancialCandle` e o agregador `aggregateFinancialCandles`;
+- extensão `candles` do `FinancialEvolutionDto` e sua orquestração a partir do snapshot único;
+- model e mapper `FinancialCandlestickChart`;
+- builder/registro modular de `CandlestickChart`;
+- `FinancialCandlesTable`, `FinancialCandlestickChart` e `FinancialVisualizationSwitcher`;
+- integração do painel server-side.
+
+Estado de saída: `TEST_STRATEGY_READY`.

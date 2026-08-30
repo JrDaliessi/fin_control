@@ -14,10 +14,10 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Media
 - Dependencias: SR-013, SR-014, saldo inicial, ordenacao estavel e ADRs 0010 a 0015.
 - Risco: Alto; máxima/mínima usam ordem de registro dentro da data civil e não horário bancário inexistente.
-- Fase recomendada: ciclo atual; Dia 1 concluído, próximo passo Dia 2.
+- Fase recomendada: ciclo atual; Dia 2 concluído em RED controlado, próximo passo Dia 3.
 - Critério de pronto: OHLC e vazios testados; uma leitura por request; seletor Linha/Candles; tabela/tooltip equivalentes; expansão, acessibilidade, mobile, bundle e pipeline verdes; nenhum recurso de trading.
 - Feature backlog:
-  - `SR-015A`: agregador puro, cenários RED de ordem/overflow/vazios, DTO e mapper a partir do snapshot único.
+  - `SR-015A`: sete suítes/fixtures em RED para agregador puro, ordem/overflow/vazios, DTO, mapper e contratos essenciais de presentation; implementação bloqueada até o Dia 3.
   - `SR-015B`: seletor, candlestick modular, tabela OHLC, estados, frame expansível e gates de UX/bundle.
 - Status: IN_PROGRESS
 

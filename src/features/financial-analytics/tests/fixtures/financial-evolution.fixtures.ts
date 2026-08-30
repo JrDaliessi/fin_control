@@ -16,6 +16,30 @@ export const expenseMovement = {
   amountInCents: 2_000
 };
 
+export const laterIncomeMovement = {
+  id: "7cf553d4-f593-42b0-834c-a16223685e3b",
+  occurredOn: "2026-03-01",
+  createdAt: "2026-03-01T12:00:00.000Z",
+  type: "income" as const,
+  amountInCents: 3_000
+};
+
+export const tiedExpenseMovement = {
+  id: "00000000-0000-4000-8000-000000000001",
+  occurredOn: "2026-03-01",
+  createdAt: "2026-03-01T09:00:00.000Z",
+  type: "expense" as const,
+  amountInCents: 3_000
+};
+
+export const tiedIncomeMovement = {
+  id: "00000000-0000-4000-8000-000000000002",
+  occurredOn: "2026-03-01",
+  createdAt: "2026-03-01T09:00:00.000Z",
+  type: "income" as const,
+  amountInCents: 5_000
+};
+
 export const laterExpenseMovement = {
   id: "5cfdcf2a-cea6-431b-bfca-6d9ea8ea7d9e",
   occurredOn: "2026-03-03",

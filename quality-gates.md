@@ -1483,3 +1483,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, Supabase, migration, dado, commit, push, PR ou deploy executado.
 - lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
 - estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2`.
+
+## Gate do Dia 2 — SR-015
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline completa: 76 suítes e 429 testes verdes; type-check e lint verdes.
+- sete suítes e três fixtures adicionais criadas antes de qualquer código funcional.
+- matriz declara 41 contratos de domain, application, presentation, adapter e arquitetura.
+- RED direcionado confirmado: sete suítes falharam; Jest materializou 13 falhas e um teste verde antes das falhas esperadas de resolução.
+- `candles` ausente no DTO falhou nos estados `success`, `empty` e `missing_accounts`.
+- sete fronteiras, `CandlestickChart`, mapper, builder, tabela e switcher falharam somente por ainda não existirem.
+- type-check RED contém exclusivamente cinco `TS2307` dos módulos planejados ausentes.
+- lint direcionado dos oito arquivos novos/alterados: verde, zero warnings.
+- regressão anterior, excluindo apenas as sete suítes RED: 76 suítes e 429 testes verdes.
+- nenhum teste anterior foi removido, ignorado ou relaxado; `git diff --check` verde.
+- nenhum código funcional, dependência, Supabase, migration, dado, commit, push, PR ou deploy executado.
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
