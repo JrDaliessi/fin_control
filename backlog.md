@@ -14,12 +14,25 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: SR-013, UI-003 e SP-001 concluídos.
 - Risco: Médio por bundle cliente, hidratação e acessibilidade de visualização financeira.
-- Fase atual: Dia 3 concluído; 4 contratos essenciais estão em GREEN e a integração mínima do painel com a ilha está funcional.
-- Small releases internas: `SR-014A` integração mínima test-first; `SR-014B` UX, bundle, browser e hardening.
+- Fase atual: Dia 4 concluído; integração mínima e expansão universal estão funcionais e cobertas por testes.
+- Small releases internas: `SR-014A` integração mínima test-first; `SR-014B` expansão universal, UX, bundle, browser e hardening.
 - Critério de pronto: gráfico e tabela simultâneos em `/` e `/dashboard`; estados tratados; RSC e uma leitura preservados; props serializáveis; ECharts ausente de rotas não relacionadas; testes, browser, bundle e pipeline verdes.
-- Próximo passo: executar `dia 4` para expandir estados e composição de forma controlada, incluindo os contratos adicionais de experiência sem alterar regras financeiras.
+- Próximo passo: executar `dia 5` para refatoração e hardening interno da integração e da primitive compartilhada.
 - ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
 - Status: IN_PROGRESS
+
+### UX-CHART-001 — Expansão universal de gráficos
+- Tipo: Small Release / UX Improvement transversal
+- Descrição objetiva: permitir ampliar qualquer gráfico por uma primitive cliente reutilizável, com overlay CSS e Fullscreen API progressiva.
+- Objetivo de negócio: facilitar leitura detalhada de séries financeiras em telas pequenas e densas.
+- Valor esperado: comportamento consistente no gráfico de linha e nos futuros candles e histogramas.
+- Prioridade: Alta
+- Dependências: SP-001 concluído e SR-014A funcional.
+- Risco: Médio por foco, scroll, fullscreen assíncrono, cleanup e resize do renderer.
+- Fase atual: Dia 4 concluído; primitive e primeiro consumidor implementados em TDD, com pipeline e bundle validados.
+- Critério de pronto: expandir/recolher, fallback sem API nativa, `Escape`, foco e scroll restaurados, mesma instância do gráfico, contratos acessíveis e pipeline verde.
+- ADR: `adr/0014-expandable-chart-frame.md`.
+- Status: IN_PROGRESS até hardening, browser e quality gate final
 
 ## DISCOVERY
 

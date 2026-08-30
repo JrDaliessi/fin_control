@@ -111,6 +111,7 @@
 - Data do discovery e arquitetura da SR-014: 2026-08-30
 - Data da estratégia de testes e RED controlado da SR-014: 2026-08-30
 - Data da implementação mínima orientada por teste da SR-014: 2026-08-30
+- Data da expansão controlada e fullscreen universal da SR-014: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -963,6 +964,9 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: após tipar `this` nos doubles de fullscreen do Dia 4 da SR-014, o harness continuou violando `@typescript-eslint/no-this-alias` ao atribuir o receptor a uma variável externa. Prevenção: testes de APIs DOM devem capturar explicitamente o elemento renderizado e fechá-lo no mock, evitando dependência implícita de `this` quando a identidade do alvo já pode ser consultada de forma acessível.
+- Erro: os primeiros doubles de `requestFullscreen()` do Dia 4 da SR-014 dependeram do `this` fornecido pela chamada de método, mas não declararam seu tipo, fazendo o type-check falhar com `TS2683` apesar do GREEN comportamental. Prevenção: mocks de métodos nativos que inspecionam o receptor devem declarar explicitamente `this: HTMLElement` (ou o elemento compatível) na implementação, mantendo o contrato DOM e `noImplicitThis` verdes.
+- Erro: no primeiro GREEN do Dia 4 da SR-014, a integração do frame expansível acrescentou `h-full` ao atributo de classes do container ECharts e rompeu o marcador estático existente que protege `min-h-72 w-full`, embora o comportamento visual pretendido fosse compatível. Prevenção: antes de alterar classes protegidas, pesquisar contratos estáticos transversais; preservar a classe-base aprovada e expressar o preenchimento contextual por estilo ou container externo, sem relaxar a asserção existente.
 - Erro: ao inspecionar o relatório `next experimental-analyze` no Dia 3 da SR-014, a IA presumiu que `analyze.data` continha um único JSON após um cabeçalho fixo de quatro bytes; o arquivo usa framing adicional e o `ConvertFrom-Json` rejeitou bytes posteriores ao primeiro documento. Prevenção: tratar artefatos internos do analyzer como formato opaco, usar os relatórios/manifestos públicos e buscas binárias somente para presença por rota, ou empregar parser oficial antes de extrair métricas; não inferir tamanho de bundle pelo tamanho do arquivo `.data`.
 - Erro: no primeiro GREEN ampliado do Dia 3 da SR-014, a suíte `DashboardRoutes.test.tsx` carregou as páginas server-side com `jest.requireActual()` sem mockar a nova ilha `FinancialEvolutionChart.client`, fazendo o Jest tentar interpretar o ESM real de `echarts/charts` antes de executar os testes. Prevenção: todo teste de composição ou rota que atravesse `FinancialEvolutionPanel` deve registrar o mock da ilha cliente antes de carregar a página, mantendo ECharts real restrito às suítes específicas da ilha e ao build; pesquisar consumidores server-side ao integrar uma nova fronteira cliente.
 - Erro: ao retomar o RED direcionado do Dia 2 da SR-014, a IA enviou caminhos Windows em uma string JavaScript comum, fazendo sequências como `\n`, `\b`, `\f` e `\t` corromperem o comando antes da criação do processo. Prevenção: ao orquestrar PowerShell pelo executor JavaScript, usar `String.raw` para comandos e caminhos Windows com barras invertidas, validando que o processo realmente iniciou antes de interpretar o resultado como evidência do projeto.
@@ -5839,3 +5843,78 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - SR-014 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 4`
+
+## Mudança de Escopo Aprovada — UX-CHART-001 no Dia 4 da SR-014
+
+Solicitação aprovada:
+- todos os gráficos atuais e futuros devem oferecer expansão para ocupar a tela
+- a primeira entrega ocorrerá na `SR-014B`, usando o gráfico de evolução como consumidor real
+
+Impacto arquitetural:
+- criar uma primitive cliente compartilhada de presentation, sem ECharts ou semântica financeira
+- manter `FinancialEvolutionPanel` server-side e o view model serializável existente
+- reutilizar a mesma instância ECharts e o `ResizeObserver`; não duplicar o gráfico em modal ou portal
+- usar overlay CSS como baseline e Fullscreen API como melhoria progressiva
+- preservar tabela equivalente, foco, teclado, cleanup, movimento reduzido e controle do usuário
+
+Escopo permitido no Dia 4:
+- registrar `UX-CHART-001` e ADR 0014
+- criar testes antes da implementação
+- implementar expandir/recolher, fallback, `Escape`, foco e scroll
+- integrar somente o gráfico de evolução como primeiro consumidor
+- executar regressão, lint, type-check e build
+
+Fora do escopo:
+- alterar gráficos futuros ainda inexistentes
+- regras financeiras, DTOs, data fetching, Supabase, migrations ou dependências
+- forçar orientação, duplicar instância ECharts ou remover a tabela
+- validação final de mobile/acessibilidade, reservada ao Dia 6
+
+Estado durante a execução:
+- `IMPLEMENTATION_IN_PROGRESS`
+- Dia 4 aprovado; TDD obrigatório antes do código funcional
+
+## Dia 4 — Expansão Controlada da SR-014 com UX-CHART-001
+
+Incremento entregue:
+- `ExpandableChartFrame.client.tsx` criado como primitive compartilhada e independente de provider
+- overlay CSS ocupa o viewport como baseline; Fullscreen API nativa é solicitada somente quando disponível
+- rejeição ou indisponibilidade da API mantém o overlay funcional
+- botão único alterna expandir/recolher, preserva foco e oferece rótulos acessíveis
+- `Escape` fecha o fallback; `fullscreenchange` sincroniza a saída controlada pelo navegador
+- scroll do documento é bloqueado apenas durante a expansão e restaurado no fechamento ou unmount
+- focus trap impede navegação por teclado para controles atrás do diálogo
+- o mesmo nó e a mesma instância ECharts são preservados; `ResizeObserver` continua responsável pelo resize
+- dois frames mantêm estado independente
+
+TDD observado:
+- RED inicial: 3 suítes falharam; 2 testes falharam e 22 passaram, enquanto a nova suíte não carregou porque a primitive ainda não existia
+- primeiro GREEN: 31 de 32 testes passaram; um contrato estático antigo detectou alteração indevida na classe-base do viewport
+- a classe-base foi preservada sem relaxar o teste e o comportamento de altura expandida foi mantido
+- revisão React encontrou ausência de focus trap; novo RED reproduziu 1 falha em 9 testes da primitive
+- GREEN direcionado final: 3 suítes e 33 testes verdes
+- regressão completa: 76 suítes e 428 testes verdes
+- lint global com 0 warnings e type-check verdes
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados
+
+Bundle:
+- analyzer de produção verde
+- ECharts/ZRender continua somente nos manifests cliente de `/` e `/dashboard`
+- chunk anterior: 500.653 bytes brutos e 170.071 bytes gzip
+- chunk atual: 503.674 bytes brutos e 171.266 bytes gzip
+- delta do incremento: +3.021 bytes brutos e +1.195 bytes gzip
+- `/login`, `/accounts`, `/categories` e `/transactions` permanecem sem referência ao chunk
+
+Arquitetura e governança:
+- ADR 0014 registra a decisão universal para gráficos atuais e futuros
+- `FinancialEvolutionChart.client.tsx` é o primeiro consumidor; gráficos inexistentes não foram antecipados
+- `FinancialEvolutionPanel`, mapper, model, option builder, adapter, domain, application, infrastructure e Supabase não mudaram
+- nenhuma dependência, migration, orientação forçada, duplicação de dados ou nova fonte de leitura foi introduzida
+- revisão `vercel:react-best-practices` confirmou callbacks estáveis, listeners condicionais, cleanup e ausência de dados duplicados
+- validação visual real, mobile e acessibilidade aprofundada permanecem reservadas ao Dia 6
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até hardening e validação final
+- próximo comando válido: `dia 5`

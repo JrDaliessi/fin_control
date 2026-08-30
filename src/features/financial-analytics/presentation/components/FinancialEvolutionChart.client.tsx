@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { ExpandableChartFrame } from "@/shared/components/charts/ExpandableChartFrame.client";
 import type { FinancialEvolutionChartModel } from "../charts/financial-evolution-chart.model";
 import {
   buildFinancialEvolutionOption,
@@ -158,26 +159,31 @@ export function FinancialEvolutionChart({
     );
   }
 
-  return (
-    <div className="grid gap-2">
-      <p className="sr-only" id={descriptionId}>
-        Visualização complementar. Os mesmos valores permanecem disponíveis na
-        tabela de evolução financeira.
+  if (initializationFailed) {
+    return (
+      <p className="text-sm text-muted-foreground" role="status">
+        Não foi possível carregar o gráfico. Consulte a tabela de evolução
+        financeira.
       </p>
-      {initializationFailed ? (
-        <p className="text-sm text-muted-foreground" role="status">
-          Não foi possível carregar o gráfico. Consulte a tabela de evolução
-          financeira.
+    );
+  }
+
+  return (
+    <ExpandableChartFrame title="Evolução do saldo">
+      <div className="grid h-full min-h-0 gap-2">
+        <p className="sr-only" id={descriptionId}>
+          Visualização complementar. Os mesmos valores permanecem disponíveis na
+          tabela de evolução financeira.
         </p>
-      ) : (
         <div
           aria-describedby={descriptionId}
           aria-label="Evolução do saldo por dia"
           className="min-h-72 w-full"
           ref={attachChart}
           role="img"
+          style={{ height: "100%" }}
         />
-      )}
-    </div>
+      </div>
+    </ExpandableChartFrame>
   );
 }

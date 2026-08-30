@@ -218,7 +218,9 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Novo ciclo em andamento: Dia 3 da `SR-014 — Gráfico de linha da evolução` concluído em `IMPLEMENTATION_IN_PROGRESS`. Os quatro contratos essenciais estão em GREEN, com painel server-side, ilha ECharts e tabela acessível integrados.
+Novo ciclo em andamento: Dia 4 da `SR-014 — Gráfico de linha da evolução` concluído em `IMPLEMENTATION_IN_PROGRESS`. O gráfico está integrado e expansível por uma primitive compartilhada, com fullscreen progressivo e tabela acessível preservada.
+
+Mudança transversal entregue no Dia 4: `UX-CHART-001` criou um frame expansível reutilizável com overlay CSS e Fullscreen API progressiva. O gráfico de evolução é o primeiro consumidor; candles e histogramas futuros deverão adotar o mesmo contrato em suas próprias releases.
 
 Integrações posteriores:
 
@@ -239,9 +241,9 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003 e SP-001 concluídos; Dia 3 da SR-014 concluído. A linha do saldo está integrada ao Server Component com view model plano, tabela equivalente e chunk ECharts isolado em `/` e `/dashboard`.
+Estado atual: SR-013, UI-003 e SP-001 concluídos; Dia 4 da SR-014 concluído. A linha do saldo está integrada, expansível e isolada em `/` e `/dashboard`, sem duplicação de dados ou renderer.
 
-Próximo passo recomendado: executar o Dia 4 da SR-014 para expansão controlada dos estados e da composição. Browser, UX e acessibilidade continuam critérios obrigatórios antes do Dia 7.
+Próximo passo recomendado: executar o Dia 5 da SR-014 para refatoração e hardening interno. Browser, UX e acessibilidade continuam critérios obrigatórios no Dia 6.
 
 ## Marco 10 - Candles Financeiros
 

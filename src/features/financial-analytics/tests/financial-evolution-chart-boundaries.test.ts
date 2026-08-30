@@ -117,6 +117,33 @@ describe("financial evolution chart architecture", () => {
     expect(panel).not.toMatch(/from ["']echarts(?:\/|["'])/);
   });
 
+  it("requires chart islands to use the provider-neutral expandable frame", () => {
+    const chartIsland = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialEvolutionChart.client.tsx"
+      ),
+      "utf-8"
+    );
+    const expandableFrame = readFileSync(
+      join(
+        process.cwd(),
+        "src",
+        "shared",
+        "components",
+        "charts",
+        "ExpandableChartFrame.client.tsx"
+      ),
+      "utf-8"
+    );
+
+    expect(chartIsland).toContain("ExpandableChartFrame");
+    expect(expandableFrame).not.toMatch(/echarts|supabase/i);
+    expect(expandableFrame).not.toContain("FinancialEvolution");
+  });
+
   it("keeps the client island independent from data sources and offline claims", () => {
     const clientIsland = readFileSync(
       join(

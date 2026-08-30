@@ -411,6 +411,16 @@ O projeto deve ter:
 - Não há nova leitura cliente, Route Handler, Server Action, Suspense artificial, cache, Supabase, migration ou mudança de regra financeira.
 - Decisão completa: `adr/0013-financial-evolution-line-chart-integration.md`.
 
+## Expansão universal de gráficos — UX-CHART-001
+
+- `ExpandableChartFrame.client.tsx` é uma primitive de presentation compartilhada; não conhece ECharts, DTOs ou regras financeiras.
+- O frame preserva o mesmo elemento e a mesma instância do gráfico ao alternar entre fluxo normal e overlay de viewport.
+- Fullscreen nativo é melhoria progressiva; overlay CSS, botão de saída, `Escape`, foco e scroll formam o contrato mínimo.
+- Componentes de gráficos futuros compõem a primitive dentro de suas ilhas cliente, sem ampliar a fronteira de dados Server → Client.
+- A tabela equivalente permanece fora do frame e não pode ser removida pelo modo expandido.
+- Nenhuma dependência, orientação forçada ou abstração de domínio é introduzida.
+- Decisão completa: `adr/0014-expandable-chart-frame.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações

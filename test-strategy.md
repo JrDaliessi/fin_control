@@ -717,6 +717,39 @@ Estado de saída: `TEST_STRATEGY_READY`.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## Matriz Adicional Aprovada para o Dia 4 — UX-CHART-001
+
+| Área | Contratos antes da implementação |
+| --- | --- |
+| estado | normal, expandido, API nativa indisponível e solicitação rejeitada |
+| teclado | botão acessível, `Escape` no fallback e saída nativa sincronizada por `fullscreenchange` |
+| foco | foco movido ao controle de saída e restaurado ao controle de abertura |
+| scroll | scroll do documento bloqueado somente durante expansão e restaurado no fechamento/unmount |
+| lifecycle | listeners removidos, mesma instância do gráfico e `ResizeObserver` acionado pelo novo tamanho |
+| independência | dois frames não compartilham estado |
+| integração | gráfico de evolução usa a primitive sem duplicar model, ECharts ou fonte de dados |
+| arquitetura | primitive compartilhada não importa ECharts, Supabase, domain ou application |
+
+Implementação bloqueada até a reprodução dos contratos essenciais em RED.
+
+## RED/GREEN do Dia 4 — UX-CHART-001
+
+RED inicial:
+- 3 suítes falharam; 2 testes falharam e 22 passaram
+- a nova suíte da primitive não carregou porque o componente ainda não existia
+- gráfico atual não oferecia controle de expansão e o contrato arquitetural não encontrou o frame
+
+GREEN e refino:
+- primeiro GREEN: 31/32 testes; regressão estática de classe-base corrigida sem relaxar contrato
+- revisão React originou novo RED para focus trap: 1 falha e 8 testes verdes na suíte da primitive
+- GREEN direcionado final: 3 suítes e 33 testes verdes
+- regressão completa: 76 suítes e 428 testes verdes
+- lint global, type-check, build e analyzer verdes
+- expansão preserva o mesmo nó e uma única instância ECharts
+- overlay, API nativa, rejeição, `Escape`, `fullscreenchange`, foco, scroll, cleanup e independência estão cobertos
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

@@ -1383,3 +1383,22 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado e `rewrite-msgs.sh` preservado fora do escopo.
 - nenhuma validação visual, deploy, commit, push ou atualização de PR foi executada.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — SR-014 / UX-CHART-001
+
+- mudança de escopo documentada em contexto, arquitetura, roadmap, backlog, estratégia e ADR 0014 antes do código.
+- testes essenciais criados em RED antes da primitive e da integração.
+- `ExpandableChartFrame.client.tsx` não importa ECharts, Supabase, domain ou application.
+- fallback CSS, API nativa, rejeição, saída, foco, scroll, focus trap, cleanup e múltiplos frames cobertos.
+- integração mantém a mesma instância ECharts e o `ResizeObserver` existente.
+- GREEN direcionado final: 3 suítes e 33 testes.
+- regressão completa: 76 suítes e 428 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3`: verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; delta de +3.021 bytes brutos e +1.195 bytes gzip.
+- revisão `vercel:react-best-practices`: callbacks estáveis, listeners condicionais, cleanup explícito e sem duplicação de dados/renderers.
+- nenhuma dependência, Supabase, migration, regra financeira, orientação forçada ou gráfico futuro foi criado.
+- validação visual/browser e acessibilidade aprofundada permanecem para o Dia 6.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhum commit, push, deploy ou atualização de PR foi executado nesta fase.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
