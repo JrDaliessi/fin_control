@@ -18,6 +18,19 @@ export type FinancialEvolutionPoint = Readonly<{
   transactionCount: number;
 }>;
 
+export type FinancialCandle = Readonly<{
+  startOnInclusive: string;
+  endOnExclusive: string;
+  openInCents: number;
+  highInCents: number;
+  lowInCents: number;
+  closeInCents: number;
+  incomeInCents: number;
+  expenseInCents: number;
+  volumeInCents: number;
+  transactionCount: number;
+}>;
+
 export type FinancialEvolutionSnapshot = Readonly<{
   accountCount: number;
   openingBalanceInCents: number;

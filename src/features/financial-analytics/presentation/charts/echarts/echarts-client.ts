@@ -1,4 +1,4 @@
-import { LineChart } from "echarts/charts";
+import { CandlestickChart, LineChart } from "echarts/charts";
 import {
   AriaComponent,
   GridComponent,
@@ -7,9 +7,11 @@ import {
 import { init, use as registerEChartsModules } from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import type { FinancialEvolutionChartOption } from "./build-financial-evolution-option";
+import type { FinancialCandlestickChartOption } from "./build-financial-candlestick-option";
 
 registerEChartsModules([
   LineChart,
+  CandlestickChart,
   AriaComponent,
   GridComponent,
   TooltipComponent,
@@ -17,7 +19,9 @@ registerEChartsModules([
 ]);
 
 export type FinancialEvolutionChartInstance = Readonly<{
-  setOption: (option: FinancialEvolutionChartOption) => void;
+  setOption: (
+    option: FinancialEvolutionChartOption | FinancialCandlestickChartOption
+  ) => void;
   resize: () => void;
   dispose: () => void;
 }>;

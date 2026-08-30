@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-015 concluído; sete suítes e fixtures definem o RED controlado antes da implementação OHLC
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-015 concluído; agregação OHLC, DTO, seletor, gráfico e tabela estão integrados com pipeline local verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -118,6 +118,7 @@
 - Data de seleção da SR-015 como próximo ciclo: 2026-08-30
 - Data do discovery e arquitetura da SR-015: 2026-08-30
 - Data da estratégia de testes e RED controlado da SR-015: 2026-08-30
+- Data da implementação mínima orientada por teste da SR-015: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -970,6 +971,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: o Dia 2 da SR-015 adicionou os novos contratos específicos, mas não atualizou fixtures tipadas, mocks server-side e o boundary transversal da SR-014 para a responsabilidade aprovada do `FinancialVisualizationSwitcher`; a regressão ampliada encontrou o drift somente no Dia 3. Prevenção: ao introduzir uma nova fronteira cliente ou mover a composição entre componentes, pesquisar e adaptar no RED todos os consumidores, fixtures e scanners arquiteturais existentes antes de considerar a estratégia de testes concluída.
+- Erro: os contratos TDD criados no Dia 2 da SR-015 usaram `structuredClone` e espionaram `globalThis.fetch`, mas o ambiente `jest-environment-jsdom` do projeto não expunha essas APIs, produzindo quatro falsos negativos após o primeiro GREEN funcional. Prevenção: quando um teste depender de APIs globais do runtime, confirmar sua presença no ambiente Jest durante o RED e centralizar polyfills determinísticos em `tests/setupTests.ts`, sem mascarar chamadas de rede inesperadas.
 - Erro: na inspeção inicial do Dia 1 da SR-015, a IA presumiu nomes inexistentes para um ADR e para um DTO antes de confirmar a árvore real; as leituras falharam sem alterar o projeto. Prevenção: resolver caminhos com `rg --files` antes de abrir artefatos cuja localização não foi confirmada, especialmente após retomadas por contexto resumido.
 - Erro: no Dia 7 da SR-014, após consultar as dependências empacotadas, a IA presumiu que o diretório Node informado também continha `node_modules/npm/bin/npm-cli.js`; o bundle atual expõe Node 24 e não possui esse arquivo, enquanto o projeto exige Node 22. Prevenção: tratar os caminhos retornados como artefatos independentes, validar existência e versão antes de invocar e resolver explicitamente uma runtime compatível com `engines`, sem derivar o caminho do npm a partir do caminho do Node.
 - Erro: após tipar `this` nos doubles de fullscreen do Dia 4 da SR-014, o harness continuou violando `@typescript-eslint/no-this-alias` ao atribuir o receptor a uma variável externa. Prevenção: testes de APIs DOM devem capturar explicitamente o elemento renderizado e fechá-lo no mock, evitando dependência implícita de `this` quando a identidade do alvo já pode ser consultada de forma acessível.
@@ -6190,3 +6193,50 @@ Estado de saída:
 - `TEST_STRATEGY_READY`
 - SR-015 permanece `IN_PROGRESS`
 - implementação permanece bloqueada até aprovação explícita do `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-015
+
+Small release implementada: `SR-015A — Agregação OHLC, DTO e mapper`, com a integração mínima da `SR-015B` necessária para o fluxo funcional.
+
+Implementação entregue:
+- `FinancialCandle` e `aggregateFinancialCandles` validam período, IDs, instantes, tipos, valores e inteiros seguros;
+- movimentos são ordenados em cópia por data civil, `createdAt` e `id`, preservando o input;
+- todos os dias do período recebem OHLC, totais, volume absoluto e quantidade, incluindo dias vazios e saldos negativos;
+- `ListFinancialEvolutionUseCase` deriva linha e candles do mesmo `FinancialEvolutionSnapshot` e mantém exatamente uma chamada ao repository;
+- DTO, model e mapper transportam somente valores planos e serializáveis;
+- ECharts registra `CandlestickChart` no adapter modular existente e usa tuplas `[open, close, low, high]`;
+- painel permanece Server Component e entrega os dois modelos ao seletor cliente;
+- seletor usa linha como padrão, alterna localmente sem rede e monta somente gráfico/tabela ativos;
+- tabela OHLC expressa alta, queda e estabilidade em texto e explica que extremos seguem a ordem de registro;
+- o novo gráfico reutiliza `ExpandableChartFrame`, movimento reduzido, cores forçadas, tema e fallback textual.
+
+Evidência TDD e correções de harness:
+- primeiro GREEN funcional: 37 de 41 contratos passaram; quatro falsos negativos vieram de APIs globais ausentes no jsdom;
+- `tests/setupTests.ts` passou a fornecer clones determinísticos e um `fetch` que falha explicitamente quando chamado;
+- fixtures tipadas, mocks server-side e o boundary transversal foram alinhados à responsabilidade aprovada do seletor;
+- ambas as falhas de harness foram documentadas em Erros Recorrentes antes da correção;
+- GREEN direcionado final: sete suítes e 41 testes;
+- GREEN transversal: três suítes e 26 testes;
+- regressão completa: 83 suítes e 470 testes, sem snapshots.
+
+Quality gates locais:
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde, com todas as rotas e Proxy preservados;
+- `next experimental-analyze --output` verde;
+- único chunk ECharts/ZRender com 525.017 bytes brutos e 179.024 bytes gzip, delta de +20.997/+7.437 bytes sobre a baseline da SR-014;
+- chunk continua referenciado somente nos manifests cliente de `/` e `/dashboard`;
+- `git diff --check` verde; `next-env.d.ts` gerado pelo build foi restaurado ao conteúdo versionado;
+- revisão `vercel:nextjs` e `vercel:react-best-practices` confirmou Server Component, props serializáveis, ausência de fetch cliente, estado derivado e imports diretos.
+
+Riscos, pendências e escopo preservado:
+- custo incremental do candlestick é controlado e não justifica `next/dynamic` ou wrapper adicional neste recorte;
+- duplicação do ciclo de vida entre as duas ilhas ECharts foi registrada para avaliação no Dia 5, sem abstração prematura;
+- estados, teclado, mobile, alto contraste e comportamento visual real devem ser aprofundados nos Dias 4 e 6;
+- nenhum Supabase, RPC, migration, RLS, dado, dependência, período novo, recurso de trading, deploy, commit, push ou PR foi executado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-015 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`

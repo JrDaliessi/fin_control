@@ -1500,3 +1500,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, dependência, Supabase, migration, dado, commit, push, PR ou deploy executado.
 - `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — SR-015
+
+- contexto central, workflow e skills `vercel:nextjs`/`vercel:react-best-practices` consultados; declaração operacional aprovada antes do código.
+- agregador OHLC puro, tipo, DTO, mapper, builder ECharts, registro modular, gráfico, tabela, seletor e painel server-side implementados.
+- uma única chamada ao repository preservada; linha e candles derivam o mesmo snapshot, sem nova consulta ou migration.
+- primeiro GREEN: 37/41 contratos; quatro falsos negativos do jsdom foram registrados antes do polyfill compartilhado.
+- fixtures, mocks server-side e boundary transversal desatualizados foram registrados antes do alinhamento à arquitetura aprovada.
+- GREEN direcionado final: 7 suítes e 41 testes; GREEN transversal: 3 suítes e 26 testes.
+- regressão completa: 83 suítes e 470 testes verdes; zero snapshots.
+- lint global: verde com zero warnings; type-check: verde.
+- build Next.js `16.3.3` com Turbopack: verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; chunk com 525.017 bytes brutos e 179.024 bytes gzip, delta de +20.997/+7.437 bytes.
+- revisão React/Next: painel server-side, props planas serializáveis, estado local derivado, sem fetch ou persistência cliente e imports diretos.
+- `TECH-CHART-002` registra para o Dia 5 a avaliação da duplicação entre ciclos de vida das ilhas, sem abstração prematura no Dia 3.
+- nenhum Supabase, RPC, migration, RLS, dado, dependência, recurso de trading, deploy, commit, push ou PR executado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; `git diff --check` verde.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.

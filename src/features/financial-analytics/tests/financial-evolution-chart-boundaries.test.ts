@@ -84,7 +84,7 @@ describe("financial evolution chart architecture", () => {
     expect(adapter).not.toMatch(/from ["']echarts["']/);
   });
 
-  it("preserves the server panel and its accessible table", () => {
+  it("preserves the server panel and delegates its accessible table", () => {
     const panel = readFileSync(
       join(
         analyticsRoot,
@@ -96,10 +96,22 @@ describe("financial evolution chart architecture", () => {
     );
 
     expect(panel).not.toMatch(/^["']use client["'];?/m);
-    expect(panel).toContain("FinancialEvolutionTable");
+    expect(panel).toContain("FinancialVisualizationSwitcher");
+
+    const switcher = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialVisualizationSwitcher.client.tsx"
+      ),
+      "utf-8"
+    );
+
+    expect(switcher).toContain("FinancialEvolutionTable");
   });
 
-  it("requires the server panel to own the approved chart integration", () => {
+  it("requires the server panel to own the serializable chart models", () => {
     const panel = readFileSync(
       join(
         analyticsRoot,
@@ -111,8 +123,7 @@ describe("financial evolution chart architecture", () => {
     );
 
     expect(panel).toContain("toFinancialEvolutionChartModel");
-    expect(panel).toContain("FinancialEvolutionChart");
-    expect(panel).toContain("Evolução do saldo");
+    expect(panel).toContain("FinancialVisualizationSwitcher");
     expect(panel).not.toContain("next/dynamic");
     expect(panel).not.toMatch(/from ["']echarts(?:\/|["'])/);
   });

@@ -15,9 +15,9 @@ jest.mock("@/app/(private)/dashboard/load-financial-evolution", () => ({
 }));
 
 jest.mock(
-  "../../financial-analytics/presentation/components/FinancialEvolutionChart.client",
+  "../../financial-analytics/presentation/components/FinancialVisualizationSwitcher.client",
   () => ({
-    FinancialEvolutionChart: () => null
+    FinancialVisualizationSwitcher: () => null
   })
 );
 
@@ -66,7 +66,8 @@ const financialEvolutionResult = {
     closingBalanceInCents: 2_500,
     transactionCount: 0
   },
-  points: []
+  points: [],
+  candles: []
 };
 
 describe("dashboard routes", () => {

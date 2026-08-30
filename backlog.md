@@ -14,11 +14,11 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Media
 - Dependencias: SR-013, SR-014, saldo inicial, ordenacao estavel e ADRs 0010 a 0015.
 - Risco: Alto; máxima/mínima usam ordem de registro dentro da data civil e não horário bancário inexistente.
-- Fase recomendada: ciclo atual; Dia 2 concluído em RED controlado, próximo passo Dia 3.
+- Fase recomendada: ciclo atual; Dia 3 concluído com pipeline local verde, próximo passo Dia 4.
 - Critério de pronto: OHLC e vazios testados; uma leitura por request; seletor Linha/Candles; tabela/tooltip equivalentes; expansão, acessibilidade, mobile, bundle e pipeline verdes; nenhum recurso de trading.
 - Feature backlog:
-  - `SR-015A`: sete suítes/fixtures em RED para agregador puro, ordem/overflow/vazios, DTO, mapper e contratos essenciais de presentation; implementação bloqueada até o Dia 3.
-  - `SR-015B`: seletor, candlestick modular, tabela OHLC, estados, frame expansível e gates de UX/bundle.
+  - `SR-015A`: agregador puro, ordem/overflow/vazios, DTO e mapper concluídos com os contratos verdes.
+  - `SR-015B`: seletor, candlestick modular, tabela OHLC e frame expansível integrados; estados, UX e validação visual seguem no Dia 4 em diante.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -333,6 +333,16 @@ Nenhum item pronto aguardando início no momento.
 Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial e sem decisão de provedor.
 
 ## DÍVIDA TÉCNICA
+
+### TECH-CHART-002 — Avaliar ciclo de vida compartilhado das ilhas ECharts
+- Tipo: Dívida Técnica / Refatoração
+- Descrição objetiva: `FinancialEvolutionChart` e `FinancialCandlestickChart` repetem inicialização, resize, tema, preferências visuais e cleanup.
+- Impacto: manutenção duplicada e risco moderado de drift quando uma terceira visualização for adicionada.
+- Severidade: MÉDIA.
+- Risco de adiar: baixo durante a SR-015; cresce somente com novos consumidores.
+- Fase recomendada: Dia 5 da SR-015, mediante plano incremental e regressão verde.
+- Critério de pronto: decidir com evidência entre manter duplicação explícita ou extrair hook interno tipado, sem criar `ChartPort` genérico nem alterar comportamento.
+- Status: DISCOVERY
 
 ### SEC-DEPS-001 — Atualizar dependências com vulnerabilidades altas
 - Tipo: Security Item / Dívida Técnica

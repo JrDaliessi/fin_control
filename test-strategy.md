@@ -1626,3 +1626,16 @@ Implementação bloqueada até o Dia 3:
 - integração do painel server-side.
 
 Estado de saída: `TEST_STRATEGY_READY`.
+
+## GREEN executado no Dia 3 — SR-015 Candles Financeiros
+
+- os 41 contratos planejados nas sete suítes da SR-015 passaram;
+- agregador cobre continuidade, ordem estável, imutabilidade, saldos negativos, calendário, validação e overflow;
+- caso de uso prova uma leitura por request e candles corretos nos três estados;
+- mapper, option builder, tabela, seletor e boundaries passaram sem rede ou dependência de cor;
+- quatro falsos negativos iniciais por globais ausentes no jsdom foram corrigidos no setup compartilhado após registro no contexto;
+- contratos transversais antigos foram alinhados à nova responsabilidade do seletor após registro do drift;
+- regressão completa final: 83 suítes e 470 testes verdes;
+- lint, type-check, build e analyzer verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
