@@ -630,6 +630,51 @@ Contratos adiados deliberadamente para a SR-014:
 
 Critério observado: o SP-001 está `DONE`; a dependência foi aceita para uso controlado e a SR-014 deve iniciar novamente pelo Dia 1 antes de qualquer integração.
 
+## Matriz planejada no Dia 1 — SR-014
+
+Objetivo: integrar o gráfico aprovado ao painel real sem criar código funcional antes dos testes essenciais.
+
+| Camada | Alvo | Contratos a materializar em RED no Dia 2 |
+| --- | --- | --- |
+| application/domain | `FinancialEvolutionDto` e pontos | nenhuma regra nova; datas civis, ordem, centavos, saldo negativo e linha plana permanecem cobertos pelas suítes existentes |
+| presentation server | `FinancialEvolutionPanel` | permanece sem `use client`; mapeia DTO; renderiza heading, gráfico e tabela em `success`/`empty`; omite ambos em `missing_accounts` |
+| presentation client | `FinancialEvolutionChart` | recebe somente model plano; fallback local não remove a tabela; lifecycle herdado continua verde |
+| route | `/` e `/dashboard` | mesma composition root, uma única chamada de `loadFinancialEvolution` e nenhuma leitura cliente adicional |
+| arquitetura | fronteiras | ECharts confinado; sem Supabase/fetch/storage na ilha; sem import do pacote em Server Components |
+| bundle | chunks por rota | ECharts presente apenas em `/` e `/dashboard`; baseline e delta documentados após o GREEN |
+| acessibilidade | gráfico + tabela | heading de nível 3, imagem nomeada/descrita, tabela visível e equivalente, movimento reduzido e alto contraste preservados |
+
+Cenário feliz:
+- um usuário com contas e movimentos abre o dashboard; o servidor carrega um DTO, o painel mostra resumo, linha do saldo e tabela diária a partir desse mesmo resultado.
+
+Cenários alternativos:
+- conta sem movimentos no período gera linha plana, feedback honesto e tabela de saldos;
+- ausência de contas mantém apenas o onboarding existente;
+- falha de inicialização do ECharts mostra fallback e preserva a tabela;
+- saldo negativo permanece inteiro e visualmente identificável sem depender apenas de cor.
+
+Edge cases:
+- um único ponto e até 31 pontos;
+- datas atravessando mês ou ano;
+- valor zero e saldo negativo;
+- viewport de 320 px e valores monetários longos;
+- movimento reduzido, forced colors e troca de tema;
+- ECharts vazando para rotas não relacionadas;
+- suite server-side carregando ESM real antes do mock da ilha.
+
+Estratégia de harness:
+- mockar a ilha cliente antes de carregar `FinancialEvolutionPanel` nos testes de composição, evitando executar ESM do ECharts no Jest server-side;
+- reutilizar as suítes do SP-001 para lifecycle/option builder sem duplicar seus contratos;
+- adicionar somente contratos de integração, rota, acessibilidade conjunta e bundle que ainda não existem.
+
+Implementação bloqueada até o Dia 3:
+- importar mapper ou ilha em `FinancialEvolutionPanel`;
+- criar card/heading do gráfico;
+- alterar layout, estados ou composição da rota;
+- qualquer mudança em Supabase, DTO, domínio, application ou infrastructure.
+
+Estado planejado após o Dia 2: `TEST_STRATEGY_READY`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

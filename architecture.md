@@ -398,6 +398,19 @@ O projeto deve ter:
 - Não existe `ChartPort` genérico nesta fase; nova abstração depende de segundo consumidor real.
 - Decisão completa: `adr/0012-chart-library-presentation-adapter.md`.
 
+## Gráfico de linha da evolução — SR-014
+
+- `composeDashboardRoute` continua sendo a composition root server-side compartilhada por `/` e `/dashboard` e realiza uma única leitura financeira.
+- `FinancialEvolutionPanel` permanece Server Component e converte `FinancialEvolutionDto` por `toFinancialEvolutionChartModel` antes da fronteira cliente.
+- `FinancialEvolutionChart.client.tsx` recebe somente um view model plano com datas civis e saldos de fechamento em centavos; não recebe identidade, token, funções, classes ou objetos `Date`.
+- O painel integra diretamente a ilha cliente aprovada. Um segundo wrapper com `next/dynamic` e `ssr: false` só pode surgir se build ou medição de bundle demonstrarem necessidade concreta.
+- O gráfico renderiza nos estados `success` e `empty`; `missing_accounts` continua sem gráfico ou tabela. Falha de dados usa o error boundary da rota, enquanto falha de ECharts preserva a tabela e exibe fallback local.
+- A linha representa apenas saldo de fechamento diário. Receitas, despesas, comparação, previsão, candles, zoom, exportação e semântica de trading permanecem fora.
+- O gráfico fica em card próprio com heading de nível 3 e descrição; a tabela diária continua visível, equivalente e navegável por teclado.
+- ECharts permanece confinado ao adapter de presentation e deve aparecer somente nos chunks cliente de `/` e `/dashboard`; qualquer vazamento para rotas não relacionadas bloqueia a release.
+- Não há nova leitura cliente, Route Handler, Server Action, Suspense artificial, cache, Supabase, migration ou mudança de regra financeira.
+- Decisão completa: `adr/0013-financial-evolution-line-chart-integration.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações

@@ -1333,3 +1333,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma integração no dashboard, SR-014, Supabase, migration, dado, promoção, merge, commit, push ou novo PR foi executado.
 - `git diff --check` verde; `next-env.d.ts` restaurado e `rewrite-msgs.sh` preservado fora do escopo.
 - estado final: `READY_FOR_RELEASE`; SP-001 marcado como `DONE`.
+
+## Gate do Dia 1 — SR-014
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- PR #17 confirmado como squash merge em `develop` no commit `f741e680234f3182bfe6f6d8bc9201bb2baf9927`.
+- `develop` sincronizada por fast-forward e branch `codex/sr-014-financial-evolution-chart` criada da base integrada.
+- DTO, loader, composition root, painel, tabela, mapper, ilha cliente, adapter, testes e ADRs anteriores foram confrontados.
+- escopo limitado a uma linha do saldo de fechamento diário em `/` e `/dashboard`, sem nova fonte de dados ou regra financeira.
+- painel permanece Server Component; mapper roda no servidor; ilha recebe somente view model plano e serializável.
+- estados `success`, `empty`, `missing_accounts`, erro da rota e erro local do chart foram definidos sem inventar loading cliente.
+- tabela visível e equivalente, heading, descrição, alto contraste, movimento reduzido e responsividade permanecem obrigatórios.
+- estratégia de bundle exige ECharts somente nos chunks do dashboard e documenta delta real antes do encerramento.
+- `next/dynamic`, wrapper adicional, múltiplas séries, candles, comparação, previsão, analytics e offline foram excluídos sem evidência/contrato.
+- erro de quoting do PowerShell foi documentado em Erros Recorrentes antes da leitura corrigida com `-LiteralPath`.
+- ADR 0013, arquitetura, backlog, roadmap, estratégia de testes e especificação de produto atualizados.
+- nenhum código funcional, teste executável, dependência, Supabase, migration, dado, commit, push, PR ou deploy foi criado.
+- lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2`.

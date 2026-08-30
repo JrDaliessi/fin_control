@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 do SP-001 concluído; ECharts 6.1.0 e o adapter isolado foram aceitos para a futura SR-014, sem integrar o experimento às rotas
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SR-014 concluído; integração server/client do gráfico de linha definida sem alterar código funcional
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -107,6 +107,8 @@
 - Data da refatoração e hardening do SP-001: 2026-08-30
 - Data da revisão de UX, acessibilidade e PWA do SP-001: 2026-08-30
 - Data da validação final e preparação de release do SP-001: 2026-08-30
+- Data de seleção da SR-014 como próximo ciclo: 2026-08-30
+- Data do discovery e arquitetura da SR-014: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -959,6 +961,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: na inspeção inicial do Dia 1 da SR-014, a IA passou `src/app/(private)/dashboard/compose-dashboard-route.tsx` ao PowerShell sem `-LiteralPath`, e o shell interpretou `(private)` como expressão, interrompendo somente essa leitura. Prevenção: caminhos Windows com parênteses ou outros metacaracteres devem ser passados com `Get-Content -LiteralPath` e aspas, mesmo quando já foram confirmados por `rg --files`.
 - Erro: na auditoria inicial do Dia 6 do SP-001, a IA tentou ler `src/app/manifest.ts` apesar de a descoberta no mesmo comando apontar `public/manifest.webmanifest` como manifesto real. Prevenção: separar descoberta e leitura de artefatos opcionais; somente abrir caminhos confirmados por `rg --files`, sem presumir convenções alternativas do Next.js.
 - Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
 - Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
@@ -5654,3 +5657,88 @@ Estado de saída:
 - `READY_FOR_RELEASE`
 - SP-001 está `DONE`
 - próximo passo recomendado: refinar e iniciar humanamente a `SR-014 — Gráfico de linha da evolução`, começando pelo Dia 1; nenhuma nova fase foi iniciada automaticamente
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-014
+
+Small release: `SR-014 — Gráfico de linha da evolução`.
+
+Entrada e reconciliação:
+- PR #17 do SP-001 confirmado como squash merge na `develop` pelo commit `f741e680234f3182bfe6f6d8bc9201bb2baf9927`
+- `develop` local avançada por fast-forward e branch `codex/sr-014-financial-evolution-chart` criada a partir da base integrada
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo
+- SR-013, UI-003 e SP-001 estão concluídos; não existe bloqueio duro para o TDD da integração
+
+Objetivo de produto:
+- tornar a evolução do saldo de fechamento diário visualmente legível no dashboard
+- complementar, e nunca substituir, a tabela de evolução financeira
+- reutilizar os cinco períodos existentes e os dados reais já carregados no servidor
+
+Escopo mínimo aprovado:
+- integrar a ilha `FinancialEvolutionChart` ao `FinancialEvolutionPanel` nas rotas compartilhadas `/` e `/dashboard`
+- representar uma única linha de saldo de fechamento por data civil
+- renderizar o gráfico para estados `success` e `empty`; em `empty`, a linha plana continua informativa porque os saldos diários existem
+- preservar `missing_accounts` sem gráfico ou dados financeiros, com o CTA de cadastro existente
+- compor o gráfico em card próprio, com título de nível 3 e descrição objetiva, antes da tabela visível
+- manter fallback textual do chart apontando para a tabela quando a inicialização falhar
+
+Fora do escopo:
+- nova consulta, caso de uso, DTO, repository, RPC, migration, policy, grant ou dado
+- linhas de receitas/despesas, comparação entre períodos, previsão, tendência calculada ou “disponível de verdade”
+- candles, OHLC, volume, zoom, brush, exportação, toggle de visualização ou semântica de trading
+- analytics de produto, telemetria financeira, cache, service worker ou promessa offline
+- alteração de período customizado, timezone ou regras de saldo
+
+Contratos arquiteturais:
+- `composeDashboardRoute` continua realizando uma única leitura server-side e entrega o mesmo `FinancialEvolutionDto` ao painel
+- `FinancialEvolutionPanel` permanece Server Component, chama `toFinancialEvolutionChartModel` no servidor e passa somente strings, números, arrays e objetos planos à ilha
+- `FinancialEvolutionChart.client.tsx` permanece a única fronteira React cliente do recurso e não recebe DTO de infrastructure, identidade, token, função ou `Date`
+- a ilha não realiza fetch, Server Action, Supabase, storage ou transformação financeira; browser APIs permanecem limitadas a lifecycle, resize e preferências visuais
+- a importação direta da ilha pelo painel é a opção inicial; `next/dynamic` com um segundo wrapper não será criado sem evidência de incompatibilidade ou custo material no bundle
+- ECharts continua restrito a `presentation/charts/echarts`, com imports modulares e `SVGRenderer`
+- nenhuma abstração `ChartPort` será criada antes de um segundo consumidor real
+
+Estados e experiência:
+- loading de dados continua pertencendo ao `loading.tsx` da rota; não será simulado dentro de uma ilha síncrona
+- `missing_accounts`: CTA existente, sem gráfico ou tabela
+- `empty`: feedback honesto, resumo, linha plana e tabela de saldos
+- `success`: resumo, linha de saldo e tabela equivalente
+- falha de dados: error boundary existente; falha apenas do ECharts: fallback local e tabela preservada
+- o gráfico é uma imagem informativa, sem controles próprios; não será adicionado foco de teclado artificial
+- contraste, alto contraste, movimento reduzido, descrição associada e responsividade permanecem contratos herdados do SP-001
+
+Estratégia de bundle:
+- medir baseline e delta depois da primeira integração funcional com `next experimental-analyze --output`
+- ECharts pode aparecer somente nos chunks cliente de `/` e `/dashboard`; presença em `/login`, `/accounts`, `/categories` ou `/transactions` bloqueia aceitação
+- o delta bruto e comprimido disponível deve ser documentado antes da conclusão; não será inventado limite numérico sem baseline real
+- lazy loading adicional só será considerado com evidência de custo ou regressão, preservando o menor número de fronteiras cliente
+
+Fatiamento interno:
+- `SR-014A`: testes de integração e implementação mínima painel + mapper + ilha + tabela
+- `SR-014B`: estados, layout, bundle, validação visual, acessibilidade e hardening até o Dia 7
+
+Matriz planejada para o Dia 2:
+- painel `success` renderiza gráfico e tabela a partir do mesmo DTO
+- painel `empty` mantém feedback, linha plana e tabela
+- painel `missing_accounts` não renderiza ilha nem tabela
+- mapper é executado na fronteira server-side e a ilha recebe somente o view model serializável
+- falha de inicialização do chart mantém a tabela consultável
+- rotas `/` e `/dashboard` continuam compartilhando a mesma composição e uma única leitura
+- contrato estático preserva RSC, imports ECharts confinados e ausência de fontes de dados na ilha
+- build/análise posterior comprovam isolamento dos chunks por rota
+
+Influência da skill `vercel:nextjs`:
+- leitura continua no Server Component, sem Route Handler ou fetch cliente
+- props Server → Client permanecem JSON-serializáveis e excluem classes, funções, `Date`, `Map` ou `Set`
+- componente cliente continua síncrono; APIs do browser não atravessam para o servidor
+- um segundo dynamic wrapper foi rejeitado por enquanto para evitar fronteira e loading artificiais sem evidência
+
+Artefatos e validação do Dia 1:
+- ADR 0013 registra a integração do gráfico de linha
+- arquitetura, backlog, roadmap, estratégia de testes, quality gates e especificação de produto foram atualizados
+- nenhum arquivo funcional, teste executável, dependência, banco, commit, push, PR ou deploy foi criado nesta fase
+- `git diff --check` é o gate aplicável; lint, type-check, testes e build não precisam ser repetidos para uma entrega exclusivamente documental
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-014 está `IN_PROGRESS`
+- próximo comando válido: `dia 2`

@@ -6,7 +6,20 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### SR-014 — Gráfico de linha da evolução
+- Tipo: Small Release
+- Descrição objetiva: integrar a linha do saldo de fechamento diário ao painel financeiro real, mantendo a tabela acessível e a leitura server-side existentes.
+- Objetivo de negócio: tornar a evolução do saldo visualmente legível sem esconder os valores detalhados.
+- Valor esperado: leitura rápida de trajetória, inclusive saldo negativo e períodos sem movimentos, com fonte financeira única e auditável.
+- Prioridade: Alta
+- Dependências: SR-013, UI-003 e SP-001 concluídos.
+- Risco: Médio por bundle cliente, hidratação e acessibilidade de visualização financeira.
+- Fase atual: Dia 1 concluído; escopo, contratos, estados e estratégia de bundle definidos.
+- Small releases internas: `SR-014A` integração mínima test-first; `SR-014B` UX, bundle, browser e hardening.
+- Critério de pronto: gráfico e tabela simultâneos em `/` e `/dashboard`; estados tratados; RSC e uma leitura preservados; props serializáveis; ECharts ausente de rotas não relacionadas; testes, browser, bundle e pipeline verdes.
+- Próximo passo: executar `dia 2` para materializar os contratos de integração em RED antes de alterar o painel.
+- ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
+- Status: IN_PROGRESS
 
 ## DISCOVERY
 
@@ -177,17 +190,6 @@ Nenhum item em andamento no momento.
 - Risco: Alto por geração de artefato financeiro sensível.
 - Fase recomendada: release separada após relatórios.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
-- Status: DISCOVERY
-
-### SR-014 - Grafico de linha da evolucao
-- Tipo: Small Release
-- Objetivo de negocio: tornar tendencia financeira visual.
-- Valor esperado: leitura rapida sem perder tabela acessivel.
-- Prioridade: Alta
-- Dependencias: SR-013 e SP-001, ambas concluídas.
-- Risco: Medio
-- Fase recomendada: Dia 1 para refinar o recorte de integração, sem reutilizar automaticamente o escopo do spike.
-- Criterio de pronto: responsivo, acessivel, estados tratados e testes de componente.
 - Status: DISCOVERY
 
 ### SR-015 - Candles financeiros
