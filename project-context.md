@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 do SP-001 concluído; experimento mínimo ECharts está GREEN e permanece fora das rotas de produção
+- Fase atual: Dia 4 do SP-001 concluído; estado vazio e tema dinâmico estão GREEN e o experimento permanece fora das rotas de produção
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -103,6 +103,7 @@
 - Data do discovery e arquitetura do SP-001: 2026-08-29
 - Data da estratégia de testes do SP-001: 2026-08-29
 - Data da implementação mínima do SP-001: 2026-08-29
+- Data da expansão controlada do SP-001: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -955,6 +956,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
 - Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
 - Erro: o primeiro adapter ECharts importou `use` com o nome original e o ESLint o classificou como React Hook chamado no topo do módulo. Prevenção: APIs externas homônimas a hooks devem receber alias sem prefixo `use`, deixando explícita sua função de registro e evitando falsos positivos sem desabilitar regras.
 - Erro: o primeiro fallback da ilha ECharts chamou `setInitializationFailed` sincronamente dentro de `useEffect`, violando o gate React 19 de `set-state-in-effect`. Prevenção: inicialização estritamente ligada ao elemento deve usar callback ref estável com cleanup de ref do React 19; effects permanecem apenas para sincronizar opções após a instância existir.
@@ -5474,3 +5476,42 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - SP-001 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Expansão test-first:
+- baseline do experimento antes dos novos cenários: 4 suítes e 20 testes verdes
+- dois testes foram escritos antes da implementação para estado vazio e alteração de `data-theme`
+- RED observado: 1 suíte executada, 2 falhas esperadas e 5 testes verdes; a ilha ainda renderizava/inicializava o gráfico vazio e não observava o tema
+- GREEN do componente: 1 suíte e 7 testes verdes
+- GREEN direcionado final: 4 suítes e 22 testes verdes
+
+Comportamentos consolidados:
+- modelo sem pontos apresenta status textual explícito e não inicializa ECharts nem constrói opções
+- alteração do atributo raiz `data-theme` reaplica os tokens CSS na instância existente, sem recriar o gráfico
+- o `MutationObserver` observa somente `data-theme` e é desconectado no cleanup
+- sucesso continua expondo gráfico nomeado e descrição associada; falha de inicialização continua orientando o usuário à tabela acessível
+- resize, atualização de modelo, movimento reduzido e descarte da instância permanecem cobertos
+- estado de loading não foi criado porque o experimento não possui operação assíncrona; simular espera seria um estado falso
+
+Fronteiras preservadas:
+- `FinancialEvolutionPanel` e as rotas continuam sem importar a ilha experimental
+- nenhuma integração com dashboard ou SR-014 foi antecipada
+- domain, application, infrastructure, Supabase, migrations e dados permaneceram inalterados
+- nenhuma abstração genérica, candle ou nova regra financeira foi adicionada
+- validação visual em navegador não se aplica nesta fase porque o componente ainda não possui rota aprovada
+
+Quality Gates:
+- regressão completa: 75 suítes e 408 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`

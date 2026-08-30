@@ -41,6 +41,7 @@ export function FinancialEvolutionChart({
 }: FinancialEvolutionChartProps) {
   const chartRef = useRef<FinancialEvolutionChartInstance | null>(null);
   const [initializationFailed, setInitializationFailed] = useState(false);
+  const hasPoints = model.points.length > 0;
 
   const attachChart = useCallback((container: HTMLDivElement | null) => {
     if (!container) {
@@ -72,7 +73,7 @@ export function FinancialEvolutionChart({
     };
   }, []);
 
-  useEffect(() => {
+  const applyCurrentOption = useCallback(() => {
     const chart = chartRef.current;
 
     if (!chart) {
@@ -87,6 +88,34 @@ export function FinancialEvolutionChart({
       })
     );
   }, [model]);
+
+  useEffect(() => {
+    applyCurrentOption();
+  }, [applyCurrentOption]);
+
+  useEffect(() => {
+    if (!hasPoints) {
+      return;
+    }
+
+    const themeObserver = new MutationObserver(applyCurrentOption);
+    themeObserver.observe(document.documentElement, {
+      attributeFilter: ["data-theme"],
+      attributes: true
+    });
+
+    return () => {
+      themeObserver.disconnect();
+    };
+  }, [applyCurrentOption, hasPoints]);
+
+  if (!hasPoints) {
+    return (
+      <p className="text-sm text-muted-foreground" role="status">
+        Não há dados para exibir no gráfico neste período.
+      </p>
+    );
+  }
 
   return (
     <div className="grid gap-2">

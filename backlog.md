@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: view model da SR-013 e UI-003 concluída.
 - Risco: Médio
-- Fase atual: Dia 3 concluído; ECharts modular, mapper, option builder, adapter SVG e ilha cliente experimental estão GREEN sem integração nas rotas.
+- Fase atual: Dia 4 concluído; estado vazio, fallback, lifecycle e sincronização dinâmica de tema estão GREEN sem integração nas rotas.
 - Critério de pronto: ADR comparando opções, critérios objetivos, adapter de presentation definido e experimento limitado quando necessário; nenhum gráfico de produção.
-- Próximo passo: executar `dia 4` para expandir controladamente o experimento, validar tema/microestados e fechar critérios do spike sem antecipar a SR-014.
+- Próximo passo: executar `dia 5` para revisar duplicação, fronteiras, consistência e hardening interno do experimento sem antecipar a SR-014.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

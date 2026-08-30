@@ -570,6 +570,20 @@ Estado de saída: `TEST_STRATEGY_READY`.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## RED/GREEN do Dia 4 — SP-001
+
+- baseline antes dos cenários incrementais: 4 suítes e 20 testes verdes.
+- RED test-first: 1 suíte, 2 falhas esperadas e 5 testes verdes; faltavam estado vazio e reação a `data-theme`.
+- estado vazio passou a exibir status textual sem inicializar ECharts ou construir opções.
+- mudança de tema passou a reaplicar tokens CSS na mesma instância, com cleanup do `MutationObserver` validado após unmount.
+- loading foi classificado como não aplicável porque não existe operação assíncrona no experimento.
+- GREEN do componente: 1 suíte e 7 testes verdes.
+- GREEN direcionado: 4 suítes e 22 testes verdes.
+- regressão completa: 75 suítes e 408 testes verdes.
+- nenhum teste foi removido, relaxado ou ignorado; nenhuma rota ou integração de produção foi criada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

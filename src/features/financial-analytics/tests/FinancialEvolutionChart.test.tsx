@@ -1,4 +1,11 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest
+} from "@jest/globals";
 import { act, render, screen } from "@testing-library/react";
 import type { FinancialEvolutionChartModel } from "../presentation/charts/financial-evolution-chart.model";
 
@@ -84,6 +91,7 @@ function setReducedMotion(matches: boolean) {
 describe("FinancialEvolutionChart", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    document.documentElement.removeAttribute("data-theme");
     Object.defineProperty(globalThis, "ResizeObserver", {
       configurable: true,
       value: ResizeObserverMock
@@ -97,6 +105,10 @@ describe("FinancialEvolutionChart", () => {
       resize,
       dispose
     });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it("exposes a named graphic and initializes ECharts with SVG", () => {
@@ -180,5 +192,87 @@ describe("FinancialEvolutionChart", () => {
     expect(screen.getByRole("status")).toHaveTextContent(
       "Não foi possível carregar o gráfico. Consulte a tabela de evolução financeira."
     );
+  });
+
+  it("shows an explicit empty state without initializing ECharts", () => {
+    render(
+      <FinancialEvolutionChart
+        model={{ ...model, points: [] }}
+      />
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Não há dados para exibir no gráfico neste período."
+    );
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(initializeFinancialEvolutionChart).not.toHaveBeenCalled();
+    expect(buildFinancialEvolutionOption).not.toHaveBeenCalled();
+  });
+
+  it("reapplies theme tokens without recreating the chart instance", async () => {
+    const themeChannels = {
+      light: {
+        "--foreground": "17 24 39",
+        "--muted-foreground": "95 111 133",
+        "--primary": "15 118 110",
+        "--surface": "255 255 255",
+        "--border": "229 231 235"
+      },
+      dark: {
+        "--foreground": "248 250 252",
+        "--muted-foreground": "148 163 184",
+        "--primary": "45 212 191",
+        "--surface": "17 24 39",
+        "--border": "51 65 85"
+      }
+    } as const;
+
+    jest.spyOn(window, "getComputedStyle").mockImplementation(
+      () =>
+        ({
+          getPropertyValue: (name: string) => {
+            const theme =
+              document.documentElement.dataset.theme === "dark"
+                ? themeChannels.dark
+                : themeChannels.light;
+            return theme[name as keyof typeof theme] ?? "";
+          }
+        }) as unknown as CSSStyleDeclaration
+    );
+
+    const view = render(<FinancialEvolutionChart model={model} />);
+
+    expect(buildFinancialEvolutionOption.mock.calls[0][0].theme).toEqual(
+      expect.objectContaining({
+        foreground: "rgb(17 24 39)",
+        primary: "rgb(15 118 110)",
+        surface: "rgb(255 255 255)"
+      })
+    );
+
+    await act(async () => {
+      document.documentElement.dataset.theme = "dark";
+      await Promise.resolve();
+    });
+
+    expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
+    expect(buildFinancialEvolutionOption).toHaveBeenCalledTimes(2);
+    expect(setOption).toHaveBeenCalledTimes(2);
+    expect(buildFinancialEvolutionOption.mock.calls[1][0].theme).toEqual(
+      expect.objectContaining({
+        foreground: "rgb(248 250 252)",
+        primary: "rgb(45 212 191)",
+        surface: "rgb(17 24 39)"
+      })
+    );
+
+    view.unmount();
+
+    await act(async () => {
+      document.documentElement.dataset.theme = "light";
+      await Promise.resolve();
+    });
+
+    expect(buildFinancialEvolutionOption).toHaveBeenCalledTimes(2);
   });
 });
