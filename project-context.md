@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SR-014 concluído; contratos essenciais de integração materializados em RED controlado, sem código funcional
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SR-014 concluído; integração mínima server/client do gráfico em GREEN, com tabela e isolamento de bundle preservados
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -110,6 +110,7 @@
 - Data de seleção da SR-014 como próximo ciclo: 2026-08-30
 - Data do discovery e arquitetura da SR-014: 2026-08-30
 - Data da estratégia de testes e RED controlado da SR-014: 2026-08-30
+- Data da implementação mínima orientada por teste da SR-014: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -962,6 +963,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: ao inspecionar o relatório `next experimental-analyze` no Dia 3 da SR-014, a IA presumiu que `analyze.data` continha um único JSON após um cabeçalho fixo de quatro bytes; o arquivo usa framing adicional e o `ConvertFrom-Json` rejeitou bytes posteriores ao primeiro documento. Prevenção: tratar artefatos internos do analyzer como formato opaco, usar os relatórios/manifestos públicos e buscas binárias somente para presença por rota, ou empregar parser oficial antes de extrair métricas; não inferir tamanho de bundle pelo tamanho do arquivo `.data`.
+- Erro: no primeiro GREEN ampliado do Dia 3 da SR-014, a suíte `DashboardRoutes.test.tsx` carregou as páginas server-side com `jest.requireActual()` sem mockar a nova ilha `FinancialEvolutionChart.client`, fazendo o Jest tentar interpretar o ESM real de `echarts/charts` antes de executar os testes. Prevenção: todo teste de composição ou rota que atravesse `FinancialEvolutionPanel` deve registrar o mock da ilha cliente antes de carregar a página, mantendo ECharts real restrito às suítes específicas da ilha e ao build; pesquisar consumidores server-side ao integrar uma nova fronteira cliente.
 - Erro: ao retomar o RED direcionado do Dia 2 da SR-014, a IA enviou caminhos Windows em uma string JavaScript comum, fazendo sequências como `\n`, `\b`, `\f` e `\t` corromperem o comando antes da criação do processo. Prevenção: ao orquestrar PowerShell pelo executor JavaScript, usar `String.raw` para comandos e caminhos Windows com barras invertidas, validando que o processo realmente iniciou antes de interpretar o resultado como evidência do projeto.
 - Erro: após detectar o npm global quebrado no Dia 2 da SR-014, a IA chamou o alias descontinuado `codex_app__load_workspace_dependencies`; a ferramenta orientou usar o endpoint MCP atual e não executou ação. Prevenção: neste host, descobrir runtimes empacotadas exclusivamente por `mcp__codex_app__load_workspace_dependencies`, ignorando o alias legado ainda exposto no catálogo.
 - Erro: ao iniciar a baseline do Dia 2 da SR-014, a IA executou `npm run test:ci` apesar de o contexto já registrar que o wrapper global do npm está quebrado; o comando falhou antes de carregar Jest. Prevenção: antes de qualquer gate Node neste host, consultar a runtime empacotada do workspace e invocar seus executáveis/binários locais, sem tentar primeiro o npm global conhecido como inválido.
@@ -5790,3 +5793,49 @@ Estado de saída:
 - SR-014 permanece `IN_PROGRESS`
 - implementação funcional permanece bloqueada até aprovação explícita do Dia 3
 - próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-014
+
+Small release: `SR-014A — Integração mínima do gráfico de evolução`.
+
+Implementação mínima:
+- `FinancialEvolutionPanel` permaneceu Server Component e passou a executar `toFinancialEvolutionChartModel` somente no ramo com dados
+- `FinancialEvolutionChart` foi composta em card próprio, com heading de nível 3 e descrição objetiva, antes da tabela
+- o view model enviado à ilha contém somente strings, números, arrays e objetos planos
+- `success` e `empty` exibem gráfico e tabela; `missing_accounts` continua sem ambos
+- o fallback local já existente na ilha mantém a tabela como representação consultável
+- nenhuma regra financeira, consulta, DTO, repository, RPC, migration, policy, grant ou dado foi alterado
+
+TDD RED → GREEN:
+- os 4 contratos do Dia 2 passaram sem remoção, relaxamento ou alteração de expectativa
+- GREEN direcionado inicial: 2 suítes e 21 testes verdes
+- a regressão ampliada revelou que `DashboardRoutes.test.tsx` carregava o ESM real do ECharts sem mockar a ilha; o erro foi registrado antes da correção do harness
+- GREEN direcionado ampliado: 3 suítes e 25 testes verdes
+- regressão completa final: 75 suítes e 417 testes verdes
+- lint global com 0 warnings e type-check verdes
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e `ƒ Proxy (Middleware)` preservados
+
+Bundle e fronteiras:
+- `next experimental-analyze --output` concluiu com sucesso
+- o único chunk contendo ECharts/ZRender mede 500.653 bytes brutos e 170.071 bytes em gzip
+- esse chunk aparece somente nos manifests cliente de `/` e `/dashboard`
+- `/login`, `/accounts`, `/categories` e `/transactions` não referenciam o chunk
+- `next/dynamic`, wrapper adicional, import direto de ECharts no Server Component e abstração genérica permaneceram ausentes
+- uma tentativa de interpretar o formato interno `analyze.data` como JSON simples foi registrada como erro operacional; nenhuma métrica foi inferida desses arquivos opacos
+
+Fronteiras e escopo preservados:
+- produção alterada somente em `FinancialEvolutionPanel.tsx`
+- harness de rota alterado somente para mockar a fronteira cliente antes do carregamento server-side
+- `next-env.d.ts` gerado pelo build foi restaurado ao conteúdo versionado
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo
+- nenhuma validação visual, expansão de estado, refatoração ampla, deploy, commit, push ou PR foi executado nesta fase
+
+Influência da skill `vercel:nextjs`:
+- a leitura permaneceu no Server Component e nenhuma busca cliente foi criada
+- a fronteira cliente recebe somente um objeto serializável e não conhece DTO, identidade ou infraestrutura
+- o wrapper cliente existente isolou a dependência browser-only; não houve necessidade comprovada de `next/dynamic`
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-014 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`

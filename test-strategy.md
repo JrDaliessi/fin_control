@@ -702,6 +702,21 @@ Implementação bloqueada até o Dia 3:
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## GREEN do Dia 3 — SR-014
+
+- `FinancialEvolutionPanel` permaneceu server-side, passou a executar o mapper e compôs a ilha cliente com view model plano.
+- `success` e `empty` exibem o gráfico antes da tabela; `missing_accounts` não chama a ilha.
+- fallback local do gráfico e tabela permanecem simultaneamente disponíveis.
+- GREEN direcionado inicial: 2 suítes e 21 testes passaram.
+- a regressão reproduziu um carregamento indevido do ESM real de ECharts no harness de rotas; o teste passou a mockar a ilha antes de carregar as páginas, sem mudar comportamento de produção.
+- GREEN direcionado ampliado: 3 suítes e 25 testes passaram.
+- regressão completa: 75 suítes e 417 testes passaram.
+- lint global, type-check e build Next.js `16.3.3` passaram.
+- análise de bundle confirmou ECharts/ZRender somente em `/` e `/dashboard`; o chunk identificado mede 500.653 bytes brutos e 170.071 bytes em gzip.
+- nenhum teste foi removido, ignorado ou relaxado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

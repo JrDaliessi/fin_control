@@ -1367,3 +1367,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum Supabase, migration, dado, dependência, commit, push, PR ou deploy foi executado.
 - `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — SR-014
+
+- contexto central, workflow do Dia 3 e referências RSC/bundling da skill `vercel:nextjs` consultados após aprovação operacional.
+- produção alterada somente em `FinancialEvolutionPanel.tsx`: mapper server-side, card, heading e ilha cliente antes da tabela.
+- GREEN direcionado inicial: 2 suítes e 21 testes passaram.
+- falha de isolamento no harness de rotas registrada antes da correção; GREEN ampliado com 3 suítes e 25 testes.
+- regressão completa: 75 suítes e 417 testes verdes.
+- lint global: verde com 0 warnings; type-check: verde.
+- build Next.js `16.3.3` com Turbopack: verde; rotas e Proxy preservados.
+- analyzer de produção: verde; chunk ECharts/ZRender de 500.653 bytes brutos e 170.071 bytes gzip somente em `/` e `/dashboard`.
+- `/login`, `/accounts`, `/categories` e `/transactions` não referenciam o chunk do gráfico.
+- nenhum teste relaxado; nenhum domain, application, infrastructure, Supabase, migration, dado ou dependência alterado.
+- `next-env.d.ts` restaurado e `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma validação visual, deploy, commit, push ou atualização de PR foi executada.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.

@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Novo ciclo em andamento: Dia 2 da `SR-014 — Gráfico de linha da evolução` concluído em `TEST_STRATEGY_READY`. Quatro contratos essenciais estão em RED controlado, mantendo a rede anterior verde e sem antecipar código funcional.
+Novo ciclo em andamento: Dia 3 da `SR-014 — Gráfico de linha da evolução` concluído em `IMPLEMENTATION_IN_PROGRESS`. Os quatro contratos essenciais estão em GREEN, com painel server-side, ilha ECharts e tabela acessível integrados.
 
 Integrações posteriores:
 
@@ -239,9 +239,9 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003 e SP-001 concluídos; Dia 2 da SR-014 concluído. O gráfico continuará como uma única linha do saldo de fechamento diário, mapeada no Server Component e entregue como view model plano à ilha ECharts, com tabela visível e equivalente.
+Estado atual: SR-013, UI-003 e SP-001 concluídos; Dia 3 da SR-014 concluído. A linha do saldo está integrada ao Server Component com view model plano, tabela equivalente e chunk ECharts isolado em `/` e `/dashboard`.
 
-Próximo passo recomendado: executar o Dia 3 da SR-014 para satisfazer os quatro contratos RED com a implementação mínima. Bundle real, browser, UX e acessibilidade continuam critérios obrigatórios antes do Dia 7.
+Próximo passo recomendado: executar o Dia 4 da SR-014 para expansão controlada dos estados e da composição. Browser, UX e acessibilidade continuam critérios obrigatórios antes do Dia 7.
 
 ## Marco 10 - Candles Financeiros
 
