@@ -1293,3 +1293,23 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
 - nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Gate do Dia 6 — SP-001
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional aprovada antes da execução.
+- baseline direcionado: 4 suítes e 25 testes verdes.
+- contraste auditado: mínimos de `5,12:1` no tema claro e `6,92:1` no tema escuro para texto secundário; linha principal acima de `5,47:1`.
+- RED test-first: 2 suítes com 1 falha planejada e 20 testes verdes para alto contraste.
+- GREEN de componente/fronteira: 2 suítes e 21 testes; GREEN com manifesto PWA: 5 suítes e 29 testes.
+- `forced-colors` usa cores semânticas do sistema, atualiza a instância existente e remove o listener no unmount.
+- largura fluida, altura mínima, resize, nomes/descrições, estados textuais e tabela equivalente permaneceram protegidos.
+- manifesto instalável, ícones e atalhos reais permanecem verdes; nenhum service worker, cache financeiro ou promessa offline foi criado.
+- regressão completa: 75 suítes e 413 testes verdes.
+- type-check: verde; lint global: verde, 0 warnings.
+- audit de produção: verde, 0 vulnerabilidades.
+- build Next.js 16.3.3: verde; todas as rotas e `ƒ Proxy (Middleware)` preservados.
+- `next experimental-analyze --output`: nenhum módulo ECharts nas rotas/chunks atuais.
+- validação visual em navegador permanece condicionada à rota real da SR-014 e não foi simulada artificialmente.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhuma integração no dashboard, SR-014, Supabase, migration, dado, commit, push, PR ou deploy foi executado.
+- estado de saída: `QUALITY_VALIDATION`.

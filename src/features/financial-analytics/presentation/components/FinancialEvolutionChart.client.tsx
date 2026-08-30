@@ -16,6 +16,14 @@ type FinancialEvolutionChartProps = Readonly<{
 }>;
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+const FORCED_COLORS_QUERY = "(forced-colors: active)";
+const FORCED_COLORS_THEME: FinancialEvolutionChartTheme = {
+  border: "CanvasText",
+  foreground: "CanvasText",
+  mutedForeground: "CanvasText",
+  primary: "Highlight",
+  surface: "Canvas"
+};
 
 function resolveCssColor(name: string, fallback: string) {
   const channels = getComputedStyle(document.documentElement)
@@ -26,6 +34,10 @@ function resolveCssColor(name: string, fallback: string) {
 }
 
 function resolveChartTheme(): FinancialEvolutionChartTheme {
+  if (window.matchMedia(FORCED_COLORS_QUERY).matches) {
+    return FORCED_COLORS_THEME;
+  }
+
   return {
     foreground: resolveCssColor("--foreground", "#111827"),
     mutedForeground: resolveCssColor("--muted-foreground", "#4b5563"),
@@ -112,7 +124,8 @@ export function FinancialEvolutionChart({
     }
 
     const reducedMotionQuery = window.matchMedia(REDUCED_MOTION_QUERY);
-    const handleReducedMotionChange = () => {
+    const forcedColorsQuery = window.matchMedia(FORCED_COLORS_QUERY);
+    const handleVisualPreferenceChange = () => {
       applyCurrentOption();
     };
     const themeObserver = new MutationObserver(applyCurrentOption);
@@ -121,13 +134,18 @@ export function FinancialEvolutionChart({
       attributes: true
     });
 
-    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+    reducedMotionQuery.addEventListener("change", handleVisualPreferenceChange);
+    forcedColorsQuery.addEventListener("change", handleVisualPreferenceChange);
 
     return () => {
       themeObserver.disconnect();
       reducedMotionQuery.removeEventListener(
         "change",
-        handleReducedMotionChange
+        handleVisualPreferenceChange
+      );
+      forcedColorsQuery.removeEventListener(
+        "change",
+        handleVisualPreferenceChange
       );
     };
   }, [applyCurrentOption, hasPoints]);

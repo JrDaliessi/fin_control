@@ -155,6 +155,7 @@ describe("FinancialEvolutionChart", () => {
     const descriptionId = graphic.getAttribute("aria-describedby");
     expect(descriptionId).toBeTruthy();
     expect(description).toHaveAttribute("id", descriptionId);
+    expect(graphic).toHaveClass("min-h-72", "w-full");
     expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
     const [initializedContainer, initializationOptions] =
       initializeFinancialEvolutionChart.mock.calls[0];
@@ -319,6 +320,81 @@ describe("FinancialEvolutionChart", () => {
     });
 
     expect(buildFinancialEvolutionOption).toHaveBeenCalledTimes(2);
+  });
+
+  it("uses system colors while forced colors are active and follows changes", () => {
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+    const forcedColorsListeners = new Set<MediaQueryChangeListener>();
+    const addForcedColorsListener = jest.fn(
+      (type: string, listener: MediaQueryChangeListener) => {
+        if (type === "change") {
+          forcedColorsListeners.add(listener);
+        }
+      }
+    );
+    const removeForcedColorsListener = jest.fn(
+      (type: string, listener: MediaQueryChangeListener) => {
+        if (type === "change") {
+          forcedColorsListeners.delete(listener);
+        }
+      }
+    );
+    let forcedColorsActive = true;
+    const forcedColorsQuery = {
+      get matches() {
+        return forcedColorsActive;
+      },
+      media: "(forced-colors: active)",
+      onchange: null,
+      addEventListener: addForcedColorsListener,
+      removeEventListener: removeForcedColorsListener,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      dispatchEvent: jest.fn(() => true)
+    } as unknown as MediaQueryList;
+
+    jest.mocked(window.matchMedia).mockImplementation((query) =>
+      query === "(forced-colors: active)"
+        ? forcedColorsQuery
+        : reducedMotionQuery
+    );
+
+    const view = render(<FinancialEvolutionChart model={model} />);
+
+    expect(buildFinancialEvolutionOption.mock.calls[0][0].theme).toEqual({
+      border: "CanvasText",
+      foreground: "CanvasText",
+      mutedForeground: "CanvasText",
+      primary: "Highlight",
+      surface: "Canvas"
+    });
+    expect(addForcedColorsListener).toHaveBeenCalledWith(
+      "change",
+      expect.any(Function)
+    );
+
+    act(() => {
+      forcedColorsActive = false;
+      forcedColorsListeners.forEach((listener) =>
+        listener({ matches: false } as MediaQueryListEvent)
+      );
+    });
+
+    expect(buildFinancialEvolutionOption).toHaveBeenCalledTimes(2);
+    expect(buildFinancialEvolutionOption.mock.calls[1][0].theme).toEqual(
+      expect.objectContaining({
+        foreground: "#111827",
+        primary: "#0f766e",
+        surface: "#ffffff"
+      })
+    );
+
+    const listener = addForcedColorsListener.mock.calls[0][1];
+    view.unmount();
+
+    expect(removeForcedColorsListener).toHaveBeenCalledWith("change", listener);
   });
 
   it("reacts to reduced-motion changes and removes the listener", () => {

@@ -597,6 +597,19 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 
+## RED/GREEN do Dia 6 — SP-001
+
+- baseline direcionado: 4 suítes e 25 testes verdes.
+- auditoria confirmou layout fluido, resize reativo, alternativa tabular, estados textuais e contraste WCAG AA dos tokens claros/escuros.
+- RED test-first: 2 suítes, 1 falha planejada e 20 testes verdes; faltavam tokens e listener de `forced-colors`.
+- contratos verdes adicionais preservam classes responsivas e proíbem fonte de dados, storage, service worker ou promessa offline na ilha.
+- GREEN de componente/fronteira: 2 suítes e 21 testes verdes.
+- GREEN com manifesto PWA: 5 suítes e 29 testes verdes.
+- regressão completa: 75 suítes e 413 testes verdes.
+- nenhum teste foi removido, relaxado ou ignorado; nenhuma rota, dependência ou integração de produção foi criada.
+
+Estado de saída: `QUALITY_VALIDATION`.
+
 ## Matriz originada no Dia 1 — SP-001
 
 O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:

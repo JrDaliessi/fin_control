@@ -98,4 +98,21 @@ describe("financial evolution chart architecture", () => {
     expect(panel).not.toMatch(/^["']use client["'];?/m);
     expect(panel).toContain("FinancialEvolutionTable");
   });
+
+  it("keeps the client island independent from data sources and offline claims", () => {
+    const clientIsland = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialEvolutionChart.client.tsx"
+      ),
+      "utf-8"
+    );
+
+    expect(clientIsland).not.toMatch(
+      /fetch\s*\(|supabase|localStorage|indexedDB|serviceWorker/i
+    );
+    expect(clientIsland).toContain('className="min-h-72 w-full"');
+  });
 });

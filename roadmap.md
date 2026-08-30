@@ -218,7 +218,7 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo ciclo em andamento: Dia 5 do `SP-001 — Biblioteca de gráficos` concluído. Lifecycle transacional, IDs únicos e preferências visuais dinâmicas estão GREEN e isolados das rotas; o próximo comando válido é `dia 6`, e gráficos de produção continuam fora até a SR-014.
+Próximo ciclo em andamento: Dia 6 do `SP-001 — Biblioteca de gráficos` concluído. Alto contraste, responsividade, movimento reduzido e compatibilidade PWA estão GREEN e isolados das rotas; o próximo comando válido é `dia 7`, e gráficos de produção continuam fora até a SR-014.
 
 Integrações posteriores:
 
@@ -239,7 +239,7 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013 e UI-003 concluídas; Dia 5 do SP-001 concluído em `IMPLEMENTATION_IN_PROGRESS`, com ECharts 6.1 modular, lifecycle transacional, IDs acessíveis únicos e preferências visuais dinâmicas verdes. A análise de bundle confirma ausência do pacote nas rotas atuais; integração de produção continua pertencendo à SR-014.
+Estado atual: SR-013 e UI-003 concluídas; Dia 6 do SP-001 concluído em `QUALITY_VALIDATION`, com ECharts 6.1 modular, alto contraste, responsividade, movimento reduzido e PWA sem promessa offline validados. A análise de bundle confirma ausência do pacote nas rotas atuais; integração de produção continua pertencendo à SR-014.
 
 ## Marco 10 - Candles Financeiros
 

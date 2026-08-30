@@ -14,9 +14,9 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Alta
 - Dependências: view model da SR-013 e UI-003 concluída.
 - Risco: Médio
-- Fase atual: Dia 5 concluído; lifecycle transacional, IDs únicos e sincronização dinâmica de preferências visuais estão GREEN sem integração nas rotas.
+- Fase atual: Dia 6 concluído; alto contraste, responsividade, movimento reduzido e compatibilidade PWA estão GREEN sem integração nas rotas.
 - Critério de pronto: ADR comparando opções, critérios objetivos, adapter de presentation definido e experimento limitado quando necessário; nenhum gráfico de produção.
-- Próximo passo: executar `dia 6` para revisar experiência, responsividade, acessibilidade e comportamento PWA do experimento sem antecipar a SR-014.
+- Próximo passo: executar `dia 7` para qualidade final, segurança, observabilidade e fechamento auditável do spike sem antecipar a SR-014.
 - Status: IN_PROGRESS
 
 ## DISCOVERY

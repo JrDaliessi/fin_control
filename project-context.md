@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 do SP-001 concluído; lifecycle, preferências visuais e relações acessíveis estão endurecidos sem integrar o experimento às rotas
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 do SP-001 concluído; alto contraste, responsividade e compatibilidade PWA estão validados sem integrar o experimento às rotas
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -105,6 +105,7 @@
 - Data da implementação mínima do SP-001: 2026-08-29
 - Data da expansão controlada do SP-001: 2026-08-30
 - Data da refatoração e hardening do SP-001: 2026-08-30
+- Data da revisão de UX, acessibilidade e PWA do SP-001: 2026-08-30
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -957,6 +958,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: na auditoria inicial do Dia 6 do SP-001, a IA tentou ler `src/app/manifest.ts` apesar de a descoberta no mesmo comando apontar `public/manifest.webmanifest` como manifesto real. Prevenção: separar descoberta e leitura de artefatos opcionais; somente abrir caminhos confirmados por `rg --files`, sem presumir convenções alternativas do Next.js.
 - Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
 - Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
 - Erro: o primeiro adapter ECharts importou `use` com o nome original e o ESLint o classificou como React Hook chamado no topo do módulo. Prevenção: APIs externas homônimas a hooks devem receber alias sem prefixo `use`, deixando explícita sua função de registro e evitando falsos positivos sem desabilitar regras.
@@ -5563,3 +5565,46 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - SP-001 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Auditoria de experiência:
+- container do gráfico permanece mobile first com `w-full`, altura mínima estável e `ResizeObserver`
+- estados vazio e erro usam status textual; o gráfico possui nome e descrição únicos; a tabela server-side permanece como representação equivalente
+- a série única não depende de distinção entre múltiplas cores e o option builder mantém ARIA/decal e movimento reduzido
+- contraste medido entre tokens principais: `5,47:1` e `5,12:1` no tema claro; `9,53:1` e `6,92:1` no tema escuro
+- não há interação por teclado a adicionar porque a superfície é uma imagem informativa, sem controles próprios
+
+Melhoria test-first:
+- baseline: 4 suítes e 25 testes verdes
+- contratos adicionais preservam classes responsivas e impedem fetch, Supabase, storage ou promessa offline dentro da ilha cliente
+- RED direcionado: 2 suítes executadas, 1 falha planejada e 20 testes verdes; faltavam tokens e assinatura de `forced-colors`
+- GREEN de componente/fronteira: 2 suítes e 21 testes verdes
+- GREEN com manifesto PWA: 5 suítes e 29 testes verdes
+- alto contraste agora usa `Canvas`, `CanvasText` e `Highlight`, acompanha mudanças do sistema e remove o listener no cleanup
+
+Experiência PWA:
+- manifesto real em `public/manifest.webmanifest` continua válido, instalável, em `pt-BR`, com ícones raster/maskable e atalhos apenas para fluxos existentes
+- a ilha é determinística a partir de props serializáveis e não acessa fonte de dados, storage, service worker ou rede
+- nenhum service worker ou cache financeiro foi criado; o produto não promete funcionamento offline sem estratégia de consistência
+- o erro inicial de leitura do caminho do manifesto foi registrado em erros recorrentes antes da correção da auditoria
+
+Limites preservados:
+- nenhuma rota, dashboard ou integração SR-014 foi criada
+- validação visual end-to-end em navegador não se aplica ao spike isolado; deverá ocorrer quando a SR-014 fornecer uma rota real
+- domain, application, infrastructure, Supabase, migrations, dados e dependências permaneceram inalterados
+
+Quality Gates:
+- regressão completa: 75 suítes e 413 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 7`
