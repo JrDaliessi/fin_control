@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: SEC-AUTH-001 pausada em `BLOCKED`; SEC-HARD-001 selecionada como próximo ciclo de hardening
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da SEC-HARD-001 concluído; small release SEC-HARD-001A pronta para estratégia TDD
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -125,6 +125,7 @@
 - Data da validação final e preparação de release da SR-015: 2026-08-31
 - Data de seleção da SEC-AUTH-001 como próximo ciclo: 2026-08-31
 - Data do discovery e arquitetura da SEC-AUTH-001: 2026-08-31
+- Data do discovery e arquitetura da SEC-HARD-001: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6457,3 +6458,46 @@ Estado de saída:
 - por decisão humana, o upgrade foi adiado até a preparação para produção pública;
 - a máquina global retorna a `READY_FOR_RELEASE`, mantendo a promoção pública bloqueada;
 - próximo passo selecionado: iniciar o Dia 1 da `SEC-HARD-001`; retomar o Dia 2 da `SEC-AUTH-001` somente após upgrade explícito.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SEC-HARD-001
+
+Security item: `SEC-HARD-001 — Hardening do ambiente de autenticação`.
+
+Diagnóstico confirmado:
+- `next.config.mjs` define somente `reactStrictMode`; não existem headers de segurança do aplicativo nem testes específicos;
+- `src/proxy.ts` delega exclusivamente à renovação/proteção de sessão do Supabase e não deve absorver política HTTP estática;
+- a resposta pública de `/login` confirma HTTPS e HSTS da Vercel, mas não apresenta CSP, frame policy, `nosniff`, referrer policy ou permissions policy;
+- a resposta de proteção SSO dos previews possui headers próprios da Vercel e não é evidência da resposta do aplicativo;
+- o login usa `createBrowserClient` e `signInWithPassword`, enviando o password grant diretamente ao Supabase Auth;
+- o Security Advisor permanece somente com `auth_leaked_password_protection`, já isolado em `SEC-AUTH-001`.
+
+Decisões arquiteturais:
+- headers globais serão configurados em `next.config.mjs`; o Proxy continuará focado em sessão;
+- CSP será aplicada em enforcement e testada com as rotas reais, usando a origem Supabase exata em `connect-src`;
+- framing, objetos e recursos não usados serão negados; políticas legadas serão mantidas quando agregarem defesa em profundidade;
+- não será criado proxy de credenciais, nem será considerada uma regra WAF de `/login` como proteção do password grant;
+- CAPTCHA nativo será uma small release separada e exige decisão humana de provedor e credenciais externas;
+- rollback não envolve migration ou dados; cada camada pode ser revertida isoladamente;
+- decisão completa registrada no ADR 0017.
+
+Small releases:
+- `SEC-HARD-001A` — headers determinísticos, CSP, origem Supabase e validação em Preview: `READY`;
+- `SEC-HARD-001B` — inventário de rate limits e CAPTCHA nativo: `BLOCKED` até escolha humana do provedor e configuração segura de credenciais.
+
+Estratégia prevista para o Dia 2:
+- testes de composição e aplicação global dos headers;
+- falha fechada para origem Supabase ausente ou inválida;
+- contratos de CSP, framing, MIME sniffing, referrer, permissions, HSTS de produção e remoção de `X-Powered-By`;
+- matriz futura de CAPTCHA cobrindo token ausente/válido/expirado, reset, `429` e mensagem genérica, sem implementar o provedor antecipadamente.
+
+Evidências e escopo preservado:
+- documentação atual de Next.js, Supabase Auth e Vercel WAF consultada;
+- projeto Vercel e resposta pública inspecionados somente para leitura;
+- nenhum header, Proxy, Auth, rate limit, CAPTCHA, usuário, senha, sessão, segredo, migration, RLS, dado, dependência, deploy, commit adicional, push ou PR desta branch foi alterado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `ARCHITECTURE_READY`;
+- `SEC-HARD-001A` pronta para o Dia 2;
+- `SEC-HARD-001B` explicitamente bloqueada por decisão/credenciais externas;
+- próximo comando válido: `dia 2` da `SEC-HARD-001A`.

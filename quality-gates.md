@@ -1611,3 +1611,15 @@ Uma release incremental só pode ser considerada pronta quando:
 - ADR 0016 define provider nativo, ausência de tratamento próprio de senhas, contratos TDD, validação remota e rollback.
 - nenhuma configuração Auth, usuário, senha, sessão, migration, RLS, dado, segredo, dependência ou código funcional foi alterado.
 - estado arquitetural: `ARCHITECTURE_READY`; estado operacional: `BLOCKED` até upgrade humano para Pro ou superior.
+
+## Gate do Dia 1 — SEC-HARD-001
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- skills `supabase:supabase`, `vercel:nextjs` e `vercel:vercel-api` aplicadas somente em discovery e leitura.
+- documentação atual de headers do Next.js, rate limits/CAPTCHA do Supabase e WAF rate limiting da Vercel consultada.
+- inspeção local confirmou ausência de headers em `next.config.mjs` e responsabilidade exclusiva de sessão no Proxy.
+- inspeção remota confirmou HTTPS/HSTS da Vercel e ausência da baseline completa na resposta pública do aplicativo.
+- fronteira de tráfego confirmada: `signInWithPassword` sai do browser para o Supabase; WAF em `/login` não limita o password grant.
+- ADR 0017 separa headers locais (`SEC-HARD-001A`) de CAPTCHA externo (`SEC-HARD-001B`) e proíbe proxy próprio de credenciais.
+- nenhuma configuração, código funcional, teste executável, Auth, CAPTCHA, rate limit, segredo, migration, RLS, dado, dependência ou deploy foi alterado.
+- `SEC-HARD-001A`: `READY`; `SEC-HARD-001B`: `BLOCKED`; estado de saída: `ARCHITECTURE_READY`.
