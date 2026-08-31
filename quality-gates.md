@@ -1623,3 +1623,17 @@ Uma release incremental só pode ser considerada pronta quando:
 - ADR 0017 separa headers locais (`SEC-HARD-001A`) de CAPTCHA externo (`SEC-HARD-001B`) e proíbe proxy próprio de credenciais.
 - nenhuma configuração, código funcional, teste executável, Auth, CAPTCHA, rate limit, segredo, migration, RLS, dado, dependência ou deploy foi alterado.
 - `SEC-HARD-001A`: `READY`; `SEC-HARD-001B`: `BLOCKED`; estado de saída: `ARCHITECTURE_READY`.
+
+## Gate do Dia 2 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- skills `vercel:nextjs` e `supabase:supabase` consultadas apenas para o contrato da configuração do Next.js e da origem Supabase.
+- baseline anterior ao RED: 84 suítes e 482 testes verdes, sem snapshots.
+- nova suíte server-side usa a configuração real do Next.js e cobre 12 casos de headers, CSP, origem Supabase, produção/preview e fronteira do Proxy.
+- RED direcionado válido: 1 suíte falhou, com 11 falhas intencionais e 1 teste de fronteira verde.
+- regressão ampliada: 84 suítes anteriores verdes; somente a nova suíte falhou; 483 testes verdes e 11 falhas planejadas em 494 testes.
+- as falhas são causadas exclusivamente pela implementação ainda ausente em `next.config.mjs`, conforme exigido pelo TDD.
+- type-check verde; lint global verde com zero warnings; zero snapshots.
+- `next.config.mjs` e `src/proxy.ts` não foram alterados; nenhum header funcional, Auth, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência ou deploy foi modificado.
+- `next.config.d.mts` tipa somente a importação da configuração no teste; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.

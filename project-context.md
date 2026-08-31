@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SEC-HARD-001 concluído; small release SEC-HARD-001A pronta para estratégia TDD
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da SEC-HARD-001A concluído em RED controlado; próxima fase válida é o Dia 3
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -126,6 +126,7 @@
 - Data de seleção da SEC-AUTH-001 como próximo ciclo: 2026-08-31
 - Data do discovery e arquitetura da SEC-AUTH-001: 2026-08-31
 - Data do discovery e arquitetura da SEC-HARD-001: 2026-08-31
+- Data da estratégia de testes da SEC-HARD-001A: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -978,6 +979,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
+- Erro: o primeiro RED da `SEC-HARD-001A` carregou `next/experimental/testing/server` sob o `jest-environment-jsdom` global, que não expõe `Request`, e a suíte falhou antes de avaliar qualquer contrato de header. Prevenção: testes da API server-side de configuração do Next.js devem declarar `@jest-environment node` por arquivo, mantendo jsdom apenas para componentes e sem adicionar polyfill global que possa mascarar diferenças reais de runtime.
 - Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
 - Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e depois incluiu o diretório opcional inexistente `scripts` em uma busca. Prevenção: resolver arquivos e diretórios opcionais ou operacionais com `rg --files` antes da leitura/busca e só então usar os caminhos confirmados, inclusive quando o nome do job remoto difere do nome do arquivo local.
 - Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
@@ -6501,3 +6504,40 @@ Estado de saída:
 - `SEC-HARD-001A` pronta para o Dia 2;
 - `SEC-HARD-001B` explicitamente bloqueada por decisão/credenciais externas;
 - próximo comando válido: `dia 2` da `SEC-HARD-001A`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SEC-HARD-001A
+
+Small release: `SEC-HARD-001A — Headers determinísticos do aplicativo`.
+
+Baseline e fronteira:
+- a baseline anterior à nova suíte permaneceu verde com 84 suítes e 482 testes;
+- `next.config.mjs` continua sem implementação de headers e `src/proxy.ts` permanece responsável somente por sessão;
+- os contratos exercitam a configuração real do Next.js com `unstable_getResponseFromNextConfig`, em ambiente Node isolado;
+- a declaração TypeScript de `next.config.mjs` foi adicionada apenas para tipar a importação do arquivo de configuração no teste.
+
+Matriz implementada no RED:
+- remoção de `X-Powered-By` por `poweredByHeader: false`;
+- baseline global em `/login`, `/dashboard` e `/manifest.webmanifest` com `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`;
+- CSP em enforcement com negação de framing/objetos e fontes compatíveis com o runtime atual do Next.js;
+- `connect-src` limitado a `'self'` e à origem HTTPS exata e normalizada do Supabase, sem wildcard;
+- falha fechada para `NEXT_PUBLIC_SUPABASE_URL` ausente, malformada ou fora de HTTPS;
+- HSTS e `upgrade-insecure-requests` somente em produção;
+- contrato arquitetural garantindo que headers estáticos não migrem para o Proxy.
+
+Evidência TDD:
+- suíte direcionada: 1 suíte em RED válido, 11 falhas intencionais, 1 teste de fronteira aprovado e 12 casos totais;
+- regressão ampliada: somente a nova suíte falhou; as 84 suítes anteriores passaram, totalizando 483 testes verdes e 11 vermelhos planejados em 494 testes;
+- as falhas apontam exclusivamente a ausência de `headers()`, `poweredByHeader` e respectivas políticas no `next.config.mjs`;
+- lint global e type-check ficaram verdes após alinhar o ambiente e os imports do harness às convenções existentes;
+- zero snapshots.
+
+Escopo preservado:
+- nenhum header, Proxy, Auth, CAPTCHA, rate limit, usuário, senha, sessão, segredo, migration, RLS, dado, dependência ou deploy foi alterado;
+- `SEC-HARD-001B` continua bloqueada até decisão humana sobre provedor e credenciais;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit, push ou PR foi executado nesta fase.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- testes essenciais da `SEC-HARD-001A` existem em RED controlado;
+- próximo comando válido: `dia 3` para implementar o mínimo em `next.config.mjs` e levar os contratos a GREEN.
