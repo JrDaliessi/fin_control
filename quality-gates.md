@@ -1599,3 +1599,15 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, migration, dado, RLS, configuração Auth, commit, push, merge, deploy ou promoção foi executado.
 - `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; `git diff --check` verde após a atualização documental.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo válido é versionar esta documentação e atualizar a PR `#19`, mantendo o merge condicionado aos checks do novo head.
+
+## Gate do Dia 1 — SEC-AUTH-001
+
+- contexto central, workflow do Dia 1 e skill `supabase:supabase` consultados; declaração operacional aprovada antes da execução.
+- changelog e documentação atuais do Supabase consultados; nenhum breaking change aplicável alterou a arquitetura.
+- projeto `fin_control` confirmado como `ACTIVE_HEALTHY`; organização confirmada no plano `free`.
+- Security Advisor confirmou exclusivamente `auth_leaked_password_protection` como aviso externo.
+- documentação oficial confirmou Pwned Passwords/Have I Been Pwned e requisito de plano Pro ou superior.
+- código e SDK instalados foram inspecionados: sessão válida pode transportar `weakPassword`; falhas reais continuam separadas por `error`.
+- ADR 0016 define provider nativo, ausência de tratamento próprio de senhas, contratos TDD, validação remota e rollback.
+- nenhuma configuração Auth, usuário, senha, sessão, migration, RLS, dado, segredo, dependência ou código funcional foi alterado.
+- estado arquitetural: `ARCHITECTURE_READY`; estado operacional: `BLOCKED` até upgrade humano para Pro ou superior.

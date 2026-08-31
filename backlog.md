@@ -319,6 +319,24 @@ Nenhum item em andamento no momento.
 
 Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial e sem decisão de provedor.
 
+### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
+- Tipo: Security Item
+- Descrição objetiva: habilitar a proteção nativa do Supabase Auth contra senhas presentes na base Pwned Passwords do Have I Been Pwned, sem processar credenciais no FinControl.
+- Objetivo de negócio: impedir uso de credenciais conhecidamente comprometidas.
+- Valor esperado: reduzir risco de account takeover.
+- Prioridade: Alta antes de produção pública
+- Dependências: upgrade humano da organização Supabase do plano Free para Pro ou superior; ADR 0016; contratos TDD do login.
+- Risco: Médio no ambiente atual; Alto em produção pública.
+- Fase recomendada: hardening de autenticação antes do deploy público.
+- Critério de pronto: contrato de sessão válida com `weakPassword` protegido por teste; proteção ativada; login sintético e logs de Auth sem regressão; advisor sem `auth_leaked_password_protection`.
+- Small releases:
+  - `SEC-AUTH-001A`: testes de compatibilidade do password grant e erro genérico.
+  - `SEC-AUTH-001B`: ativação nativa, smoke test sanitizado e advisor limpo.
+- Motivo do bloqueio: organização confirmada no plano Free; o recurso nativo está disponível somente no Pro ou superior.
+- Decisão de priorização: upgrade adiado enquanto o app permanecer em desenvolvimento e previews privados; retomar antes da produção pública.
+- Ação mínima de desbloqueio: aprovar e concluir o upgrade Supabase, sem compartilhar credenciais ou senhas com o agente.
+- Status: BLOCKED
+
 ## DÍVIDA TÉCNICA
 
 ### SEC-DEPS-001 — Atualizar dependências com vulnerabilidades altas
@@ -365,17 +383,6 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Critério de pronto: calcular lista e resumo com uma única leitura mensal, preservar os contratos de application e manter todos os gates verdes.
 - Resultado: a composition root passou a consultar transações uma vez e `calculateMonthlySummary` deriva o resumo do conjunto já carregado; 61 suítes e 292 testes permaneceram verdes.
 - Status: DONE
-
-### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
-- Tipo: Security Item
-- Objetivo de negócio: impedir uso de credenciais conhecidamente comprometidas.
-- Valor esperado: reduzir risco de account takeover.
-- Prioridade: Alta antes de produção pública
-- Dependências: configuração do Supabase Auth.
-- Risco: Médio no ambiente atual; Alto em produção pública.
-- Fase recomendada: hardening de autenticação antes do deploy público.
-- Critério de pronto: proteção ativada no Supabase e advisor de segurança sem o alerta `auth_leaked_password_protection`.
-- Status: READY
 
 ### DB-PERF-001 — Investigar advisor `auth_rls_initplan` das contas
 - Tipo: Dívida Técnica / Hardening

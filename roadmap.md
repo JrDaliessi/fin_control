@@ -243,7 +243,7 @@ Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de 
 
 Estado atual: SR-013, UI-003, SP-001, SR-014 e SR-015 concluídos. Linha e candles estão integrados, expansíveis, acessíveis, responsivos e isolados em `/` e `/dashboard`. A SR-015 encerrou o Dia 7 em `READY_FOR_RELEASE`, com pipeline local, segurança, Supabase, Vercel, observabilidade e PR validados.
 
-Próximo passo recomendado: versionar a documentação do Dia 7, atualizar a PR `#19` e realizar o merge somente se os checks do novo head permanecerem verdes; a seleção da SR-016 depende de comando humano explícito.
+Próximo passo concluído: PR `#19` mesclada por squash em `develop` no commit `496424e`; deployment Vercel da branch ficou `READY` e sem erro/fatal recente.
 
 ## Marco 10 - Candles Financeiros
 
@@ -258,6 +258,14 @@ Evidência do Dia 5: `useFinancialChart` extrai somente inicialização, resize,
 Evidência do Dia 6: o mapper normaliza `timestamptz` válido na fronteira, as duas tabelas executam rolagem horizontal por setas e o dashboard autenticado foi validado em 320, 768 e 1280 px sem overflow global ou erros no console. Expansão/foco, manifesto PWA e pipeline local ficaram verdes com 84 suítes/482 testes.
 
 Evidência do Dia 7: 84 suítes/482 testes, lint, type-check, build e auditorias npm ficaram verdes; bundle permaneceu restrito a `/` e `/dashboard`. Migrations locais/remotas estão alinhadas, logs recentes não indicaram erro explícito/fatal/5xx, preview está `READY` e checks da PR `#19` estão verdes. A entrega incremental pode ser mergeada após a atualização documental e nova validação remota, mas produção pública continua bloqueada pelos hardenings globais já registrados.
+
+## Hardening pré-produção — SEC-AUTH-001
+
+Estado atual: Dia 1 concluído com arquitetura registrada no ADR 0016. O Security Advisor confirma proteção contra senhas vazadas desativada, e a organização está no plano Supabase Free.
+
+Bloqueio: o recurso nativo exige Pro ou superior. Nenhuma configuração Auth foi alterada e produção pública permanece bloqueada. Por decisão humana, o upgrade foi adiado enquanto o app permanecer em desenvolvimento e previews privados.
+
+Próximo passo selecionado: executar o Dia 1 da `SEC-HARD-001`. Retomar o Dia 2 da `SEC-AUTH-001` somente após o upgrade humano para Pro ou superior, antes da produção pública.
 
 ## Marco 11 - Distribuicao de Frequencia
 
