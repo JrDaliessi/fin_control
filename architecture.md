@@ -514,3 +514,13 @@ Regras:
 
 ## ADRs
 Decisões arquiteturais relevantes devem ser registradas em `adr/`.
+
+## Hardening da borda HTTP e autenticação — SEC-HARD-001
+
+- Headers estáticos e CSP pertencem à configuração Next.js, não ao Proxy responsável pela renovação da sessão Supabase.
+- A baseline global inclui CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS de produção e remoção de `X-Powered-By`.
+- A CSP permite conexão somente com a própria origem e com a origem HTTPS exata do projeto Supabase; nenhum wildcard de provider, Realtime ou analytics será antecipado.
+- O login atual chama o Supabase Auth diretamente no navegador. Rate limit da Vercel sobre `/login` não protege o password grant e não substitui os controles nativos do Supabase.
+- CAPTCHA permanece uma integração separada: presentation coleta token efêmero, application orquestra, infrastructure adapta ao Supabase e nenhum segredo chega ao cliente.
+- Não será criado proxy próprio de credenciais. Mensagens públicas continuam genéricas e autorização permanece baseada em claims server-side e RLS.
+- Decisão completa: `adr/0017-auth-environment-security-hardening.md`.

@@ -27,3 +27,4 @@ Formato recomendado:
 - `0014-expandable-chart-frame.md` — frame expansível compartilhado, fullscreen progressivo, foco e safe areas
 - `0015-financial-balance-candles.md` — OHLC diário do saldo, snapshot único e seletor Linha/Candles
 - `0016-native-leaked-password-protection.md` — proteção nativa contra senhas vazadas, compatibilidade do login e bloqueio de plano
+- `0017-auth-environment-security-hardening.md` — headers HTTP, CSP e fronteiras para proteção contra abuso do login

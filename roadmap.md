@@ -267,6 +267,19 @@ Bloqueio: o recurso nativo exige Pro ou superior. Nenhuma configuração Auth fo
 
 Próximo passo selecionado: executar o Dia 1 da `SEC-HARD-001`. Retomar o Dia 2 da `SEC-AUTH-001` somente após o upgrade humano para Pro ou superior, antes da produção pública.
 
+## Hardening pré-produção — SEC-HARD-001
+
+Estado atual: Dia 1 concluído com arquitetura registrada no ADR 0017. A resposta pública confirma HTTPS/HSTS da Vercel, mas o aplicativo ainda não define CSP, frame policy, `nosniff`, referrer policy ou permissions policy.
+
+Sequência aprovada:
+1. `SEC-HARD-001A` — TDD e implementação dos headers determinísticos no Next.js;
+2. validação em Preview da resposta real, hidratação, tema, login, sessão, gráficos e PWA;
+3. `SEC-HARD-001B` — somente após decisão humana sobre CAPTCHA e credenciais externas.
+
+Decisão de borda: rate limit WAF sobre `/login` não protege o password grant enviado pelo browser diretamente ao Supabase. Não será criado proxy próprio de senha para contornar essa fronteira.
+
+Próximo passo: executar o Dia 2 da `SEC-HARD-001A` para escrever os contratos RED antes de alterar `next.config.mjs`.
+
 ## Marco 11 - Distribuicao de Frequencia
 
 SR-016 entrega algoritmo continuo, tabela, FI, FR, percentuais, acumuladas e medidas agrupadas. SR-017 adiciona histograma, toggle, filtros e comparacao. O metodo inicial usa `k = ceil(sqrt(n))`.
