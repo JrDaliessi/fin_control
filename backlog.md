@@ -179,17 +179,6 @@ Nenhum item em andamento no momento.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
 - Status: DISCOVERY
 
-### SR-015 - Candles financeiros
-- Tipo: Small Release
-- Objetivo de negocio: mostrar abertura, maxima, minima e fechamento do saldo.
-- Valor esperado: leitura avancada inspirada em exchanges sem trading.
-- Prioridade: Media
-- Dependencias: SR-013, SR-014, saldo inicial e ordenacao estavel.
-- Risco: Alto
-- Fase recomendada: apos grafico simples.
-- Criterio de pronto: OHLC e vazios testados, tooltip acessivel e sem recursos de trading.
-- Status: DISCOVERY
-
 ### SR-016 - Distribuicao de frequencia continua
 - Tipo: Small Release
 - Objetivo de negocio: revelar concentracao de despesas por faixa.
@@ -449,6 +438,35 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-015 — Candles financeiros
+- Tipo: Small Release
+- Resultado: saldo diário apresentado como linha ou candles OHLC sobre o mesmo snapshot server-side, com seletor, tooltip explicável, tabela equivalente e frame expansível.
+- Integridade: abertura, máxima, mínima e fechamento seguem ordem determinística de registro; intervalos vazios, overflow e timestamps PostgreSQL com offset estão cobertos sem semântica de trading.
+- UX/PWA: 320, 768 e 1280 px sem overflow global; controles de 44 px, teclado horizontal, foco modal, manifesto standalone e fallback textual validados.
+- Evidência final: 84 suítes/482 testes, lint, type-check, build e auditorias npm verdes; chunk ECharts/ZRender restrito a `/` e `/dashboard` com 179.457 bytes gzip.
+- Evidência remota: migrations alinhadas, advisors/logs revisados, preview `READY` e checks da PR `#19` verdes no head publicado.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- Data de conclusão: 2026-08-31
+- Status: DONE
+
+### BUG-ANALYTICS-001 — Normalizar `timestamptz` do snapshot financeiro
+- Tipo: Bug / Data Integrity
+- Resultado: o mapper converte todo instante válido recebido do PostgreSQL para ISO UTC canônico antes de construir o snapshot e continua rejeitando valores inválidos.
+- Limites preservados: nenhuma mudança em RPC, migration, RLS, dados, ordenação, fórmulas financeiras ou contrato do domínio.
+- Evidência TDD: teste com offset falhou antes da correção; quatro suítes/32 testes direcionados e regressão completa de 84 suítes/482 testes ficaram verdes.
+- Evidência real: dashboard autenticado renderizou dois movimentos sem overlay, erro ou warning após a correção.
+- Data de conclusão: 2026-08-31
+- Status: DONE
+
+### TECH-CHART-002 — Ciclo de vida compartilhado das ilhas ECharts
+- Tipo: Dívida Técnica / Refatoração
+- Resultado: `useFinancialChart` centraliza inicialização SVG, resize, preferências visuais, atualização e cleanup das duas ilhas existentes.
+- Limites preservados: builders, temas, modelos, copy e estados continuam concretos; nenhum `ChartPort`, fetch, persistência ou regra financeira foi criado.
+- Evidência TDD: contrato arquitetural falhou antes da extração e passou depois; sete suítes/54 testes direcionados e regressão completa de 84 suítes/480 testes verdes.
+- Bundle: 525.257 bytes brutos e 179.344 bytes gzip, variação imaterial de -584/+34 bytes sobre o Dia 4.
+- Data de conclusão: 2026-08-31
+- Status: DONE
 
 ### SR-014 — Gráfico de linha da evolução
 - Tipo: Small Release

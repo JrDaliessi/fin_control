@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-014 concluído; qualidade, segurança, observabilidade e preview validados para entrega incremental de código
+- Fase atual: Dia 7 da SR-015 concluído; entrega incremental validada e aguardando commit, push e atualização da PR por comando explícito
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -115,6 +115,14 @@
 - Data da refatoração e hardening interno da SR-014: 2026-08-30
 - Data da revisão de UX, acessibilidade e PWA da SR-014: 2026-08-30
 - Data da validação final e preparação de release da SR-014: 2026-08-30
+- Data de seleção da SR-015 como próximo ciclo: 2026-08-30
+- Data do discovery e arquitetura da SR-015: 2026-08-30
+- Data da estratégia de testes e RED controlado da SR-015: 2026-08-30
+- Data da implementação mínima orientada por teste da SR-015: 2026-08-30
+- Data da expansão controlada da SR-015: 2026-08-30
+- Data da refatoração e hardening interno da SR-015: 2026-08-31
+- Data da revisão de UX, acessibilidade e PWA da SR-015: 2026-08-31
+- Data da validação final e preparação de release da SR-015: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -932,7 +940,7 @@ Sequencia aprovada:
 Regra operacional:
 - cada SR percorre integralmente Dias 1 a 7
 - nenhuma implementacao funcional foi autorizada nesta analise
-- SR-007 foi selecionada e teve o Dia 1 concluído; o próximo comando válido é `dia 2`
+- SR-015 teve o Dia 2 concluído em RED controlado; o próximo comando válido é `dia 3`
 
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
@@ -967,6 +975,14 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
+- Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e depois incluiu o diretório opcional inexistente `scripts` em uma busca. Prevenção: resolver arquivos e diretórios opcionais ou operacionais com `rg --files` antes da leitura/busca e só então usar os caminhos confirmados, inclusive quando o nome do job remoto difere do nome do arquivo local.
+- Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
+- Erro: no início dos gates do Dia 5 da SR-015, a IA usou o fallback `pnpm` em um projeto gerenciado por npm; o pnpm tentou mover dependências existentes para `node_modules/.ignored` e criar `.pnpm-store` antes de falhar por rede restrita. Prevenção: respeitar sempre o `packageManager` do projeto, invocar Jest/TypeScript/ESLint/Next diretamente com a runtime Node compatível quando o wrapper npm estiver quebrado e nunca usar outro gerenciador apenas como substituto de execução; se ocorrer, interromper, restaurar os pacotes movidos e remover somente os artefatos criados após validar os caminhos absolutos.
+- Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
+- Erro: o Dia 2 da SR-015 adicionou os novos contratos específicos, mas não atualizou fixtures tipadas, mocks server-side e o boundary transversal da SR-014 para a responsabilidade aprovada do `FinancialVisualizationSwitcher`; a regressão ampliada encontrou o drift somente no Dia 3. Prevenção: ao introduzir uma nova fronteira cliente ou mover a composição entre componentes, pesquisar e adaptar no RED todos os consumidores, fixtures e scanners arquiteturais existentes antes de considerar a estratégia de testes concluída.
+- Erro: os contratos TDD criados no Dia 2 da SR-015 usaram `structuredClone` e espionaram `globalThis.fetch`, mas o ambiente `jest-environment-jsdom` do projeto não expunha essas APIs, produzindo quatro falsos negativos após o primeiro GREEN funcional. Prevenção: quando um teste depender de APIs globais do runtime, confirmar sua presença no ambiente Jest durante o RED e centralizar polyfills determinísticos em `tests/setupTests.ts`, sem mascarar chamadas de rede inesperadas.
+- Erro: na inspeção inicial do Dia 1 da SR-015, a IA presumiu nomes inexistentes para um ADR e para um DTO antes de confirmar a árvore real; as leituras falharam sem alterar o projeto. Prevenção: resolver caminhos com `rg --files` antes de abrir artefatos cuja localização não foi confirmada, especialmente após retomadas por contexto resumido.
 - Erro: no Dia 7 da SR-014, após consultar as dependências empacotadas, a IA presumiu que o diretório Node informado também continha `node_modules/npm/bin/npm-cli.js`; o bundle atual expõe Node 24 e não possui esse arquivo, enquanto o projeto exige Node 22. Prevenção: tratar os caminhos retornados como artefatos independentes, validar existência e versão antes de invocar e resolver explicitamente uma runtime compatível com `engines`, sem derivar o caminho do npm a partir do caminho do Node.
 - Erro: após tipar `this` nos doubles de fullscreen do Dia 4 da SR-014, o harness continuou violando `@typescript-eslint/no-this-alias` ao atribuir o receptor a uma variável externa. Prevenção: testes de APIs DOM devem capturar explicitamente o elemento renderizado e fechá-lo no mock, evitando dependência implícita de `this` quando a identidade do alvo já pode ser consultada de forma acessível.
 - Erro: os primeiros doubles de `requestFullscreen()` do Dia 4 da SR-014 dependeram do `this` fornecido pela chamada de método, mas não declararam seu tipo, fazendo o type-check falhar com `TS2683` apesar do GREEN comportamental. Prevenção: mocks de métodos nativos que inspecionam o receptor devem declarar explicitamente `this: HTMLElement` (ou o elemento compatível) na implementação, mantendo o contrato DOM e `noImplicitThis` verdes.
@@ -6069,3 +6085,324 @@ Estado de saída:
 - merge recomendado: squash do PR #18 em `develop` após commit/push desta documentação e nova confirmação dos checks
 - produção pública e promoção manual permanecem fora do escopo e bloqueadas pelos hardenings documentados
 - próximo ciclo recomendado: refinar humanamente a `SR-015 — Candles financeiros` antes de iniciar seu Dia 1
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-015
+
+Small release: `SR-015 — Candles financeiros`.
+
+Objetivo aprovado:
+- permitir alternar entre “Evolução do saldo” e “Variação do saldo” no painel financeiro;
+- representar abertura, máxima, mínima e fechamento do saldo por dia, sem semântica de preço ou trading;
+- manter volume, receitas, despesas e quantidade de transações como informação financeira explicável;
+- preservar tabela textual equivalente, expansão universal e os estados existentes do dashboard.
+
+Escopo fechado para o primeiro incremento:
+- todos os cinco períodos atuais (`week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`) usam buckets diários, pois o contrato vigente limita o intervalo a no máximo 31 dias;
+- `open` é o saldo no início do dia; `close` é o saldo após o último lançamento ordenado daquele dia;
+- `high` e `low` incluem o saldo de abertura e cada saldo intermediário;
+- `volumeInCents` é a soma absoluta dos valores efetivados, equivalente a receitas mais despesas no domínio atual;
+- dia vazio mantém `open = high = low = close`, com receita, despesa, volume e quantidade iguais a zero;
+- dentro da mesma data civil, a ordem determinística é `createdAt` ascendente e depois `id` ascendente;
+- como o modelo atual não registra horário bancário do evento, máximas e mínimas intradiárias descrevem a ordem de registro no FinControl, não uma linha temporal bancária inferida.
+
+Contratos de camada:
+- `domain`: um agregador puro recebe período, saldo de abertura e movimentos, valida entradas, ordena deterministicamente e devolve candles diários contínuos em centavos seguros;
+- `application`: `ListFinancialEvolutionUseCase` reutiliza o único `FinancialEvolutionSnapshot` já carregado e acrescenta `candles` ao DTO, sem segundo repository call;
+- `infrastructure`: o RPC existente já fornece saldo de abertura e movimentos necessários; nenhuma migration, policy, grant ou nova consulta foi aprovada;
+- `presentation`: um seletor cliente controla somente o modo visual, recebe modelos planos e serializáveis e monta apenas o gráfico/tabela ativos, sem buscar dados;
+- ECharts continua isolado em `financial-analytics/presentation/charts/echarts`, agora com `CandlestickChart` modular além de `LineChart`;
+- linha e candles reutilizam `ExpandableChartFrame`; não há renderer, fonte de dados ou instância simultânea duplicada;
+- a tabela OHLC apresenta a mesma informação do tooltip e permanece utilizável sem depender de cor, hover ou sucesso do renderer.
+
+Estados e comportamento:
+- `success`: seletor, modo ativo, tabela equivalente e resumo existentes;
+- `empty`: candles planos por dia e volume zero, com feedback já existente;
+- `missing_accounts`: nenhum seletor, gráfico ou tabela financeira;
+- erro da leitura: error boundary sanitizada da rota;
+- erro local de ECharts: fallback textual e tabela ativa preservada;
+- loading continua pertencendo à rota, sem spinner cliente artificial.
+
+Small releases internas:
+- `SR-015A`: testes RED e implementação mínima do agregador OHLC, DTO e mapper do modelo de candles a partir do snapshot único;
+- `SR-015B`: seletor Linha/Candles, gráfico ECharts, tabela OHLC, expansão, estados, acessibilidade, bundle e validação visual.
+
+Decisões e exclusões:
+- granularidade semanal/mensal, período customizado, zoom, brush, indicadores técnicos, previsão e exportação permanecem fora;
+- nenhum `ChartPort` genérico será criado; o segundo tipo visual compartilha somente primitives e adapters concretos que já possuem uso real;
+- nenhuma nova dependência é necessária;
+- a decisão completa está no ADR 0015.
+
+Riscos:
+- ALTO: interpretar máxima/mínima como horário real da transação; mitigado por copy explícita sobre ordem de registro e por testes de desempate;
+- MÉDIO: crescimento do chunk ECharts ao registrar candlestick; deve ser medido contra a baseline de 504.020 bytes brutos no Dia 3 e novamente no Dia 7;
+- MÉDIO: tabela larga em mobile; responsividade, navegação e leitura por tecnologia assistiva são gates do Dia 4 ao Dia 6;
+- os bloqueios pré-produção `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001` e a dívida `CI-VERCEL-002` permanecem inalterados.
+
+Artefatos e validação do Dia 1:
+- contexto, backlog, roadmap, arquitetura, especificação de produto, estratégia planejada e quality gate atualizados;
+- ADR 0015 criado e índice de ADRs corrigido para incluir 0014 e 0015;
+- erro de caminhos presumidos registrado antes da correção;
+- nenhum código funcional, teste executável, dependência, Supabase, migration, dado, commit, push, PR ou deploy foi criado;
+- lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-015 está `IN_PROGRESS`
+- próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-015
+
+Small release prioritária: `SR-015A — Agregação OHLC, DTO e mapper`.
+
+Baseline anterior ao RED:
+- Node `22.14.0` compatível com `engines`; binários locais usados porque o wrapper global do npm permanece quebrado;
+- regressão completa verde com 76 suítes e 429 testes;
+- type-check verde;
+- lint global verde com zero warnings.
+
+Matriz executável criada:
+- domain: OHLC, volume, continuidade diária, ordem por `createdAt`/`id`, imutabilidade, saldo negativo, calendário, validação e overflow;
+- application: pontos e candles derivados do mesmo snapshot, uma única chamada ao repository, `missing_accounts` e `empty`;
+- presentation mapper: datas civis, centavos inteiros, dados de tooltip, imutabilidade e série ausente;
+- adapter: tupla ECharts `[open, close, low, high]`, estilos de alta/queda, formatação na borda, ARIA e movimento reduzido;
+- tabela: equivalência OHLC, scroll por teclado, direção textual e explicação sobre ordem de registro;
+- seletor: linha como padrão, troca para candles, um modo ativo e ausência de rede;
+- arquitetura: artefatos aprovados, ECharts confinado ao adapter, painel server-side e ilha cliente sem fonte de dados.
+
+Fixtures acrescentadas:
+- receita posterior no mesmo dia para provar novo extremo após queda intermediária;
+- despesa e receita com o mesmo `createdAt`, desempatadas por IDs estáveis;
+- cenários locais cobrem vazio, saldo negativo, cruzamento de zero, data inválida e limites de inteiro seguro.
+
+RED observado:
+- sete suítes novas executadas; sete falharam como esperado;
+- Jest materializou 14 contratos antes de a resolução de módulos interromper cinco suítes: 13 falharam e um contrato arquitetural já passou;
+- falhas funcionais: `candles` ainda ausente no DTO nos estados `success`, `empty` e `missing_accounts`;
+- falhas estruturais: agregador, mapper, model, builder, tabela, chart, switcher e registro `CandlestickChart` ainda inexistentes;
+- type-check contém somente cinco `TS2307` correspondentes aos módulos de produção deliberadamente ausentes;
+- lint direcionado dos oito arquivos de teste/fixture está verde com zero warnings;
+- regressão anterior, excluindo apenas as sete suítes RED, permaneceu verde com 76 suítes e 429 testes;
+- `git diff --check` verde.
+
+Arquivos de teste criados:
+- `aggregate-financial-candles.test.ts`;
+- `list-financial-candles.use-case.test.ts`;
+- `to-financial-candlestick-chart-model.test.ts`;
+- `build-financial-candlestick-option.test.ts`;
+- `FinancialCandlesTable.test.tsx`;
+- `FinancialVisualizationSwitcher.test.tsx`;
+- `financial-candles-boundaries.test.ts`.
+
+Restrições preservadas:
+- nenhum código funcional, tipo de produção, DTO, adapter, componente ou dependência foi criado;
+- nenhum Supabase, RPC, migration, RLS, dado, commit, push, PR ou deploy foi executado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-015 permanece `IN_PROGRESS`
+- implementação permanece bloqueada até aprovação explícita do `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-015
+
+Small release implementada: `SR-015A — Agregação OHLC, DTO e mapper`, com a integração mínima da `SR-015B` necessária para o fluxo funcional.
+
+Implementação entregue:
+- `FinancialCandle` e `aggregateFinancialCandles` validam período, IDs, instantes, tipos, valores e inteiros seguros;
+- movimentos são ordenados em cópia por data civil, `createdAt` e `id`, preservando o input;
+- todos os dias do período recebem OHLC, totais, volume absoluto e quantidade, incluindo dias vazios e saldos negativos;
+- `ListFinancialEvolutionUseCase` deriva linha e candles do mesmo `FinancialEvolutionSnapshot` e mantém exatamente uma chamada ao repository;
+- DTO, model e mapper transportam somente valores planos e serializáveis;
+- ECharts registra `CandlestickChart` no adapter modular existente e usa tuplas `[open, close, low, high]`;
+- painel permanece Server Component e entrega os dois modelos ao seletor cliente;
+- seletor usa linha como padrão, alterna localmente sem rede e monta somente gráfico/tabela ativos;
+- tabela OHLC expressa alta, queda e estabilidade em texto e explica que extremos seguem a ordem de registro;
+- o novo gráfico reutiliza `ExpandableChartFrame`, movimento reduzido, cores forçadas, tema e fallback textual.
+
+Evidência TDD e correções de harness:
+- primeiro GREEN funcional: 37 de 41 contratos passaram; quatro falsos negativos vieram de APIs globais ausentes no jsdom;
+- `tests/setupTests.ts` passou a fornecer clones determinísticos e um `fetch` que falha explicitamente quando chamado;
+- fixtures tipadas, mocks server-side e o boundary transversal foram alinhados à responsabilidade aprovada do seletor;
+- ambas as falhas de harness foram documentadas em Erros Recorrentes antes da correção;
+- GREEN direcionado final: sete suítes e 41 testes;
+- GREEN transversal: três suítes e 26 testes;
+- regressão completa: 83 suítes e 470 testes, sem snapshots.
+
+Quality gates locais:
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde, com todas as rotas e Proxy preservados;
+- `next experimental-analyze --output` verde;
+- único chunk ECharts/ZRender com 525.017 bytes brutos e 179.024 bytes gzip, delta de +20.997/+7.437 bytes sobre a baseline da SR-014;
+- chunk continua referenciado somente nos manifests cliente de `/` e `/dashboard`;
+- `git diff --check` verde; `next-env.d.ts` gerado pelo build foi restaurado ao conteúdo versionado;
+- revisão `vercel:nextjs` e `vercel:react-best-practices` confirmou Server Component, props serializáveis, ausência de fetch cliente, estado derivado e imports diretos.
+
+Riscos, pendências e escopo preservado:
+- custo incremental do candlestick é controlado e não justifica `next/dynamic` ou wrapper adicional neste recorte;
+- duplicação do ciclo de vida entre as duas ilhas ECharts foi registrada para avaliação no Dia 5, sem abstração prematura;
+- estados, teclado, mobile, alto contraste e comportamento visual real devem ser aprofundados nos Dias 4 e 6;
+- nenhum Supabase, RPC, migration, RLS, dado, dependência, período novo, recurso de trading, deploy, commit, push ou PR foi executado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-015 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-015
+
+Objetivo executado:
+- tornar a visualização de candles mais explicável, resiliente e semanticamente navegável sem alterar o contrato OHLC, o snapshot ou as fronteiras aprovadas.
+
+TDD e implementação:
+- RED direcionado: três suítes com duas falhas esperadas e 12 testes verdes;
+- falhas planejadas: tooltip ainda sem formatter financeiro e controles sem relação semântica com a região ativa;
+- GREEN final direcionado: três suítes e 15 testes verdes;
+- `FinancialCandlestickChart.test.tsx` protege inicialização SVG, descrição acessível, resize, cleanup, atualização sem nova instância, expansão, fallback e vazio;
+- tooltip passa a explicar data, abertura, máxima, mínima, fechamento, direção textual, volume e quantidade de movimentos;
+- formatter retorna mensagem estável quando ECharts não fornece um índice válido;
+- ambos os botões usam `aria-controls` e a região ativa é nomeada pelo controle selecionado com IDs únicos do React;
+- seletor mantém somente o modo como estado, deriva a seleção durante o render e continua montando apenas um renderer/tabela;
+- falha local do candlestick preserva a tabela OHLC ativa.
+
+Quality gates:
+- regressão completa: 84 suítes e 479 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- analyzer verde; único chunk ECharts/ZRender com 525.841 bytes brutos e 179.310 bytes gzip;
+- delta sobre o Dia 3: +824 bytes brutos e +286 bytes gzip;
+- chunk permanece somente nos manifests cliente de `/` e `/dashboard`;
+- `git diff --check` verde e `next-env.d.ts` restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices` confirmou hooks estáveis, renderização condicional explícita, ausência de fetch/persistência cliente e uma única visualização montada.
+
+Erros, riscos e escopo preservado:
+- ruído inicial de tipos no harness foi documentado em Erros Recorrentes antes da correção;
+- validação browser, mobile, contraste e tecnologia assistiva aprofundada permanece reservada ao Dia 6;
+- `TECH-CHART-002` permanece para decisão no Dia 5, sem refatoração antecipada;
+- nenhum domain, application, infrastructure, Supabase, RPC, migration, RLS, dado, dependência, período, recurso de trading, deploy, commit, push ou PR foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-015 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-015
+
+Objetivo executado:
+- eliminar duplicação comprovada do ciclo de vida das duas ilhas ECharts sem criar uma abstração universal, alterar fórmulas financeiras ou ampliar a fronteira cliente.
+
+TDD e refatoração:
+- baseline direcionada anterior permaneceu verde com sete suítes e 53 testes;
+- um contrato arquitetural foi acrescentado antes da implementação e falhou pela ausência do hook compartilhado;
+- `useFinancialChart` centraliza inicialização SVG, `ResizeObserver`, aplicação de opções, tema, movimento reduzido, cores forçadas, falha de inicialização e cleanup;
+- `FinancialEvolutionChart` e `FinancialCandlestickChart` mantêm builders, temas, modelos, textos, acessibilidade e estados concretos;
+- nenhum `ChartPort`, renderer genérico, fetch, persistência ou estado derivado adicional foi introduzido;
+- GREEN direcionado final: sete suítes e 54 testes.
+
+Quality gates:
+- regressão completa: 84 suítes e 480 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- chunk ECharts/ZRender: 525.257 bytes brutos e 179.344 bytes gzip;
+- delta sobre o Dia 4: -584 bytes brutos e +34 bytes gzip, sem impacto material;
+- revisão `vercel:react-best-practices`: listeners únicos com cleanup, dependências estreitas e ausência de estado derivado por efeito;
+- `next-env.d.ts` restaurado ao conteúdo versionado.
+
+Integridade, riscos e escopo preservado:
+- `TECH-CHART-002` foi encerrada como `DONE` com hook interno tipado e contrato estático contra `ChartPort`;
+- o incidente do gerenciador incompatível foi registrado; dependências foram restauradas e `.pnpm-store`/`.ignored` criados nessa tentativa foram removidos;
+- validação browser, mobile, contraste e tecnologia assistiva aprofundada permanece reservada ao Dia 6;
+- nenhum domain, application, infrastructure, Supabase, RPC, migration, RLS, dado, dependência, regra OHLC, período, recurso de trading, deploy, commit, push ou PR foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado;
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS`;
+- SR-015 permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 6`.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-015
+
+Objetivo executado:
+- validar a visualização financeira real em mobile, tablet e desktop, fortalecer a navegação por teclado das tabelas e confirmar a base PWA sem prometer offline.
+
+TDD, integridade e implementação:
+- baseline direcionada de UX/PWA iniciou verde com cinco suítes e 25 testes;
+- o navegador autenticado revelou `movement createdAt is invalid` antes da renderização, porque um `timestamptz` PostgreSQL válido com offset atravessava a fronteira sem normalização;
+- após aprovação humana explícita, um teste RED reproduziu o valor `2026-03-01T07:00:00-03:00` e o mapper passou a entregá-lo como `2026-03-01T10:00:00.000Z`;
+- a correção permaneceu em infrastructure, rejeita instantes inválidos e não altera ordenação, fórmulas OHLC, RPC, RLS, migration ou dados;
+- o navegador mostrou que a região focável das tabelas não executava de forma determinística a rolagem prometida pelas setas;
+- dois testes RED foram adicionados antes do handler compartilhado de presentation; `ArrowRight` avança e `ArrowLeft` retorna sem interceptar outras teclas;
+- GREEN direcionado final das duas tabelas: duas suítes e 14 testes.
+
+Validação real no navegador:
+- `/` autenticado renderizou o dashboard com dois movimentos reais e sem overlay, erro ou warning no console;
+- em 320 px, não houve overflow global; os dois botões do seletor mediram 44 px de altura e a tabela conteve seu próprio overflow horizontal;
+- em 768 px e 1280 px, não houve overflow global e os controles mantiveram 44 px;
+- alternância Linha/Candles atualizou `aria-pressed`, preservou gráfico e tabela equivalentes e manteve somente o modo ativo;
+- expansão do candlestick abriu diálogo modal, bloqueou o scroll do body, moveu foco ao controle de recolher e restaurou foco/scroll ao fechar;
+- a tabela OHLC focada rolou 216 px com `ArrowRight` e voltou a zero com `ArrowLeft` no viewport de 320 px;
+- o manifesto servido respondeu HTTP 200 como `application/manifest+json`, com `display: standalone`, quatro ícones, dois atalhos e sem promessa de offline.
+
+Quality gates:
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde após regenerar exclusivamente o cache corrompido de tipos do Next.js;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- `git diff --check` verde e `next-env.d.ts` restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices`: handlers estáveis, nenhuma assinatura global, efeito ou estado derivado adicional e responsabilidade restrita à interação da presentation.
+
+Riscos e escopo preservado:
+- o `Escape` permanece coberto deterministicamente por Jest; a automação do navegador integrado não propagou essa tecla de modo confiável ao documento, mas o fechamento pelo controle e a restauração de foco foram confirmados no navegador real;
+- nenhum RPC, migration, RLS, dado, dependência, regra OHLC, período, recurso de trading, deploy, commit, push ou PR foi criado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `QUALITY_VALIDATION`;
+- SR-015 permanece `IN_PROGRESS`;
+- `BUG-ANALYTICS-001` encerrado como `DONE`;
+- próximo comando válido: `dia 7`.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-015
+
+Objetivo executado:
+- validar a SR-015 como entrega incremental, incluindo pipeline local, dependências, segurança, banco, observabilidade, preview e prontidão da PR, sem promover produção.
+
+Pipeline e bundle:
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- auditorias npm completa e de produção verdes, ambas com zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- analyzer verde; chunk único ECharts/ZRender com 525.530 bytes brutos e 179.457 bytes gzip;
+- delta sobre a baseline do Dia 5: +273 bytes brutos e +113 bytes gzip, sem impacto material;
+- chunk permanece restrito aos manifests cliente de `/` e `/dashboard`.
+
+Segurança e Supabase, somente leitura:
+- migrations locais e remotas permanecem alinhadas até `20260826190714_create_financial_evolution_snapshot`; nenhuma migration é necessária para esta etapa;
+- RPC financeira continua `SECURITY INVOKER`, deriva `auth.uid()`, rejeita sessão ausente/anônima, limita intervalos a 31 dias e mantém ownership;
+- nenhuma chave de serviço é usada pelo código cliente; `.env.local` permanece ignorado e nenhum valor de segredo foi exposto;
+- Security Advisor mantém somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`;
+- Performance Advisor mantém três índices ainda não usados como informação, sem evidência para remoção;
+- logs de Auth, API e Postgres das últimas 24 horas não apresentaram erro explícito, fatal ou 5xx.
+
+Vercel, GitHub e observabilidade:
+- preview do commit `22df2d6` está `READY`, com manifesto válido e sem erro/fatal de runtime nas últimas 24 horas;
+- PR `#19` está aberta, não draft e mergeable; Quality Gates, Vercel e Vercel Preview Comments estão verdes no head publicado;
+- nenhum comentário pendente da toolbar foi encontrado;
+- baseline operacional permanece em GitHub Actions, build/runtime logs da Vercel e logs/advisors do Supabase;
+- captura externa sanitizada, alertas e teste sintético continuam em `HARD-OBS-001` antes de produção pública.
+
+Riscos e escopo preservado:
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública, mas não o merge incremental da SR-015;
+- `CI-VERCEL-002` permanece dívida MÉDIA e deve ser resolvida antes de operação direta por CLI ou promoção;
+- nenhum domínio, regra OHLC, dependência, migration, RLS, dado, configuração Auth, commit, push, merge, deploy ou promoção de produção foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `READY_FOR_RELEASE`;
+- SR-015 concluída como entrega incremental;
+- próximo passo recomendado: commit e push documental do Dia 7, atualização da PR `#19` e merge somente após os checks do novo head permanecerem verdes.

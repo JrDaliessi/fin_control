@@ -38,7 +38,8 @@ const evolution: FinancialEvolutionDto = {
       closingBalanceInCents: -2_500,
       transactionCount: 1
     }
-  ]
+  ],
+  candles: []
 };
 
 describe("toFinancialEvolutionChartModel", () => {

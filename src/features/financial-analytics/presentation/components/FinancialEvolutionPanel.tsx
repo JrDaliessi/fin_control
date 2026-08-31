@@ -5,9 +5,9 @@ import { Card } from "@/shared/components/ui/Card";
 import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { formatCents } from "@/shared/utils/formatCents";
 import { toFinancialEvolutionChartModel } from "../charts/to-financial-evolution-chart-model";
-import { FinancialEvolutionChart } from "./FinancialEvolutionChart.client";
-import { FinancialEvolutionTable } from "./FinancialEvolutionTable";
+import { toFinancialCandlestickChartModel } from "../charts/to-financial-candlestick-chart-model";
 import { FinancialPeriodSelector } from "./FinancialPeriodSelector";
+import { FinancialVisualizationSwitcher } from "./FinancialVisualizationSwitcher.client";
 
 type FinancialEvolutionPanelProps = Readonly<{
   result: FinancialEvolutionDto;
@@ -116,21 +116,12 @@ export function FinancialEvolutionPanel({
             {movementLabel(result.summary.transactionCount)}
           </p>
 
-          <Card className="grid gap-3">
-            <div className="grid gap-1">
-              <h3 className="text-lg font-semibold text-foreground">
-                Evolução do saldo
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Saldo ao fim de cada dia do período selecionado.
-              </p>
-            </div>
-            <FinancialEvolutionChart
-              model={toFinancialEvolutionChartModel(result)}
-            />
-          </Card>
-
-          <FinancialEvolutionTable points={result.points} />
+          <FinancialVisualizationSwitcher
+            candles={result.candles}
+            candlestickModel={toFinancialCandlestickChartModel(result)}
+            evolutionModel={toFinancialEvolutionChartModel(result)}
+            evolutionPoints={result.points}
+          />
         </div>
       )}
     </section>

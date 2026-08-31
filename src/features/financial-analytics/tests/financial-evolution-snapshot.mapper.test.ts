@@ -15,6 +15,19 @@ describe("mapFinancialEvolutionSnapshotRows", () => {
     });
   });
 
+  it("normalizes a valid PostgreSQL timestamptz before crossing into domain", () => {
+    const snapshot = mapFinancialEvolutionSnapshotRows([
+      {
+        ...rpcMovementRow,
+        created_at: "2026-03-01T07:00:00-03:00"
+      }
+    ]);
+
+    expect(snapshot.movements[0]?.createdAt).toBe(
+      "2026-03-01T10:00:00.000Z"
+    );
+  });
+
   it("maps the nullable sentinel row to an empty snapshot", () => {
     expect(mapFinancialEvolutionSnapshotRows([emptyRpcSnapshotRow])).toEqual({
       accountCount: 1,

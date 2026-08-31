@@ -1467,3 +1467,135 @@ Uma release incremental só pode ser considerada pronta quando:
 - `git diff --check`: verde; somente `backlog.md`, `project-context.md`, `quality-gates.md` e `roadmap.md` foram alterados nesta fase.
 - nenhum commit, push, merge ou deploy de produção foi executado nesta fase.
 - estado final: `READY_FOR_RELEASE`; SR-014 e UX-CHART-001 marcadas como `DONE`.
+
+## Gate do Dia 1 — SR-015
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- branch `codex/sr-015-financial-candles` criada da `develop` integrada no commit `503d037`.
+- períodos, snapshot/RPC, movimentos, agregador diário, caso de uso, DTO, painel, tabela, adapter ECharts e ADRs anteriores confrontados.
+- contrato limitado a candles diários para os cinco períodos atuais de até 31 dias.
+- OHLC, volume, vazios, ordem por data civil/registro e ressalva semântica sobre ausência de horário bancário documentados.
+- uma única leitura server-side preservada; nenhuma nova consulta, migration, RLS ou dependência aprovada.
+- ilha cliente limitada ao seletor e visualização; modelos planos, tabela equivalente, frame expansível e imports modulares permanecem obrigatórios.
+- matriz TDD planejada para domain, application, presentation, arquitetura e bundle; nenhum teste executável criado no Dia 1.
+- erro de caminhos presumidos registrado em Erros Recorrentes antes da correção.
+- ADR 0015, contexto, arquitetura, backlog, roadmap, estratégia de testes e especificação de produto atualizados.
+- nenhum código funcional, Supabase, migration, dado, commit, push, PR ou deploy executado.
+- lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2`.
+
+## Gate do Dia 2 — SR-015
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline completa: 76 suítes e 429 testes verdes; type-check e lint verdes.
+- sete suítes e três fixtures adicionais criadas antes de qualquer código funcional.
+- matriz declara 41 contratos de domain, application, presentation, adapter e arquitetura.
+- RED direcionado confirmado: sete suítes falharam; Jest materializou 13 falhas e um teste verde antes das falhas esperadas de resolução.
+- `candles` ausente no DTO falhou nos estados `success`, `empty` e `missing_accounts`.
+- sete fronteiras, `CandlestickChart`, mapper, builder, tabela e switcher falharam somente por ainda não existirem.
+- type-check RED contém exclusivamente cinco `TS2307` dos módulos planejados ausentes.
+- lint direcionado dos oito arquivos novos/alterados: verde, zero warnings.
+- regressão anterior, excluindo apenas as sete suítes RED: 76 suítes e 429 testes verdes.
+- nenhum teste anterior foi removido, ignorado ou relaxado; `git diff --check` verde.
+- nenhum código funcional, dependência, Supabase, migration, dado, commit, push, PR ou deploy executado.
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — SR-015
+
+- contexto central, workflow e skills `vercel:nextjs`/`vercel:react-best-practices` consultados; declaração operacional aprovada antes do código.
+- agregador OHLC puro, tipo, DTO, mapper, builder ECharts, registro modular, gráfico, tabela, seletor e painel server-side implementados.
+- uma única chamada ao repository preservada; linha e candles derivam o mesmo snapshot, sem nova consulta ou migration.
+- primeiro GREEN: 37/41 contratos; quatro falsos negativos do jsdom foram registrados antes do polyfill compartilhado.
+- fixtures, mocks server-side e boundary transversal desatualizados foram registrados antes do alinhamento à arquitetura aprovada.
+- GREEN direcionado final: 7 suítes e 41 testes; GREEN transversal: 3 suítes e 26 testes.
+- regressão completa: 83 suítes e 470 testes verdes; zero snapshots.
+- lint global: verde com zero warnings; type-check: verde.
+- build Next.js `16.3.3` com Turbopack: verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; chunk com 525.017 bytes brutos e 179.024 bytes gzip, delta de +20.997/+7.437 bytes.
+- revisão React/Next: painel server-side, props planas serializáveis, estado local derivado, sem fetch ou persistência cliente e imports diretos.
+- `TECH-CHART-002` registra para o Dia 5 a avaliação da duplicação entre ciclos de vida das ilhas, sem abstração prematura no Dia 3.
+- nenhum Supabase, RPC, migration, RLS, dado, dependência, recurso de trading, deploy, commit, push ou PR executado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; `git diff --check` verde.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — SR-015
+
+- contexto central, workflow e skill `vercel:react-best-practices` consultados; declaração operacional aprovada antes dos testes.
+- RED direcionado: 3 suítes, 2 falhas esperadas e 12 testes verdes para tooltip financeiro e relação semântica do seletor.
+- nova suíte da ilha cobre inicialização SVG, descrição, resize, cleanup, atualização, expansão, falha e vazio.
+- GREEN direcionado final: 3 suítes e 15 testes verdes.
+- tooltip contém data, OHLC, direção textual, volume e quantidade; índice inválido possui fallback estável.
+- botões e região ativa estão ligados por `aria-controls`/`aria-labelledby`; apenas um renderer e sua tabela permanecem montados.
+- falha local do renderer mantém a tabela OHLC disponível.
+- ruído tipado inicial do harness foi documentado antes da correção; expectativas funcionais permaneceram intactas.
+- regressão completa: 84 suítes e 479 testes verdes; zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; 525.841 bytes brutos e 179.310 bytes gzip, delta de +824/+286 bytes.
+- revisão React: estado mínimo, valores derivados no render, condicionais explícitas, hooks estáveis e ausência de rede/persistência cliente.
+- nenhum domain, application, infrastructure, Supabase, migration, dado, dependência, período ou recurso de trading alterado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado; `git diff --check` verde.
+- nenhum deploy, commit, push ou atualização de PR executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — SR-015
+
+- contexto central, workflow do Dia 5 e skill `vercel:react-best-practices` consultados; declaração operacional aprovada antes da refatoração.
+- inventário confirmou 160 ocorrências de linhas iguais entre as duas ilhas e justificou extração limitada ao lifecycle.
+- baseline direcionada antes da mudança: sete suítes e 53 testes verdes.
+- RED arquitetural: novo contrato falhou somente porque `presentation/hooks/useFinancialChart.ts` ainda não existia.
+- GREEN direcionado: sete suítes e 54 testes verdes após a extração.
+- hook interno tipado centraliza inicialização SVG, resize, preferências visuais, atualização e cleanup; builders, modelos, temas, textos e estados permanecem específicos.
+- contrato arquitetural proíbe `ChartPort`, Supabase e fetch no hook; ECharts continua confinado ao adapter de presentation.
+- revisão React: listeners únicos com remoção simétrica, callbacks com dependências estreitas e nenhum estado derivado em efeito.
+- regressão completa: 84 suítes e 480 testes verdes; zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` verde; rotas e Proxy preservados.
+- analyzer: chunk ECharts/ZRender com 525.257 bytes brutos e 179.344 bytes gzip; delta de -584/+34 bytes sobre o Dia 4.
+- tentativa incompatível com pnpm registrada no contexto; pacotes restaurados e artefatos temporários removidos antes dos gates finais.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhum domain, application, infrastructure, Supabase, migration, dado, dependência, commit, push, PR ou deploy alterado.
+- `TECH-CHART-002` encerrada como `DONE`.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — SR-015
+
+- contexto central, workflow do Dia 6 e declaração operacional consultados e aprovados antes da execução.
+- skills `vercel:nextjs`, `vercel:react-best-practices`, `vercel:agent-browser-verify`, Browser e `supabase:supabase` aplicadas dentro do escopo aprovado.
+- baseline direcionada: cinco suítes e 25 testes de UX/PWA verdes.
+- bloqueio real reproduzido em RED: `timestamptz` PostgreSQL válido com offset atravessava o mapper sem normalização e era rejeitado pelo domínio.
+- correção mínima aprovada e isolada em infrastructure: `toISOString()` na fronteira, sem mudança de RPC, migration, RLS, dados, ordenação ou fórmulas OHLC.
+- GREEN de integridade: quatro suítes e 32 testes direcionados.
+- RED/GREEN de acessibilidade: duas tabelas focáveis passaram a executar rolagem horizontal por `ArrowRight`/`ArrowLeft`; duas suítes e 14 testes verdes.
+- navegador autenticado: `/` renderizado com dados reais, sem overlay, erro ou warning; alternância Linha/Candles e tabela equivalente preservadas.
+- responsividade: 320, 768 e 1280 px sem overflow global; botões do seletor com 44 px; overflow largo confinado à tabela.
+- expansão: diálogo modal, scroll do body bloqueado, foco no controle de recolher e restauração de foco/scroll confirmados.
+- teclado real: tabela OHLC avançou 216 px com `ArrowRight` e retornou a zero com `ArrowLeft` em 320 px.
+- PWA: manifesto HTTP 200 como `application/manifest+json`, `display: standalone`, quatro ícones e dois atalhos; nenhuma promessa de offline.
+- revisão React: handlers estáveis, sem listener global, efeito ou estado derivado novo; regra permanece na presentation.
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots.
+- lint global: verde com zero warnings; type-check: verde.
+- build Next.js `16.3.3` com Turbopack: verde; rotas e Proxy preservados.
+- cache corrompido `.next/dev/types` foi validado dentro do workspace, removido e regenerado; `next-env.d.ts` voltou ao conteúdo versionado.
+- `git diff --check`: verde; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhum deploy, commit, push ou PR foi executado.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — SR-015
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- auditorias npm completa e de produção verdes, ambas com zero vulnerabilidades.
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; 525.530 bytes brutos e 179.457 bytes gzip, delta de +273/+113 bytes sobre a baseline do Dia 5.
+- revisão local de segurança confirmou autenticação server-side por claims, RPC `SECURITY INVOKER`, ownership, limite de 31 dias, ausência de segredo de serviço no cliente e fronteira cliente sem fetch/Supabase/persistência financeira.
+- migrations locais e remotas alinhadas; nenhuma migration é necessária nesta etapa.
+- Security Advisor manteve somente `SEC-AUTH-001`; três índices sem uso permaneceram informativos; logs recentes de Auth, API e Postgres não apresentaram erro explícito, fatal ou 5xx.
+- preview Vercel do commit `22df2d6` está `READY`, sem erro/fatal recente; manifesto servido corretamente e nenhum comentário pendente da toolbar.
+- PR `#19` está aberta, não draft e mergeable; Quality Gates, Vercel e Vercel Preview Comments estão verdes no head publicado.
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública; `CI-VERCEL-002` permanece dívida MÉDIA antes de CLI/promoção.
+- nenhum código funcional, migration, dado, RLS, configuração Auth, commit, push, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; `git diff --check` verde após a atualização documental.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo válido é versionar esta documentação e atualizar a PR `#19`, mantendo o merge condicionado aos checks do novo head.

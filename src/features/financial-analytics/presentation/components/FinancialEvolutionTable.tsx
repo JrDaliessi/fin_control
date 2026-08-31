@@ -1,5 +1,6 @@
 import type { FinancialEvolutionPoint } from "../../domain/types/financial-evolution.types";
 import { formatCents } from "@/shared/utils/formatCents";
+import { handleHorizontalTableKeyDown } from "./horizontal-table-keyboard-scroll";
 
 type FinancialEvolutionTableProps = Readonly<{
   points: readonly FinancialEvolutionPoint[];
@@ -26,6 +27,7 @@ export function FinancialEvolutionTable({
         aria-describedby="financial-evolution-table-hint"
         aria-label="Evolução financeira por dia"
         className="touch-pan-x overflow-x-auto overscroll-x-contain rounded-xl border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+        onKeyDown={handleHorizontalTableKeyDown}
         role="region"
         tabIndex={0}
       >

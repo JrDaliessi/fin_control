@@ -1,8 +1,12 @@
 import type { FinancialAnalyticsQueryRepository } from "../ports/financial-analytics-query.repository";
 import { resolveReferenceCivilDate } from "../services/resolve-reference-civil-date";
 import { aggregateFinancialEvolution } from "../../domain/services/aggregate-financial-evolution";
+import { aggregateFinancialCandles } from "../../domain/services/aggregate-financial-candles";
 import { resolveFinancialPeriod } from "../../domain/services/resolve-financial-period";
-import type { FinancialEvolutionPoint } from "../../domain/types/financial-evolution.types";
+import type {
+  FinancialCandle,
+  FinancialEvolutionPoint
+} from "../../domain/types/financial-evolution.types";
 import type {
   FinancialPeriod,
   FinancialPeriodKind
@@ -30,6 +34,7 @@ export type FinancialEvolutionDto = Readonly<{
   period: FinancialPeriod;
   summary: FinancialEvolutionSummaryDto;
   points: readonly FinancialEvolutionPoint[];
+  candles: readonly FinancialCandle[];
 }>;
 
 type ListFinancialEvolutionDependencies = Readonly<{
@@ -123,11 +128,17 @@ export class ListFinancialEvolutionUseCase {
         accountCount: 0,
         period,
         summary: summarize(snapshot.openingBalanceInCents, []),
-        points: []
+        points: [],
+        candles: []
       };
     }
 
     const points = aggregateFinancialEvolution({
+      period,
+      openingBalanceInCents: snapshot.openingBalanceInCents,
+      movements: snapshot.movements
+    });
+    const candles = aggregateFinancialCandles({
       period,
       openingBalanceInCents: snapshot.openingBalanceInCents,
       movements: snapshot.movements
@@ -138,7 +149,8 @@ export class ListFinancialEvolutionUseCase {
       accountCount: snapshot.accountCount,
       period,
       summary: summarize(snapshot.openingBalanceInCents, points),
-      points
+      points,
+      candles
     };
   }
 }

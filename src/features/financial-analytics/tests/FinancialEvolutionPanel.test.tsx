@@ -1,26 +1,38 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 import type { FinancialEvolutionDto } from "../application/use-cases/list-financial-evolution.use-case";
+import type {
+  FinancialCandle,
+  FinancialEvolutionPoint
+} from "../domain/types/financial-evolution.types";
+import type { FinancialCandlestickChartModel } from "../presentation/charts/financial-candlestick-chart.model";
 import type { FinancialEvolutionChartModel } from "../presentation/charts/financial-evolution-chart.model";
 
 jest.mock(
-  "../presentation/components/FinancialEvolutionChart.client",
+  "../presentation/components/FinancialVisualizationSwitcher.client",
   () => ({
-    FinancialEvolutionChart: jest.fn(() => null)
+    FinancialVisualizationSwitcher: jest.fn(() => null)
   })
 );
 
-type FinancialEvolutionChartStub = (props: {
-  model: FinancialEvolutionChartModel;
+type FinancialVisualizationSwitcherStub = (props: {
+  evolutionModel: FinancialEvolutionChartModel;
+  candlestickModel: FinancialCandlestickChartModel;
+  evolutionPoints: readonly FinancialEvolutionPoint[];
+  candles: readonly FinancialCandle[];
 }) => ReactNode;
 
-const { FinancialEvolutionChart: mockFinancialEvolutionChart } =
+const { FinancialVisualizationSwitcher: mockFinancialVisualizationSwitcher } =
   jest.requireMock(
-    "../presentation/components/FinancialEvolutionChart.client"
+    "../presentation/components/FinancialVisualizationSwitcher.client"
   ) as {
-    FinancialEvolutionChart: jest.MockedFunction<FinancialEvolutionChartStub>;
+    FinancialVisualizationSwitcher: jest.MockedFunction<FinancialVisualizationSwitcherStub>;
   };
+
+const { FinancialEvolutionTable } = jest.requireActual<
+  typeof import("../presentation/components/FinancialEvolutionTable")
+>("../presentation/components/FinancialEvolutionTable");
 
 const { FinancialEvolutionPanel } = jest.requireActual<
   typeof import("../presentation/components/FinancialEvolutionPanel")
@@ -53,6 +65,20 @@ const successResult: FinancialEvolutionDto = {
       closingBalanceInCents: 13_000,
       transactionCount: 2
     }
+  ],
+  candles: [
+    {
+      startOnInclusive: "2026-03-01",
+      endOnExclusive: "2026-03-02",
+      openInCents: 10_000,
+      highInCents: 15_000,
+      lowInCents: 10_000,
+      closeInCents: 13_000,
+      incomeInCents: 5_000,
+      expenseInCents: 2_000,
+      volumeInCents: 7_000,
+      transactionCount: 2
+    }
   ]
 };
 
@@ -64,8 +90,15 @@ function makeResult(
 
 describe("FinancialEvolutionPanel", () => {
   beforeEach(() => {
-    mockFinancialEvolutionChart.mockReset();
-    mockFinancialEvolutionChart.mockImplementation(() => null);
+    mockFinancialVisualizationSwitcher.mockReset();
+    mockFinancialVisualizationSwitcher.mockImplementation(
+      ({ evolutionPoints }) => (
+        <>
+          <h3>Evolução do saldo</h3>
+          <FinancialEvolutionTable points={evolutionPoints} />
+        </>
+      )
+    );
   });
 
   it("offers the five supported periods and preserves the selected period", () => {
@@ -97,7 +130,8 @@ describe("FinancialEvolutionPanel", () => {
         result={makeResult({
           status: "missing_accounts",
           accountCount: 0,
-          points: []
+          points: [],
+          candles: []
         })}
         selectedPeriodKind="month"
       />
@@ -113,7 +147,7 @@ describe("FinancialEvolutionPanel", () => {
     expect(
       screen.queryByRole("group", { name: /Saldo ao fim do período:/ })
     ).not.toBeInTheDocument();
-    expect(mockFinancialEvolutionChart).not.toHaveBeenCalled();
+    expect(mockFinancialVisualizationSwitcher).not.toHaveBeenCalled();
   });
 
   it("distinguishes a period without movements and keeps daily balances visible", () => {
@@ -247,6 +281,12 @@ describe("FinancialEvolutionPanel", () => {
         "Deslize horizontalmente ou use as setas do teclado para consultar todas as colunas."
       )
     ).toHaveClass("sm:sr-only");
+
+    fireEvent.keyDown(scrollRegion, { key: "ArrowRight" });
+    expect(scrollRegion.scrollLeft).toBeGreaterThan(0);
+
+    fireEvent.keyDown(scrollRegion, { key: "ArrowLeft" });
+    expect(scrollRegion.scrollLeft).toBe(0);
   });
 
   it("renders the balance chart and table from the same success result", () => {
@@ -260,14 +300,35 @@ describe("FinancialEvolutionPanel", () => {
     expect(
       screen.getByRole("heading", { level: 3, name: "Evolução do saldo" })
     ).toBeInTheDocument();
-    expect(mockFinancialEvolutionChart).toHaveBeenCalledTimes(1);
-    expect(mockFinancialEvolutionChart.mock.calls[0]?.[0].model).toEqual({
+    expect(mockFinancialVisualizationSwitcher).toHaveBeenCalledTimes(1);
+    expect(
+      mockFinancialVisualizationSwitcher.mock.calls[0]?.[0].evolutionModel
+    ).toEqual({
       startOnInclusive: "2026-03-01",
       endOnExclusive: "2026-03-08",
       points: [
         {
           civilDate: "2026-03-01",
           closingBalanceInCents: 13_000
+        }
+      ]
+    });
+    expect(
+      mockFinancialVisualizationSwitcher.mock.calls[0]?.[0].candlestickModel
+    ).toEqual({
+      startOnInclusive: "2026-03-01",
+      endOnExclusive: "2026-03-08",
+      points: [
+        {
+          civilDate: "2026-03-01",
+          openInCents: 10_000,
+          highInCents: 15_000,
+          lowInCents: 10_000,
+          closeInCents: 13_000,
+          incomeInCents: 5_000,
+          expenseInCents: 2_000,
+          volumeInCents: 7_000,
+          transactionCount: 2
         }
       ]
     });
@@ -319,22 +380,29 @@ describe("FinancialEvolutionPanel", () => {
     expect(screen.getByRole("status")).toHaveTextContent(
       "Nenhuma movimentação neste período. Seus saldos continuam visíveis."
     );
-    expect(mockFinancialEvolutionChart.mock.calls[0]?.[0].model.points).toEqual([
-      { civilDate: "2026-03-01", closingBalanceInCents: 2_500 },
-      { civilDate: "2026-03-02", closingBalanceInCents: 2_500 }
-    ]);
+    expect(
+      mockFinancialVisualizationSwitcher.mock.calls[0]?.[0].evolutionModel.points
+    ).toEqual([
+        { civilDate: "2026-03-01", closingBalanceInCents: 2_500 },
+        { civilDate: "2026-03-02", closingBalanceInCents: 2_500 }
+      ]);
     expect(
       screen.getByRole("table", { name: "Evolução financeira por dia" })
     ).toBeInTheDocument();
   });
 
   it("keeps the table available when the chart reports a local failure", () => {
-    mockFinancialEvolutionChart.mockImplementationOnce(() => (
-      <p role="status">
-        Não foi possível carregar o gráfico. Consulte a tabela de evolução
-        financeira.
-      </p>
-    ));
+    mockFinancialVisualizationSwitcher.mockImplementationOnce(
+      ({ evolutionPoints }) => (
+        <>
+          <p role="status">
+            Não foi possível carregar o gráfico. Consulte a tabela de evolução
+            financeira.
+          </p>
+          <FinancialEvolutionTable points={evolutionPoints} />
+        </>
+      )
+    );
 
     render(
       <FinancialEvolutionPanel

@@ -1564,3 +1564,116 @@ pgTAP:
 - qualquer rota, action ou componente de apresentação
 
 Estado de saída: `TEST_STRATEGY_READY`.
+
+## Matriz planejada no Dia 1 — SR-015 Candles Financeiros
+
+Objetivo do próximo Dia 2: criar testes executáveis em RED para `SR-015A` antes de qualquer agregador, DTO ou componente funcional.
+
+| Camada | Alvo | Cenários essenciais planejados |
+| --- | --- | --- |
+| domain | agregador de candles | OHLC com receita/despesa intercaladas; abertura/fechamento; extremos intermediários; volume e quantidade |
+| domain | continuidade diária | dias vazios antes, entre e depois de movimentos; mês civil; saldo inicial negativo e zero |
+| domain | ordem determinística | input embaralhado; `occurredOn`, `createdAt` e `id`; empate de timestamp; imutabilidade |
+| domain | validação numérica | data/instant inválido, movimento fora do período, valor não positivo/não inteiro e overflow de inteiro seguro |
+| application | `ListFinancialEvolutionUseCase` | evolução e candles derivados de um único snapshot e uma única chamada ao repository |
+| presentation | mapper de candles | datas civis e centavos preservados; view model plano, serializável e sem identidade |
+| presentation | seletor e estados | Linha padrão; alternância; `empty`; `missing_accounts`; falha do renderer com tabela preservada |
+| presentation | equivalência acessível | tabela contém OHLC/volume/quantidade do modo ativo; alta/queda não depende somente de cor |
+| arquitetura | fronteiras | ECharts somente em presentation; ilha sem Supabase/rede; Server Component preservado |
+| integração | bundle e renderer | `CandlestickChart` modular; um modo ativo; ECharts somente em `/` e `/dashboard` |
+
+Fixtures mínimas planejadas:
+- saldo de abertura positivo com receita, despesa e nova receita no mesmo dia;
+- movimentos recebidos fora de ordem e dois movimentos com o mesmo `createdAt` desempatable por `id`;
+- sequência de três dias com o dia central vazio;
+- saldo negativo que cruza zero;
+- período sem movimentos;
+- valores próximos ao limite seguro para reproduzir overflow.
+
+Critério RED do Dia 2:
+- os testes novos falham somente pelos módulos/contratos da SR-015 ainda ausentes;
+- a regressão anterior permanece verde quando as novas suítes são excluídas;
+- nenhum código funcional, adapter ECharts ou mudança de DTO é criado antes dessa evidência.
+
+## Matriz executada no Dia 2 — SR-015 Candles Financeiros
+
+| Camada | Suíte | Contratos declarados | RED observado |
+| --- | --- | ---: | --- |
+| domain | `aggregate-financial-candles.test.ts` | 15 | módulo do agregador ausente |
+| application | `list-financial-candles.use-case.test.ts` | 3 | `candles` ausente nos três estados |
+| presentation mapper | `to-financial-candlestick-chart-model.test.ts` | 3 | módulo do mapper ausente |
+| adapter ECharts | `build-financial-candlestick-option.test.ts` | 4 | model e builder ausentes |
+| presentation table | `FinancialCandlesTable.test.tsx` | 3 | tabela ausente |
+| presentation interaction | `FinancialVisualizationSwitcher.test.tsx` | 2 | switcher ausente |
+| arquitetura | `financial-candles-boundaries.test.ts` | 11 | sete artefatos, registro modular e integração ainda ausentes; confinamento atual já verde |
+
+Total planejado após os módulos carregarem: 41 contratos em sete suítes.
+
+Resultado observado:
+- baseline: 76 suítes e 429 testes verdes; type-check e lint verdes;
+- RED direcionado: sete suítes falharam, com 13 testes falhos e um teste verde entre os 14 que Jest conseguiu materializar antes das falhas de resolução;
+- os cinco módulos importados diretamente ainda ausentes geraram somente cinco `TS2307` no type-check;
+- nenhum erro implícito, warning de lint ou falha de harness permaneceu;
+- regressão anterior, excluindo exclusivamente as sete suítes novas, continuou verde com 76 suítes e 429 testes;
+- nenhuma expectativa anterior foi relaxada, ignorada ou removida.
+
+Implementação bloqueada até o Dia 3:
+- `FinancialCandle` e o agregador `aggregateFinancialCandles`;
+- extensão `candles` do `FinancialEvolutionDto` e sua orquestração a partir do snapshot único;
+- model e mapper `FinancialCandlestickChart`;
+- builder/registro modular de `CandlestickChart`;
+- `FinancialCandlesTable`, `FinancialCandlestickChart` e `FinancialVisualizationSwitcher`;
+- integração do painel server-side.
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## GREEN executado no Dia 3 — SR-015 Candles Financeiros
+
+- os 41 contratos planejados nas sete suítes da SR-015 passaram;
+- agregador cobre continuidade, ordem estável, imutabilidade, saldos negativos, calendário, validação e overflow;
+- caso de uso prova uma leitura por request e candles corretos nos três estados;
+- mapper, option builder, tabela, seletor e boundaries passaram sem rede ou dependência de cor;
+- quatro falsos negativos iniciais por globais ausentes no jsdom foram corrigidos no setup compartilhado após registro no contexto;
+- contratos transversais antigos foram alinhados à nova responsabilidade do seletor após registro do drift;
+- regressão completa final: 83 suítes e 470 testes verdes;
+- lint, type-check, build e analyzer verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Expansão TDD executada no Dia 4 — SR-015
+
+- RED: duas falhas específicas para formatter financeiro e região controlada; 12 contratos existentes já verdes;
+- GREEN: três suítes e 15 testes;
+- nova suíte caracteriza ciclo de vida, expansão e estados da ilha candlestick;
+- tooltip testa rótulos OHLC, direção, volume, singular/plural e fallback sem índice;
+- seletor testa uma região ativa nomeada, IDs únicos e tabela preservada após falha do renderer;
+- regressão completa: 84 suítes e 479 testes verdes;
+- type-check, lint, build e analyzer verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Refatoração protegida por testes no Dia 5 — SR-015
+
+- baseline direcionada: sete suítes e 53 testes verdes antes da mudança;
+- RED: contrato arquitetural novo falhou pela ausência de `useFinancialChart`;
+- GREEN: sete suítes e 54 testes após extrair o lifecycle compartilhado;
+- o contrato exige que as duas ilhas usem o hook, que `ResizeObserver` não permaneça duplicado e que o hook não introduza `ChartPort`, Supabase ou fetch;
+- suítes comportamentais preservam inicialização SVG, resize, cleanup, atualização sem reinicialização, tema, cores forçadas, movimento reduzido, falha e vazio;
+- regressão completa: 84 suítes e 480 testes verdes;
+- type-check, lint, build e orçamento do chunk verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.
+
+## RED/GREEN do Dia 6 — SR-015
+
+- baseline de UX/PWA: cinco suítes e 25 testes verdes;
+- RED de integridade: fixture PostgreSQL com offset provou que o mapper preservava representação válida, porém não canônica, de `timestamptz`;
+- GREEN de integridade: mapper converte instantes válidos com `toISOString()` e quatro suítes/32 testes direcionados passaram;
+- RED de acessibilidade: as duas tabelas focáveis não alteravam `scrollLeft` com `ArrowRight`;
+- GREEN de acessibilidade: handler de presentation avança e retorna com `ArrowRight`/`ArrowLeft`; duas suítes/14 testes passaram;
+- navegador real: dashboard autenticado sem erro/warning, viewports 320/768/1280 sem overflow global, seletor Linha/Candles, expansão e foco validados;
+- confirmação real da interação: tabela OHLC avançou 216 px e retornou a zero pelas setas em 320 px;
+- manifesto servido: HTTP 200, `application/manifest+json`, `standalone`, quatro ícones e dois atalhos, sem claim offline;
+- regressão completa: 84 suítes e 482 testes verdes; lint, type-check e build verdes.
+
+Estado de saída: `QUALITY_VALIDATION`.

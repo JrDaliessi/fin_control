@@ -33,8 +33,10 @@ function parseSafeInteger(value: NumericInteger, field: string): number {
   return parsedValue;
 }
 
-function isValidInstant(value: string): boolean {
-  return !Number.isNaN(new Date(value).getTime());
+function normalizeInstant(value: string): string | null {
+  const instant = new Date(value);
+
+  return Number.isNaN(instant.getTime()) ? null : instant.toISOString();
 }
 
 export function mapFinancialEvolutionSnapshotRows(
@@ -85,13 +87,14 @@ export function mapFinancialEvolutionSnapshotRows(
     const movementId = row.movement_id as string;
     const occurredOn = row.occurred_on as string;
     const createdAt = row.created_at as string;
+    const normalizedCreatedAt = normalizeInstant(createdAt);
     const movementType = row.movement_type;
     const amountInCents = parseSafeInteger(
       row.amount_in_cents as NumericInteger,
       "movement amount"
     );
 
-    if (!movementId || !isValidInstant(createdAt)) {
+    if (!movementId || !normalizedCreatedAt) {
       throw new Error("financial movement row is invalid");
     }
 
@@ -112,7 +115,7 @@ export function mapFinancialEvolutionSnapshotRows(
     return {
       id: movementId,
       occurredOn,
-      createdAt,
+      createdAt: normalizedCreatedAt,
       type: movementType,
       amountInCents
     };
