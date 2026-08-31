@@ -1637,3 +1637,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next.config.mjs` e `src/proxy.ts` não foram alterados; nenhum header funcional, Auth, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência ou deploy foi modificado.
 - `next.config.d.mts` tipa somente a importação da configuração no teste; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- skills `vercel:nextjs` e `supabase:supabase` aplicadas somente à configuração do Next.js e ao contrato da origem pública.
+- documentação atual confirmou `headers()` como função assíncrona de configuração; nenhum breaking change do Supabase afeta a origem HTTPS gerenciada usada pela CSP.
+- implementação mínima confinada a `next.config.mjs`: `poweredByHeader: false`, baseline global, CSP, validação HTTPS da origem Supabase e políticas exclusivas de produção.
+- GREEN direcionado: 1 suíte e 12 testes verdes, sem remoção ou relaxamento de expectativas.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados.
+- primeira execução do build falhou somente pela rede isolada ao buscar Geist; repetição com acesso autorizado compilou e gerou todas as páginas.
+- `next-env.d.ts` restaurado após geração automática; `git diff --check` verde.
+- nenhum Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, commit, push, merge ou deploy foi alterado.
+- `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.

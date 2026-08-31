@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da SEC-HARD-001A concluído em RED controlado; próxima fase válida é o Dia 3
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da SEC-HARD-001A concluído em GREEN; próxima fase válida é o Dia 4
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -127,6 +127,7 @@
 - Data do discovery e arquitetura da SEC-AUTH-001: 2026-08-31
 - Data do discovery e arquitetura da SEC-HARD-001: 2026-08-31
 - Data da estratégia de testes da SEC-HARD-001A: 2026-08-31
+- Data da implementação mínima orientada por teste da SEC-HARD-001A: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6541,3 +6542,37 @@ Estado de saída:
 - `TEST_STRATEGY_READY`;
 - testes essenciais da `SEC-HARD-001A` existem em RED controlado;
 - próximo comando válido: `dia 3` para implementar o mínimo em `next.config.mjs` e levar os contratos a GREEN.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SEC-HARD-001A
+
+Objetivo executado:
+- implementar o mínimo em `next.config.mjs` para satisfazer os contratos do Dia 2 sem deslocar a política HTTP para o Proxy nem antecipar CAPTCHA.
+
+Implementação:
+- `poweredByHeader` foi desativado;
+- `headers()` aplica a baseline global de framing, MIME sniffing, referrer, permissions e CSP;
+- a origem de `NEXT_PUBLIC_SUPABASE_URL` é normalizada para `URL.origin`, exige HTTPS e falha fechada quando ausente ou inválida;
+- `connect-src` permite somente `'self'` e a origem Supabase exata, sem wildcard;
+- HSTS e `upgrade-insecure-requests` são adicionados somente quando `VERCEL_ENV=production`;
+- `src/proxy.ts` permaneceu responsável exclusivamente por sessão.
+
+TDD e quality gates:
+- GREEN direcionado: 1 suíte e 12 testes verdes, sem alterar expectativas;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas preservadas;
+- a primeira tentativa de build foi bloqueada somente pelo acesso isolado ao Google Fonts; a repetição autorizada concluiu sem erro de código ou configuração;
+- documentação oficial atual de headers do Next.js e changelog do Supabase foram verificados; nenhum breaking change aplicável alterou a solução.
+
+Escopo preservado:
+- nenhuma mudança em UI, domain, application, infrastructure, Proxy, Auth remoto, CAPTCHA, rate limit, usuário, senha, sessão, migration, RLS, dado, segredo ou dependência;
+- `next-env.d.ts` foi restaurado após a regeneração automática do build;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana e credenciais externas;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`;
+- `SEC-HARD-001A` funcional localmente com pipeline verde;
+- próximo comando válido: `dia 4` para expansão controlada e validação dos estados reais em Preview antes de merge.

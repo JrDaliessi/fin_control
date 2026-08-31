@@ -269,7 +269,7 @@ Próximo passo selecionado: executar o Dia 1 da `SEC-HARD-001`. Retomar o Dia 2 
 
 ## Hardening pré-produção — SEC-HARD-001
 
-Estado atual: Dia 2 da `SEC-HARD-001A` concluído em `TEST_STRATEGY_READY`. A nova suíte exerce a configuração real do Next.js e está em RED controlado: 11 falhas planejadas, 1 fronteira verde e as 84 suítes anteriores preservadas.
+Estado atual: Dia 3 da `SEC-HARD-001A` concluído em `IMPLEMENTATION_IN_PROGRESS`. Headers globais, CSP com origem Supabase exata e políticas exclusivas de produção estão implementados; 85 suítes/494 testes, lint, type-check e build estão verdes.
 
 Sequência aprovada:
 1. `SEC-HARD-001A` — TDD e implementação dos headers determinísticos no Next.js;
@@ -278,7 +278,7 @@ Sequência aprovada:
 
 Decisão de borda: rate limit WAF sobre `/login` não protege o password grant enviado pelo browser diretamente ao Supabase. Não será criado proxy próprio de senha para contornar essa fronteira.
 
-Próximo passo: executar o Dia 3 da `SEC-HARD-001A` para implementar o mínimo em `next.config.mjs`, sem mover headers para o Proxy e sem antecipar CAPTCHA.
+Próximo passo: executar o Dia 4 da `SEC-HARD-001A` para validar Preview, hidratação, tema, login, sessão, gráficos e PWA sob a CSP, sem antecipar CAPTCHA.
 
 ## Marco 11 - Distribuicao de Frequencia
 
