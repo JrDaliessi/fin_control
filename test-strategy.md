@@ -1663,3 +1663,17 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 - type-check, lint, build e orçamento do chunk verdes.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.
+
+## RED/GREEN do Dia 6 — SR-015
+
+- baseline de UX/PWA: cinco suítes e 25 testes verdes;
+- RED de integridade: fixture PostgreSQL com offset provou que o mapper preservava representação válida, porém não canônica, de `timestamptz`;
+- GREEN de integridade: mapper converte instantes válidos com `toISOString()` e quatro suítes/32 testes direcionados passaram;
+- RED de acessibilidade: as duas tabelas focáveis não alteravam `scrollLeft` com `ArrowRight`;
+- GREEN de acessibilidade: handler de presentation avança e retorna com `ArrowRight`/`ArrowLeft`; duas suítes/14 testes passaram;
+- navegador real: dashboard autenticado sem erro/warning, viewports 320/768/1280 sem overflow global, seletor Linha/Candles, expansão e foco validados;
+- confirmação real da interação: tabela OHLC avançou 216 px e retornou a zero pelas setas em 320 px;
+- manifesto servido: HTTP 200, `application/manifest+json`, `standalone`, quatro ícones e dois atalhos, sem claim offline;
+- regressão completa: 84 suítes e 482 testes verdes; lint, type-check e build verdes.
+
+Estado de saída: `QUALITY_VALIDATION`.

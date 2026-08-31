@@ -14,11 +14,11 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Media
 - Dependencias: SR-013, SR-014, saldo inicial, ordenacao estavel e ADRs 0010 a 0015.
 - Risco: Alto; máxima/mínima usam ordem de registro dentro da data civil e não horário bancário inexistente.
-- Fase recomendada: ciclo atual; Dia 5 concluído com pipeline local verde, próximo passo Dia 6.
+- Fase recomendada: ciclo atual; Dia 6 concluído em `QUALITY_VALIDATION`, próximo passo Dia 7.
 - Critério de pronto: OHLC e vazios testados; uma leitura por request; seletor Linha/Candles; tabela/tooltip equivalentes; expansão, acessibilidade, mobile, bundle e pipeline verdes; nenhum recurso de trading.
 - Feature backlog:
   - `SR-015A`: agregador puro, ordem/overflow/vazios, DTO e mapper concluídos com os contratos verdes.
-  - `SR-015B`: seletor, candlestick modular, tabela OHLC, tooltip explicável, estados do renderer, frame expansível e lifecycle compartilhado integrados; validação visual segue no Dia 6.
+  - `SR-015B`: seletor, candlestick modular, tabela OHLC, tooltip explicável, estados do renderer, frame expansível, lifecycle compartilhado, breakpoints e teclado validados; qualidade final segue no Dia 7.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -451,6 +451,15 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### BUG-ANALYTICS-001 — Normalizar `timestamptz` do snapshot financeiro
+- Tipo: Bug / Data Integrity
+- Resultado: o mapper converte todo instante válido recebido do PostgreSQL para ISO UTC canônico antes de construir o snapshot e continua rejeitando valores inválidos.
+- Limites preservados: nenhuma mudança em RPC, migration, RLS, dados, ordenação, fórmulas financeiras ou contrato do domínio.
+- Evidência TDD: teste com offset falhou antes da correção; quatro suítes/32 testes direcionados e regressão completa de 84 suítes/482 testes ficaram verdes.
+- Evidência real: dashboard autenticado renderizou dois movimentos sem overlay, erro ou warning após a correção.
+- Data de conclusão: 2026-08-31
+- Status: DONE
 
 ### TECH-CHART-002 — Ciclo de vida compartilhado das ilhas ECharts
 - Tipo: Dívida Técnica / Refatoração

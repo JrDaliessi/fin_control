@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da SR-015 concluído; ciclo de vida ECharts compartilhado foi endurecido sem alterar comportamento, com pipeline local verde
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SR-015 concluído; UX, acessibilidade, responsividade e PWA validados, pronto para o Dia 7
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -121,6 +121,7 @@
 - Data da implementação mínima orientada por teste da SR-015: 2026-08-30
 - Data da expansão controlada da SR-015: 2026-08-30
 - Data da refatoração e hardening interno da SR-015: 2026-08-31
+- Data da revisão de UX, acessibilidade e PWA da SR-015: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -973,6 +974,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
 - Erro: no início dos gates do Dia 5 da SR-015, a IA usou o fallback `pnpm` em um projeto gerenciado por npm; o pnpm tentou mover dependências existentes para `node_modules/.ignored` e criar `.pnpm-store` antes de falhar por rede restrita. Prevenção: respeitar sempre o `packageManager` do projeto, invocar Jest/TypeScript/ESLint/Next diretamente com a runtime Node compatível quando o wrapper npm estiver quebrado e nunca usar outro gerenciador apenas como substituto de execução; se ocorrer, interromper, restaurar os pacotes movidos e remover somente os artefatos criados após validar os caminhos absolutos.
 - Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
 - Erro: o Dia 2 da SR-015 adicionou os novos contratos específicos, mas não atualizou fixtures tipadas, mocks server-side e o boundary transversal da SR-014 para a responsabilidade aprovada do `FinancialVisualizationSwitcher`; a regressão ampliada encontrou o drift somente no Dia 3. Prevenção: ao introduzir uma nova fronteira cliente ou mover a composição entre componentes, pesquisar e adaptar no RED todos os consumidores, fixtures e scanners arquiteturais existentes antes de considerar a estratégia de testes concluída.
@@ -6319,3 +6321,45 @@ Estado de saída:
 - retorno estável a `IMPLEMENTATION_IN_PROGRESS`;
 - SR-015 permanece `IN_PROGRESS`;
 - próximo comando válido: `dia 6`.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-015
+
+Objetivo executado:
+- validar a visualização financeira real em mobile, tablet e desktop, fortalecer a navegação por teclado das tabelas e confirmar a base PWA sem prometer offline.
+
+TDD, integridade e implementação:
+- baseline direcionada de UX/PWA iniciou verde com cinco suítes e 25 testes;
+- o navegador autenticado revelou `movement createdAt is invalid` antes da renderização, porque um `timestamptz` PostgreSQL válido com offset atravessava a fronteira sem normalização;
+- após aprovação humana explícita, um teste RED reproduziu o valor `2026-03-01T07:00:00-03:00` e o mapper passou a entregá-lo como `2026-03-01T10:00:00.000Z`;
+- a correção permaneceu em infrastructure, rejeita instantes inválidos e não altera ordenação, fórmulas OHLC, RPC, RLS, migration ou dados;
+- o navegador mostrou que a região focável das tabelas não executava de forma determinística a rolagem prometida pelas setas;
+- dois testes RED foram adicionados antes do handler compartilhado de presentation; `ArrowRight` avança e `ArrowLeft` retorna sem interceptar outras teclas;
+- GREEN direcionado final das duas tabelas: duas suítes e 14 testes.
+
+Validação real no navegador:
+- `/` autenticado renderizou o dashboard com dois movimentos reais e sem overlay, erro ou warning no console;
+- em 320 px, não houve overflow global; os dois botões do seletor mediram 44 px de altura e a tabela conteve seu próprio overflow horizontal;
+- em 768 px e 1280 px, não houve overflow global e os controles mantiveram 44 px;
+- alternância Linha/Candles atualizou `aria-pressed`, preservou gráfico e tabela equivalentes e manteve somente o modo ativo;
+- expansão do candlestick abriu diálogo modal, bloqueou o scroll do body, moveu foco ao controle de recolher e restaurou foco/scroll ao fechar;
+- a tabela OHLC focada rolou 216 px com `ArrowRight` e voltou a zero com `ArrowLeft` no viewport de 320 px;
+- o manifesto servido respondeu HTTP 200 como `application/manifest+json`, com `display: standalone`, quatro ícones, dois atalhos e sem promessa de offline.
+
+Quality gates:
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde após regenerar exclusivamente o cache corrompido de tipos do Next.js;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- `git diff --check` verde e `next-env.d.ts` restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices`: handlers estáveis, nenhuma assinatura global, efeito ou estado derivado adicional e responsabilidade restrita à interação da presentation.
+
+Riscos e escopo preservado:
+- o `Escape` permanece coberto deterministicamente por Jest; a automação do navegador integrado não propagou essa tecla de modo confiável ao documento, mas o fechamento pelo controle e a restauração de foco foram confirmados no navegador real;
+- nenhum RPC, migration, RLS, dado, dependência, regra OHLC, período, recurso de trading, deploy, commit, push ou PR foi criado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `QUALITY_VALIDATION`;
+- SR-015 permanece `IN_PROGRESS`;
+- `BUG-ANALYTICS-001` encerrado como `DONE`;
+- próximo comando válido: `dia 7`.

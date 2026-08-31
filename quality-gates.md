@@ -1558,3 +1558,26 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum domain, application, infrastructure, Supabase, migration, dado, dependência, commit, push, PR ou deploy alterado.
 - `TECH-CHART-002` encerrada como `DONE`.
 - estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — SR-015
+
+- contexto central, workflow do Dia 6 e declaração operacional consultados e aprovados antes da execução.
+- skills `vercel:nextjs`, `vercel:react-best-practices`, `vercel:agent-browser-verify`, Browser e `supabase:supabase` aplicadas dentro do escopo aprovado.
+- baseline direcionada: cinco suítes e 25 testes de UX/PWA verdes.
+- bloqueio real reproduzido em RED: `timestamptz` PostgreSQL válido com offset atravessava o mapper sem normalização e era rejeitado pelo domínio.
+- correção mínima aprovada e isolada em infrastructure: `toISOString()` na fronteira, sem mudança de RPC, migration, RLS, dados, ordenação ou fórmulas OHLC.
+- GREEN de integridade: quatro suítes e 32 testes direcionados.
+- RED/GREEN de acessibilidade: duas tabelas focáveis passaram a executar rolagem horizontal por `ArrowRight`/`ArrowLeft`; duas suítes e 14 testes verdes.
+- navegador autenticado: `/` renderizado com dados reais, sem overlay, erro ou warning; alternância Linha/Candles e tabela equivalente preservadas.
+- responsividade: 320, 768 e 1280 px sem overflow global; botões do seletor com 44 px; overflow largo confinado à tabela.
+- expansão: diálogo modal, scroll do body bloqueado, foco no controle de recolher e restauração de foco/scroll confirmados.
+- teclado real: tabela OHLC avançou 216 px com `ArrowRight` e retornou a zero com `ArrowLeft` em 320 px.
+- PWA: manifesto HTTP 200 como `application/manifest+json`, `display: standalone`, quatro ícones e dois atalhos; nenhuma promessa de offline.
+- revisão React: handlers estáveis, sem listener global, efeito ou estado derivado novo; regra permanece na presentation.
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots.
+- lint global: verde com zero warnings; type-check: verde.
+- build Next.js `16.3.3` com Turbopack: verde; rotas e Proxy preservados.
+- cache corrompido `.next/dev/types` foi validado dentro do workspace, removido e regenerado; `next-env.d.ts` voltou ao conteúdo versionado.
+- `git diff --check`: verde; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhum deploy, commit, push ou PR foi executado.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.

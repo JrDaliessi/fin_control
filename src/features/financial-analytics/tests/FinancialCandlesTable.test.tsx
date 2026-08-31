@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { FinancialCandlesTable } from "../presentation/components/FinancialCandlesTable";
 
 const candles = [
@@ -68,6 +68,20 @@ describe("FinancialCandlesTable", () => {
         within(table).getByRole("columnheader", { name: heading })
       ).toBeInTheDocument();
     }
+  });
+
+  it("moves the wide table horizontally with the arrow keys", () => {
+    render(<FinancialCandlesTable candles={candles} />);
+
+    const region = screen.getByRole("region", {
+      name: "Variação financeira por dia"
+    });
+
+    fireEvent.keyDown(region, { key: "ArrowRight" });
+    expect(region.scrollLeft).toBeGreaterThan(0);
+
+    fireEvent.keyDown(region, { key: "ArrowLeft" });
+    expect(region.scrollLeft).toBe(0);
   });
 
   it("expresses rise, fall and stability with text instead of color alone", () => {

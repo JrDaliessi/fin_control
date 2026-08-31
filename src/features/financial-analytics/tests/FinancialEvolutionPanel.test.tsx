@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 import type { FinancialEvolutionDto } from "../application/use-cases/list-financial-evolution.use-case";
 import type {
@@ -281,6 +281,12 @@ describe("FinancialEvolutionPanel", () => {
         "Deslize horizontalmente ou use as setas do teclado para consultar todas as colunas."
       )
     ).toHaveClass("sm:sr-only");
+
+    fireEvent.keyDown(scrollRegion, { key: "ArrowRight" });
+    expect(scrollRegion.scrollLeft).toBeGreaterThan(0);
+
+    fireEvent.keyDown(scrollRegion, { key: "ArrowLeft" });
+    expect(scrollRegion.scrollLeft).toBe(0);
   });
 
   it("renders the balance chart and table from the same success result", () => {

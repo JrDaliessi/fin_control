@@ -429,6 +429,7 @@ O projeto deve ter:
 - O candle representa saldo financeiro diário, nunca preço de ativo, ordem de mercado ou recomendação de trading.
 - Um agregador puro do domínio recebe o período resolvido, o saldo de abertura e os movimentos do snapshot; ele não depende de React, Next.js, Supabase ou ECharts.
 - Os movimentos são ordenados por `occurredOn`, `createdAt` e `id`. Como `occurredOn` é data civil, a ordem intradiária representa a ordem de registro no sistema e deve ser explicada na interface.
+- A fronteira Supabase normaliza todo `timestamptz` válido para ISO UTC canônico com `toISOString()` antes de construir o snapshot; o domínio continua rejeitando instantes inválidos e independente das representações textuais do PostgreSQL.
 - Cada candle inclui `open`, `high`, `low`, `close`, receita, despesa, volume e quantidade em inteiros seguros de centavos. Dias vazios preservam o último saldo com volume zero.
 - `ListFinancialEvolutionUseCase` calcula evolução e candles a partir do mesmo `FinancialEvolutionSnapshot`; a SR-015 não cria segunda consulta, Route Handler, Server Action, RPC ou migration.
 - O DTO adiciona uma coleção `candles` plana e serializável. Domain e application permanecem independentes da visualização.
