@@ -1651,3 +1651,15 @@ Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
 - type-check, lint, build e analyzer verdes.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Refatoração protegida por testes no Dia 5 — SR-015
+
+- baseline direcionada: sete suítes e 53 testes verdes antes da mudança;
+- RED: contrato arquitetural novo falhou pela ausência de `useFinancialChart`;
+- GREEN: sete suítes e 54 testes após extrair o lifecycle compartilhado;
+- o contrato exige que as duas ilhas usem o hook, que `ResizeObserver` não permaneça duplicado e que o hook não introduza `ChartPort`, Supabase ou fetch;
+- suítes comportamentais preservam inicialização SVG, resize, cleanup, atualização sem reinicialização, tema, cores forçadas, movimento reduzido, falha e vazio;
+- regressão completa: 84 suítes e 480 testes verdes;
+- type-check, lint, build e orçamento do chunk verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.

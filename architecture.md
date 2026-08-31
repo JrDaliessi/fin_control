@@ -435,6 +435,7 @@ O projeto deve ter:
 - `FinancialEvolutionPanel` continua Server Component. Uma ilha cliente estreita recebe os modelos de linha e candles e controla somente o seletor visual e a montagem do modo ativo.
 - A ilha não acessa Supabase, Auth, repository ou rede. Apenas um gráfico e uma tabela equivalentes ficam ativos por vez.
 - O adapter ECharts registra `CandlestickChart` por import modular e preserva SVG, ARIA, tema, movimento reduzido, resize, dispose e isolamento de bundle das rotas não financeiras.
+- `useFinancialChart` é um hook interno de presentation compartilhado somente pelos dois renderers existentes; ele concentra lifecycle e preferências visuais, enquanto builders, temas, modelos, estados e textos permanecem concretos. Ele não constitui nem autoriza um `ChartPort` genérico.
 - Linha e candles reutilizam `ExpandableChartFrame`; expansão não duplica renderer nem dados.
 - A tabela OHLC é a alternativa do tooltip e comunica alta/queda também por texto e valores, nunca somente por cor.
 - O primeiro recorte usa buckets diários nos cinco períodos atuais, todos limitados a 31 dias. Semana/mês para intervalos longos e período customizado permanecem fora.

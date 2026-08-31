@@ -1538,3 +1538,23 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado; `git diff --check` verde.
 - nenhum deploy, commit, push ou atualização de PR executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — SR-015
+
+- contexto central, workflow do Dia 5 e skill `vercel:react-best-practices` consultados; declaração operacional aprovada antes da refatoração.
+- inventário confirmou 160 ocorrências de linhas iguais entre as duas ilhas e justificou extração limitada ao lifecycle.
+- baseline direcionada antes da mudança: sete suítes e 53 testes verdes.
+- RED arquitetural: novo contrato falhou somente porque `presentation/hooks/useFinancialChart.ts` ainda não existia.
+- GREEN direcionado: sete suítes e 54 testes verdes após a extração.
+- hook interno tipado centraliza inicialização SVG, resize, preferências visuais, atualização e cleanup; builders, modelos, temas, textos e estados permanecem específicos.
+- contrato arquitetural proíbe `ChartPort`, Supabase e fetch no hook; ECharts continua confinado ao adapter de presentation.
+- revisão React: listeners únicos com remoção simétrica, callbacks com dependências estreitas e nenhum estado derivado em efeito.
+- regressão completa: 84 suítes e 480 testes verdes; zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` verde; rotas e Proxy preservados.
+- analyzer: chunk ECharts/ZRender com 525.257 bytes brutos e 179.344 bytes gzip; delta de -584/+34 bytes sobre o Dia 4.
+- tentativa incompatível com pnpm registrada no contexto; pacotes restaurados e artefatos temporários removidos antes dos gates finais.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo.
+- nenhum domain, application, infrastructure, Supabase, migration, dado, dependência, commit, push, PR ou deploy alterado.
+- `TECH-CHART-002` encerrada como `DONE`.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 6`.

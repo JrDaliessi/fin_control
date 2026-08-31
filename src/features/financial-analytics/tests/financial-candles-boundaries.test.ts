@@ -115,4 +115,46 @@ describe("financial candles architecture", () => {
       /fetch\s*\(|supabase|localStorage|indexedDB|serviceWorker/i
     );
   });
+
+  it("centralizes the shared chart lifecycle without creating a generic chart port", () => {
+    const hookPath = join(
+      analyticsRoot,
+      "presentation",
+      "hooks",
+      "useFinancialChart.ts"
+    );
+    const evolutionChart = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialEvolutionChart.client.tsx"
+      ),
+      "utf-8"
+    );
+    const candlestickChart = readFileSync(
+      join(
+        analyticsRoot,
+        "presentation",
+        "components",
+        "FinancialCandlestickChart.client.tsx"
+      ),
+      "utf-8"
+    );
+
+    expect(existsSync(hookPath)).toBe(true);
+
+    if (!existsSync(hookPath)) {
+      return;
+    }
+
+    const hook = readFileSync(hookPath, "utf-8");
+
+    expect(evolutionChart).toContain("useFinancialChart");
+    expect(candlestickChart).toContain("useFinancialChart");
+    expect(evolutionChart).not.toContain("ResizeObserver");
+    expect(candlestickChart).not.toContain("ResizeObserver");
+    expect(hook).toContain("ResizeObserver");
+    expect(hook).not.toMatch(/ChartPort|supabase|fetch\s*\(/i);
+  });
 });

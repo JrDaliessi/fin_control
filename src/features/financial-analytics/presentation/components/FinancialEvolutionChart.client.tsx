@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useId } from "react";
 import { ExpandableChartFrame } from "@/shared/components/charts/ExpandableChartFrame.client";
 import type { FinancialEvolutionChartModel } from "../charts/financial-evolution-chart.model";
 import {
@@ -8,16 +8,14 @@ import {
   type FinancialEvolutionChartTheme
 } from "../charts/echarts/build-financial-evolution-option";
 import {
-  initializeFinancialEvolutionChart,
-  type FinancialEvolutionChartInstance
-} from "../charts/echarts/echarts-client";
+  useFinancialChart,
+  type FinancialChartVisualPreferences
+} from "../hooks/useFinancialChart";
 
 type FinancialEvolutionChartProps = Readonly<{
   model: FinancialEvolutionChartModel;
 }>;
 
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-const FORCED_COLORS_QUERY = "(forced-colors: active)";
 const FORCED_COLORS_THEME: FinancialEvolutionChartTheme = {
   border: "CanvasText",
   foreground: "CanvasText",
@@ -34,8 +32,10 @@ function resolveCssColor(name: string, fallback: string) {
   return channels ? `rgb(${channels})` : fallback;
 }
 
-function resolveChartTheme(): FinancialEvolutionChartTheme {
-  if (window.matchMedia(FORCED_COLORS_QUERY).matches) {
+function resolveChartTheme(
+  forcedColors: boolean
+): FinancialEvolutionChartTheme {
+  if (forcedColors) {
     return FORCED_COLORS_THEME;
   }
 
@@ -51,105 +51,22 @@ function resolveChartTheme(): FinancialEvolutionChartTheme {
 export function FinancialEvolutionChart({
   model
 }: FinancialEvolutionChartProps) {
-  const chartRef = useRef<FinancialEvolutionChartInstance | null>(null);
-  const [initializationFailed, setInitializationFailed] = useState(false);
   const descriptionId = useId();
   const hasPoints = model.points.length > 0;
-
-  const attachChart = useCallback((container: HTMLDivElement | null) => {
-    if (!container) {
-      return;
-    }
-
-    let chart: FinancialEvolutionChartInstance | undefined;
-    let resizeObserver: ResizeObserver | undefined;
-
-    try {
-      chart = initializeFinancialEvolutionChart(container, {
-        renderer: "svg"
-      });
-      chartRef.current = chart;
-
-      resizeObserver = new ResizeObserver(() => {
-        chart?.resize();
-      });
-      resizeObserver.observe(container);
-    } catch {
-      resizeObserver?.disconnect();
-      chart?.dispose();
-
-      if (chartRef.current === chart) {
-        chartRef.current = null;
-      }
-
-      setInitializationFailed(true);
-      return;
-    }
-
-    const initializedChart = chart;
-    const initializedResizeObserver = resizeObserver;
-
-    return () => {
-      initializedResizeObserver.disconnect();
-      initializedChart.dispose();
-
-      if (chartRef.current === initializedChart) {
-        chartRef.current = null;
-      }
-    };
-  }, []);
-
-  const applyCurrentOption = useCallback(() => {
-    const chart = chartRef.current;
-
-    if (!chart) {
-      return;
-    }
-
-    chart.setOption(
-      buildFinancialEvolutionOption({
+  const buildOption = useCallback(
+    ({ forcedColors, reducedMotion }: FinancialChartVisualPreferences) => {
+      return buildFinancialEvolutionOption({
         model,
-        reducedMotion: window.matchMedia(REDUCED_MOTION_QUERY).matches,
-        theme: resolveChartTheme()
-      })
-    );
-  }, [model]);
-
-  useEffect(() => {
-    applyCurrentOption();
-  }, [applyCurrentOption]);
-
-  useEffect(() => {
-    if (!hasPoints) {
-      return;
-    }
-
-    const reducedMotionQuery = window.matchMedia(REDUCED_MOTION_QUERY);
-    const forcedColorsQuery = window.matchMedia(FORCED_COLORS_QUERY);
-    const handleVisualPreferenceChange = () => {
-      applyCurrentOption();
-    };
-    const themeObserver = new MutationObserver(applyCurrentOption);
-    themeObserver.observe(document.documentElement, {
-      attributeFilter: ["data-theme"],
-      attributes: true
-    });
-
-    reducedMotionQuery.addEventListener("change", handleVisualPreferenceChange);
-    forcedColorsQuery.addEventListener("change", handleVisualPreferenceChange);
-
-    return () => {
-      themeObserver.disconnect();
-      reducedMotionQuery.removeEventListener(
-        "change",
-        handleVisualPreferenceChange
-      );
-      forcedColorsQuery.removeEventListener(
-        "change",
-        handleVisualPreferenceChange
-      );
-    };
-  }, [applyCurrentOption, hasPoints]);
+        reducedMotion,
+        theme: resolveChartTheme(forcedColors)
+      });
+    },
+    [model]
+  );
+  const { attachChart, initializationFailed } = useFinancialChart({
+    buildOption,
+    enabled: hasPoints
+  });
 
   if (!hasPoints) {
     return (

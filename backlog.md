@@ -14,11 +14,11 @@ Nenhum item pronto aguardando início no momento.
 - Prioridade: Media
 - Dependencias: SR-013, SR-014, saldo inicial, ordenacao estavel e ADRs 0010 a 0015.
 - Risco: Alto; máxima/mínima usam ordem de registro dentro da data civil e não horário bancário inexistente.
-- Fase recomendada: ciclo atual; Dia 4 concluído com pipeline local verde, próximo passo Dia 5.
+- Fase recomendada: ciclo atual; Dia 5 concluído com pipeline local verde, próximo passo Dia 6.
 - Critério de pronto: OHLC e vazios testados; uma leitura por request; seletor Linha/Candles; tabela/tooltip equivalentes; expansão, acessibilidade, mobile, bundle e pipeline verdes; nenhum recurso de trading.
 - Feature backlog:
   - `SR-015A`: agregador puro, ordem/overflow/vazios, DTO e mapper concluídos com os contratos verdes.
-  - `SR-015B`: seletor, candlestick modular, tabela OHLC, tooltip explicável, estados do renderer e frame expansível integrados; hardening e validação visual seguem nos Dias 5 e 6.
+  - `SR-015B`: seletor, candlestick modular, tabela OHLC, tooltip explicável, estados do renderer, frame expansível e lifecycle compartilhado integrados; validação visual segue no Dia 6.
 - Status: IN_PROGRESS
 
 ## DISCOVERY
@@ -334,16 +334,6 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DÍVIDA TÉCNICA
 
-### TECH-CHART-002 — Avaliar ciclo de vida compartilhado das ilhas ECharts
-- Tipo: Dívida Técnica / Refatoração
-- Descrição objetiva: `FinancialEvolutionChart` e `FinancialCandlestickChart` repetem inicialização, resize, tema, preferências visuais e cleanup.
-- Impacto: manutenção duplicada e risco moderado de drift quando uma terceira visualização for adicionada.
-- Severidade: MÉDIA.
-- Risco de adiar: baixo durante a SR-015; cresce somente com novos consumidores.
-- Fase recomendada: Dia 5 da SR-015, mediante plano incremental e regressão verde.
-- Critério de pronto: decidir com evidência entre manter duplicação explícita ou extrair hook interno tipado, sem criar `ChartPort` genérico nem alterar comportamento.
-- Status: DISCOVERY
-
 ### SEC-DEPS-001 — Atualizar dependências com vulnerabilidades altas
 - Tipo: Security Item / Dívida Técnica
 - Descrição: a auditoria de 2026-08-25 identificou 4 vulnerabilidades altas em dependências de produção e 6 altas no conjunto completo, envolvendo `nanoid`, `next`, `postcss`, `sharp`, `brace-expansion` e `js-yaml`.
@@ -461,6 +451,15 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### TECH-CHART-002 — Ciclo de vida compartilhado das ilhas ECharts
+- Tipo: Dívida Técnica / Refatoração
+- Resultado: `useFinancialChart` centraliza inicialização SVG, resize, preferências visuais, atualização e cleanup das duas ilhas existentes.
+- Limites preservados: builders, temas, modelos, copy e estados continuam concretos; nenhum `ChartPort`, fetch, persistência ou regra financeira foi criado.
+- Evidência TDD: contrato arquitetural falhou antes da extração e passou depois; sete suítes/54 testes direcionados e regressão completa de 84 suítes/480 testes verdes.
+- Bundle: 525.257 bytes brutos e 179.344 bytes gzip, variação imaterial de -584/+34 bytes sobre o Dia 4.
+- Data de conclusão: 2026-08-31
+- Status: DONE
 
 ### SR-014 — Gráfico de linha da evolução
 - Tipo: Small Release

@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SR-015 concluído; tooltip financeiro, estados do renderer e semântica do seletor estão cobertos com pipeline local verde
+- Fase atual: Dia 5 da SR-015 concluído; ciclo de vida ECharts compartilhado foi endurecido sem alterar comportamento, com pipeline local verde
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -120,6 +120,7 @@
 - Data da estratégia de testes e RED controlado da SR-015: 2026-08-30
 - Data da implementação mínima orientada por teste da SR-015: 2026-08-30
 - Data da expansão controlada da SR-015: 2026-08-30
+- Data da refatoração e hardening interno da SR-015: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -972,6 +973,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no início dos gates do Dia 5 da SR-015, a IA usou o fallback `pnpm` em um projeto gerenciado por npm; o pnpm tentou mover dependências existentes para `node_modules/.ignored` e criar `.pnpm-store` antes de falhar por rede restrita. Prevenção: respeitar sempre o `packageManager` do projeto, invocar Jest/TypeScript/ESLint/Next diretamente com a runtime Node compatível quando o wrapper npm estiver quebrado e nunca usar outro gerenciador apenas como substituto de execução; se ocorrer, interromper, restaurar os pacotes movidos e remover somente os artefatos criados após validar os caminhos absolutos.
 - Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
 - Erro: o Dia 2 da SR-015 adicionou os novos contratos específicos, mas não atualizou fixtures tipadas, mocks server-side e o boundary transversal da SR-014 para a responsabilidade aprovada do `FinancialVisualizationSwitcher`; a regressão ampliada encontrou o drift somente no Dia 3. Prevenção: ao introduzir uma nova fronteira cliente ou mover a composição entre componentes, pesquisar e adaptar no RED todos os consumidores, fixtures e scanners arquiteturais existentes antes de considerar a estratégia de testes concluída.
 - Erro: os contratos TDD criados no Dia 2 da SR-015 usaram `structuredClone` e espionaram `globalThis.fetch`, mas o ambiente `jest-environment-jsdom` do projeto não expunha essas APIs, produzindo quatro falsos negativos após o primeiro GREEN funcional. Prevenção: quando um teste depender de APIs globais do runtime, confirmar sua presença no ambiente Jest durante o RED e centralizar polyfills determinísticos em `tests/setupTests.ts`, sem mascarar chamadas de rede inesperadas.
@@ -6281,3 +6283,39 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - SR-015 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-015
+
+Objetivo executado:
+- eliminar duplicação comprovada do ciclo de vida das duas ilhas ECharts sem criar uma abstração universal, alterar fórmulas financeiras ou ampliar a fronteira cliente.
+
+TDD e refatoração:
+- baseline direcionada anterior permaneceu verde com sete suítes e 53 testes;
+- um contrato arquitetural foi acrescentado antes da implementação e falhou pela ausência do hook compartilhado;
+- `useFinancialChart` centraliza inicialização SVG, `ResizeObserver`, aplicação de opções, tema, movimento reduzido, cores forçadas, falha de inicialização e cleanup;
+- `FinancialEvolutionChart` e `FinancialCandlestickChart` mantêm builders, temas, modelos, textos, acessibilidade e estados concretos;
+- nenhum `ChartPort`, renderer genérico, fetch, persistência ou estado derivado adicional foi introduzido;
+- GREEN direcionado final: sete suítes e 54 testes.
+
+Quality gates:
+- regressão completa: 84 suítes e 480 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- chunk ECharts/ZRender: 525.257 bytes brutos e 179.344 bytes gzip;
+- delta sobre o Dia 4: -584 bytes brutos e +34 bytes gzip, sem impacto material;
+- revisão `vercel:react-best-practices`: listeners únicos com cleanup, dependências estreitas e ausência de estado derivado por efeito;
+- `next-env.d.ts` restaurado ao conteúdo versionado.
+
+Integridade, riscos e escopo preservado:
+- `TECH-CHART-002` foi encerrada como `DONE` com hook interno tipado e contrato estático contra `ChartPort`;
+- o incidente do gerenciador incompatível foi registrado; dependências foram restauradas e `.pnpm-store`/`.ignored` criados nessa tentativa foram removidos;
+- validação browser, mobile, contraste e tecnologia assistiva aprofundada permanece reservada ao Dia 6;
+- nenhum domain, application, infrastructure, Supabase, RPC, migration, RLS, dado, dependência, regra OHLC, período, recurso de trading, deploy, commit, push ou PR foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado;
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS`;
+- SR-015 permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 6`.

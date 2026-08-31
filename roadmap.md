@@ -241,9 +241,9 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`. O Dia 4 da SR-015 está concluído em `IMPLEMENTATION_IN_PROGRESS`, com tooltip financeiro, estados do renderer e semântica do seletor validados em 84 suítes/479 testes.
+Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`. O Dia 5 da SR-015 está concluído em `IMPLEMENTATION_IN_PROGRESS`, com lifecycle compartilhado tipado e regressão de 84 suítes/480 testes.
 
-Próximo passo recomendado: executar o Dia 5 da SR-015 para avaliar duplicação, consistência e hardening interno sem mudar comportamento.
+Próximo passo recomendado: executar o Dia 6 da SR-015 para validar responsividade, acessibilidade, microinterações e experiência PWA em navegador real.
 
 ## Marco 10 - Candles Financeiros
 
@@ -252,6 +252,8 @@ SR-015 entrega OHLC diário de saldo, intervalos vazios, tabela/tooltip acessív
 Evidência do Dia 3: agregador determinístico, DTO e mapper, registro modular de Candlestick, seletor local, tabela textual e frame expansível estão integrados; lint, type-check, build, analyzer e 83 suítes/470 testes estão verdes. O chunk ECharts permanece exclusivo de `/` e `/dashboard`, com delta gzip de 7.437 bytes.
 
 Evidência do Dia 4: tooltip rotulado, direção textual, fallback com tabela, vazio, lifecycle, expansão e região ativa nomeada estão cobertos; lint, type-check, build, analyzer e 84 suítes/479 testes permanecem verdes, com delta de apenas 286 bytes gzip.
+
+Evidência do Dia 5: `useFinancialChart` extrai somente inicialização, resize, preferências visuais, atualização e cleanup já duplicados; builders e estados concretos permanecem nas ilhas, sem `ChartPort`. Lint, type-check, build e 84 suítes/480 testes estão verdes; o chunk ficou em 525.257 bytes brutos e 179.344 bytes gzip.
 
 ## Marco 11 - Distribuicao de Frequencia
 
