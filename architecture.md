@@ -442,6 +442,18 @@ O projeto deve ter:
 - O primeiro recorte usa buckets diários nos cinco períodos atuais, todos limitados a 31 dias. Semana/mês para intervalos longos e período customizado permanecem fora.
 - Decisão completa: `adr/0015-financial-balance-candles.md`.
 
+## Proteção contra senhas vazadas — SEC-AUTH-001
+
+- A proteção será fornecida nativamente pelo Supabase Auth e não por código próprio.
+- Nenhuma senha ou hash será enviado a presentation, application, domínio financeiro, Edge Function, banco, log ou observabilidade.
+- A ativação depende de plano Supabase Pro ou superior; a organização atual está no plano Free.
+- O password grant pode devolver sessão válida acompanhada de `weakPassword`; o contrato de infrastructure deve preservar a sessão e continuar falhando fechado quando houver erro real ou usuário ausente.
+- A UI mantém mensagem genérica para falhas de autenticação e não expõe existência de conta, detalhes do provider ou motivos de comprometimento antes de sessão válida.
+- O quality gate remoto exige login sintético sanitizado, logs de Auth sem regressão e Security Advisor sem `auth_leaked_password_protection`.
+- Rollback é exclusivamente operacional: desativar a opção nativa e repetir os mesmos gates. Não existe migration ou rollback de dados.
+- Troca/recuperação de senha e remediação guiada de usuários existentes permanecem fora deste item e exigem ciclo próprio.
+- Decisão completa: `adr/0016-native-leaked-password-protection.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações

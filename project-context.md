@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SR-015 concluído; entrega incremental validada e aguardando commit, push e atualização da PR por comando explícito
+- Fase atual: SEC-AUTH-001 pausada em `BLOCKED`; SEC-HARD-001 selecionada como próximo ciclo de hardening
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -123,6 +123,8 @@
 - Data da refatoração e hardening interno da SR-015: 2026-08-31
 - Data da revisão de UX, acessibilidade e PWA da SR-015: 2026-08-31
 - Data da validação final e preparação de release da SR-015: 2026-08-31
+- Data de seleção da SEC-AUTH-001 como próximo ciclo: 2026-08-31
+- Data do discovery e arquitetura da SEC-AUTH-001: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6406,3 +6408,52 @@ Estado de saída:
 - `READY_FOR_RELEASE`;
 - SR-015 concluída como entrega incremental;
 - próximo passo recomendado: commit e push documental do Dia 7, atualização da PR `#19` e merge somente após os checks do novo head permanecerem verdes.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SEC-AUTH-001
+
+Security item: `SEC-AUTH-001 — Ativar proteção contra senhas vazadas`.
+
+Diagnóstico confirmado:
+- projeto Supabase `fin_control` ativo e saudável em `sa-east-1`;
+- organização `JrDaliessi's Org` confirmada pelo MCP no plano `free`;
+- Security Advisor retorna exclusivamente `auth_leaked_password_protection` como `WARN` externo;
+- documentação atual exige plano Pro ou superior para “Prevent use of leaked passwords”;
+- o recurso usa a Pwned Passwords API do Have I Been Pwned e não requer migration, RLS ou armazenamento adicional.
+
+Impacto no fluxo atual:
+- o FinControl possui somente login por e-mail/senha; cadastro, recuperação e troca de senha não estão implementados;
+- a versão instalada de `@supabase/auth-js` transporta `weakPassword` junto de uma sessão válida no password grant;
+- o gateway atual aceita a sessão quando `error` é nulo e o usuário existe, portanto não há evidência de quebra automática do login;
+- o Dia 2 deverá formalizar essa compatibilidade em teste antes de qualquer ativação;
+- mensagens de credenciais inválidas permanecem genéricas e nenhum detalhe do provider será exposto.
+
+Decisão arquitetural:
+- usar exclusivamente a proteção nativa do Supabase Auth;
+- não consultar Have I Been Pwned no browser, Server Action, Edge Function ou banco;
+- não ler, testar, registrar ou transmitir senhas existentes;
+- ativar somente após upgrade humano explícito para Pro ou superior;
+- validar por teste do contrato, login sintético, logs de Auth e ausência do alerta no Security Advisor;
+- rollback por desativação isolada da opção, sem migration ou restauração de dados;
+- decisão completa registrada no ADR 0016.
+
+Small releases:
+- `SEC-AUTH-001A`: contrato TDD que preserva sessão válida com `weakPassword` e mantém erro público genérico;
+- `SEC-AUTH-001B`: ativação remota nativa, smoke test sanitizado, revisão de logs e confirmação do advisor;
+- remediação guiada/troca de senha para usuários existentes será item separado e não será improvisada neste ciclo.
+
+Bloqueio duro:
+- a organização está no plano Free e o recurso é exclusivo do Pro ou superior;
+- nenhuma ferramenta disponível pode autorizar compra ou mudança de assinatura em nome do usuário;
+- ação mínima de desbloqueio: o usuário aprovar e concluir o upgrade do plano Supabase, depois informar que está pronto para revalidação.
+
+Escopo preservado:
+- nenhuma configuração Auth, usuário, senha, sessão, migration, RLS, dado, segredo, dependência ou código funcional foi alterado;
+- changelog e documentação atuais foram consultados; nenhum breaking change aplicável altera a decisão;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- arquitetura `ARCHITECTURE_READY` documentada;
+- `SEC-AUTH-001` permanece em `BLOCKED` pela dependência externa de plano, sem bloquear trabalho local ou previews privados;
+- por decisão humana, o upgrade foi adiado até a preparação para produção pública;
+- a máquina global retorna a `READY_FOR_RELEASE`, mantendo a promoção pública bloqueada;
+- próximo passo selecionado: iniciar o Dia 1 da `SEC-HARD-001`; retomar o Dia 2 da `SEC-AUTH-001` somente após upgrade explícito.
