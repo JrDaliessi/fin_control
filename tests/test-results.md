@@ -975,3 +975,21 @@ Interpretação:
 - UI-003 está `READY_FOR_RELEASE` como entrega incremental de código.
 - produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
 - `CI-VERCEL-002` registra o vínculo local antigo e o desalinhamento Node/npm antes de operação direta por CLI ou promoção.
+
+## Dia 7 — SR-015
+
+### Pipeline final
+
+- regressão completa: 84 suítes e 482 testes passaram, sem snapshots.
+- lint passou com zero warnings; type-check passou.
+- auditorias npm completa e de produção passaram com zero vulnerabilidades.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- analyzer confirmou ECharts/ZRender somente em `/` e `/dashboard`: 525.530 bytes brutos e 179.457 bytes gzip.
+
+### Segurança, banco e entrega
+
+- migrations locais e remotas permaneceram alinhadas; nenhuma migration foi necessária.
+- RPC invoker, ownership, autenticação server-side e ausência de segredo de serviço no cliente foram confirmados por inspeção.
+- Security Advisor manteve somente `SEC-AUTH-001`; logs recentes de Supabase e Vercel não apresentaram erro explícito, fatal ou 5xx.
+- preview Vercel está `READY`; PR `#19` mergeable e checks do head publicado verdes.
+- estado final: `READY_FOR_RELEASE` para entrega incremental; produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.

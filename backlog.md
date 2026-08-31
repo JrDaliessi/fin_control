@@ -6,20 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### SR-015 - Candles financeiros
-- Tipo: Small Release
-- Descrição objetiva: alternar entre linha do saldo de fechamento e candles OHLC diários calculados sobre o mesmo snapshot financeiro.
-- Objetivo de negocio: mostrar abertura, maxima, minima e fechamento do saldo sem simular preço de ativo.
-- Valor esperado: leitura avançada, explicável e acessível da variação diária do saldo.
-- Prioridade: Media
-- Dependencias: SR-013, SR-014, saldo inicial, ordenacao estavel e ADRs 0010 a 0015.
-- Risco: Alto; máxima/mínima usam ordem de registro dentro da data civil e não horário bancário inexistente.
-- Fase recomendada: ciclo atual; Dia 6 concluído em `QUALITY_VALIDATION`, próximo passo Dia 7.
-- Critério de pronto: OHLC e vazios testados; uma leitura por request; seletor Linha/Candles; tabela/tooltip equivalentes; expansão, acessibilidade, mobile, bundle e pipeline verdes; nenhum recurso de trading.
-- Feature backlog:
-  - `SR-015A`: agregador puro, ordem/overflow/vazios, DTO e mapper concluídos com os contratos verdes.
-  - `SR-015B`: seletor, candlestick modular, tabela OHLC, tooltip explicável, estados do renderer, frame expansível, lifecycle compartilhado, breakpoints e teclado validados; qualidade final segue no Dia 7.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -451,6 +438,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### SR-015 — Candles financeiros
+- Tipo: Small Release
+- Resultado: saldo diário apresentado como linha ou candles OHLC sobre o mesmo snapshot server-side, com seletor, tooltip explicável, tabela equivalente e frame expansível.
+- Integridade: abertura, máxima, mínima e fechamento seguem ordem determinística de registro; intervalos vazios, overflow e timestamps PostgreSQL com offset estão cobertos sem semântica de trading.
+- UX/PWA: 320, 768 e 1280 px sem overflow global; controles de 44 px, teclado horizontal, foco modal, manifesto standalone e fallback textual validados.
+- Evidência final: 84 suítes/482 testes, lint, type-check, build e auditorias npm verdes; chunk ECharts/ZRender restrito a `/` e `/dashboard` com 179.457 bytes gzip.
+- Evidência remota: migrations alinhadas, advisors/logs revisados, preview `READY` e checks da PR `#19` verdes no head publicado.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- Data de conclusão: 2026-08-31
+- Status: DONE
 
 ### BUG-ANALYTICS-001 — Normalizar `timestamptz` do snapshot financeiro
 - Tipo: Bug / Data Integrity

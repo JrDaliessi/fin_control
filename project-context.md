@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SR-015 concluído; UX, acessibilidade, responsividade e PWA validados, pronto para o Dia 7
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SR-015 concluído; entrega incremental validada e aguardando commit, push e atualização da PR por comando explícito
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -122,6 +122,7 @@
 - Data da expansão controlada da SR-015: 2026-08-30
 - Data da refatoração e hardening interno da SR-015: 2026-08-31
 - Data da revisão de UX, acessibilidade e PWA da SR-015: 2026-08-31
+- Data da validação final e preparação de release da SR-015: 2026-08-31
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -974,6 +975,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
+- Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e depois incluiu o diretório opcional inexistente `scripts` em uma busca. Prevenção: resolver arquivos e diretórios opcionais ou operacionais com `rg --files` antes da leitura/busca e só então usar os caminhos confirmados, inclusive quando o nome do job remoto difere do nome do arquivo local.
 - Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
 - Erro: no início dos gates do Dia 5 da SR-015, a IA usou o fallback `pnpm` em um projeto gerenciado por npm; o pnpm tentou mover dependências existentes para `node_modules/.ignored` e criar `.pnpm-store` antes de falhar por rede restrita. Prevenção: respeitar sempre o `packageManager` do projeto, invocar Jest/TypeScript/ESLint/Next diretamente com a runtime Node compatível quando o wrapper npm estiver quebrado e nunca usar outro gerenciador apenas como substituto de execução; se ocorrer, interromper, restaurar os pacotes movidos e remover somente os artefatos criados após validar os caminhos absolutos.
 - Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
@@ -6363,3 +6366,43 @@ Estado de saída:
 - SR-015 permanece `IN_PROGRESS`;
 - `BUG-ANALYTICS-001` encerrado como `DONE`;
 - próximo comando válido: `dia 7`.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-015
+
+Objetivo executado:
+- validar a SR-015 como entrega incremental, incluindo pipeline local, dependências, segurança, banco, observabilidade, preview e prontidão da PR, sem promover produção.
+
+Pipeline e bundle:
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- auditorias npm completa e de produção verdes, ambas com zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- analyzer verde; chunk único ECharts/ZRender com 525.530 bytes brutos e 179.457 bytes gzip;
+- delta sobre a baseline do Dia 5: +273 bytes brutos e +113 bytes gzip, sem impacto material;
+- chunk permanece restrito aos manifests cliente de `/` e `/dashboard`.
+
+Segurança e Supabase, somente leitura:
+- migrations locais e remotas permanecem alinhadas até `20260826190714_create_financial_evolution_snapshot`; nenhuma migration é necessária para esta etapa;
+- RPC financeira continua `SECURITY INVOKER`, deriva `auth.uid()`, rejeita sessão ausente/anônima, limita intervalos a 31 dias e mantém ownership;
+- nenhuma chave de serviço é usada pelo código cliente; `.env.local` permanece ignorado e nenhum valor de segredo foi exposto;
+- Security Advisor mantém somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`;
+- Performance Advisor mantém três índices ainda não usados como informação, sem evidência para remoção;
+- logs de Auth, API e Postgres das últimas 24 horas não apresentaram erro explícito, fatal ou 5xx.
+
+Vercel, GitHub e observabilidade:
+- preview do commit `22df2d6` está `READY`, com manifesto válido e sem erro/fatal de runtime nas últimas 24 horas;
+- PR `#19` está aberta, não draft e mergeable; Quality Gates, Vercel e Vercel Preview Comments estão verdes no head publicado;
+- nenhum comentário pendente da toolbar foi encontrado;
+- baseline operacional permanece em GitHub Actions, build/runtime logs da Vercel e logs/advisors do Supabase;
+- captura externa sanitizada, alertas e teste sintético continuam em `HARD-OBS-001` antes de produção pública.
+
+Riscos e escopo preservado:
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública, mas não o merge incremental da SR-015;
+- `CI-VERCEL-002` permanece dívida MÉDIA e deve ser resolvida antes de operação direta por CLI ou promoção;
+- nenhum domínio, regra OHLC, dependência, migration, RLS, dado, configuração Auth, commit, push, merge, deploy ou promoção de produção foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `READY_FOR_RELEASE`;
+- SR-015 concluída como entrega incremental;
+- próximo passo recomendado: commit e push documental do Dia 7, atualização da PR `#19` e merge somente após os checks do novo head permanecerem verdes.

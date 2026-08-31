@@ -1581,3 +1581,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - `git diff --check`: verde; `rewrite-msgs.sh` preservado fora do escopo.
 - nenhum deploy, commit, push ou PR foi executado.
 - estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — SR-015
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- auditorias npm completa e de produção verdes, ambas com zero vulnerabilidades.
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados.
+- analyzer: ECharts/ZRender somente em `/` e `/dashboard`; 525.530 bytes brutos e 179.457 bytes gzip, delta de +273/+113 bytes sobre a baseline do Dia 5.
+- revisão local de segurança confirmou autenticação server-side por claims, RPC `SECURITY INVOKER`, ownership, limite de 31 dias, ausência de segredo de serviço no cliente e fronteira cliente sem fetch/Supabase/persistência financeira.
+- migrations locais e remotas alinhadas; nenhuma migration é necessária nesta etapa.
+- Security Advisor manteve somente `SEC-AUTH-001`; três índices sem uso permaneceram informativos; logs recentes de Auth, API e Postgres não apresentaram erro explícito, fatal ou 5xx.
+- preview Vercel do commit `22df2d6` está `READY`, sem erro/fatal recente; manifesto servido corretamente e nenhum comentário pendente da toolbar.
+- PR `#19` está aberta, não draft e mergeable; Quality Gates, Vercel e Vercel Preview Comments estão verdes no head publicado.
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública; `CI-VERCEL-002` permanece dívida MÉDIA antes de CLI/promoção.
+- nenhum código funcional, migration, dado, RLS, configuração Auth, commit, push, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; `rewrite-msgs.sh` preservado fora do escopo; `git diff --check` verde após a atualização documental.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo válido é versionar esta documentação e atualizar a PR `#19`, mantendo o merge condicionado aos checks do novo head.

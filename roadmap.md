@@ -241,9 +241,9 @@ Governança:
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013, UI-003, SP-001 e SR-014 concluídos. A linha está integrada, expansível, acessível, responsiva e isolada em `/` e `/dashboard`. O Dia 6 da SR-015 está concluído em `QUALITY_VALIDATION`, com dashboard real, breakpoints, expansão, teclado e manifesto validados e regressão de 84 suítes/482 testes.
+Estado atual: SR-013, UI-003, SP-001, SR-014 e SR-015 concluídos. Linha e candles estão integrados, expansíveis, acessíveis, responsivos e isolados em `/` e `/dashboard`. A SR-015 encerrou o Dia 7 em `READY_FOR_RELEASE`, com pipeline local, segurança, Supabase, Vercel, observabilidade e PR validados.
 
-Próximo passo recomendado: executar o Dia 7 da SR-015 para qualidade final, segurança, observabilidade e preparação da entrega incremental.
+Próximo passo recomendado: versionar a documentação do Dia 7, atualizar a PR `#19` e realizar o merge somente se os checks do novo head permanecerem verdes; a seleção da SR-016 depende de comando humano explícito.
 
 ## Marco 10 - Candles Financeiros
 
@@ -256,6 +256,8 @@ Evidência do Dia 4: tooltip rotulado, direção textual, fallback com tabela, v
 Evidência do Dia 5: `useFinancialChart` extrai somente inicialização, resize, preferências visuais, atualização e cleanup já duplicados; builders e estados concretos permanecem nas ilhas, sem `ChartPort`. Lint, type-check, build e 84 suítes/480 testes estão verdes; o chunk ficou em 525.257 bytes brutos e 179.344 bytes gzip.
 
 Evidência do Dia 6: o mapper normaliza `timestamptz` válido na fronteira, as duas tabelas executam rolagem horizontal por setas e o dashboard autenticado foi validado em 320, 768 e 1280 px sem overflow global ou erros no console. Expansão/foco, manifesto PWA e pipeline local ficaram verdes com 84 suítes/482 testes.
+
+Evidência do Dia 7: 84 suítes/482 testes, lint, type-check, build e auditorias npm ficaram verdes; bundle permaneceu restrito a `/` e `/dashboard`. Migrations locais/remotas estão alinhadas, logs recentes não indicaram erro explícito/fatal/5xx, preview está `READY` e checks da PR `#19` estão verdes. A entrega incremental pode ser mergeada após a atualização documental e nova validação remota, mas produção pública continua bloqueada pelos hardenings globais já registrados.
 
 ## Marco 11 - Distribuicao de Frequencia
 
