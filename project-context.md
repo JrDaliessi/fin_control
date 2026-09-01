@@ -7015,3 +7015,10 @@ Estado de saída:
 - `QUALITY_VALIDATION` em GREEN;
 - `UX-SHELL-001A`, `UX-SHELL-001B` e `UX-SHELL-001C` validadas sem dívida crítica ou alta aberta;
 - próximo comando válido: `dia 7` para segurança, observabilidade, build final e preparação de release.
+
+### Ajuste pós-push — quality gate de dependências
+
+- a primeira execução remota da PR `#23` falhou somente no `npm audit` porque `browserslist 4.28.5`, dependência transitiva de build, recebeu dois advisories de severidade alta;
+- `npm audit fix --package-lock-only --ignore-scripts` atualizou apenas o lockfile: `browserslist` para `4.28.8` e seus cinco pacotes auxiliares compatíveis, sem alterar dependências diretas ou código da aplicação;
+- audit local retornou zero vulnerabilidades; 86 suítes/505 testes, lint, type-check e build de produção permaneceram verdes;
+- a correção é restrita ao pipeline e não altera comportamento, dados financeiros, Auth, Supabase, RLS ou contratos arquiteturais.
