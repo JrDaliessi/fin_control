@@ -1687,3 +1687,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, commit, push, merge ou deploy foi alterado.
 - `UX-CHART-002` e `UX-CHART-003` foram preservadas como documentação futura; `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional e uso do Preview protegido aprovados antes da execução.
+- deployment `dpl_Bg9ZwECGhPPr9L3SAyQwTmqhA6at` no commit `f4506dc` e na PR `#22` confirmado `READY`.
+- login e dashboard autenticado renderizaram sem erro ou warning no console; nenhuma credencial ou URL temporária foi persistida.
+- responsividade em 320, 768 e 1280 px sem overflow global; navegação adaptativa, cards, tabela e gráfico preservados.
+- alvos principais de 44 px, rótulos, landmark, `lang=pt-BR`, viewport e alternância claro/escuro/sistema validados.
+- tabela manteve rolagem horizontal confinada e avançou 216 px com `ArrowRight` em 320 px.
+- expansão do candle manteve diálogo nomeado, foco no recolhimento, bloqueio do body e restauração de foco/scroll ao fechar.
+- simulação de `Escape` no navegador protegido foi inconclusiva; o contrato específico continuou verde no Jest e não foi tratado como defeito sem reprodução confiável.
+- abertura isolada do manifesto foi bloqueada pela autenticação SSO da Vercel; link/metadata foram validados no DOM e o contrato versionado permaneceu verde, sem promessa offline ou service worker.
+- sete suítes direcionadas e 42 testes verdes; regressão completa com 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy preservados.
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, configuração permanente da Vercel, commit, push, merge ou deploy foi alterado.
+- `next-env.d.ts` restaurado; `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.

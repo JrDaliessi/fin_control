@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da SEC-HARD-001A concluído em GREEN; próxima fase válida é o Dia 5
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da SEC-HARD-001A concluído em GREEN; próxima fase válida é o Dia 7
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -130,6 +130,7 @@
 - Data da implementação mínima orientada por teste da SEC-HARD-001A: 2026-08-31
 - Data da expansão controlada e validação em Preview da SEC-HARD-001A: 2026-09-01
 - Data da refatoração e hardening interno da SEC-HARD-001A: 2026-09-01
+- Data da revisão de UX, acessibilidade e PWA da SEC-HARD-001A: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6648,3 +6649,38 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` estável após o hardening;
 - Dia 5 da `SEC-HARD-001A` concluído em GREEN;
 - próximo comando válido: `dia 6` para experiência, acessibilidade e PWA, sem expansão de regra de negócio.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SEC-HARD-001A
+
+Objetivo executado:
+- validar que os headers de segurança já implementados não degradam login, sessão, dashboard, temas, gráficos, responsividade, acessibilidade essencial ou o contrato PWA, sem antecipar CAPTCHA, rate limit ou offline.
+
+Validação real no Preview:
+- deployment `dpl_Bg9ZwECGhPPr9L3SAyQwTmqhA6at`, associado ao commit `f4506dc` e à PR `#22`, confirmado em estado `READY`;
+- `/login` e dashboard autenticado carregaram sem erro ou warning no console;
+- em 320, 768 e 1280 px não houve overflow horizontal global; navegação mobile/desktop, cards, gráfico e tabela mantiveram composição coerente;
+- campos e ações principais preservaram alvos mínimos de 44 px; `lang=pt-BR`, landmark principal, rótulos, viewport, manifesto e cores de tema permaneceram presentes;
+- temas claro, escuro e sistema foram alternados com estado selecionado consistente;
+- tabela larga manteve overflow confinado e avançou 216 px com `ArrowRight` em 320 px;
+- gráfico de candles expandiu como diálogo nomeado, bloqueou o scroll do body, manteve foco no recolhimento e restaurou foco e scroll ao fechar;
+- a automação de navegador não reproduziu de forma conclusiva o fechamento por `Escape` no Preview protegido; o contrato permanece coberto e verde no Jest, e nenhum defeito funcional foi inferido sem evidência reproduzível;
+- a proteção SSO da Vercel bloqueou a abertura isolada de `manifest.webmanifest` em uma nova navegação; a presença do link foi validada no DOM e o conteúdo permaneceu coberto pelo contrato local, sem promessa de offline ou service worker.
+
+TDD e quality gates:
+- sete suítes direcionadas e 42 testes de headers, PWA, design system, temas, dashboard e frame expansível ficaram verdes;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- nenhuma falha funcional foi reproduzida, portanto nenhum código de produto ou teste foi alterado;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a geração automática do build.
+
+Fronteiras e riscos:
+- nenhum Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, configuração permanente da Vercel, commit, push, merge ou deploy foi alterado;
+- o vínculo local antigo da Vercel continua registrado em `CI-VERCEL-002` como dívida MÉDIA e não afetou o Preview validado pelo conector;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana sobre provedor e credenciais externas;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo.
+
+Estado de saída:
+- `QUALITY_VALIDATION`;
+- Dia 6 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 7` para segurança final, observabilidade e preparação da entrega incremental.
