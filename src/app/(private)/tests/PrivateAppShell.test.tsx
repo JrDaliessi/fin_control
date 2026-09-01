@@ -192,6 +192,7 @@ describe("PrivateAppShell", () => {
     const closeButton = within(dialog).getByRole("button", {
       name: "Fechar painel da conta",
     });
+    const backdrop = screen.getByTestId("account-panel-backdrop");
 
     expect(accountTrigger).toHaveAttribute("aria-expanded", "true");
     expect(accountTrigger).toHaveAttribute("aria-controls", dialog.id);
@@ -216,6 +217,8 @@ describe("PrivateAppShell", () => {
     );
     expect(container).toHaveAttribute("aria-hidden", "true");
     expect(container).toHaveAttribute("inert");
+    expect(backdrop).toHaveAttribute("aria-hidden", "true");
+    expect(backdrop).toHaveAttribute("tabindex", "-1");
     expect(within(dialog).getByText("usuario@example.com")).toBeInTheDocument();
     expect(
       within(dialog).getByRole("radiogroup", { name: "Tema" }),

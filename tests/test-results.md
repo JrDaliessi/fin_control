@@ -1087,3 +1087,25 @@ Interpretação:
 - build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
 - `next-env.d.ts` foi restaurado após regeneração automática.
 - estado final: `IMPLEMENTATION_IN_PROGRESS` estável em GREEN; próximo passo: Dia 5.
+
+## Dia 5 — UX-SHELL-001
+
+### Baseline e RED
+
+- baseline direcionada: `PrivateAppShell` e `ExpandableChartFrame` com 2 suítes e 23 testes verdes.
+- a nova suíte de `containKeyboardFocus` falhou primeiro porque o utilitário ainda não existia.
+- o contrato do backdrop produziu 1 falha esperada e 12 testes verdes antes do hardening semântico.
+
+### GREEN e refatoração
+
+- utilitário compartilhado aprovado em 5 testes: wrap direto/reverso, posição intermediária, contêiner vazio e entradas ignoradas.
+- `PrivateAppShell`, `ExpandableChartFrame` e utilitário: 3 suítes e 28 testes verdes.
+- os componentes preservaram foco, teclado, scroll, portal, backdrop, Fullscreen API e instâncias existentes.
+
+### Regressão e gates
+
+- regressão completa: 86 suítes e 505 testes passaram, zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- `next-env.d.ts` foi restaurado após regeneração automática.
+- estado final: retorno estável a `IMPLEMENTATION_IN_PROGRESS`; próximo passo: Dia 6.

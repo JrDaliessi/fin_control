@@ -5,20 +5,12 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { SignOutButton } from "@/features/auth/presentation/components/SignOutButton";
 import { ThemeSwitcher } from "@/shared/components/ui/ThemeSwitcher";
+import { containKeyboardFocus } from "@/shared/utils/containKeyboardFocus";
 
 type AccountPanelProps = {
   email: string;
   onSignOut(): Promise<void>;
 };
-
-const FOCUSABLE_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-].join(",");
 
 export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,32 +63,7 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
         return;
       }
 
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const focusableElements = panelRef.current?.querySelectorAll<HTMLElement>(
-        FOCUSABLE_SELECTOR,
-      );
-
-      if (!focusableElements?.length) {
-        event.preventDefault();
-        return;
-      }
-
-      const firstFocusableElement = focusableElements[0];
-      const lastFocusableElement = focusableElements[focusableElements.length - 1];
-
-      if (event.shiftKey && document.activeElement === firstFocusableElement) {
-        event.preventDefault();
-        lastFocusableElement.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === lastFocusableElement
-      ) {
-        event.preventDefault();
-        firstFocusableElement.focus();
-      }
+      containKeyboardFocus(event, panelRef.current);
     }
 
     document.addEventListener("keydown", handleKeyDown);
@@ -140,6 +107,7 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
         ? createPortal(
             <div data-account-panel-portal="">
               <button
+                aria-hidden="true"
                 aria-label="Fechar painel da conta pelo fundo"
                 className="fixed inset-0 z-50 cursor-default bg-navigation/70 transition-opacity motion-reduce:transition-none"
                 data-testid="account-panel-backdrop"

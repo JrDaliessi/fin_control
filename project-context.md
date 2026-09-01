@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 5
+- Fase atual: Dia 5 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 6
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -136,6 +136,7 @@
 - Data da estratégia de testes e RED controlado da UX-SHELL-001: 2026-09-01
 - Data da implementação mínima orientada por teste da UX-SHELL-001: 2026-09-01
 - Data da expansão controlada da UX-SHELL-001: 2026-09-01
+- Data da refatoração e hardening interno da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6923,3 +6924,46 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
 - `UX-SHELL-001A` e `UX-SHELL-001B` funcionais; `UX-SHELL-001C` validada nos três viewports planejados;
 - próximo comando válido: `dia 5` para refatoração e hardening interno, sem nova regra de negócio.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UX-SHELL-001
+
+Objetivo executado:
+- remover somente a duplicação comprovada de contenção de foco e reforçar a semântica do backdrop, sem transformar painel e fullscreen de gráficos em uma primitive modal artificial.
+
+Auditoria e decisão estrutural:
+- `AccountPanel` e `ExpandableChartFrame` eram grandes, mas possuem ciclos de vida distintos: portal/backdrop/inertização no shell e preservação de nó/Fullscreen API nos gráficos;
+- uma abstração modal comum misturaria responsabilidades e aumentaria acoplamento, portanto foi explicitamente rejeitada;
+- a duplicação real limitava-se ao seletor de elementos focáveis e ao algoritmo circular de `Tab`/`Shift+Tab`;
+- `containKeyboardFocus.ts` passou a concentrar somente esse comportamento puro e reutilizável;
+- `AccountPanel` caiu de 202 para 170 linhas e `ExpandableChartFrame` de 220 para 188 linhas; o utilitário compartilhado possui 39 linhas;
+- scroll, foco inicial/restauração, backdrop, `inert`, portal e Fullscreen API continuam dentro de seus componentes concretos.
+
+TDD e hardening:
+- baseline direcionada anterior: 2 suítes e 23 testes verdes;
+- a suíte do utilitário foi criada primeiro e produziu RED pela implementação inexistente;
+- cinco testes cobrem wrap para frente, wrap reverso, ordem intermediária, contêiner vazio, tecla alheia e contêiner ausente;
+- o backdrop exclusivamente visual passou a usar `aria-hidden=true` e permaneceu fora da ordem de Tab; o contrato falhou antes do ajuste e ficou GREEN depois;
+- GREEN direcionado final: 3 suítes e 28 testes verdes, zero snapshots.
+
+Consistência React, visual e de dados:
+- revisão `vercel:react-best-practices` confirmou imports diretos, dependências primitivas dos efeitos e listeners globais com cleanup;
+- os listeners continuam instalados apenas durante o estado modal ativo; nenhuma dependência adicional ou mecanismo global foi criado;
+- varredura confirmou ausência de `any`, cores literais e acesso Supabase nos componentes/utilitário alterados;
+- nenhuma integridade financeira ou persistência foi afetada; domain, application e infrastructure permanecem fora do recorte.
+
+Quality gates:
+- regressão completa: 86 suítes e 505 testes verdes, zero snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- `next-env.d.ts` foi restaurado após regeneração automática do build.
+
+Fronteiras preservadas:
+- nenhuma nova regra de negócio, mudança visual ampla, rota, dependência, Auth, Supabase, migration, RLS, dado ou configuração remota foi introduzida;
+- validação aprofundada de UX, acessibilidade e PWA permanece reservada ao Dia 6;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado;
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade e PWA.

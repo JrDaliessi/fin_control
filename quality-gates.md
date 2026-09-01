@@ -1668,6 +1668,22 @@ Uma release incremental só pode ser considerada pronta quando:
 - anexos, `rewrite-msgs.sh` e stash de `UX-CHART-002/003` permaneceram fora do escopo.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
 
+## Gate do Dia 5 — UX-SHELL-001
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da refatoração.
+- baseline direcionada: 2 suítes e 23 testes verdes, zero snapshots.
+- plano incremental rejeitou uma primitive modal comum e limitou a extração à única duplicação comprovada: contenção de foco.
+- RED do utilitário: suíte falhou pela ausência de `containKeyboardFocus`; GREEN unitário passou em cinco cenários.
+- RED do backdrop: 12 testes verdes e 1 falha esperada por `aria-hidden` ausente; ajuste mínimo levou o contrato a GREEN.
+- GREEN direcionado final: 3 suítes e 28 testes verdes, zero snapshots.
+- `AccountPanel` reduziu de 202 para 170 linhas e `ExpandableChartFrame` de 220 para 188; utilitário compartilhado possui 39 linhas.
+- revisão React confirmou imports diretos, dependências estreitas e listeners com cleanup; scan de design/arquitetura não encontrou `any`, cor literal ou Supabase no recorte.
+- regressão final: 86 suítes e 505 testes verdes, zero snapshots.
+- lint global verde com zero warnings; type-check verde; build Next.js `16.3.3` verde com todas as rotas e o Proxy preservados.
+- `next-env.d.ts` restaurado; nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, commit, push, merge ou deploy foi alterado.
+- anexos, `rewrite-msgs.sh` e stash de `UX-CHART-002/003` permaneceram fora do escopo.
+- `REFACTORING_IN_PROGRESS` encerrado; retorno estável a `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 6`.
+
 ## Gate do Dia 3 — SEC-HARD-001A
 
 - contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
