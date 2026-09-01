@@ -21,7 +21,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-SHELL-001A` estrutura/semântica em RED e GREEN; `UX-SHELL-001B` responsividade, foco, scroll e microinterações; `UX-SHELL-001C` hardening visual e validação PWA.
 - Fase recomendada: ciclo dedicado Dias 1–7.
 - Critério de pronto: header cabe em uma linha; conteúdo global ocupa no máximo 64 px mais safe area no mobile; painel oferece sessão/tema/logout por toque e teclado; nenhuma rota ou fluxo existente regride; lint, type-check, Jest e build verdes.
-- Status: IN_PROGRESS — Dia 1 concluído; pronto para estratégia TDD do Dia 2.
+- Status: IN_PROGRESS — Dia 2 concluído em `TEST_STRATEGY_READY`; 8 contratos de apresentação em RED controlado, prontos para implementação mínima no Dia 3.
 
 ## DISCOVERY
 

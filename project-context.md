@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da UX-SHELL-001 concluído; próxima fase válida é o Dia 2
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da UX-SHELL-001 concluído em RED controlado; próxima fase válida é o Dia 3
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -133,6 +133,7 @@
 - Data da revisão de UX, acessibilidade e PWA da SEC-HARD-001A: 2026-09-01
 - Data da validação final e preparação de release da SEC-HARD-001A: 2026-09-01
 - Data de seleção, discovery e arquitetura da UX-SHELL-001: 2026-09-01
+- Data da estratégia de testes e RED controlado da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6790,3 +6791,50 @@ Estado de saída:
 - `ARCHITECTURE_READY`;
 - `UX-SHELL-001` refinada e em `IN_PROGRESS`, sem código funcional;
 - próximo comando válido: `dia 2` para matriz de testes e RED controlado da apresentação.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-SHELL-001
+
+Small release: `UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta`.
+
+Matriz por camada:
+- domain: não aplicável; nenhuma regra financeira ou entidade nasce neste recorte;
+- application: não aplicável; o caso de uso de logout existente não muda;
+- infrastructure: não aplicável; Supabase Auth e o gateway existente permanecem intactos;
+- presentation: cobertura obrigatória concentrada na composição real de `PrivateAppShell`, incluindo topbar, painel da conta, tema, logout, foco, teclado, scroll, responsividade, navegação e landmarks.
+
+Baseline antes do RED:
+- suíte direcionada existente: 1 suíte, 7 testes verdes e zero snapshots;
+- a primeira tentativa com pattern comum não encontrou o caminho porque `(private)` foi interpretado pelo Jest; `--runTestsByPath` executou a suíte literal corretamente;
+- nenhuma implementação foi alterada para preparar o harness.
+
+Contratos criados primeiro:
+- topbar de uma linha, marca compacta, contexto de rota oculto no mobile e trigger `Abrir painel da conta`;
+- trigger com alvo mínimo, `aria-expanded` e `aria-controls`;
+- painel ausente do DOM enquanto fechado, sem e-mail, tema ou logout alcançáveis;
+- diálogo `Conta e aparência` com `aria-modal`, sessão, radiogroup de tema, logout e classes responsivas de bottom sheet/painel ancorado;
+- foco inicial no fechamento e scroll do documento bloqueado durante a abertura;
+- fechamento por `Escape`, botão explícito e backdrop, sempre restaurando foco e scroll;
+- contenção circular de `Tab` e `Shift+Tab`;
+- mudança para tema escuro sem fechar o painel;
+- logout acessado dentro do painel, preservando provider, redirecionamento e refresh existentes;
+- navegação desktop/mobile, skip link, reserva inferior, único `main` e fallback de rota desconhecida preservados.
+
+Evidência RED:
+- suíte direcionada: 12 testes totais, 4 verdes e 8 vermelhos planejados;
+- as falhas apontam para o trigger/painel inexistentes e para as classes compactas ainda não aplicadas;
+- regressão completa: 85 suítes, 84 verdes e somente a suíte do shell vermelha; 499 testes, 491 verdes e 8 vermelhos planejados;
+- zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde.
+
+Fronteiras preservadas:
+- nenhum `AccountPanel.client.tsx`, header compacto, foco, scroll, estilo funcional ou código de produto foi criado;
+- nenhum teste foi flexibilizado para reproduzir o comportamento atual;
+- nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, commit, push, merge ou deploy foi alterado;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo;
+- o planejamento `UX-CHART-002/003` continua preservado em stash separado.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- RED controlado isolado à implementação ausente da `UX-SHELL-001`;
+- próximo comando válido: `dia 3` para implementar o mínimo necessário e levar os contratos a GREEN sem expansão de escopo.

@@ -1029,3 +1029,19 @@ Interpretação:
 - Preview do head `f8049e4` está `READY`, sem cluster de runtime, log `error/fatal` ou resposta 5xx em 24 horas.
 - PR `#22` está aberta, mergeável e com Quality Gates e Vercel verdes.
 - `SEC-HARD-001A` encerrou em `READY_FOR_RELEASE`; produção pública continua bloqueada pelos hardenings externos documentados.
+
+## Dia 2 — UX-SHELL-001
+
+### Baseline
+
+- suíte direcionada do shell antes do RED: 1 suíte e 7 testes passaram.
+- a tentativa inicial por pattern não encontrou o grupo de rota `(private)`; `--runTestsByPath` executou o caminho literal corretamente.
+
+### RED controlado
+
+- suíte direcionada após os novos contratos: 12 testes, 4 passaram e 8 falharam como planejado.
+- as falhas são causadas exclusivamente pela ausência do trigger `Abrir painel da conta`, do diálogo responsivo e das classes compactas ainda não implementadas.
+- regressão completa: 85 suítes, 84 passaram e somente a suíte do shell falhou; 499 testes, 491 passaram e 8 falharam de forma planejada.
+- zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- nenhum componente ou código funcional foi criado; estado final: `TEST_STRATEGY_READY`.

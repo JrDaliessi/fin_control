@@ -1724,3 +1724,17 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum Auth remoto, CAPTCHA, rate limit, migration, RLS, dado, segredo, dependência, commit, push, merge, deploy ou promoção foi executado.
 - `next-env.d.ts` restaurado; `UX-CHART-002/003`, `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar a documentação do Dia 7 e atualizar a PR `#22`.
+
+## Gate do Dia 2 — UX-SHELL-001
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes dos testes.
+- baseline direcionada anterior ao RED: 1 suíte e 7 testes verdes.
+- matriz classifica domain, application e infrastructure como não aplicáveis; o recorte permanece integralmente em presentation.
+- suíte do `PrivateAppShell` ampliada para 12 testes sem criar componente ou código funcional.
+- RED direcionado: 4 testes verdes e 8 falhas planejadas pela ausência do trigger, painel e classes compactas.
+- regressão completa: 85 suítes, 84 verdes e somente a suíte do shell vermelha; 499 testes, 491 verdes e 8 vermelhos planejados; zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- falhas cobrem topbar compacta, diálogo, foco, teclado, backdrop, scroll, tema e logout, sem flexibilizar comportamento esperado.
+- nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, código funcional, commit, push, merge ou deploy foi alterado.
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` foram preservados fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
