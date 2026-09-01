@@ -418,12 +418,12 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Risco: Médio em previews privados; Alto em produção pública sem headers e proteção contra abuso.
 - Fase recomendada: ciclo dedicado Dias 1–7 antes da promoção pública.
 - Small releases:
-  - `SEC-HARD-001A`: headers globais, CSP compatível, contrato da origem Supabase e validação real em Preview — `IN_PROGRESS`, com Dia 4 concluído em GREEN no deployment da PR #22 (login/sessão/gráficos/PWA, 85 suítes/494 testes, lint, type-check e build verdes).
+  - `SEC-HARD-001A`: headers globais, CSP compatível, contrato da origem Supabase e validação real em Preview — `IN_PROGRESS`, com Dia 5 concluído em GREEN; a auditoria confirmou configuração curta, coesa e determinística, sem refatoração funcional justificável (85 suítes/494 testes, lint, type-check e build verdes).
   - `SEC-HARD-001B`: inventário dos rate limits e CAPTCHA nativo com token efêmero — `BLOCKED` até decisão humana de provedor e credenciais seguras.
 - Critério de pronto: headers validados na resposta do app, console sem violação CSP, HTTPS/HSTS confirmados, login/sessão/PWA/gráficos sem regressão e controles de abuso explicitamente verificados.
 - Limite: WAF de `/login` não será tratado como proteção do password grant direto ao Supabase; nenhum proxy próprio de senha será criado.
 - ADR: `adr/0017-auth-environment-security-hardening.md`.
-- Status: IN_PROGRESS para `SEC-HARD-001A` — `IMPLEMENTATION_IN_PROGRESS`; próximo passo: Dia 5 de refatoração e hardening interno
+- Status: IN_PROGRESS para `SEC-HARD-001A` — `IMPLEMENTATION_IN_PROGRESS` estável; próximo passo: Dia 6 de experiência, acessibilidade e PWA
 
 ### CI-HARD-001 — Fixar ações do GitHub por SHA
 - Tipo: Dívida Técnica

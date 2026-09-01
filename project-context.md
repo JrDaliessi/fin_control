@@ -129,6 +129,7 @@
 - Data da estratégia de testes da SEC-HARD-001A: 2026-08-31
 - Data da implementação mínima orientada por teste da SEC-HARD-001A: 2026-08-31
 - Data da expansão controlada e validação em Preview da SEC-HARD-001A: 2026-09-01
+- Data da refatoração e hardening interno da SEC-HARD-001A: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6611,3 +6612,39 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` estável;
 - Dia 4 da `SEC-HARD-001A` concluído em GREEN;
 - próximo comando válido: `dia 5` para refatoração e hardening interno, sem expansão de regra de negócio.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SEC-HARD-001A
+
+Objetivo executado:
+- auditar duplicação, acoplamento, fronteiras e consistência da configuração de headers sem alterar o comportamento validado no Preview nem antecipar a `SEC-HARD-001B`.
+
+Auditoria estrutural e decisão:
+- `next.config.mjs` permanece curto e coeso, com a composição da CSP, normalização da origem Supabase e baseline HTTP concentradas na fronteira correta do Next.js;
+- os helpers locais são puros, pequenos e usados por uma única configuração; extraí-los para um módulo genérico ou criar uma abstração adicional aumentaria a superfície sem reduzir duplicação, acoplamento ou risco;
+- `src/proxy.ts` continua responsável somente por sessão e não contém política estática de headers;
+- a URL pública do Supabase continua normalizada por `URL.origin`, exige HTTPS e falha fechada quando ausente ou inválida;
+- HSTS e `upgrade-insecure-requests` continuam exclusivos de `VERCEL_ENV=production`;
+- nenhuma refatoração funcional foi aplicada porque não surgiu evidência técnica que a justificasse.
+
+TDD e quality gates:
+- baseline direcionada: 1 suíte e 12 testes verdes;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- `git diff --check` verde após a atualização documental.
+
+Ocorrência operacional e prevenção:
+- a primeira tentativa direcionada não iniciou o Jest porque o shim global de `npm` apontava para `C:\Users\junio\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js`, que não existe;
+- a falha era externa ao repositório e não representava regressão do produto;
+- prevenção: nesta estação, executar os binários locais de Jest, ESLint, TypeScript e Next.js com o runtime Node empacotado do workspace quando o shim global estiver indisponível.
+
+Fronteiras preservadas:
+- nenhum header, CSP, Proxy, UI, domain, application, infrastructure, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo ou dependência foi alterado;
+- `UX-CHART-002` e `UX-CHART-003` permanecem somente em `DISCOVERY` e suas alterações documentais locais foram preservadas;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram não rastreados e fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável após o hardening;
+- Dia 5 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade e PWA, sem expansão de regra de negócio.

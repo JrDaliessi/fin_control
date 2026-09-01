@@ -1671,3 +1671,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, dependência, configuração permanente da Vercel, merge ou deploy foi alterado.
 - credenciais e links temporários não foram persistidos; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução.
+- skill `vercel:nextjs` aplicada à revisão de `next.config.mjs` e da fronteira com o Proxy.
+- auditoria confirmou configuração curta, coesa e determinística; helpers locais possuem responsabilidade única e nenhuma extração adicional reduziria risco ou duplicação.
+- CSP, origem Supabase exata, falha fechada, headers comuns e políticas exclusivas de produção permaneceram inalterados.
+- baseline direcionada: 1 suíte e 12 testes verdes.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados.
+- o shim global de `npm` estava inválido; os gates foram executados com os binários locais pelo runtime Node empacotado do workspace, sem alteração de dependência ou configuração do projeto.
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado.
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, commit, push, merge ou deploy foi alterado.
+- `UX-CHART-002` e `UX-CHART-003` foram preservadas como documentação futura; `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável; próximo comando válido: `dia 6`.
