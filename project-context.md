@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 6
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 7
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -137,6 +137,7 @@
 - Data da implementação mínima orientada por teste da UX-SHELL-001: 2026-09-01
 - Data da expansão controlada da UX-SHELL-001: 2026-09-01
 - Data da refatoração e hardening interno da UX-SHELL-001: 2026-09-01
+- Data da revisão de UX, acessibilidade e PWA da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6967,3 +6968,50 @@ Estado de saída:
 - `REFACTORING_IN_PROGRESS` encerrado;
 - retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 6` para experiência, acessibilidade e PWA.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-SHELL-001
+
+Objetivo executado:
+- validar em navegador real o cabeçalho compacto e o painel da conta em mobile, tablet e desktop, incluindo responsividade, teclado, foco, contraste, microinterações e metadados PWA.
+
+Validação responsiva real:
+- em `320 x 800`, o header ocupou 65 px incluindo borda, o trigger mediu `46 x 44` px, o menu inferior permaneceu visível e não houve overflow horizontal;
+- o bottom sheet ocupou toda a largura, ficou ancorado ao rodapé e respeitou o limite vertical do viewport;
+- em `768 x 900`, a navegação lateral de 80 px substituiu o menu inferior e o painel passou para `384 x 284` px, ancorado 16 px à direita e abaixo da topbar;
+- em `1280 x 900`, a sidebar de 256 px, o rótulo de rota e o trigger textual `Conta` ficaram visíveis; o painel manteve 384 px, ancoragem e ausência de overflow.
+
+Acessibilidade e microinterações:
+- diálogo nomeado por `Conta e aparência`, descrito pela sessão atual e marcado com `aria-modal=true`;
+- foco inicial no botão de fechar, contenção circular validada com `Tab` e `Shift+Tab`, fechamento por `Escape`, botão e backdrop;
+- após o fechamento, foco retornou ao trigger, `overflow` do body foi restaurado e atributos `inert`/`aria-hidden` temporários foram removidos;
+- fundo ficou inerte durante a abertura e o scroll da página foi bloqueado;
+- targets interativos críticos mantiveram mínimo de 44 px e o skip link, landmarks e navegações preservaram semântica coerente;
+- movimento reduzido e safe areas permanecem cobertos pelas regras globais e classes responsivas existentes.
+
+Temas e contraste:
+- tema claro: corpo `16,68:1`, trigger `16,96:1` e texto secundário `5,12:1`;
+- tema escuro: corpo `17,89:1`, trigger `13,98:1` e texto secundário `6,92:1`;
+- os valores auditados atendem WCAG AA; alternância Claro/Escuro funcionou e a preferência `Sistema` foi restaurada ao final.
+
+Experiência PWA:
+- HTML preserva `lang=pt-BR`, viewport `width=device-width, initial-scale=1`, manifest e metadados Apple;
+- theme colors claro/escuro permanecem alinhados aos tokens visuais;
+- manifest válido em `display=standalone`, `start_url=/`, `scope=/`, quatro ícones e dois atalhos;
+- manifest, ícones SVG/PNG, ícone maskable e Apple Touch Icon responderam HTTP 200 com tipos corretos;
+- não existe service worker nem promessa de funcionamento offline; essa limitação permanece honesta e fora do escopo da small release.
+
+Quality gates:
+- regressão completa: 86 suítes e 505 testes verdes, zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- único log observado foi o aviso conhecido de CSP/`eval()` exclusivo do React em modo de desenvolvimento; não representa erro do produto e não ocorre no build de produção já validado no Dia 5.
+
+Fronteiras preservadas:
+- nenhum arquivo funcional, dependência, regra de negócio, rota, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterado;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `QUALITY_VALIDATION` em GREEN;
+- `UX-SHELL-001A`, `UX-SHELL-001B` e `UX-SHELL-001C` validadas sem dívida crítica ou alta aberta;
+- próximo comando válido: `dia 7` para segurança, observabilidade, build final e preparação de release.

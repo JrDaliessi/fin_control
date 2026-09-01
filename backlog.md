@@ -21,7 +21,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-SHELL-001A` estrutura/semântica em RED e GREEN; `UX-SHELL-001B` responsividade, foco, scroll e microinterações; `UX-SHELL-001C` hardening visual e validação PWA.
 - Fase recomendada: ciclo dedicado Dias 1–7.
 - Critério de pronto: header cabe em uma linha; conteúdo global ocupa no máximo 64 px mais safe area no mobile; painel oferece sessão/tema/logout por toque e teclado; nenhuma rota ou fluxo existente regride; lint, type-check, Jest e build verdes.
-- Status: IN_PROGRESS — Dia 5 concluído em GREEN; focus trap duplicado extraído para utilitário testado, backdrop endurecido e componentes reduzidos sem criar primitive modal genérica; 86 suítes/505 testes, lint, type-check e build verdes; próximo passo é UX, acessibilidade e PWA no Dia 6.
+- Status: IN_PROGRESS — Dia 6 concluído em GREEN; 320/768/1280 px, foco, teclado, backdrop, contraste AA e metadados/assets PWA validados em navegador real; 86 suítes/505 testes, lint e type-check verdes; próximo passo é o quality gate final do Dia 7.
 
 ## DISCOVERY
 
