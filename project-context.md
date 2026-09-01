@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SEC-HARD-001A concluído em GREEN; entrega incremental pronta para versionamento
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da UX-SHELL-001 concluído; próxima fase válida é o Dia 2
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -132,6 +132,7 @@
 - Data da refatoração e hardening interno da SEC-HARD-001A: 2026-09-01
 - Data da revisão de UX, acessibilidade e PWA da SEC-HARD-001A: 2026-09-01
 - Data da validação final e preparação de release da SEC-HARD-001A: 2026-09-01
+- Data de seleção, discovery e arquitetura da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6725,3 +6726,67 @@ Estado de saída:
 - `READY_FOR_RELEASE` para a entrega incremental da `SEC-HARD-001A`;
 - Dia 7 concluído em GREEN;
 - próximo passo recomendado: versionar somente a documentação do Dia 7, atualizar a PR `#22` e fazer squash merge em `develop` apenas após os novos checks verdes.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-SHELL-001
+
+Small release: `UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta`.
+
+Problema validado:
+- em viewport mobile, a topbar empilha marca, título da rota, e-mail, três opções de tema e logout, consumindo uma parcela desproporcional da primeira tela;
+- `Visão geral` aparece na topbar e novamente como `h1` da página, aumentando ruído sem acrescentar orientação;
+- a navegação principal já está resolvida na barra inferior, portanto um menu hambúrguer com as mesmas rotas criaria duplicação e ambiguidade.
+
+Objetivo e decisão de experiência:
+- reduzir a topbar a uma linha de até 64 px, além da safe area superior quando instalada como PWA;
+- no mobile, mostrar a marca compacta à esquerda e um trigger de conta à direita; o título principal permanece responsabilidade da página;
+- a partir de 768 px, manter a sidebar/rail existente e usar uma topbar de uma linha com contexto de rota discreto e o mesmo trigger de conta;
+- o trigger usa ícone de conta ou iniciais derivadas somente para apresentação, com nome acessível `Abrir painel da conta`;
+- ao abrir, mobile usa bottom sheet e tablet/desktop usa painel ancorado à direita;
+- o painel contém título `Conta e aparência`, e-mail da sessão, `ThemeSwitcher` e `SignOutButton`, com logout visualmente separado no final;
+- a estrutura usa semântica de diálogo, não `role=menu`, porque contém um radiogroup e informação de sessão, não apenas comandos de menu.
+
+Contratos de interação e acessibilidade:
+- trigger mínimo de 44 × 44 px, foco visível, `aria-expanded` e `aria-controls`;
+- painel fechado não deixa controles ocultos alcançáveis por teclado;
+- abertura move o foco para um controle previsível do painel e bloqueia o scroll do documento no mobile;
+- `Tab` e `Shift+Tab` permanecem contidos enquanto o diálogo estiver aberto;
+- botão explícito, backdrop e `Escape` fecham o painel e restauram foco ao trigger;
+- o painel respeita `safe-area-inset-bottom`, movimento reduzido e contraste dos tokens existentes;
+- troca de tema não fecha o painel nem perde foco; logout conserva carregamento, erro e redirecionamento atuais;
+- a navegação inferior continua sendo a única navegação primária mobile e não é repetida dentro do painel.
+
+Arquitetura e fronteiras:
+- `PrivateAppShell` continua client composition root por já depender de `usePathname`, `useRouter` e do fluxo de logout;
+- `PrivateTopbar` fica responsável apenas pela composição visual compacta e recebe props serializáveis/funções já internas à fronteira cliente;
+- `AccountPanel.client.tsx`, próximo ao App Router em `src/app/(private)/components`, concentra abertura, fechamento, foco, scroll e variação responsiva;
+- `ThemeSwitcher` e `SignOutButton` são reutilizados sem mudar seus contratos;
+- nenhuma primitive modal genérica será criada no Dia 3; a possível extração de comportamento comum com `ExpandableChartFrame` só será avaliada no Dia 5 se houver duplicação concreta e testes como rede de segurança;
+- nenhuma camada de domain, application financeira ou infrastructure muda; Auth, Supabase, RLS, migrations, dados e rotas permanecem intactos;
+- nenhuma dependência nova é autorizada: React, Tailwind e Lucide existentes cobrem o recorte.
+
+Small releases:
+- `UX-SHELL-001A`: testes de contrato e implementação mínima da topbar/painel;
+- `UX-SHELL-001B`: estados responsivos, foco, scroll, `Escape`, backdrop e restauração;
+- `UX-SHELL-001C`: consistência visual, safe areas, movimento reduzido e validação real em 320/768/1280 px.
+
+Critérios de aceite:
+- topbar mobile permanece em uma linha e ocupa no máximo 64 px além da safe area;
+- `Visão geral` deixa de ser repetido no header mobile e continua como `h1` da página;
+- e-mail, tema e logout ficam disponíveis dentro do painel em todos os viewports;
+- abrir, navegar, alterar tema e fechar funcionam por toque e teclado;
+- foco e scroll são restaurados sem vazamento de interação para o conteúdo de fundo;
+- navegação inferior, sidebar, logout, tema, skip link e único landmark `main` permanecem funcionais;
+- nenhuma nova rota, configuração remota, dependência ou acesso Supabase é introduzido;
+- Jest, lint, type-check e build permanecem verdes.
+
+Riscos e pendências:
+- risco MÉDIO de regressão em foco/scroll; o Dia 2 deverá transformar cada contrato crítico em teste antes de código funcional;
+- a geração de iniciais a partir do e-mail deve ter fallback neutro e nunca expor o endereço fora do painel;
+- a captura anexada inclui chrome do navegador, que não pertence ao app; a altura controlável começa na topbar do FinControl;
+- `UX-CHART-002/003` permanece preservada separadamente e não entra nesta branch;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueios independentes de produção pública.
+
+Estado de saída:
+- `ARCHITECTURE_READY`;
+- `UX-SHELL-001` refinada e em `IN_PROGRESS`, sem código funcional;
+- próximo comando válido: `dia 2` para matriz de testes e RED controlado da apresentação.

@@ -370,6 +370,21 @@ O projeto deve ter:
 - Nenhuma mudança de domain, application, infrastructure, Supabase, migration, PWA offline ou regra financeira pertence à UI-002.
 - Decisão completa: `adr/0006-responsive-private-shell.md`.
 
+## Cabeçalho Responsivo Compacto — UX-SHELL-001
+
+- `UX-SHELL-001` evolui a topbar criada pela UI-002 sem alterar a matriz de navegação, autenticação ou regras financeiras.
+- A topbar usa uma única linha de até 64 px, além da safe area superior; o `h1` e a descrição continuam pertencendo à página.
+- Mobile exibe marca compacta e trigger de conta. Tablet/desktop preservam contexto discreto da rota e o mesmo trigger, mantendo sidebar/rail existentes.
+- O trigger abre um diálogo responsivo: bottom sheet abaixo de 768 px e painel ancorado à direita a partir de 768 px.
+- O painel recebe semântica de diálogo, e não de menu ARIA, porque compõe identidade, radiogroup de tema e logout.
+- `AccountPanel.client.tsx` permanece específico do shell em `src/app/(private)/components` e concentra somente estado visual, foco, teclado, backdrop, scroll e responsividade.
+- `ThemeSwitcher` e `SignOutButton` são compostos sem alterar seus contratos. O endereço completo da sessão aparece somente dentro do painel.
+- `PrivateAppShell` continua a client composition root e proprietária da orquestração do logout existente; nenhuma nova fronteira Server → Client ou prop não serializável é introduzida.
+- A navegação inferior permanece a única navegação primária mobile; suas rotas não são duplicadas no painel.
+- Nenhuma primitive modal, dependência, rota, Supabase, Auth, migration, RLS, dado ou configuração remota é adicionada neste recorte.
+- O contrato mínimo inclui alvo de 44 px, `aria-expanded`, diálogo nomeado, foco inicial/contido/restaurado, fechamento explícito/`Escape`/backdrop, scroll bloqueado, safe areas e movimento reduzido.
+- Decisão completa: `adr/0018-responsive-account-panel.md`.
+
 ## Dashboard FinControl Pulse — UI-003
 
 - `src/app/(private)/dashboard/compose-dashboard-route.tsx` permanece a composition root server-side compartilhada por `/` e `/dashboard`.
