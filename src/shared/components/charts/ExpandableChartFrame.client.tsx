@@ -11,21 +11,13 @@ import {
   type MouseEvent,
   type ReactNode
 } from "react";
+import { containKeyboardFocus } from "@/shared/utils/containKeyboardFocus";
 import { Button } from "../ui/Button";
 
 type ExpandableChartFrameProps = Readonly<{
   children: ReactNode;
   title: string;
 }>;
-
-const FOCUSABLE_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])"
-].join(",");
 
 export function ExpandableChartFrame({
   children,
@@ -135,31 +127,7 @@ export function ExpandableChartFrame({
         return;
       }
 
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const focusableElements = frameRef.current?.querySelectorAll<HTMLElement>(
-        FOCUSABLE_SELECTOR
-      );
-
-      if (!focusableElements?.length) {
-        return;
-      }
-
-      const firstFocusableElement = focusableElements[0];
-      const lastFocusableElement = focusableElements[focusableElements.length - 1];
-      const movingBeforeFirst =
-        event.shiftKey && document.activeElement === firstFocusableElement;
-      const movingAfterLast =
-        !event.shiftKey && document.activeElement === lastFocusableElement;
-
-      if (!movingBeforeFirst && !movingAfterLast) {
-        return;
-      }
-
-      event.preventDefault();
-      (event.shiftKey ? lastFocusableElement : firstFocusableElement).focus();
+      containKeyboardFocus(event, frameRef.current);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);

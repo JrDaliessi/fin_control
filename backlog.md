@@ -451,6 +451,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DONE
 
+### UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta
+- Tipo: Small Release / UX Improvement.
+- Resultado: topbar privada reduzida a uma linha e sessão, tema e logout consolidados em painel acionado no canto superior direito, com bottom sheet no mobile e popover ancorado em tablet/desktop.
+- Arquitetura: `PrivateAppShell` preservado como composition root; apresentação sem acesso direto ao Supabase; contratos existentes de tema, logout e sessão reutilizados sem regra financeira nova.
+- UX/PWA: 320/768/1280 px sem overflow; targets de 44 px, foco circular/restaurado, `Escape`, backdrop, scroll bloqueado, contraste WCAG AA e manifesto/assets PWA validados.
+- Evidência final: lint, type-check, audit e build verdes; regressão completa com 86 suítes/505 testes e zero snapshots.
+- Evidência remota: Supabase `ACTIVE_HEALTHY` e migrations alinhadas; Preview Vercel `READY`, logs sem `error/fatal` em 24 horas e checks da PR `#23` verdes no head publicado.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de CLI/promoção, mas nenhum deles bloqueia o merge incremental da UI.
+- Data de conclusão: 2026-09-01.
+- Status: DONE.
+
 ### SR-015 — Candles financeiros
 - Tipo: Small Release
 - Resultado: saldo diário apresentado como linha ou candles OHLC sobre o mesmo snapshot server-side, com seletor, tooltip explicável, tabela equivalente e frame expansível.

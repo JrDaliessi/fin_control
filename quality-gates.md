@@ -1638,6 +1638,68 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next.config.d.mts` tipa somente a importação da configuração no teste; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
 
+## Gate do Dia 7 — UX-SHELL-001
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução;
+- lint e type-check verdes; regressão completa com 86 suítes, 505 testes e zero snapshots;
+- auditoria do lockfile em severidade alta verde com zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde, preservando todas as rotas e o Proxy;
+- revisão do diff confirmou ausência de mudança em Auth, Supabase, migrations, RLS, dados financeiros, segredos ou variáveis de ambiente;
+- CSP, headers, claims verificadas, rejeição anônima, atualização de cookies e falha fechada permanecem preservados;
+- Supabase `ACTIVE_HEALTHY`, seis migrations alinhadas, somente `SEC-AUTH-001` no Security Advisor e três índices sem uso como alertas informativos;
+- Preview `dpl_F7b8DgT51THXnShNQdrnDCTDrXMi` no head `f232e5d` está `READY`; runtime sem `error/fatal` em 24 horas;
+- PR `#23` aberta, limpa e mergeável, com Quality Gates, Vercel e Vercel Preview Comments verdes;
+- observabilidade mínima coberta por GitHub Actions e logs Vercel; `HARD-OBS-001` continua bloqueando produção pública;
+- avisos de Node/npm e vínculo local antigo permanecem registrados em `CI-VERCEL-002` como dívida MÉDIA;
+- nenhum Auth remoto, migration, dado, configuração permanente, commit, push, merge, deploy ou promoção foi executado;
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar a documentação e atualizar a PR `#23`.
+
+## Gate do Dia 3 — UX-SHELL-001
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- `PrivateTopbar` compactada e `AccountPanel.client.tsx` criado sem alterar os testes do Dia 2.
+- GREEN direcionado: 1 suíte e 12 testes verdes, zero snapshots.
+- regressão intermediária detectou somente literal `bg-black/50`; corrigido para token semântico `bg-navigation/70` sem flexibilizar contratos.
+- regressão final: 85 suítes e 499 testes verdes, zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy preservados.
+- revisão Next.js confirmou manutenção da client composition root; revisão React confirmou callback estável, cleanup de listener/scroll e portal ancorado ao viewport.
+- nenhuma dependência, rota, regra financeira, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterada.
+- `next-env.d.ts` restaurado; anexos, script local e stash de charts preservados fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — UX-SHELL-001
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da execução.
+- baseline direcionada: 1 suíte e 12 testes verdes; novos contratos produziram RED com 11 verdes e 2 falhas esperadas.
+- GREEN direcionado: 1 suíte e 13 testes verdes, zero snapshots.
+- diálogo passou a ter descrição acessível da sessão, fundo `inert`/`aria-hidden` com restauração integral e foco restaurado após o cleanup.
+- topbar e painel passaram a respeitar safe areas laterais; painel preserva safe areas superior/inferior e contém overscroll.
+- validação real em 320, 768 e 1280 px confirmou ausência de overflow, breakpoints corretos, foco/scroll restaurados e composição bottom sheet/painel ancorado.
+- nenhum overlay de erro foi encontrado; o único log foi o aviso esperado do React Dev por a CSP segura bloquear `unsafe-eval`, sem impacto no build de produção.
+- regressão final: 85 suítes e 500 testes verdes, zero snapshots.
+- lint global verde com zero warnings; type-check verde; build Next.js `16.3.3` verde com todas as rotas e o Proxy preservados.
+- o runtime Node empacotado foi usado porque o shim global do npm permanece quebrado; `next-env.d.ts` foi restaurado e artefatos auxiliares do dev server removidos.
+- nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, commit, push, merge ou deploy foi alterado.
+- anexos, `rewrite-msgs.sh` e stash de `UX-CHART-002/003` permaneceram fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — UX-SHELL-001
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da refatoração.
+- baseline direcionada: 2 suítes e 23 testes verdes, zero snapshots.
+- plano incremental rejeitou uma primitive modal comum e limitou a extração à única duplicação comprovada: contenção de foco.
+- RED do utilitário: suíte falhou pela ausência de `containKeyboardFocus`; GREEN unitário passou em cinco cenários.
+- RED do backdrop: 12 testes verdes e 1 falha esperada por `aria-hidden` ausente; ajuste mínimo levou o contrato a GREEN.
+- GREEN direcionado final: 3 suítes e 28 testes verdes, zero snapshots.
+- `AccountPanel` reduziu de 202 para 170 linhas e `ExpandableChartFrame` de 220 para 188; utilitário compartilhado possui 39 linhas.
+- revisão React confirmou imports diretos, dependências estreitas e listeners com cleanup; scan de design/arquitetura não encontrou `any`, cor literal ou Supabase no recorte.
+- regressão final: 86 suítes e 505 testes verdes, zero snapshots.
+- lint global verde com zero warnings; type-check verde; build Next.js `16.3.3` verde com todas as rotas e o Proxy preservados.
+- `next-env.d.ts` restaurado; nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, commit, push, merge ou deploy foi alterado.
+- anexos, `rewrite-msgs.sh` e stash de `UX-CHART-002/003` permaneceram fora do escopo.
+- `REFACTORING_IN_PROGRESS` encerrado; retorno estável a `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 6`.
+
 ## Gate do Dia 3 — SEC-HARD-001A
 
 - contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
@@ -1724,3 +1786,17 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum Auth remoto, CAPTCHA, rate limit, migration, RLS, dado, segredo, dependência, commit, push, merge, deploy ou promoção foi executado.
 - `next-env.d.ts` restaurado; `UX-CHART-002/003`, `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar a documentação do Dia 7 e atualizar a PR `#22`.
+
+## Gate do Dia 2 — UX-SHELL-001
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes dos testes.
+- baseline direcionada anterior ao RED: 1 suíte e 7 testes verdes.
+- matriz classifica domain, application e infrastructure como não aplicáveis; o recorte permanece integralmente em presentation.
+- suíte do `PrivateAppShell` ampliada para 12 testes sem criar componente ou código funcional.
+- RED direcionado: 4 testes verdes e 8 falhas planejadas pela ausência do trigger, painel e classes compactas.
+- regressão completa: 85 suítes, 84 verdes e somente a suíte do shell vermelha; 499 testes, 491 verdes e 8 vermelhos planejados; zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- falhas cobrem topbar compacta, diálogo, foco, teclado, backdrop, scroll, tema e logout, sem flexibilizar comportamento esperado.
+- nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, código funcional, commit, push, merge ou deploy foi alterado.
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` foram preservados fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.

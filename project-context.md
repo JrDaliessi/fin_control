@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da SEC-HARD-001A concluído em GREEN; entrega incremental pronta para versionamento
+- Fase atual: Dia 7 da UX-SHELL-001 concluído em GREEN; próxima ação válida é versionar a documentação e atualizar a PR #23
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -132,6 +132,13 @@
 - Data da refatoração e hardening interno da SEC-HARD-001A: 2026-09-01
 - Data da revisão de UX, acessibilidade e PWA da SEC-HARD-001A: 2026-09-01
 - Data da validação final e preparação de release da SEC-HARD-001A: 2026-09-01
+- Data de seleção, discovery e arquitetura da UX-SHELL-001: 2026-09-01
+- Data da estratégia de testes e RED controlado da UX-SHELL-001: 2026-09-01
+- Data da implementação mínima orientada por teste da UX-SHELL-001: 2026-09-01
+- Data da expansão controlada da UX-SHELL-001: 2026-09-01
+- Data da refatoração e hardening interno da UX-SHELL-001: 2026-09-01
+- Data da revisão de UX, acessibilidade e PWA da UX-SHELL-001: 2026-09-01
+- Data da validação final e preparação de release da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6725,3 +6732,340 @@ Estado de saída:
 - `READY_FOR_RELEASE` para a entrega incremental da `SEC-HARD-001A`;
 - Dia 7 concluído em GREEN;
 - próximo passo recomendado: versionar somente a documentação do Dia 7, atualizar a PR `#22` e fazer squash merge em `develop` apenas após os novos checks verdes.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-SHELL-001
+
+Small release: `UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta`.
+
+Problema validado:
+- em viewport mobile, a topbar empilha marca, título da rota, e-mail, três opções de tema e logout, consumindo uma parcela desproporcional da primeira tela;
+- `Visão geral` aparece na topbar e novamente como `h1` da página, aumentando ruído sem acrescentar orientação;
+- a navegação principal já está resolvida na barra inferior, portanto um menu hambúrguer com as mesmas rotas criaria duplicação e ambiguidade.
+
+Objetivo e decisão de experiência:
+- reduzir a topbar a uma linha de até 64 px, além da safe area superior quando instalada como PWA;
+- no mobile, mostrar a marca compacta à esquerda e um trigger de conta à direita; o título principal permanece responsabilidade da página;
+- a partir de 768 px, manter a sidebar/rail existente e usar uma topbar de uma linha com contexto de rota discreto e o mesmo trigger de conta;
+- o trigger usa ícone de conta ou iniciais derivadas somente para apresentação, com nome acessível `Abrir painel da conta`;
+- ao abrir, mobile usa bottom sheet e tablet/desktop usa painel ancorado à direita;
+- o painel contém título `Conta e aparência`, e-mail da sessão, `ThemeSwitcher` e `SignOutButton`, com logout visualmente separado no final;
+- a estrutura usa semântica de diálogo, não `role=menu`, porque contém um radiogroup e informação de sessão, não apenas comandos de menu.
+
+Contratos de interação e acessibilidade:
+- trigger mínimo de 44 × 44 px, foco visível, `aria-expanded` e `aria-controls`;
+- painel fechado não deixa controles ocultos alcançáveis por teclado;
+- abertura move o foco para um controle previsível do painel e bloqueia o scroll do documento no mobile;
+- `Tab` e `Shift+Tab` permanecem contidos enquanto o diálogo estiver aberto;
+- botão explícito, backdrop e `Escape` fecham o painel e restauram foco ao trigger;
+- o painel respeita `safe-area-inset-bottom`, movimento reduzido e contraste dos tokens existentes;
+- troca de tema não fecha o painel nem perde foco; logout conserva carregamento, erro e redirecionamento atuais;
+- a navegação inferior continua sendo a única navegação primária mobile e não é repetida dentro do painel.
+
+Arquitetura e fronteiras:
+- `PrivateAppShell` continua client composition root por já depender de `usePathname`, `useRouter` e do fluxo de logout;
+- `PrivateTopbar` fica responsável apenas pela composição visual compacta e recebe props serializáveis/funções já internas à fronteira cliente;
+- `AccountPanel.client.tsx`, próximo ao App Router em `src/app/(private)/components`, concentra abertura, fechamento, foco, scroll e variação responsiva;
+- `ThemeSwitcher` e `SignOutButton` são reutilizados sem mudar seus contratos;
+- nenhuma primitive modal genérica será criada no Dia 3; a possível extração de comportamento comum com `ExpandableChartFrame` só será avaliada no Dia 5 se houver duplicação concreta e testes como rede de segurança;
+- nenhuma camada de domain, application financeira ou infrastructure muda; Auth, Supabase, RLS, migrations, dados e rotas permanecem intactos;
+- nenhuma dependência nova é autorizada: React, Tailwind e Lucide existentes cobrem o recorte.
+
+Small releases:
+- `UX-SHELL-001A`: testes de contrato e implementação mínima da topbar/painel;
+- `UX-SHELL-001B`: estados responsivos, foco, scroll, `Escape`, backdrop e restauração;
+- `UX-SHELL-001C`: consistência visual, safe areas, movimento reduzido e validação real em 320/768/1280 px.
+
+Critérios de aceite:
+- topbar mobile permanece em uma linha e ocupa no máximo 64 px além da safe area;
+- `Visão geral` deixa de ser repetido no header mobile e continua como `h1` da página;
+- e-mail, tema e logout ficam disponíveis dentro do painel em todos os viewports;
+- abrir, navegar, alterar tema e fechar funcionam por toque e teclado;
+- foco e scroll são restaurados sem vazamento de interação para o conteúdo de fundo;
+- navegação inferior, sidebar, logout, tema, skip link e único landmark `main` permanecem funcionais;
+- nenhuma nova rota, configuração remota, dependência ou acesso Supabase é introduzido;
+- Jest, lint, type-check e build permanecem verdes.
+
+Riscos e pendências:
+- risco MÉDIO de regressão em foco/scroll; o Dia 2 deverá transformar cada contrato crítico em teste antes de código funcional;
+- a geração de iniciais a partir do e-mail deve ter fallback neutro e nunca expor o endereço fora do painel;
+- a captura anexada inclui chrome do navegador, que não pertence ao app; a altura controlável começa na topbar do FinControl;
+- `UX-CHART-002/003` permanece preservada separadamente e não entra nesta branch;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueios independentes de produção pública.
+
+Estado de saída:
+- `ARCHITECTURE_READY`;
+- `UX-SHELL-001` refinada e em `IN_PROGRESS`, sem código funcional;
+- próximo comando válido: `dia 2` para matriz de testes e RED controlado da apresentação.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-SHELL-001
+
+Small release: `UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta`.
+
+Matriz por camada:
+- domain: não aplicável; nenhuma regra financeira ou entidade nasce neste recorte;
+- application: não aplicável; o caso de uso de logout existente não muda;
+- infrastructure: não aplicável; Supabase Auth e o gateway existente permanecem intactos;
+- presentation: cobertura obrigatória concentrada na composição real de `PrivateAppShell`, incluindo topbar, painel da conta, tema, logout, foco, teclado, scroll, responsividade, navegação e landmarks.
+
+Baseline antes do RED:
+- suíte direcionada existente: 1 suíte, 7 testes verdes e zero snapshots;
+- a primeira tentativa com pattern comum não encontrou o caminho porque `(private)` foi interpretado pelo Jest; `--runTestsByPath` executou a suíte literal corretamente;
+- nenhuma implementação foi alterada para preparar o harness.
+
+Contratos criados primeiro:
+- topbar de uma linha, marca compacta, contexto de rota oculto no mobile e trigger `Abrir painel da conta`;
+- trigger com alvo mínimo, `aria-expanded` e `aria-controls`;
+- painel ausente do DOM enquanto fechado, sem e-mail, tema ou logout alcançáveis;
+- diálogo `Conta e aparência` com `aria-modal`, sessão, radiogroup de tema, logout e classes responsivas de bottom sheet/painel ancorado;
+- foco inicial no fechamento e scroll do documento bloqueado durante a abertura;
+- fechamento por `Escape`, botão explícito e backdrop, sempre restaurando foco e scroll;
+- contenção circular de `Tab` e `Shift+Tab`;
+- mudança para tema escuro sem fechar o painel;
+- logout acessado dentro do painel, preservando provider, redirecionamento e refresh existentes;
+- navegação desktop/mobile, skip link, reserva inferior, único `main` e fallback de rota desconhecida preservados.
+
+Evidência RED:
+- suíte direcionada: 12 testes totais, 4 verdes e 8 vermelhos planejados;
+- as falhas apontam para o trigger/painel inexistentes e para as classes compactas ainda não aplicadas;
+- regressão completa: 85 suítes, 84 verdes e somente a suíte do shell vermelha; 499 testes, 491 verdes e 8 vermelhos planejados;
+- zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde.
+
+Fronteiras preservadas:
+- nenhum `AccountPanel.client.tsx`, header compacto, foco, scroll, estilo funcional ou código de produto foi criado;
+- nenhum teste foi flexibilizado para reproduzir o comportamento atual;
+- nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, commit, push, merge ou deploy foi alterado;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo;
+- o planejamento `UX-CHART-002/003` continua preservado em stash separado.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- RED controlado isolado à implementação ausente da `UX-SHELL-001`;
+- próximo comando válido: `dia 3` para implementar o mínimo necessário e levar os contratos a GREEN sem expansão de escopo.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-SHELL-001
+
+Objetivo executado:
+- implementar o menor recorte capaz de levar os oito contratos planejados de RED para GREEN, sem alterar expectativas nem ampliar o shell com novas rotas ou integrações.
+
+Implementação:
+- `PrivateTopbar` passou a usar uma única linha de 64 px mais safe area superior;
+- mobile exibe somente a marca compacta e o trigger da conta; o contexto da rota permanece discreto a partir de `md`;
+- e-mail, tema e logout deixaram de ocupar permanentemente o header;
+- `AccountPanel.client.tsx` concentra trigger, portal, diálogo, backdrop, foco, teclado, scroll e composição de `ThemeSwitcher`/`SignOutButton`;
+- mobile usa bottom sheet; tablet/desktop usa painel ancorado ao canto superior direito;
+- o portal mantém o painel acima da navegação inferior, enquanto um contêiner fixo de viewport preserva a âncora após scroll;
+- o backdrop fica fora da sequência de Tab; fechamento explícito, `Escape` e backdrop restauram foco ao trigger;
+- `Tab`/`Shift+Tab` ficam contidos, e o overflow anterior do body é restaurado ao fechar ou desmontar;
+- nenhum endereço é exposto no header fechado; a sessão aparece somente dentro do diálogo.
+
+Arquitetura e revisão React/Next.js:
+- a client composition root existente continua em `PrivateAppShell`; nenhuma nova fronteira Server → Client foi criada;
+- `PrivateTopbar` ficou focada em composição visual e `AccountPanel` em comportamento interativo;
+- `closePanel` foi estabilizado com `useCallback` para o listener global depender de uma referência consistente;
+- o overlay usa `bg-navigation/70`, token semântico do design system, em vez de literal de paleta;
+- classes de animação dependentes de plugin foram removidas; nenhuma dependência foi adicionada;
+- nenhuma primitive modal genérica foi extraída prematuramente.
+
+TDD e quality gates:
+- primeiro GREEN direcionado: 1 suíte e 12 testes verdes, sem alterar testes;
+- a primeira regressão ampliada encontrou somente `bg-black/50` pelo contrato do design system; a implementação foi corrigida para token semântico e os testes permaneceram intactos;
+- regressão final: 85 suítes e 499 testes verdes, zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- `next-env.d.ts` foi restaurado após as duas regenerações automáticas do build.
+
+Fronteiras preservadas:
+- nenhum teste foi alterado no Dia 3;
+- nenhuma rota, regra financeira, domain, application, infrastructure, Auth, Supabase, migration, RLS, dado, configuração remota ou dependência foi alterada;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
+- fluxo principal da `UX-SHELL-001A` funcional e aderente ao ADR 0018;
+- próximo comando válido: `dia 4` para expansão controlada, estados auxiliares e validação visual responsiva, sem ampliar o produto.
+
+## Dia 4 — Expansão Controlada da UX-SHELL-001
+
+Objetivo executado:
+- fortalecer a experiência responsiva e a acessibilidade modal do painel da conta, preservando o comportamento entregue no Dia 3 e sem ampliar rotas, integrações ou regras de negócio.
+
+TDD e implementação incremental:
+- baseline direcionada: 1 suíte e 12 testes verdes;
+- os novos contratos foram escritos primeiro e produziram RED controlado com 13 testes, 11 verdes e 2 falhas esperadas por descrição acessível e safe areas ainda ausentes;
+- o diálogo passou a descrever formalmente a sessão atual por `aria-describedby`;
+- enquanto aberto, todos os elementos visíveis de fundo fora do portal recebem `inert` e `aria-hidden=true`, com preservação e restauração dos estados anteriores no cleanup;
+- a restauração do foco ocorre somente depois da remoção do estado inerte, usando referência estável capturada pelo efeito;
+- painel e topbar passaram a respeitar safe areas laterais; o painel ancorado inclui a safe area superior, contém overscroll e mantém a safe area inferior no bottom sheet;
+- GREEN direcionado final: 1 suíte e 13 testes verdes, zero snapshots.
+
+Validação real no navegador:
+- em 320 × 800 px, header com 65 px incluindo borda, trigger de 46 × 44 px, contexto da rota oculto, ausência de overflow horizontal e bottom sheet com 320 px ancorado ao rodapé;
+- o painel mobile moveu foco ao fechamento, bloqueou o scroll, tornou o fundo inerte e restaurou foco, scroll e atributos ao fechar por `Escape`;
+- em 768 × 900 px, sidebar visível, navegação inferior oculta, contexto da rota visível e painel de 384 px ancorado a 16 px da direita e 64 px do topo;
+- em 1280 × 900 px, trigger textual `Conta`, sidebar e painel ancorado permaneceram consistentes, sem overflow horizontal ou overlay de erro;
+- o único log do navegador foi o aviso de desenvolvimento do React por a CSP de produção bloquear `unsafe-eval`; a CSP não foi enfraquecida e o build de produção não depende desse recurso.
+
+Quality gates:
+- regressão completa: 85 suítes e 500 testes verdes, zero snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- o shim global do npm continuou indisponível e o runtime Node empacotado do workspace executou os gates;
+- `next-env.d.ts` foi restaurado após regeneração automática; os arquivos auxiliares gerados pelo dev server foram removidos.
+
+Fronteiras preservadas:
+- nenhuma dependência, rota, regra financeira, domain, application, infrastructure, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterada;
+- nenhuma primitive modal comum foi extraída; essa avaliação permanece reservada ao Dia 5 com testes como rede de segurança;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
+- `UX-SHELL-001A` e `UX-SHELL-001B` funcionais; `UX-SHELL-001C` validada nos três viewports planejados;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem nova regra de negócio.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UX-SHELL-001
+
+Objetivo executado:
+- remover somente a duplicação comprovada de contenção de foco e reforçar a semântica do backdrop, sem transformar painel e fullscreen de gráficos em uma primitive modal artificial.
+
+Auditoria e decisão estrutural:
+- `AccountPanel` e `ExpandableChartFrame` eram grandes, mas possuem ciclos de vida distintos: portal/backdrop/inertização no shell e preservação de nó/Fullscreen API nos gráficos;
+- uma abstração modal comum misturaria responsabilidades e aumentaria acoplamento, portanto foi explicitamente rejeitada;
+- a duplicação real limitava-se ao seletor de elementos focáveis e ao algoritmo circular de `Tab`/`Shift+Tab`;
+- `containKeyboardFocus.ts` passou a concentrar somente esse comportamento puro e reutilizável;
+- `AccountPanel` caiu de 202 para 170 linhas e `ExpandableChartFrame` de 220 para 188 linhas; o utilitário compartilhado possui 39 linhas;
+- scroll, foco inicial/restauração, backdrop, `inert`, portal e Fullscreen API continuam dentro de seus componentes concretos.
+
+TDD e hardening:
+- baseline direcionada anterior: 2 suítes e 23 testes verdes;
+- a suíte do utilitário foi criada primeiro e produziu RED pela implementação inexistente;
+- cinco testes cobrem wrap para frente, wrap reverso, ordem intermediária, contêiner vazio, tecla alheia e contêiner ausente;
+- o backdrop exclusivamente visual passou a usar `aria-hidden=true` e permaneceu fora da ordem de Tab; o contrato falhou antes do ajuste e ficou GREEN depois;
+- GREEN direcionado final: 3 suítes e 28 testes verdes, zero snapshots.
+
+Consistência React, visual e de dados:
+- revisão `vercel:react-best-practices` confirmou imports diretos, dependências primitivas dos efeitos e listeners globais com cleanup;
+- os listeners continuam instalados apenas durante o estado modal ativo; nenhuma dependência adicional ou mecanismo global foi criado;
+- varredura confirmou ausência de `any`, cores literais e acesso Supabase nos componentes/utilitário alterados;
+- nenhuma integridade financeira ou persistência foi afetada; domain, application e infrastructure permanecem fora do recorte.
+
+Quality gates:
+- regressão completa: 86 suítes e 505 testes verdes, zero snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- `next-env.d.ts` foi restaurado após regeneração automática do build.
+
+Fronteiras preservadas:
+- nenhuma nova regra de negócio, mudança visual ampla, rota, dependência, Auth, Supabase, migration, RLS, dado ou configuração remota foi introduzida;
+- validação aprofundada de UX, acessibilidade e PWA permanece reservada ao Dia 6;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado;
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade e PWA.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-SHELL-001
+
+Objetivo executado:
+- validar em navegador real o cabeçalho compacto e o painel da conta em mobile, tablet e desktop, incluindo responsividade, teclado, foco, contraste, microinterações e metadados PWA.
+
+Validação responsiva real:
+- em `320 x 800`, o header ocupou 65 px incluindo borda, o trigger mediu `46 x 44` px, o menu inferior permaneceu visível e não houve overflow horizontal;
+- o bottom sheet ocupou toda a largura, ficou ancorado ao rodapé e respeitou o limite vertical do viewport;
+- em `768 x 900`, a navegação lateral de 80 px substituiu o menu inferior e o painel passou para `384 x 284` px, ancorado 16 px à direita e abaixo da topbar;
+- em `1280 x 900`, a sidebar de 256 px, o rótulo de rota e o trigger textual `Conta` ficaram visíveis; o painel manteve 384 px, ancoragem e ausência de overflow.
+
+Acessibilidade e microinterações:
+- diálogo nomeado por `Conta e aparência`, descrito pela sessão atual e marcado com `aria-modal=true`;
+- foco inicial no botão de fechar, contenção circular validada com `Tab` e `Shift+Tab`, fechamento por `Escape`, botão e backdrop;
+- após o fechamento, foco retornou ao trigger, `overflow` do body foi restaurado e atributos `inert`/`aria-hidden` temporários foram removidos;
+- fundo ficou inerte durante a abertura e o scroll da página foi bloqueado;
+- targets interativos críticos mantiveram mínimo de 44 px e o skip link, landmarks e navegações preservaram semântica coerente;
+- movimento reduzido e safe areas permanecem cobertos pelas regras globais e classes responsivas existentes.
+
+Temas e contraste:
+- tema claro: corpo `16,68:1`, trigger `16,96:1` e texto secundário `5,12:1`;
+- tema escuro: corpo `17,89:1`, trigger `13,98:1` e texto secundário `6,92:1`;
+- os valores auditados atendem WCAG AA; alternância Claro/Escuro funcionou e a preferência `Sistema` foi restaurada ao final.
+
+Experiência PWA:
+- HTML preserva `lang=pt-BR`, viewport `width=device-width, initial-scale=1`, manifest e metadados Apple;
+- theme colors claro/escuro permanecem alinhados aos tokens visuais;
+- manifest válido em `display=standalone`, `start_url=/`, `scope=/`, quatro ícones e dois atalhos;
+- manifest, ícones SVG/PNG, ícone maskable e Apple Touch Icon responderam HTTP 200 com tipos corretos;
+- não existe service worker nem promessa de funcionamento offline; essa limitação permanece honesta e fora do escopo da small release.
+
+Quality gates:
+- regressão completa: 86 suítes e 505 testes verdes, zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- único log observado foi o aviso conhecido de CSP/`eval()` exclusivo do React em modo de desenvolvimento; não representa erro do produto e não ocorre no build de produção já validado no Dia 5.
+
+Fronteiras preservadas:
+- nenhum arquivo funcional, dependência, regra de negócio, rota, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterado;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `QUALITY_VALIDATION` em GREEN;
+- `UX-SHELL-001A`, `UX-SHELL-001B` e `UX-SHELL-001C` validadas sem dívida crítica ou alta aberta;
+- próximo comando válido: `dia 7` para segurança, observabilidade, build final e preparação de release.
+
+### Ajuste pós-push — quality gate de dependências
+
+- a primeira execução remota da PR `#23` falhou somente no `npm audit` porque `browserslist 4.28.5`, dependência transitiva de build, recebeu dois advisories de severidade alta;
+- `npm audit fix --package-lock-only --ignore-scripts` atualizou apenas o lockfile: `browserslist` para `4.28.8` e seus cinco pacotes auxiliares compatíveis, sem alterar dependências diretas ou código da aplicação;
+- audit local retornou zero vulnerabilidades; 86 suítes/505 testes, lint, type-check e build de produção permaneceram verdes;
+- a correção é restrita ao pipeline e não altera comportamento, dados financeiros, Auth, Supabase, RLS ou contratos arquiteturais.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-SHELL-001
+
+Objetivo executado:
+- fechar a small release do cabeçalho responsivo com evidência local e remota, sem expandir escopo nem modificar Auth, banco, infraestrutura ou produção.
+
+Quality gates finais:
+- lint global verde com zero warnings;
+- type-check verde;
+- regressão completa verde com 86 suítes, 505 testes e zero snapshots;
+- auditoria do lockfile em severidade alta retornou zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde, preservando `/`, `/_not-found`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e o Proxy;
+- `git diff --check origin/develop...HEAD` verde e `next-env.d.ts` restaurado após a regeneração automática do build.
+
+Revisão de segurança:
+- o diff da branch não altera Auth, Supabase, migrations, RLS, dados financeiros, rotas protegidas, segredos ou variáveis de ambiente;
+- o painel expõe o e-mail somente enquanto o diálogo da conta está aberto e reutiliza os contratos existentes de tema e logout;
+- a apresentação permanece sem acesso direto ao Supabase; o shell continua orquestrando o gateway e o caso de uso já existentes;
+- o Proxy preserva validação por claims, rejeição de sessão anônima, atualização de cookies e falha fechada;
+- CSP e headers globais permanecem ativos, e a varredura não encontrou credencial de `service_role` rastreada;
+- a documentação atual do Supabase foi revisada e nenhuma mudança recente é aplicável ao recorte, que não cria tabela, endpoint OAuth nem integração GraphQL.
+
+Supabase remoto:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) permanece `ACTIVE_HEALTHY`, em `sa-east-1`, PostgreSQL `17.6.1.141`;
+- seis migrations remotas continuam alinhadas até `create_financial_evolution_snapshot`; nenhuma migration foi aplicada nesta fase;
+- o Security Advisor não encontrou falha nova e manteve apenas o aviso conhecido `SEC-AUTH-001` de proteção contra senhas vazadas desativada;
+- o Performance Advisor manteve três índices ainda não utilizados como itens informativos, sem justificar remoção durante esta small release de UI.
+
+Vercel, PR e observabilidade:
+- Preview `dpl_F7b8DgT51THXnShNQdrnDCTDrXMi`, no head `f232e5d`, está `READY` e sem erro de build;
+- os únicos avisos de build são o alinhamento de Node/npm e o vínculo local antigo já registrados em `CI-VERCEL-002` como dívida MÉDIA;
+- logs de runtime do deployment não apresentaram `error` ou `fatal` nas últimas 24 horas;
+- PR `#23` está aberta, não draft, limpa e mergeável, com Quality Gates, Vercel e Vercel Preview Comments verdes no head publicado;
+- baseline atual: GitHub Actions para lint/type-check/testes/audit/build e Vercel para build/runtime; o plano Hobby não oferece drains, e `HARD-OBS-001` continua obrigatório antes de produção pública.
+
+Fronteiras e riscos remanescentes:
+- `UX-SHELL-001A`, `UX-SHELL-001B` e `UX-SHELL-001C` estão concluídas sem dívida crítica ou alta da feature;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta UI;
+- `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção de produção;
+- nenhum Auth remoto, migration, RLS, dado, dependência, configuração permanente, commit, push, merge, deploy ou promoção foi executado;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram preservados fora do escopo.
+
+Estado de saída:
+- `READY_FOR_RELEASE` em GREEN;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#23` e, após decisão humana, realizar squash merge em `develop`;
+- deploy público continua bloqueado pelos hardenings globais já documentados.

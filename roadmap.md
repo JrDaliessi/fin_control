@@ -237,6 +237,26 @@ Governança:
 - nenhuma promessa de IA ou offline antes de capacidade real;
 - a próxima small release continua dependendo de seleção humana explícita entre os itens `READY`/`DISCOVERY` aplicáveis.
 
+### UX-SHELL-001 — Cabeçalho responsivo compacto
+
+Estado atual: Dia 7 concluído em `READY_FOR_RELEASE`. Mobile, tablet e desktop foram validados sem overflow; foco, teclado, backdrop, contraste WCAG AA, PWA, segurança local, Supabase, Preview Vercel e PR ficaram verdes, com 86 suítes/505 testes, lint, type-check, audit e build aprovados.
+
+Objetivo: reduzir a topbar privada a uma única linha e mover sessão, tema e logout para um painel da conta responsivo, recuperando espaço vertical em todas as páginas.
+
+Composição aprovada:
+- mobile: marca compacta, trigger de conta no canto superior direito e bottom sheet;
+- tablet/desktop: contexto discreto da rota, trigger de conta e painel ancorado à direita;
+- navegação inferior e sidebar/rail permanecem como navegação primária e não são duplicadas;
+- o título principal permanece na página, eliminando a repetição no header mobile;
+- nenhuma dependência, rota, Auth, Supabase ou dado novo.
+
+Sequência:
+1. `UX-SHELL-001A` — contratos de apresentação e implementação mínima;
+2. `UX-SHELL-001B` — responsividade, foco, teclado, backdrop e scroll;
+3. `UX-SHELL-001C` — consistência visual, safe areas e validação PWA em 320/768/1280 px.
+
+Próximo passo: versionar a documentação e atualizar a PR `#23`; depois, mediante decisão humana, realizar squash merge em `develop`. Produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
+
 ## Marco 9 - Periodos e Evolucao
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.

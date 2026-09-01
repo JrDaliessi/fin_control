@@ -47,6 +47,7 @@ describe("PrivateAppShell", () => {
     jest.clearAllMocks();
     mockPathname = "/dashboard";
     window.localStorage.clear();
+    document.body.style.overflow = "";
     document.documentElement.removeAttribute("data-theme");
     Object.defineProperty(window, "matchMedia", {
       configurable: true,
@@ -149,15 +150,170 @@ describe("PrivateAppShell", () => {
     ).not.toHaveClass("bg-surface-muted", "font-semibold");
   });
 
-  it("preserves global session actions and leaves the main landmark to the page", () => {
+  it("renders a compact topbar and keeps account actions hidden by default", () => {
     renderShell();
 
-    expect(screen.getByRole("banner")).toBeInTheDocument();
-    expect(screen.getByText("usuario@example.com")).toBeInTheDocument();
-    expect(screen.getByRole("radiogroup", { name: "Tema" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sair" })).toBeInTheDocument();
+    const banner = screen.getByRole("banner");
+    const accountTrigger = within(banner).getByRole("button", {
+      name: "Abrir painel da conta",
+    });
+
+    expect(banner).toHaveClass(
+      "min-h-16",
+      "pt-[env(safe-area-inset-top)]",
+    );
+    expect(within(banner).getByText("FinControl")).toBeInTheDocument();
+    expect(within(banner).getByText("Visão geral")).toHaveClass(
+      "hidden",
+      "md:block",
+    );
+    expect(accountTrigger).toHaveAttribute("aria-expanded", "false");
+    expect(accountTrigger).toHaveClass("min-h-11", "min-w-11");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByText("usuario@example.com")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("radiogroup", { name: "Tema" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Sair" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("main")).toHaveLength(1);
     expect(screen.getByRole("main")).toHaveTextContent("Conteúdo financeiro");
+  });
+
+  it("opens a named responsive account dialog with session, theme and logout", async () => {
+    const user = userEvent.setup();
+    const { container } = renderShell();
+
+    const accountTrigger = screen.getByRole("button", {
+      name: "Abrir painel da conta",
+    });
+    await user.click(accountTrigger);
+
+    const dialog = screen.getByRole("dialog", { name: "Conta e aparência" });
+    const closeButton = within(dialog).getByRole("button", {
+      name: "Fechar painel da conta",
+    });
+    const backdrop = screen.getByTestId("account-panel-backdrop");
+
+    expect(accountTrigger).toHaveAttribute("aria-expanded", "true");
+    expect(accountTrigger).toHaveAttribute("aria-controls", dialog.id);
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(dialog).toHaveAccessibleDescription(
+      "Sessão atual usuario@example.com",
+    );
+    expect(dialog).toHaveClass(
+      "fixed",
+      "inset-x-0",
+      "bottom-0",
+      "rounded-t-2xl",
+      "overscroll-contain",
+      "pl-[max(1rem,env(safe-area-inset-left))]",
+      "pr-[max(1rem,env(safe-area-inset-right))]",
+      "pb-[max(1rem,env(safe-area-inset-bottom))]",
+      "md:absolute",
+      "md:inset-x-auto",
+      "md:right-4",
+      "md:top-[calc(4rem+env(safe-area-inset-top))]",
+      "md:rounded-xl",
+    );
+    expect(container).toHaveAttribute("aria-hidden", "true");
+    expect(container).toHaveAttribute("inert");
+    expect(backdrop).toHaveAttribute("aria-hidden", "true");
+    expect(backdrop).toHaveAttribute("tabindex", "-1");
+    expect(within(dialog).getByText("usuario@example.com")).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("radiogroup", { name: "Tema" }),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "Sair" })).toBeInTheDocument();
+    expect(closeButton).toHaveFocus();
+    expect(document.body).toHaveStyle({ overflow: "hidden" });
+  });
+
+  it("closes with Escape and restores focus and document scroll", async () => {
+    const user = userEvent.setup();
+    const { container } = renderShell();
+
+    const accountTrigger = screen.getByRole("button", {
+      name: "Abrir painel da conta",
+    });
+    await user.click(accountTrigger);
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(accountTrigger).toHaveAttribute("aria-expanded", "false");
+    expect(accountTrigger).toHaveFocus();
+    expect(document.body.style.overflow).toBe("");
+    expect(container).not.toHaveAttribute("aria-hidden");
+    expect(container).not.toHaveAttribute("inert");
+  });
+
+  it("keeps horizontal safe areas in the compact topbar", () => {
+    renderShell();
+
+    expect(screen.getByRole("banner").firstElementChild).toHaveClass(
+      "pl-[max(1rem,env(safe-area-inset-left))]",
+      "pr-[max(1rem,env(safe-area-inset-right))]",
+      "sm:px-6",
+      "lg:px-8",
+    );
+  });
+
+  it("closes through the explicit action and backdrop", async () => {
+    const user = userEvent.setup();
+    renderShell();
+
+    const accountTrigger = screen.getByRole("button", {
+      name: "Abrir painel da conta",
+    });
+    await user.click(accountTrigger);
+    await user.click(
+      screen.getByRole("button", { name: "Fechar painel da conta" }),
+    );
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(accountTrigger).toHaveFocus();
+
+    await user.click(accountTrigger);
+    await user.click(screen.getByTestId("account-panel-backdrop"));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(accountTrigger).toHaveFocus();
+  });
+
+  it("contains forward and backward keyboard focus inside the dialog", async () => {
+    const user = userEvent.setup();
+    renderShell();
+
+    await user.click(
+      screen.getByRole("button", { name: "Abrir painel da conta" }),
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "Conta e aparência" });
+    const closeButton = within(dialog).getByRole("button", {
+      name: "Fechar painel da conta",
+    });
+    const signOutButton = within(dialog).getByRole("button", { name: "Sair" });
+
+    signOutButton.focus();
+    await user.tab();
+    expect(closeButton).toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(signOutButton).toHaveFocus();
+  });
+
+  it("changes theme without dismissing the account dialog", async () => {
+    const user = userEvent.setup();
+    renderShell();
+
+    await user.click(
+      screen.getByRole("button", { name: "Abrir painel da conta" }),
+    );
+    await user.click(screen.getByRole("radio", { name: "Escuro" }));
+
+    expect(screen.getByRole("radio", { name: "Escuro" })).toBeChecked();
+    expect(
+      screen.getByRole("dialog", { name: "Conta e aparência" }),
+    ).toBeInTheDocument();
   });
 
   it("reserves mobile bottom space without introducing a second main landmark", () => {
@@ -194,6 +350,9 @@ describe("PrivateAppShell", () => {
     const user = userEvent.setup();
     renderShell();
 
+    await user.click(
+      screen.getByRole("button", { name: "Abrir painel da conta" }),
+    );
     await user.click(screen.getByRole("button", { name: "Sair" }));
 
     await waitFor(() => {
@@ -209,7 +368,7 @@ describe("PrivateAppShell", () => {
 
     expect(
       within(screen.getByRole("banner")).getByText("Área financeira"),
-    ).toBeInTheDocument();
+    ).toHaveClass("hidden", "md:block");
     expect(
       screen
         .getAllByRole("link")
