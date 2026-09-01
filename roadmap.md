@@ -239,7 +239,7 @@ Governança:
 
 ### UX-SHELL-001 — Cabeçalho responsivo compacto
 
-Estado atual: Dia 6 concluído em `QUALITY_VALIDATION`. Mobile, tablet e desktop foram validados em navegador real sem overflow; foco, teclado, backdrop, contraste WCAG AA, temas e assets/metadados PWA ficaram verdes, com 86 suítes/505 testes, lint e type-check aprovados.
+Estado atual: Dia 7 concluído em `READY_FOR_RELEASE`. Mobile, tablet e desktop foram validados sem overflow; foco, teclado, backdrop, contraste WCAG AA, PWA, segurança local, Supabase, Preview Vercel e PR ficaram verdes, com 86 suítes/505 testes, lint, type-check, audit e build aprovados.
 
 Objetivo: reduzir a topbar privada a uma única linha e mover sessão, tema e logout para um painel da conta responsivo, recuperando espaço vertical em todas as páginas.
 
@@ -255,7 +255,7 @@ Sequência:
 2. `UX-SHELL-001B` — responsividade, foco, teclado, backdrop e scroll;
 3. `UX-SHELL-001C` — consistência visual, safe areas e validação PWA em 320/768/1280 px.
 
-Próximo passo: Dia 7 para executar segurança, observabilidade, build final e preparação de release, preservando Auth, Supabase e a navegação existente.
+Próximo passo: versionar a documentação e atualizar a PR `#23`; depois, mediante decisão humana, realizar squash merge em `develop`. Produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
 
 ## Marco 9 - Periodos e Evolucao
 

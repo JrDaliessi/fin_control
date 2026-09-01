@@ -1638,6 +1638,22 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next.config.d.mts` tipa somente a importação da configuração no teste; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
 
+## Gate do Dia 7 — UX-SHELL-001
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução;
+- lint e type-check verdes; regressão completa com 86 suítes, 505 testes e zero snapshots;
+- auditoria do lockfile em severidade alta verde com zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde, preservando todas as rotas e o Proxy;
+- revisão do diff confirmou ausência de mudança em Auth, Supabase, migrations, RLS, dados financeiros, segredos ou variáveis de ambiente;
+- CSP, headers, claims verificadas, rejeição anônima, atualização de cookies e falha fechada permanecem preservados;
+- Supabase `ACTIVE_HEALTHY`, seis migrations alinhadas, somente `SEC-AUTH-001` no Security Advisor e três índices sem uso como alertas informativos;
+- Preview `dpl_F7b8DgT51THXnShNQdrnDCTDrXMi` no head `f232e5d` está `READY`; runtime sem `error/fatal` em 24 horas;
+- PR `#23` aberta, limpa e mergeável, com Quality Gates, Vercel e Vercel Preview Comments verdes;
+- observabilidade mínima coberta por GitHub Actions e logs Vercel; `HARD-OBS-001` continua bloqueando produção pública;
+- avisos de Node/npm e vínculo local antigo permanecem registrados em `CI-VERCEL-002` como dívida MÉDIA;
+- nenhum Auth remoto, migration, dado, configuração permanente, commit, push, merge, deploy ou promoção foi executado;
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar a documentação e atualizar a PR `#23`.
+
 ## Gate do Dia 3 — UX-SHELL-001
 
 - contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.

@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 7
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UX-SHELL-001 concluído em GREEN; próxima ação válida é versionar a documentação e atualizar a PR #23
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -138,6 +138,7 @@
 - Data da expansão controlada da UX-SHELL-001: 2026-09-01
 - Data da refatoração e hardening interno da UX-SHELL-001: 2026-09-01
 - Data da revisão de UX, acessibilidade e PWA da UX-SHELL-001: 2026-09-01
+- Data da validação final e preparação de release da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7022,3 +7023,49 @@ Estado de saída:
 - `npm audit fix --package-lock-only --ignore-scripts` atualizou apenas o lockfile: `browserslist` para `4.28.8` e seus cinco pacotes auxiliares compatíveis, sem alterar dependências diretas ou código da aplicação;
 - audit local retornou zero vulnerabilidades; 86 suítes/505 testes, lint, type-check e build de produção permaneceram verdes;
 - a correção é restrita ao pipeline e não altera comportamento, dados financeiros, Auth, Supabase, RLS ou contratos arquiteturais.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-SHELL-001
+
+Objetivo executado:
+- fechar a small release do cabeçalho responsivo com evidência local e remota, sem expandir escopo nem modificar Auth, banco, infraestrutura ou produção.
+
+Quality gates finais:
+- lint global verde com zero warnings;
+- type-check verde;
+- regressão completa verde com 86 suítes, 505 testes e zero snapshots;
+- auditoria do lockfile em severidade alta retornou zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde, preservando `/`, `/_not-found`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e o Proxy;
+- `git diff --check origin/develop...HEAD` verde e `next-env.d.ts` restaurado após a regeneração automática do build.
+
+Revisão de segurança:
+- o diff da branch não altera Auth, Supabase, migrations, RLS, dados financeiros, rotas protegidas, segredos ou variáveis de ambiente;
+- o painel expõe o e-mail somente enquanto o diálogo da conta está aberto e reutiliza os contratos existentes de tema e logout;
+- a apresentação permanece sem acesso direto ao Supabase; o shell continua orquestrando o gateway e o caso de uso já existentes;
+- o Proxy preserva validação por claims, rejeição de sessão anônima, atualização de cookies e falha fechada;
+- CSP e headers globais permanecem ativos, e a varredura não encontrou credencial de `service_role` rastreada;
+- a documentação atual do Supabase foi revisada e nenhuma mudança recente é aplicável ao recorte, que não cria tabela, endpoint OAuth nem integração GraphQL.
+
+Supabase remoto:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) permanece `ACTIVE_HEALTHY`, em `sa-east-1`, PostgreSQL `17.6.1.141`;
+- seis migrations remotas continuam alinhadas até `create_financial_evolution_snapshot`; nenhuma migration foi aplicada nesta fase;
+- o Security Advisor não encontrou falha nova e manteve apenas o aviso conhecido `SEC-AUTH-001` de proteção contra senhas vazadas desativada;
+- o Performance Advisor manteve três índices ainda não utilizados como itens informativos, sem justificar remoção durante esta small release de UI.
+
+Vercel, PR e observabilidade:
+- Preview `dpl_F7b8DgT51THXnShNQdrnDCTDrXMi`, no head `f232e5d`, está `READY` e sem erro de build;
+- os únicos avisos de build são o alinhamento de Node/npm e o vínculo local antigo já registrados em `CI-VERCEL-002` como dívida MÉDIA;
+- logs de runtime do deployment não apresentaram `error` ou `fatal` nas últimas 24 horas;
+- PR `#23` está aberta, não draft, limpa e mergeável, com Quality Gates, Vercel e Vercel Preview Comments verdes no head publicado;
+- baseline atual: GitHub Actions para lint/type-check/testes/audit/build e Vercel para build/runtime; o plano Hobby não oferece drains, e `HARD-OBS-001` continua obrigatório antes de produção pública.
+
+Fronteiras e riscos remanescentes:
+- `UX-SHELL-001A`, `UX-SHELL-001B` e `UX-SHELL-001C` estão concluídas sem dívida crítica ou alta da feature;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta UI;
+- `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção de produção;
+- nenhum Auth remoto, migration, RLS, dado, dependência, configuração permanente, commit, push, merge, deploy ou promoção foi executado;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram preservados fora do escopo.
+
+Estado de saída:
+- `READY_FOR_RELEASE` em GREEN;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#23` e, após decisão humana, realizar squash merge em `develop`;
+- deploy público continua bloqueado pelos hardenings globais já documentados.

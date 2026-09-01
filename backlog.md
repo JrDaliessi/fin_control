@@ -6,22 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta
-- Tipo: Small Release / UX Improvement.
-- Descrição objetiva: reduzir o cabeçalho privado a uma única linha e mover sessão, tema e logout para um painel acionado no canto superior direito.
-- Objetivo de negócio: devolver espaço vertical ao conteúdo financeiro e reduzir repetição visual em todas as rotas privadas.
-- Valor esperado: leitura mais rápida no mobile, menor carga visual e ações globais previsíveis em mobile, tablet e desktop.
-- Prioridade: Alta; selecionada antes da `UX-CHART-002` por melhorar transversalmente o shell usado por todos os gráficos e páginas.
-- Dependências: UI-001 e UI-002 concluídas; `ThemeSwitcher`, `SignOutButton`, sessão e navegação responsiva existentes.
-- Escopo: topbar de uma linha; trigger de conta no canto superior direito; bottom sheet abaixo de 768 px; painel ancorado a partir de 768 px; e-mail, tema e logout dentro do painel; remoção da duplicação visual do título no mobile.
-- Fora do escopo: novas rotas, configurações persistidas no banco, alteração de Auth/Supabase, troca da navegação inferior, notificações, foto de perfil, menu hambúrguer de páginas e nova dependência modal.
-- Acessibilidade: trigger mínimo de 44 px com nome acessível e `aria-expanded`; diálogo nomeado; foco inicial, contenção e restauração; fechamento por botão, `Escape` e backdrop; scroll do fundo bloqueado; movimento reduzido e safe areas.
-- Arquitetura: `PrivateAppShell` continua composition root cliente; `PrivateTopbar` fica focada na barra; novo `AccountPanel.client.tsx` concentra somente estado e comportamento visual; contratos de logout e tema são reutilizados sem acesso direto ao Supabase pela apresentação.
-- Risco: Médio por foco modal, scroll e variação responsiva; mitigado por TDD de apresentação e validação em 320/768/1280 px.
-- Small releases: `UX-SHELL-001A` estrutura/semântica em RED e GREEN; `UX-SHELL-001B` responsividade, foco, scroll e microinterações; `UX-SHELL-001C` hardening visual e validação PWA.
-- Fase recomendada: ciclo dedicado Dias 1–7.
-- Critério de pronto: header cabe em uma linha; conteúdo global ocupa no máximo 64 px mais safe area no mobile; painel oferece sessão/tema/logout por toque e teclado; nenhuma rota ou fluxo existente regride; lint, type-check, Jest e build verdes.
-- Status: IN_PROGRESS — Dia 6 concluído em GREEN; 320/768/1280 px, foco, teclado, backdrop, contraste AA e metadados/assets PWA validados em navegador real; 86 suítes/505 testes, lint e type-check verdes; próximo passo é o quality gate final do Dia 7.
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -465,6 +450,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta
+- Tipo: Small Release / UX Improvement.
+- Resultado: topbar privada reduzida a uma linha e sessão, tema e logout consolidados em painel acionado no canto superior direito, com bottom sheet no mobile e popover ancorado em tablet/desktop.
+- Arquitetura: `PrivateAppShell` preservado como composition root; apresentação sem acesso direto ao Supabase; contratos existentes de tema, logout e sessão reutilizados sem regra financeira nova.
+- UX/PWA: 320/768/1280 px sem overflow; targets de 44 px, foco circular/restaurado, `Escape`, backdrop, scroll bloqueado, contraste WCAG AA e manifesto/assets PWA validados.
+- Evidência final: lint, type-check, audit e build verdes; regressão completa com 86 suítes/505 testes e zero snapshots.
+- Evidência remota: Supabase `ACTIVE_HEALTHY` e migrations alinhadas; Preview Vercel `READY`, logs sem `error/fatal` em 24 horas e checks da PR `#23` verdes no head publicado.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de CLI/promoção, mas nenhum deles bloqueia o merge incremental da UI.
+- Data de conclusão: 2026-09-01.
+- Status: DONE.
 
 ### SR-015 — Candles financeiros
 - Tipo: Small Release
