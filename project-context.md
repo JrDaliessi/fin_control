@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da SEC-HARD-001A concluído em GREEN; próxima fase válida é o Dia 4
+- Fase atual: Dia 4 da SEC-HARD-001A concluído em GREEN; próxima fase válida é o Dia 5
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -128,6 +128,7 @@
 - Data do discovery e arquitetura da SEC-HARD-001: 2026-08-31
 - Data da estratégia de testes da SEC-HARD-001A: 2026-08-31
 - Data da implementação mínima orientada por teste da SEC-HARD-001A: 2026-08-31
+- Data da expansão controlada e validação em Preview da SEC-HARD-001A: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6576,3 +6577,37 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`;
 - `SEC-HARD-001A` funcional localmente com pipeline verde;
 - próximo comando válido: `dia 4` para expansão controlada e validação dos estados reais em Preview antes de merge.
+
+## Dia 4 — Expansão Controlada e Validação em Preview da SEC-HARD-001A
+
+Objetivo executado:
+- validar a resposta HTTP real e os fluxos principais do FinControl no deployment Preview correspondente ao commit `9604e44`, sob a CSP implementada no Dia 3, sem antecipar CAPTCHA ou alterar a proteção do projeto.
+
+Evidência remota:
+- deployment `dpl_4fgmbZgiKjdW62xJmnmdCQFxichL` confirmado como `READY`, associado à branch `codex/sec-hard-001a-security-headers` e à PR `#22`;
+- Vercel Authentication permaneceu ativa; a integração oficial forneceu somente um link autenticado efêmero com expiração automática em 23 horas, sem segredo persistente ou mudança de configuração;
+- login real com o usuário de validação concluiu em `/dashboard`, com sessão identificada e snapshot financeiro de três movimentos;
+- gráfico de linha e gráfico Candlestick renderizaram com suas tabelas acessíveis;
+- expansão do Candlestick abriu diálogo nomeado, moveu o foco para `Recolher gráfico`, bloqueou o scroll e, ao recolher, restaurou foco e rolagem;
+- temas escuro e sistema alternaram sem perda do fluxo; não houve overlay do Next.js nem bloqueio funcional atribuído à CSP;
+- `/login` respondeu `200` com CSP em enforcement, framing negado, `nosniff`, política de referrer/permissões, HSTS e sem `X-Powered-By`;
+- `/manifest.webmanifest` respondeu `200` como `application/manifest+json`, sob os mesmos headers; o manifesto versionado preserva `display: standalone`, quatro ícones e dois atalhos.
+
+Validação complementar e quality gates:
+- execução autenticada local do mesmo build confirmou login, sessão, dados reais, linha/candles, expansão, foco, rolagem, temas, manifesto e redirecionamento privado, sem erro ou warning no console;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` isolado verde, com todas as rotas e o Proxy preservados;
+- a primeira tentativa de build concorreu com Jest e falhou após compilar por erro de escrita do ambiente; a repetição isolada concluiu integralmente, sem alteração de código.
+
+Escopo preservado:
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, configuração permanente da Vercel, Supabase remoto, migration, RLS, dado, segredo, dependência, merge ou deploy foi alterado;
+- as credenciais de validação não foram persistidas nem documentadas;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana e credenciais externas;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit ou push foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável;
+- Dia 4 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem expansão de regra de negócio.

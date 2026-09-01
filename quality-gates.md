@@ -1653,3 +1653,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, commit, push, merge ou deploy foi alterado.
 - `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional e uso das credenciais de validação aprovados antes da execução.
+- deployment Preview `dpl_4fgmbZgiKjdW62xJmnmdCQFxichL` confirmado `READY` no commit `9604e44` e na PR `#22`.
+- Vercel Authentication preservada; acesso automatizado realizado por link oficial efêmero, com expiração automática em 23 horas e sem configuração permanente.
+- login real, sessão autenticada, dashboard com três movimentos, gráfico de linha, Candlestick e tabelas acessíveis validados no Preview.
+- expansão do Candlestick validada como diálogo nomeado, com foco no recolhimento, scroll bloqueado e restauração de foco/scroll ao fechar.
+- temas escuro e sistema funcionais; nenhum overlay do Next.js ou bloqueio funcional de CSP foi observado.
+- resposta real de `/login`: HTTP 200, CSP em enforcement com origem Supabase exata, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, políticas de referrer/permissões, HSTS e ausência de `X-Powered-By`.
+- manifesto remoto: HTTP 200 como `application/manifest+json`; contrato versionado mantém `display: standalone`, quatro ícones e dois atalhos.
+- validação local complementar do mesmo build confirmou console sem erro/warning e redirecionamento de rota privada sem sessão.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` isolado verde; rotas e Proxy preservados. Uma execução concorrente com Jest falhou por escrita do ambiente após compilar, e a repetição isolada passou sem mudança de código.
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, dependência, configuração permanente da Vercel, merge ou deploy foi alterado.
+- credenciais e links temporários não foram persistidos; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
