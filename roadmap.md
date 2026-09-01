@@ -239,7 +239,7 @@ Governança:
 
 ### UX-SHELL-001 — Cabeçalho responsivo compacto
 
-Estado atual: Dia 2 concluído em `TEST_STRATEGY_READY`; a suíte do shell possui 8 falhas planejadas e isoladas à implementação ainda ausente, enquanto 84 suítes/491 testes existentes, lint e type-check permanecem verdes.
+Estado atual: Dia 3 concluído em `IMPLEMENTATION_IN_PROGRESS` estável. Topbar compacta, trigger e painel responsivo estão funcionais; 85 suítes/499 testes, lint, type-check e build estão verdes.
 
 Objetivo: reduzir a topbar privada a uma única linha e mover sessão, tema e logout para um painel da conta responsivo, recuperando espaço vertical em todas as páginas.
 
@@ -255,7 +255,7 @@ Sequência:
 2. `UX-SHELL-001B` — responsividade, foco, teclado, backdrop e scroll;
 3. `UX-SHELL-001C` — consistência visual, safe areas e validação PWA em 320/768/1280 px.
 
-Próximo passo: Dia 3 para implementar o mínimo em `PrivateTopbar` e `AccountPanel.client.tsx`, levando os contratos a GREEN sem alterar Auth, Supabase ou navegação.
+Próximo passo: Dia 4 para expansão controlada e validação visual em mobile/tablet/desktop, preservando Auth, Supabase e a navegação existente.
 
 ## Marco 9 - Periodos e Evolucao
 

@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da UX-SHELL-001 concluído em RED controlado; próxima fase válida é o Dia 3
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 4
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -134,6 +134,7 @@
 - Data da validação final e preparação de release da SEC-HARD-001A: 2026-09-01
 - Data de seleção, discovery e arquitetura da UX-SHELL-001: 2026-09-01
 - Data da estratégia de testes e RED controlado da UX-SHELL-001: 2026-09-01
+- Data da implementação mínima orientada por teste da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6838,3 +6839,47 @@ Estado de saída:
 - `TEST_STRATEGY_READY`;
 - RED controlado isolado à implementação ausente da `UX-SHELL-001`;
 - próximo comando válido: `dia 3` para implementar o mínimo necessário e levar os contratos a GREEN sem expansão de escopo.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-SHELL-001
+
+Objetivo executado:
+- implementar o menor recorte capaz de levar os oito contratos planejados de RED para GREEN, sem alterar expectativas nem ampliar o shell com novas rotas ou integrações.
+
+Implementação:
+- `PrivateTopbar` passou a usar uma única linha de 64 px mais safe area superior;
+- mobile exibe somente a marca compacta e o trigger da conta; o contexto da rota permanece discreto a partir de `md`;
+- e-mail, tema e logout deixaram de ocupar permanentemente o header;
+- `AccountPanel.client.tsx` concentra trigger, portal, diálogo, backdrop, foco, teclado, scroll e composição de `ThemeSwitcher`/`SignOutButton`;
+- mobile usa bottom sheet; tablet/desktop usa painel ancorado ao canto superior direito;
+- o portal mantém o painel acima da navegação inferior, enquanto um contêiner fixo de viewport preserva a âncora após scroll;
+- o backdrop fica fora da sequência de Tab; fechamento explícito, `Escape` e backdrop restauram foco ao trigger;
+- `Tab`/`Shift+Tab` ficam contidos, e o overflow anterior do body é restaurado ao fechar ou desmontar;
+- nenhum endereço é exposto no header fechado; a sessão aparece somente dentro do diálogo.
+
+Arquitetura e revisão React/Next.js:
+- a client composition root existente continua em `PrivateAppShell`; nenhuma nova fronteira Server → Client foi criada;
+- `PrivateTopbar` ficou focada em composição visual e `AccountPanel` em comportamento interativo;
+- `closePanel` foi estabilizado com `useCallback` para o listener global depender de uma referência consistente;
+- o overlay usa `bg-navigation/70`, token semântico do design system, em vez de literal de paleta;
+- classes de animação dependentes de plugin foram removidas; nenhuma dependência foi adicionada;
+- nenhuma primitive modal genérica foi extraída prematuramente.
+
+TDD e quality gates:
+- primeiro GREEN direcionado: 1 suíte e 12 testes verdes, sem alterar testes;
+- a primeira regressão ampliada encontrou somente `bg-black/50` pelo contrato do design system; a implementação foi corrigida para token semântico e os testes permaneceram intactos;
+- regressão final: 85 suítes e 499 testes verdes, zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- `next-env.d.ts` foi restaurado após as duas regenerações automáticas do build.
+
+Fronteiras preservadas:
+- nenhum teste foi alterado no Dia 3;
+- nenhuma rota, regra financeira, domain, application, infrastructure, Auth, Supabase, migration, RLS, dado, configuração remota ou dependência foi alterada;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
+- fluxo principal da `UX-SHELL-001A` funcional e aderente ao ADR 0018;
+- próximo comando válido: `dia 4` para expansão controlada, estados auxiliares e validação visual responsiva, sem ampliar o produto.

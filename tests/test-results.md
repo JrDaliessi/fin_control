@@ -1045,3 +1045,20 @@ Interpretação:
 - zero snapshots.
 - lint passou com zero warnings; type-check passou.
 - nenhum componente ou código funcional foi criado; estado final: `TEST_STRATEGY_READY`.
+
+## Dia 3 — UX-SHELL-001
+
+### GREEN direcionado
+
+- suíte do `PrivateAppShell`: 12 testes passaram, sem alterar expectativas.
+- topbar compacta, painel, foco, teclado, scroll, tema, logout e navegação ficaram verdes.
+
+### Regressão e gates
+
+- primeira regressão: 84 suítes/498 testes passaram e somente o contrato global de design system falhou por `bg-black/50`.
+- correção mínima: backdrop migrou para o token semântico `bg-navigation/70`; nenhum teste foi alterado.
+- regressão final: 85 suítes e 499 testes passaram, zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- `next-env.d.ts` foi restaurado após regeneração automática.
+- estado final: `IMPLEMENTATION_IN_PROGRESS` estável em GREEN.

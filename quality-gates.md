@@ -1638,6 +1638,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next.config.d.mts` tipa somente a importação da configuração no teste; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
 
+## Gate do Dia 3 — UX-SHELL-001
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- `PrivateTopbar` compactada e `AccountPanel.client.tsx` criado sem alterar os testes do Dia 2.
+- GREEN direcionado: 1 suíte e 12 testes verdes, zero snapshots.
+- regressão intermediária detectou somente literal `bg-black/50`; corrigido para token semântico `bg-navigation/70` sem flexibilizar contratos.
+- regressão final: 85 suítes e 499 testes verdes, zero snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy preservados.
+- revisão Next.js confirmou manutenção da client composition root; revisão React confirmou callback estável, cleanup de listener/scroll e portal ancorado ao viewport.
+- nenhuma dependência, rota, regra financeira, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterada.
+- `next-env.d.ts` restaurado; anexos, script local e stash de charts preservados fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
 ## Gate do Dia 3 — SEC-HARD-001A
 
 - contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
