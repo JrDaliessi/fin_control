@@ -269,7 +269,7 @@ Próximo passo selecionado: executar o Dia 1 da `SEC-HARD-001`. Retomar o Dia 2 
 
 ## Hardening pré-produção — SEC-HARD-001
 
-Estado atual: Dia 6 da `SEC-HARD-001A` concluído em `QUALITY_VALIDATION`. O Preview preservou login, sessão, temas, dashboard, tabela, gráficos e expansão acessível em 320/768/1280 px, sem overflow global ou erro/warning no console. As 85 suítes/494 testes, lint, type-check e build estão verdes; nenhuma correção funcional foi necessária.
+Estado atual: Dia 7 da `SEC-HARD-001A` concluído em `READY_FOR_RELEASE`. As 85 suítes/494 testes, lint, type-check, auditorias npm e build estão verdes; Supabase, Preview, observabilidade e PR `#22` foram validados no head `f8049e4`, sem regressão crítica.
 
 Sequência aprovada:
 1. `SEC-HARD-001A` — TDD e implementação dos headers determinísticos no Next.js;
@@ -278,7 +278,7 @@ Sequência aprovada:
 
 Decisão de borda: rate limit WAF sobre `/login` não protege o password grant enviado pelo browser diretamente ao Supabase. Não será criado proxy próprio de senha para contornar essa fronteira.
 
-Próximo passo: executar o Dia 7 da `SEC-HARD-001A` para validar segurança final, observabilidade e release readiness, sem antecipar CAPTCHA ou promoção pública.
+Próximo passo: versionar a documentação do Dia 7 e atualizar a PR `#22`; realizar squash merge em `develop` somente após os novos checks verdes. Produção pública permanece condicionada a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
 
 ## Marco 11 - Distribuicao de Frequencia
 

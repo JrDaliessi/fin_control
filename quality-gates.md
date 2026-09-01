@@ -1705,3 +1705,22 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, configuração permanente da Vercel, commit, push, merge ou deploy foi alterado.
 - `next-env.d.ts` restaurado; `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
 - estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- auditorias npm completa e de produção verdes com zero vulnerabilidades.
+- supply chain: 701 pacotes com assinaturas verificadas e 102 com attestations verificadas.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy preservados.
+- revisão local confirmou CSP, headers globais, falha fechada da origem Supabase, claims verificadas, rejeição de Auth anônimo e ausência de segredo de serviço rastreado.
+- seis migrations locais/remotas alinhadas; RLS forçada, ownership, grants mínimos e RPC `SECURITY INVOKER` preservados.
+- projeto Supabase `ACTIVE_HEALTHY`; Security Advisor manteve somente `SEC-AUTH-001`; três índices sem uso permaneceram informativos; logs recentes sem erro/fatal/5xx relevante ao fluxo.
+- deployment `dpl_DnyxprjAaichYi5NuEjoUYEbimpG` no head `f8049e4` está `READY`, sem cluster de runtime, log `error/fatal` ou resposta 5xx em 24 horas.
+- PR `#22` aberta, não draft, mergeável e com Quality Gates, Vercel e Vercel Preview Comments verdes no head publicado.
+- avisos remotos de Node/npm e vínculo local antigo continuam em `CI-VERCEL-002` como dívida MÉDIA antes de CLI/promoção.
+- `SEC-HARD-001A` pronta para release incremental; produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
+- nenhum Auth remoto, CAPTCHA, rate limit, migration, RLS, dado, segredo, dependência, commit, push, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; `UX-CHART-002/003`, `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar a documentação do Dia 7 e atualizar a PR `#22`.

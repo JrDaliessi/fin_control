@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da SEC-HARD-001A concluído em GREEN; próxima fase válida é o Dia 7
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SEC-HARD-001A concluído em GREEN; entrega incremental pronta para versionamento
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -131,6 +131,7 @@
 - Data da expansão controlada e validação em Preview da SEC-HARD-001A: 2026-09-01
 - Data da refatoração e hardening interno da SEC-HARD-001A: 2026-09-01
 - Data da revisão de UX, acessibilidade e PWA da SEC-HARD-001A: 2026-09-01
+- Data da validação final e preparação de release da SEC-HARD-001A: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6684,3 +6685,43 @@ Estado de saída:
 - `QUALITY_VALIDATION`;
 - Dia 6 da `SEC-HARD-001A` concluído em GREEN;
 - próximo comando válido: `dia 7` para segurança final, observabilidade e preparação da entrega incremental.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SEC-HARD-001A
+
+Objetivo executado:
+- validar o head publicado da PR `#22` como entrega incremental dos headers determinísticos, sem promover produção, antecipar CAPTCHA ou alterar serviços externos.
+
+Pipeline e cadeia de suprimentos:
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- auditorias npm completa e de produção com zero vulnerabilidades;
+- 701 pacotes com assinaturas verificadas e 102 pacotes com attestations verificadas;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- GitHub Actions `Quality Gates`, Vercel e Vercel Preview Comments verdes no head `f8049e4`.
+
+Revisão de segurança:
+- CSP em enforcement, framing negado, `nosniff`, referrer/permissions policies, HSTS de produção e remoção de `X-Powered-By` permanecem cobertos por teste;
+- Proxy continua isolado em sessão, usa claims verificadas, exige `sub` válido e rejeita Auth anônimo;
+- nenhum segredo de serviço ou chave privada foi encontrado nos arquivos rastreados; frontend usa somente configuração pública do Supabase;
+- migrations locais e remotas permanecem alinhadas nas mesmas seis versões;
+- RLS habilitada e forçada, ownership por `auth.uid()`, grants mínimos e RPC `SECURITY INVOKER` permanecem preservados;
+- Security Advisor mantém somente `auth_leaked_password_protection`, já registrado em `SEC-AUTH-001` e bloqueado pelo plano atual;
+- três índices sem uso permanecem informativos e não justificam remoção sem evidência de carga.
+
+Observabilidade e entrega:
+- projeto Supabase `fin_control` confirmado `ACTIVE_HEALTHY`; logs recentes de Auth, API e Postgres não apresentaram erro explícito, fatal ou resposta 5xx relevante ao fluxo;
+- deployment `dpl_DnyxprjAaichYi5NuEjoUYEbimpG` corresponde ao commit `f8049e4`, está `READY` e não possui cluster de runtime, log `error/fatal` ou resposta 5xx na janela de 24 horas;
+- PR `#22` está aberta, não draft, mergeável e direcionada a `develop`;
+- o build remoto concluiu; os avisos de Node/npm e o vínculo local antigo continuam classificados em `CI-VERCEL-002` como dívida MÉDIA antes de CLI/promoção;
+- a mudança futura do endpoint Management API `logs.all` não afeta o conector MCP usado nesta validação; demais breaking changes recentes do Supabase não atingem este recorte.
+
+Riscos e fronteiras:
+- `SEC-HARD-001A` está pronta para release incremental e pode ser mergeada após versionar esta documentação e os checks do novo head permanecerem verdes;
+- produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e pela `SEC-HARD-001B` ainda não executada;
+- nenhum Auth remoto, CAPTCHA, rate limit, migration, RLS, dado, segredo, dependência, configuração da Vercel, commit, push, merge, deploy ou promoção foi executado nesta fase;
+- `UX-CHART-002/003`, `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo da entrega de segurança.
+
+Estado de saída:
+- `READY_FOR_RELEASE` para a entrega incremental da `SEC-HARD-001A`;
+- Dia 7 concluído em GREEN;
+- próximo passo recomendado: versionar somente a documentação do Dia 7, atualizar a PR `#22` e fazer squash merge em `develop` apenas após os novos checks verdes.

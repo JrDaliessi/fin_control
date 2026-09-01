@@ -1011,3 +1011,21 @@ Interpretação:
 - lint passou com zero warnings; type-check passou.
 - build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
 - nenhum código funcional ou configuração remota foi alterado; estado final: `QUALITY_VALIDATION`.
+
+## Dia 7 — SEC-HARD-001A
+
+### Pipeline final
+
+- regressão completa: 85 suítes e 494 testes passaram, sem snapshots.
+- lint passou com zero warnings; type-check passou.
+- auditorias npm completa e de produção passaram com zero vulnerabilidades.
+- 701 pacotes tiveram assinaturas verificadas e 102 tiveram attestations verificadas.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+
+### Segurança, observabilidade e entrega
+
+- seis migrations locais/remotas permaneceram alinhadas; RLS, ownership, grants mínimos e RPC invoker foram confirmados por inspeção.
+- Security Advisor manteve apenas a proteção contra senhas vazadas já registrada; três índices sem uso permaneceram informativos.
+- Preview do head `f8049e4` está `READY`, sem cluster de runtime, log `error/fatal` ou resposta 5xx em 24 horas.
+- PR `#22` está aberta, mergeável e com Quality Gates e Vercel verdes.
+- `SEC-HARD-001A` encerrou em `READY_FOR_RELEASE`; produção pública continua bloqueada pelos hardenings externos documentados.
