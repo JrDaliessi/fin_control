@@ -418,12 +418,12 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Risco: Médio em previews privados; Alto em produção pública sem headers e proteção contra abuso.
 - Fase recomendada: ciclo dedicado Dias 1–7 antes da promoção pública.
 - Small releases:
-  - `SEC-HARD-001A`: headers globais, CSP compatível, contrato da origem Supabase e validação real em Preview — `READY`.
+  - `SEC-HARD-001A`: headers globais, CSP compatível, contrato da origem Supabase e validação real em Preview — `READY_FOR_RELEASE`, com Dia 7 concluído em GREEN; pipeline, segurança, Supabase, observabilidade, Preview e PR validados no head `f8049e4`.
   - `SEC-HARD-001B`: inventário dos rate limits e CAPTCHA nativo com token efêmero — `BLOCKED` até decisão humana de provedor e credenciais seguras.
 - Critério de pronto: headers validados na resposta do app, console sem violação CSP, HTTPS/HSTS confirmados, login/sessão/PWA/gráficos sem regressão e controles de abuso explicitamente verificados.
 - Limite: WAF de `/login` não será tratado como proteção do password grant direto ao Supabase; nenhum proxy próprio de senha será criado.
 - ADR: `adr/0017-auth-environment-security-hardening.md`.
-- Status: READY para `SEC-HARD-001A`
+- Status: `SEC-HARD-001A` pronta para release incremental; `SEC-HARD-001B` continua `BLOCKED`, mantendo o item agregado bloqueado para produção pública
 
 ### CI-HARD-001 — Fixar ações do GitHub por SHA
 - Tipo: Dívida Técnica

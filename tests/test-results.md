@@ -993,3 +993,39 @@ Interpretação:
 - Security Advisor manteve somente `SEC-AUTH-001`; logs recentes de Supabase e Vercel não apresentaram erro explícito, fatal ou 5xx.
 - preview Vercel está `READY`; PR `#19` mergeable e checks do head publicado verdes.
 - estado final: `READY_FOR_RELEASE` para entrega incremental; produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
+
+## Dia 6 — SEC-HARD-001A
+
+### UX, acessibilidade e PWA
+
+- Preview `READY` validado em 320, 768 e 1280 px sem overflow global, erro ou warning no console.
+- login, sessão, temas, navegação, dashboard, tabela e gráficos permaneceram funcionais sob a CSP.
+- alvos principais de 44 px, tabela rolável por teclado e expansão acessível com foco/scroll restaurados foram confirmados.
+- o fechamento por `Escape` permaneceu verde no teste automatizado; a simulação do navegador protegido foi inconclusiva e não gerou correção sem reprodução confiável.
+- link e metadata PWA foram confirmados no DOM; a abertura isolada do manifesto foi bloqueada pela autenticação SSO da Vercel, enquanto o contrato local permaneceu verde e sem promessa offline.
+
+### Pipeline
+
+- direcionado: 7 suítes e 42 testes passaram.
+- regressão completa: 85 suítes e 494 testes passaram, sem snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- nenhum código funcional ou configuração remota foi alterado; estado final: `QUALITY_VALIDATION`.
+
+## Dia 7 — SEC-HARD-001A
+
+### Pipeline final
+
+- regressão completa: 85 suítes e 494 testes passaram, sem snapshots.
+- lint passou com zero warnings; type-check passou.
+- auditorias npm completa e de produção passaram com zero vulnerabilidades.
+- 701 pacotes tiveram assinaturas verificadas e 102 tiveram attestations verificadas.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+
+### Segurança, observabilidade e entrega
+
+- seis migrations locais/remotas permaneceram alinhadas; RLS, ownership, grants mínimos e RPC invoker foram confirmados por inspeção.
+- Security Advisor manteve apenas a proteção contra senhas vazadas já registrada; três índices sem uso permaneceram informativos.
+- Preview do head `f8049e4` está `READY`, sem cluster de runtime, log `error/fatal` ou resposta 5xx em 24 horas.
+- PR `#22` está aberta, mergeável e com Quality Gates e Vercel verdes.
+- `SEC-HARD-001A` encerrou em `READY_FOR_RELEASE`; produção pública continua bloqueada pelos hardenings externos documentados.

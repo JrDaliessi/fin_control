@@ -1623,3 +1623,104 @@ Uma release incremental só pode ser considerada pronta quando:
 - ADR 0017 separa headers locais (`SEC-HARD-001A`) de CAPTCHA externo (`SEC-HARD-001B`) e proíbe proxy próprio de credenciais.
 - nenhuma configuração, código funcional, teste executável, Auth, CAPTCHA, rate limit, segredo, migration, RLS, dado, dependência ou deploy foi alterado.
 - `SEC-HARD-001A`: `READY`; `SEC-HARD-001B`: `BLOCKED`; estado de saída: `ARCHITECTURE_READY`.
+
+## Gate do Dia 2 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- skills `vercel:nextjs` e `supabase:supabase` consultadas apenas para o contrato da configuração do Next.js e da origem Supabase.
+- baseline anterior ao RED: 84 suítes e 482 testes verdes, sem snapshots.
+- nova suíte server-side usa a configuração real do Next.js e cobre 12 casos de headers, CSP, origem Supabase, produção/preview e fronteira do Proxy.
+- RED direcionado válido: 1 suíte falhou, com 11 falhas intencionais e 1 teste de fronteira verde.
+- regressão ampliada: 84 suítes anteriores verdes; somente a nova suíte falhou; 483 testes verdes e 11 falhas planejadas em 494 testes.
+- as falhas são causadas exclusivamente pela implementação ainda ausente em `next.config.mjs`, conforme exigido pelo TDD.
+- type-check verde; lint global verde com zero warnings; zero snapshots.
+- `next.config.mjs` e `src/proxy.ts` não foram alterados; nenhum header funcional, Auth, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência ou deploy foi modificado.
+- `next.config.d.mts` tipa somente a importação da configuração no teste; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- skills `vercel:nextjs` e `supabase:supabase` aplicadas somente à configuração do Next.js e ao contrato da origem pública.
+- documentação atual confirmou `headers()` como função assíncrona de configuração; nenhum breaking change do Supabase afeta a origem HTTPS gerenciada usada pela CSP.
+- implementação mínima confinada a `next.config.mjs`: `poweredByHeader: false`, baseline global, CSP, validação HTTPS da origem Supabase e políticas exclusivas de produção.
+- GREEN direcionado: 1 suíte e 12 testes verdes, sem remoção ou relaxamento de expectativas.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados.
+- primeira execução do build falhou somente pela rede isolada ao buscar Geist; repetição com acesso autorizado compilou e gerou todas as páginas.
+- `next-env.d.ts` restaurado após geração automática; `git diff --check` verde.
+- nenhum Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, commit, push, merge ou deploy foi alterado.
+- `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional e uso das credenciais de validação aprovados antes da execução.
+- deployment Preview `dpl_4fgmbZgiKjdW62xJmnmdCQFxichL` confirmado `READY` no commit `9604e44` e na PR `#22`.
+- Vercel Authentication preservada; acesso automatizado realizado por link oficial efêmero, com expiração automática em 23 horas e sem configuração permanente.
+- login real, sessão autenticada, dashboard com três movimentos, gráfico de linha, Candlestick e tabelas acessíveis validados no Preview.
+- expansão do Candlestick validada como diálogo nomeado, com foco no recolhimento, scroll bloqueado e restauração de foco/scroll ao fechar.
+- temas escuro e sistema funcionais; nenhum overlay do Next.js ou bloqueio funcional de CSP foi observado.
+- resposta real de `/login`: HTTP 200, CSP em enforcement com origem Supabase exata, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, políticas de referrer/permissões, HSTS e ausência de `X-Powered-By`.
+- manifesto remoto: HTTP 200 como `application/manifest+json`; contrato versionado mantém `display: standalone`, quatro ícones e dois atalhos.
+- validação local complementar do mesmo build confirmou console sem erro/warning e redirecionamento de rota privada sem sessão.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` isolado verde; rotas e Proxy preservados. Uma execução concorrente com Jest falhou por escrita do ambiente após compilar, e a repetição isolada passou sem mudança de código.
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, dependência, configuração permanente da Vercel, merge ou deploy foi alterado.
+- credenciais e links temporários não foram persistidos; `rewrite-msgs.sh` permanece não rastreado e fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução.
+- skill `vercel:nextjs` aplicada à revisão de `next.config.mjs` e da fronteira com o Proxy.
+- auditoria confirmou configuração curta, coesa e determinística; helpers locais possuem responsabilidade única e nenhuma extração adicional reduziria risco ou duplicação.
+- CSP, origem Supabase exata, falha fechada, headers comuns e políticas exclusivas de produção permaneceram inalterados.
+- baseline direcionada: 1 suíte e 12 testes verdes.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados.
+- o shim global de `npm` estava inválido; os gates foram executados com os binários locais pelo runtime Node empacotado do workspace, sem alteração de dependência ou configuração do projeto.
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado.
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, commit, push, merge ou deploy foi alterado.
+- `UX-CHART-002` e `UX-CHART-003` foram preservadas como documentação futura; `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional e uso do Preview protegido aprovados antes da execução.
+- deployment `dpl_Bg9ZwECGhPPr9L3SAyQwTmqhA6at` no commit `f4506dc` e na PR `#22` confirmado `READY`.
+- login e dashboard autenticado renderizaram sem erro ou warning no console; nenhuma credencial ou URL temporária foi persistida.
+- responsividade em 320, 768 e 1280 px sem overflow global; navegação adaptativa, cards, tabela e gráfico preservados.
+- alvos principais de 44 px, rótulos, landmark, `lang=pt-BR`, viewport e alternância claro/escuro/sistema validados.
+- tabela manteve rolagem horizontal confinada e avançou 216 px com `ArrowRight` em 320 px.
+- expansão do candle manteve diálogo nomeado, foco no recolhimento, bloqueio do body e restauração de foco/scroll ao fechar.
+- simulação de `Escape` no navegador protegido foi inconclusiva; o contrato específico continuou verde no Jest e não foi tratado como defeito sem reprodução confiável.
+- abertura isolada do manifesto foi bloqueada pela autenticação SSO da Vercel; link/metadata foram validados no DOM e o contrato versionado permaneceu verde, sem promessa offline ou service worker.
+- sete suítes direcionadas e 42 testes verdes; regressão completa com 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy preservados.
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, configuração permanente da Vercel, commit, push, merge ou deploy foi alterado.
+- `next-env.d.ts` restaurado; `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — SEC-HARD-001A
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check verde.
+- auditorias npm completa e de produção verdes com zero vulnerabilidades.
+- supply chain: 701 pacotes com assinaturas verificadas e 102 com attestations verificadas.
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy preservados.
+- revisão local confirmou CSP, headers globais, falha fechada da origem Supabase, claims verificadas, rejeição de Auth anônimo e ausência de segredo de serviço rastreado.
+- seis migrations locais/remotas alinhadas; RLS forçada, ownership, grants mínimos e RPC `SECURITY INVOKER` preservados.
+- projeto Supabase `ACTIVE_HEALTHY`; Security Advisor manteve somente `SEC-AUTH-001`; três índices sem uso permaneceram informativos; logs recentes sem erro/fatal/5xx relevante ao fluxo.
+- deployment `dpl_DnyxprjAaichYi5NuEjoUYEbimpG` no head `f8049e4` está `READY`, sem cluster de runtime, log `error/fatal` ou resposta 5xx em 24 horas.
+- PR `#22` aberta, não draft, mergeável e com Quality Gates, Vercel e Vercel Preview Comments verdes no head publicado.
+- avisos remotos de Node/npm e vínculo local antigo continuam em `CI-VERCEL-002` como dívida MÉDIA antes de CLI/promoção.
+- `SEC-HARD-001A` pronta para release incremental; produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
+- nenhum Auth remoto, CAPTCHA, rate limit, migration, RLS, dado, segredo, dependência, commit, push, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; `UX-CHART-002/003`, `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar a documentação do Dia 7 e atualizar a PR `#22`.

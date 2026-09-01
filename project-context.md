@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da SEC-HARD-001 concluído; small release SEC-HARD-001A pronta para estratégia TDD
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da SEC-HARD-001A concluído em GREEN; entrega incremental pronta para versionamento
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -126,6 +126,12 @@
 - Data de seleção da SEC-AUTH-001 como próximo ciclo: 2026-08-31
 - Data do discovery e arquitetura da SEC-AUTH-001: 2026-08-31
 - Data do discovery e arquitetura da SEC-HARD-001: 2026-08-31
+- Data da estratégia de testes da SEC-HARD-001A: 2026-08-31
+- Data da implementação mínima orientada por teste da SEC-HARD-001A: 2026-08-31
+- Data da expansão controlada e validação em Preview da SEC-HARD-001A: 2026-09-01
+- Data da refatoração e hardening interno da SEC-HARD-001A: 2026-09-01
+- Data da revisão de UX, acessibilidade e PWA da SEC-HARD-001A: 2026-09-01
+- Data da validação final e preparação de release da SEC-HARD-001A: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -978,6 +984,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
+- Erro: o primeiro RED da `SEC-HARD-001A` carregou `next/experimental/testing/server` sob o `jest-environment-jsdom` global, que não expõe `Request`, e a suíte falhou antes de avaliar qualquer contrato de header. Prevenção: testes da API server-side de configuração do Next.js devem declarar `@jest-environment node` por arquivo, mantendo jsdom apenas para componentes e sem adicionar polyfill global que possa mascarar diferenças reais de runtime.
 - Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
 - Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e depois incluiu o diretório opcional inexistente `scripts` em uma busca. Prevenção: resolver arquivos e diretórios opcionais ou operacionais com `rg --files` antes da leitura/busca e só então usar os caminhos confirmados, inclusive quando o nome do job remoto difere do nome do arquivo local.
 - Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
@@ -6501,3 +6509,219 @@ Estado de saída:
 - `SEC-HARD-001A` pronta para o Dia 2;
 - `SEC-HARD-001B` explicitamente bloqueada por decisão/credenciais externas;
 - próximo comando válido: `dia 2` da `SEC-HARD-001A`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SEC-HARD-001A
+
+Small release: `SEC-HARD-001A — Headers determinísticos do aplicativo`.
+
+Baseline e fronteira:
+- a baseline anterior à nova suíte permaneceu verde com 84 suítes e 482 testes;
+- `next.config.mjs` continua sem implementação de headers e `src/proxy.ts` permanece responsável somente por sessão;
+- os contratos exercitam a configuração real do Next.js com `unstable_getResponseFromNextConfig`, em ambiente Node isolado;
+- a declaração TypeScript de `next.config.mjs` foi adicionada apenas para tipar a importação do arquivo de configuração no teste.
+
+Matriz implementada no RED:
+- remoção de `X-Powered-By` por `poweredByHeader: false`;
+- baseline global em `/login`, `/dashboard` e `/manifest.webmanifest` com `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`;
+- CSP em enforcement com negação de framing/objetos e fontes compatíveis com o runtime atual do Next.js;
+- `connect-src` limitado a `'self'` e à origem HTTPS exata e normalizada do Supabase, sem wildcard;
+- falha fechada para `NEXT_PUBLIC_SUPABASE_URL` ausente, malformada ou fora de HTTPS;
+- HSTS e `upgrade-insecure-requests` somente em produção;
+- contrato arquitetural garantindo que headers estáticos não migrem para o Proxy.
+
+Evidência TDD:
+- suíte direcionada: 1 suíte em RED válido, 11 falhas intencionais, 1 teste de fronteira aprovado e 12 casos totais;
+- regressão ampliada: somente a nova suíte falhou; as 84 suítes anteriores passaram, totalizando 483 testes verdes e 11 vermelhos planejados em 494 testes;
+- as falhas apontam exclusivamente a ausência de `headers()`, `poweredByHeader` e respectivas políticas no `next.config.mjs`;
+- lint global e type-check ficaram verdes após alinhar o ambiente e os imports do harness às convenções existentes;
+- zero snapshots.
+
+Escopo preservado:
+- nenhum header, Proxy, Auth, CAPTCHA, rate limit, usuário, senha, sessão, segredo, migration, RLS, dado, dependência ou deploy foi alterado;
+- `SEC-HARD-001B` continua bloqueada até decisão humana sobre provedor e credenciais;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit, push ou PR foi executado nesta fase.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- testes essenciais da `SEC-HARD-001A` existem em RED controlado;
+- próximo comando válido: `dia 3` para implementar o mínimo em `next.config.mjs` e levar os contratos a GREEN.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SEC-HARD-001A
+
+Objetivo executado:
+- implementar o mínimo em `next.config.mjs` para satisfazer os contratos do Dia 2 sem deslocar a política HTTP para o Proxy nem antecipar CAPTCHA.
+
+Implementação:
+- `poweredByHeader` foi desativado;
+- `headers()` aplica a baseline global de framing, MIME sniffing, referrer, permissions e CSP;
+- a origem de `NEXT_PUBLIC_SUPABASE_URL` é normalizada para `URL.origin`, exige HTTPS e falha fechada quando ausente ou inválida;
+- `connect-src` permite somente `'self'` e a origem Supabase exata, sem wildcard;
+- HSTS e `upgrade-insecure-requests` são adicionados somente quando `VERCEL_ENV=production`;
+- `src/proxy.ts` permaneceu responsável exclusivamente por sessão.
+
+TDD e quality gates:
+- GREEN direcionado: 1 suíte e 12 testes verdes, sem alterar expectativas;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas preservadas;
+- a primeira tentativa de build foi bloqueada somente pelo acesso isolado ao Google Fonts; a repetição autorizada concluiu sem erro de código ou configuração;
+- documentação oficial atual de headers do Next.js e changelog do Supabase foram verificados; nenhum breaking change aplicável alterou a solução.
+
+Escopo preservado:
+- nenhuma mudança em UI, domain, application, infrastructure, Proxy, Auth remoto, CAPTCHA, rate limit, usuário, senha, sessão, migration, RLS, dado, segredo ou dependência;
+- `next-env.d.ts` foi restaurado após a regeneração automática do build;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana e credenciais externas;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`;
+- `SEC-HARD-001A` funcional localmente com pipeline verde;
+- próximo comando válido: `dia 4` para expansão controlada e validação dos estados reais em Preview antes de merge.
+
+## Dia 4 — Expansão Controlada e Validação em Preview da SEC-HARD-001A
+
+Objetivo executado:
+- validar a resposta HTTP real e os fluxos principais do FinControl no deployment Preview correspondente ao commit `9604e44`, sob a CSP implementada no Dia 3, sem antecipar CAPTCHA ou alterar a proteção do projeto.
+
+Evidência remota:
+- deployment `dpl_4fgmbZgiKjdW62xJmnmdCQFxichL` confirmado como `READY`, associado à branch `codex/sec-hard-001a-security-headers` e à PR `#22`;
+- Vercel Authentication permaneceu ativa; a integração oficial forneceu somente um link autenticado efêmero com expiração automática em 23 horas, sem segredo persistente ou mudança de configuração;
+- login real com o usuário de validação concluiu em `/dashboard`, com sessão identificada e snapshot financeiro de três movimentos;
+- gráfico de linha e gráfico Candlestick renderizaram com suas tabelas acessíveis;
+- expansão do Candlestick abriu diálogo nomeado, moveu o foco para `Recolher gráfico`, bloqueou o scroll e, ao recolher, restaurou foco e rolagem;
+- temas escuro e sistema alternaram sem perda do fluxo; não houve overlay do Next.js nem bloqueio funcional atribuído à CSP;
+- `/login` respondeu `200` com CSP em enforcement, framing negado, `nosniff`, política de referrer/permissões, HSTS e sem `X-Powered-By`;
+- `/manifest.webmanifest` respondeu `200` como `application/manifest+json`, sob os mesmos headers; o manifesto versionado preserva `display: standalone`, quatro ícones e dois atalhos.
+
+Validação complementar e quality gates:
+- execução autenticada local do mesmo build confirmou login, sessão, dados reais, linha/candles, expansão, foco, rolagem, temas, manifesto e redirecionamento privado, sem erro ou warning no console;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` isolado verde, com todas as rotas e o Proxy preservados;
+- a primeira tentativa de build concorreu com Jest e falhou após compilar por erro de escrita do ambiente; a repetição isolada concluiu integralmente, sem alteração de código.
+
+Escopo preservado:
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, configuração permanente da Vercel, Supabase remoto, migration, RLS, dado, segredo, dependência, merge ou deploy foi alterado;
+- as credenciais de validação não foram persistidas nem documentadas;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana e credenciais externas;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit ou push foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável;
+- Dia 4 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem expansão de regra de negócio.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SEC-HARD-001A
+
+Objetivo executado:
+- auditar duplicação, acoplamento, fronteiras e consistência da configuração de headers sem alterar o comportamento validado no Preview nem antecipar a `SEC-HARD-001B`.
+
+Auditoria estrutural e decisão:
+- `next.config.mjs` permanece curto e coeso, com a composição da CSP, normalização da origem Supabase e baseline HTTP concentradas na fronteira correta do Next.js;
+- os helpers locais são puros, pequenos e usados por uma única configuração; extraí-los para um módulo genérico ou criar uma abstração adicional aumentaria a superfície sem reduzir duplicação, acoplamento ou risco;
+- `src/proxy.ts` continua responsável somente por sessão e não contém política estática de headers;
+- a URL pública do Supabase continua normalizada por `URL.origin`, exige HTTPS e falha fechada quando ausente ou inválida;
+- HSTS e `upgrade-insecure-requests` continuam exclusivos de `VERCEL_ENV=production`;
+- nenhuma refatoração funcional foi aplicada porque não surgiu evidência técnica que a justificasse.
+
+TDD e quality gates:
+- baseline direcionada: 1 suíte e 12 testes verdes;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- `git diff --check` verde após a atualização documental.
+
+Ocorrência operacional e prevenção:
+- a primeira tentativa direcionada não iniciou o Jest porque o shim global de `npm` apontava para `C:\Users\junio\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js`, que não existe;
+- a falha era externa ao repositório e não representava regressão do produto;
+- prevenção: nesta estação, executar os binários locais de Jest, ESLint, TypeScript e Next.js com o runtime Node empacotado do workspace quando o shim global estiver indisponível.
+
+Fronteiras preservadas:
+- nenhum header, CSP, Proxy, UI, domain, application, infrastructure, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo ou dependência foi alterado;
+- `UX-CHART-002` e `UX-CHART-003` permanecem somente em `DISCOVERY` e suas alterações documentais locais foram preservadas;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram não rastreados e fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável após o hardening;
+- Dia 5 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade e PWA, sem expansão de regra de negócio.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SEC-HARD-001A
+
+Objetivo executado:
+- validar que os headers de segurança já implementados não degradam login, sessão, dashboard, temas, gráficos, responsividade, acessibilidade essencial ou o contrato PWA, sem antecipar CAPTCHA, rate limit ou offline.
+
+Validação real no Preview:
+- deployment `dpl_Bg9ZwECGhPPr9L3SAyQwTmqhA6at`, associado ao commit `f4506dc` e à PR `#22`, confirmado em estado `READY`;
+- `/login` e dashboard autenticado carregaram sem erro ou warning no console;
+- em 320, 768 e 1280 px não houve overflow horizontal global; navegação mobile/desktop, cards, gráfico e tabela mantiveram composição coerente;
+- campos e ações principais preservaram alvos mínimos de 44 px; `lang=pt-BR`, landmark principal, rótulos, viewport, manifesto e cores de tema permaneceram presentes;
+- temas claro, escuro e sistema foram alternados com estado selecionado consistente;
+- tabela larga manteve overflow confinado e avançou 216 px com `ArrowRight` em 320 px;
+- gráfico de candles expandiu como diálogo nomeado, bloqueou o scroll do body, manteve foco no recolhimento e restaurou foco e scroll ao fechar;
+- a automação de navegador não reproduziu de forma conclusiva o fechamento por `Escape` no Preview protegido; o contrato permanece coberto e verde no Jest, e nenhum defeito funcional foi inferido sem evidência reproduzível;
+- a proteção SSO da Vercel bloqueou a abertura isolada de `manifest.webmanifest` em uma nova navegação; a presença do link foi validada no DOM e o conteúdo permaneceu coberto pelo contrato local, sem promessa de offline ou service worker.
+
+TDD e quality gates:
+- sete suítes direcionadas e 42 testes de headers, PWA, design system, temas, dashboard e frame expansível ficaram verdes;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- nenhuma falha funcional foi reproduzida, portanto nenhum código de produto ou teste foi alterado;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a geração automática do build.
+
+Fronteiras e riscos:
+- nenhum Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, configuração permanente da Vercel, commit, push, merge ou deploy foi alterado;
+- o vínculo local antigo da Vercel continua registrado em `CI-VERCEL-002` como dívida MÉDIA e não afetou o Preview validado pelo conector;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana sobre provedor e credenciais externas;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo.
+
+Estado de saída:
+- `QUALITY_VALIDATION`;
+- Dia 6 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 7` para segurança final, observabilidade e preparação da entrega incremental.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SEC-HARD-001A
+
+Objetivo executado:
+- validar o head publicado da PR `#22` como entrega incremental dos headers determinísticos, sem promover produção, antecipar CAPTCHA ou alterar serviços externos.
+
+Pipeline e cadeia de suprimentos:
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- auditorias npm completa e de produção com zero vulnerabilidades;
+- 701 pacotes com assinaturas verificadas e 102 pacotes com attestations verificadas;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- GitHub Actions `Quality Gates`, Vercel e Vercel Preview Comments verdes no head `f8049e4`.
+
+Revisão de segurança:
+- CSP em enforcement, framing negado, `nosniff`, referrer/permissions policies, HSTS de produção e remoção de `X-Powered-By` permanecem cobertos por teste;
+- Proxy continua isolado em sessão, usa claims verificadas, exige `sub` válido e rejeita Auth anônimo;
+- nenhum segredo de serviço ou chave privada foi encontrado nos arquivos rastreados; frontend usa somente configuração pública do Supabase;
+- migrations locais e remotas permanecem alinhadas nas mesmas seis versões;
+- RLS habilitada e forçada, ownership por `auth.uid()`, grants mínimos e RPC `SECURITY INVOKER` permanecem preservados;
+- Security Advisor mantém somente `auth_leaked_password_protection`, já registrado em `SEC-AUTH-001` e bloqueado pelo plano atual;
+- três índices sem uso permanecem informativos e não justificam remoção sem evidência de carga.
+
+Observabilidade e entrega:
+- projeto Supabase `fin_control` confirmado `ACTIVE_HEALTHY`; logs recentes de Auth, API e Postgres não apresentaram erro explícito, fatal ou resposta 5xx relevante ao fluxo;
+- deployment `dpl_DnyxprjAaichYi5NuEjoUYEbimpG` corresponde ao commit `f8049e4`, está `READY` e não possui cluster de runtime, log `error/fatal` ou resposta 5xx na janela de 24 horas;
+- PR `#22` está aberta, não draft, mergeável e direcionada a `develop`;
+- o build remoto concluiu; os avisos de Node/npm e o vínculo local antigo continuam classificados em `CI-VERCEL-002` como dívida MÉDIA antes de CLI/promoção;
+- a mudança futura do endpoint Management API `logs.all` não afeta o conector MCP usado nesta validação; demais breaking changes recentes do Supabase não atingem este recorte.
+
+Riscos e fronteiras:
+- `SEC-HARD-001A` está pronta para release incremental e pode ser mergeada após versionar esta documentação e os checks do novo head permanecerem verdes;
+- produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e pela `SEC-HARD-001B` ainda não executada;
+- nenhum Auth remoto, CAPTCHA, rate limit, migration, RLS, dado, segredo, dependência, configuração da Vercel, commit, push, merge, deploy ou promoção foi executado nesta fase;
+- `UX-CHART-002/003`, `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo da entrega de segurança.
+
+Estado de saída:
+- `READY_FOR_RELEASE` para a entrega incremental da `SEC-HARD-001A`;
+- Dia 7 concluído em GREEN;
+- próximo passo recomendado: versionar somente a documentação do Dia 7, atualizar a PR `#22` e fazer squash merge em `develop` apenas após os novos checks verdes.
