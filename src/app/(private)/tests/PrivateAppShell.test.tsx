@@ -181,7 +181,7 @@ describe("PrivateAppShell", () => {
 
   it("opens a named responsive account dialog with session, theme and logout", async () => {
     const user = userEvent.setup();
-    renderShell();
+    const { container } = renderShell();
 
     const accountTrigger = screen.getByRole("button", {
       name: "Abrir painel da conta",
@@ -196,18 +196,26 @@ describe("PrivateAppShell", () => {
     expect(accountTrigger).toHaveAttribute("aria-expanded", "true");
     expect(accountTrigger).toHaveAttribute("aria-controls", dialog.id);
     expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(dialog).toHaveAccessibleDescription(
+      "Sessão atual usuario@example.com",
+    );
     expect(dialog).toHaveClass(
       "fixed",
       "inset-x-0",
       "bottom-0",
       "rounded-t-2xl",
+      "overscroll-contain",
+      "pl-[max(1rem,env(safe-area-inset-left))]",
+      "pr-[max(1rem,env(safe-area-inset-right))]",
       "pb-[max(1rem,env(safe-area-inset-bottom))]",
       "md:absolute",
       "md:inset-x-auto",
       "md:right-4",
-      "md:top-16",
+      "md:top-[calc(4rem+env(safe-area-inset-top))]",
       "md:rounded-xl",
     );
+    expect(container).toHaveAttribute("aria-hidden", "true");
+    expect(container).toHaveAttribute("inert");
     expect(within(dialog).getByText("usuario@example.com")).toBeInTheDocument();
     expect(
       within(dialog).getByRole("radiogroup", { name: "Tema" }),
@@ -219,7 +227,7 @@ describe("PrivateAppShell", () => {
 
   it("closes with Escape and restores focus and document scroll", async () => {
     const user = userEvent.setup();
-    renderShell();
+    const { container } = renderShell();
 
     const accountTrigger = screen.getByRole("button", {
       name: "Abrir painel da conta",
@@ -231,6 +239,19 @@ describe("PrivateAppShell", () => {
     expect(accountTrigger).toHaveAttribute("aria-expanded", "false");
     expect(accountTrigger).toHaveFocus();
     expect(document.body.style.overflow).toBe("");
+    expect(container).not.toHaveAttribute("aria-hidden");
+    expect(container).not.toHaveAttribute("inert");
+  });
+
+  it("keeps horizontal safe areas in the compact topbar", () => {
+    renderShell();
+
+    expect(screen.getByRole("banner").firstElementChild).toHaveClass(
+      "pl-[max(1rem,env(safe-area-inset-left))]",
+      "pr-[max(1rem,env(safe-area-inset-right))]",
+      "sm:px-6",
+      "lg:px-8",
+    );
   });
 
   it("closes through the explicit action and backdrop", async () => {

@@ -1062,3 +1062,28 @@ Interpretação:
 - build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
 - `next-env.d.ts` foi restaurado após regeneração automática.
 - estado final: `IMPLEMENTATION_IN_PROGRESS` estável em GREEN.
+
+## Dia 4 — UX-SHELL-001
+
+### RED e GREEN direcionados
+
+- baseline: suíte do `PrivateAppShell` com 12 testes verdes.
+- novos contratos: descrição acessível da sessão, fundo inerte/restaurável, safe areas completas e contenção de overscroll.
+- RED controlado: 13 testes, 11 verdes e 2 falhas esperadas antes da implementação.
+- GREEN direcionado: 1 suíte e 13 testes verdes, zero snapshots.
+
+### Validação responsiva real
+
+- 320 × 800 px: header compacto, rota ocultada, trigger ≥ 44 px, bottom sheet em largura total e nenhum overflow horizontal.
+- fechamento por `Escape`: foco no trigger, scroll liberado e ausência de `inert`/`aria-hidden` residual.
+- 768 × 900 px: sidebar visível, navegação inferior oculta e painel de 384 px ancorado à direita.
+- 1280 × 900 px: trigger `Conta`, painel ancorado e ausência de overflow ou overlay de erro.
+- o aviso de `unsafe-eval` ocorreu somente no React Dev sob a CSP segura e não representa erro do build de produção.
+
+### Regressão e gates
+
+- regressão completa: 85 suítes e 500 testes passaram, zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- `next-env.d.ts` foi restaurado após regeneração automática.
+- estado final: `IMPLEMENTATION_IN_PROGRESS` estável em GREEN; próximo passo: Dia 5.

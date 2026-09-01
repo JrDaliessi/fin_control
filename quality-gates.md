@@ -1652,6 +1652,22 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; anexos, script local e stash de charts preservados fora do escopo.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 4`.
 
+## Gate do Dia 4 — UX-SHELL-001
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da execução.
+- baseline direcionada: 1 suíte e 12 testes verdes; novos contratos produziram RED com 11 verdes e 2 falhas esperadas.
+- GREEN direcionado: 1 suíte e 13 testes verdes, zero snapshots.
+- diálogo passou a ter descrição acessível da sessão, fundo `inert`/`aria-hidden` com restauração integral e foco restaurado após o cleanup.
+- topbar e painel passaram a respeitar safe areas laterais; painel preserva safe areas superior/inferior e contém overscroll.
+- validação real em 320, 768 e 1280 px confirmou ausência de overflow, breakpoints corretos, foco/scroll restaurados e composição bottom sheet/painel ancorado.
+- nenhum overlay de erro foi encontrado; o único log foi o aviso esperado do React Dev por a CSP segura bloquear `unsafe-eval`, sem impacto no build de produção.
+- regressão final: 85 suítes e 500 testes verdes, zero snapshots.
+- lint global verde com zero warnings; type-check verde; build Next.js `16.3.3` verde com todas as rotas e o Proxy preservados.
+- o runtime Node empacotado foi usado porque o shim global do npm permanece quebrado; `next-env.d.ts` foi restaurado e artefatos auxiliares do dev server removidos.
+- nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, commit, push, merge ou deploy foi alterado.
+- anexos, `rewrite-msgs.sh` e stash de `UX-CHART-002/003` permaneceram fora do escopo.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS`; próximo comando válido: `dia 5`.
+
 ## Gate do Dia 3 — SEC-HARD-001A
 
 - contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.

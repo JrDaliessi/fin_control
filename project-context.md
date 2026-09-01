@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 4
+- Fase atual: Dia 4 da UX-SHELL-001 concluído em GREEN; próxima fase válida é o Dia 5
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -135,6 +135,7 @@
 - Data de seleção, discovery e arquitetura da UX-SHELL-001: 2026-09-01
 - Data da estratégia de testes e RED controlado da UX-SHELL-001: 2026-09-01
 - Data da implementação mínima orientada por teste da UX-SHELL-001: 2026-09-01
+- Data da expansão controlada da UX-SHELL-001: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -6883,3 +6884,42 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
 - fluxo principal da `UX-SHELL-001A` funcional e aderente ao ADR 0018;
 - próximo comando válido: `dia 4` para expansão controlada, estados auxiliares e validação visual responsiva, sem ampliar o produto.
+
+## Dia 4 — Expansão Controlada da UX-SHELL-001
+
+Objetivo executado:
+- fortalecer a experiência responsiva e a acessibilidade modal do painel da conta, preservando o comportamento entregue no Dia 3 e sem ampliar rotas, integrações ou regras de negócio.
+
+TDD e implementação incremental:
+- baseline direcionada: 1 suíte e 12 testes verdes;
+- os novos contratos foram escritos primeiro e produziram RED controlado com 13 testes, 11 verdes e 2 falhas esperadas por descrição acessível e safe areas ainda ausentes;
+- o diálogo passou a descrever formalmente a sessão atual por `aria-describedby`;
+- enquanto aberto, todos os elementos visíveis de fundo fora do portal recebem `inert` e `aria-hidden=true`, com preservação e restauração dos estados anteriores no cleanup;
+- a restauração do foco ocorre somente depois da remoção do estado inerte, usando referência estável capturada pelo efeito;
+- painel e topbar passaram a respeitar safe areas laterais; o painel ancorado inclui a safe area superior, contém overscroll e mantém a safe area inferior no bottom sheet;
+- GREEN direcionado final: 1 suíte e 13 testes verdes, zero snapshots.
+
+Validação real no navegador:
+- em 320 × 800 px, header com 65 px incluindo borda, trigger de 46 × 44 px, contexto da rota oculto, ausência de overflow horizontal e bottom sheet com 320 px ancorado ao rodapé;
+- o painel mobile moveu foco ao fechamento, bloqueou o scroll, tornou o fundo inerte e restaurou foco, scroll e atributos ao fechar por `Escape`;
+- em 768 × 900 px, sidebar visível, navegação inferior oculta, contexto da rota visível e painel de 384 px ancorado a 16 px da direita e 64 px do topo;
+- em 1280 × 900 px, trigger textual `Conta`, sidebar e painel ancorado permaneceram consistentes, sem overflow horizontal ou overlay de erro;
+- o único log do navegador foi o aviso de desenvolvimento do React por a CSP de produção bloquear `unsafe-eval`; a CSP não foi enfraquecida e o build de produção não depende desse recurso.
+
+Quality gates:
+- regressão completa: 85 suítes e 500 testes verdes, zero snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- o shim global do npm continuou indisponível e o runtime Node empacotado do workspace executou os gates;
+- `next-env.d.ts` foi restaurado após regeneração automática; os arquivos auxiliares gerados pelo dev server foram removidos.
+
+Fronteiras preservadas:
+- nenhuma dependência, rota, regra financeira, domain, application, infrastructure, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterada;
+- nenhuma primitive modal comum foi extraída; essa avaliação permanece reservada ao Dia 5 com testes como rede de segurança;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
+- `UX-SHELL-001A` e `UX-SHELL-001B` funcionais; `UX-SHELL-001C` validada nos três viewports planejados;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem nova regra de negócio.

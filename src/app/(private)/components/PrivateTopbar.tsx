@@ -16,7 +16,7 @@ export function PrivateTopbar({
 
   return (
     <header className="sticky top-0 z-20 min-h-16 border-b border-border bg-surface pt-[env(safe-area-inset-top)]">
-      <div className="flex min-h-16 min-w-0 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="flex min-h-16 min-w-0 items-center justify-between gap-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 lg:px-8">
         <div className="min-w-0">
           <p className="text-sm font-semibold tracking-tight text-primary md:hidden">
             FinControl

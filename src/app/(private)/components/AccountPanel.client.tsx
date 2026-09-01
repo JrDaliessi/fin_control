@@ -24,13 +24,13 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const panelId = useId();
   const titleId = useId();
+  const sessionId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const closePanel = useCallback(() => {
     setIsOpen(false);
-    triggerRef.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -39,8 +39,30 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
     }
 
     const previousOverflow = document.body.style.overflow;
+    const triggerElement = triggerRef.current;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
+
+    const portalRoot = panelRef.current?.closest<HTMLElement>(
+      "[data-account-panel-portal]",
+    );
+    const backgroundStates = Array.from(document.body.children)
+      .filter(
+        (element): element is HTMLElement =>
+          element instanceof HTMLElement &&
+          element !== portalRoot &&
+          !["SCRIPT", "STYLE"].includes(element.tagName),
+      )
+      .map((element) => ({
+        ariaHidden: element.getAttribute("aria-hidden"),
+        element,
+        hadInertAttribute: element.hasAttribute("inert"),
+      }));
+
+    for (const { element } of backgroundStates) {
+      element.setAttribute("aria-hidden", "true");
+      element.setAttribute("inert", "");
+    }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -82,6 +104,20 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
+
+      for (const { ariaHidden, element, hadInertAttribute } of backgroundStates) {
+        if (ariaHidden === null) {
+          element.removeAttribute("aria-hidden");
+        } else {
+          element.setAttribute("aria-hidden", ariaHidden);
+        }
+
+        if (!hadInertAttribute) {
+          element.removeAttribute("inert");
+        }
+      }
+
+      triggerElement?.focus();
     };
   }, [closePanel, isOpen]);
 
@@ -102,7 +138,7 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
 
       {isOpen
         ? createPortal(
-            <>
+            <div data-account-panel-portal="">
               <button
                 aria-label="Fechar painel da conta pelo fundo"
                 className="fixed inset-0 z-50 cursor-default bg-navigation/70 transition-opacity motion-reduce:transition-none"
@@ -113,9 +149,10 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
               />
               <div className="pointer-events-none fixed inset-0 z-[60]">
                 <div
+                  aria-describedby={sessionId}
                   aria-labelledby={titleId}
                   aria-modal="true"
-                  className="pointer-events-auto fixed inset-x-0 bottom-0 z-[60] max-h-[min(85dvh,36rem)] overflow-y-auto rounded-t-2xl border border-border bg-surface px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-2xl transition-transform motion-reduce:transition-none md:absolute md:inset-x-auto md:right-4 md:top-16 md:bottom-auto md:w-[min(24rem,calc(100vw-2rem))] md:rounded-xl md:p-5"
+                  className="pointer-events-auto fixed inset-x-0 bottom-0 z-[60] max-h-[min(85dvh,36rem)] overscroll-contain overflow-y-auto rounded-t-2xl border border-border bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-4 shadow-2xl transition-transform motion-reduce:transition-none md:absolute md:inset-x-auto md:right-4 md:top-[calc(4rem+env(safe-area-inset-top))] md:bottom-auto md:w-[min(24rem,calc(100vw-2rem))] md:rounded-xl md:p-5"
                   id={panelId}
                   ref={panelRef}
                   role="dialog"
@@ -128,8 +165,12 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
                       >
                         Conta e aparência
                       </h2>
-                      <p className="mt-1 truncate text-sm text-muted-foreground">
-                        {email}
+                      <p
+                        className="mt-1 text-sm text-muted-foreground"
+                        id={sessionId}
+                      >
+                        <span className="font-medium">Sessão atual</span>
+                        <span className="block truncate">{email}</span>
                       </p>
                     </div>
                     <button
@@ -152,7 +193,7 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
                   </div>
                 </div>
               </div>
-            </>,
+            </div>,
             document.body,
           )
         : null}
