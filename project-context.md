@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-SHELL-001 concluído em GREEN; próxima ação válida é versionar a documentação e atualizar a PR #23
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 coordenado da UX-CHART-002/003 concluído; próxima fase válida é o Dia 2 da UX-CHART-002
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -139,6 +139,8 @@
 - Data da refatoração e hardening interno da UX-SHELL-001: 2026-09-01
 - Data da revisão de UX, acessibilidade e PWA da UX-SHELL-001: 2026-09-01
 - Data da validação final e preparação de release da UX-SHELL-001: 2026-09-01
+- Data de seleção da UX-CHART-002 e refinamento da UX-CHART-003: 2026-09-01
+- Data do discovery e arquitetura coordenados da UX-CHART-002/003: 2026-09-01
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7069,3 +7071,77 @@ Estado de saída:
 - `READY_FOR_RELEASE` em GREEN;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#23` e, após decisão humana, realizar squash merge em `develop`;
 - deploy público continua bloqueado pelos hardenings globais já documentados.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-002/003
+
+Objetivo executado:
+- transformar as ideias aprovadas de extrato contextual e períodos selecionáveis em features implementáveis, mantendo a ordem incremental e sem misturar UI, SQL e agregações longas em uma única entrega;
+- selecionar `UX-CHART-002` como feature ativa e deixar `UX-CHART-003` refinada e bloqueada pela predecessora.
+
+Evidência do sistema existente:
+- `FinancialCandle` já preserva `startOnInclusive`, `endOnExclusive`, OHLC, receita, despesa, volume e quantidade;
+- o view model atual perde `endOnExclusive`, portanto essa fronteira deverá ser corrigida por teste antes de habilitar seleção;
+- `FinancialCandlestickChart` e `useFinancialChart` não registram evento de clique, e o adapter expõe apenas lifecycle; a evolução aprovada é estreita e não cria `ChartPort` genérico;
+- `FinancialCandlesTable` já oferece equivalência textual, mas ainda não possui ação por intervalo;
+- o repository transacional existente é orientado a `create` e `findByMonth`; a consulta analítica terá port próprio para preservar coesão;
+- `transactions` possui RLS forçada, policies para `authenticated` e índice cobrindo proprietário/data/ordem; nenhuma migration é necessária para o primeiro recorte;
+- a composição financeira atual já valida claims server-side, rejeita Auth anônimo e injeta `claims.sub`.
+
+Decisão de sequência:
+1. concluir o ciclo Dias 1–7 da `UX-CHART-002`;
+2. somente depois revalidar e iniciar o ciclo da `UX-CHART-003A`;
+3. não antecipar períodos longos, migration ou agregação durante o extrato contextual.
+
+Arquitetura da `UX-CHART-002`:
+- seleção canônica por `{ startOnInclusive, endOnExclusive }`, inicialmente restrita a candles diários e períodos de até 31 dias;
+- `FinancialIntervalStatementQueryRepository` como port de application em `financial-analytics`, separado do repository de comandos/listagem mensal de transações;
+- implementação Supabase em infrastructure com projeção mínima, filtro explícito por proprietário, limites semiabertos e ordenação determinística, sempre sob RLS;
+- Server Action como composition root: valida claims, deriva o ator e nunca aceita `userId` do cliente;
+- detalhes carregados somente após clique/toque no candle ou botão `Ver extrato` na tabela; o snapshot e a RPC atuais permanecem enxutos;
+- adapter/hook ECharts ampliados apenas com registro/cleanup do evento necessário e mapeamento seguro de `dataIndex`;
+- bottom sheet abaixo de 768 px e painel lateral a partir de 768 px, com resumo OHLC e estados `loading`, `empty`, `error` e `success`;
+- foco inicial, contenção/restauração, `Escape`, backdrop, scroll, safe areas, movimento reduzido e alvos de 44 px são contratos obrigatórios;
+- respostas assíncronas obsoletas não podem substituir a seleção atual.
+
+Small releases da `UX-CHART-002`:
+1. `UX-CHART-002A` — contratos, DTO, consulta Supabase sob demanda e Server Action;
+2. `UX-CHART-002B` — seleção no gráfico/tabela e painel responsivo;
+3. `UX-CHART-002C` — concorrência, acessibilidade, responsividade e validação real.
+
+Arquitetura planejada da `UX-CHART-003`:
+- `003A`: `7D`, `15D` e `Mês` usando a RPC diária atual, mantendo compatibilidade de URL e sem migration;
+- `003B`: `3M` e `Ano` com agregação server-side, migration forward-only e pgTAP;
+- `003C`: `Tudo`, intervalo personalizado e integração completa com o extrato contextual;
+- granularidade diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso, preferencialmente entre 12 e 60 pontos;
+- buckets civis, consecutivos e semiabertos; primeiro/último parciais respeitam exatamente o recorte;
+- uma única resolução de período alimenta cards, linha, candles, tabela e extrato;
+- períodos longos usam RPC `SECURITY INVOKER`, Auth/RLS, grants mínimos, allowlist e limites; movimentos brutos não são transferidos em massa ao browser;
+- a RPC diária atual mantém o teto de 31 dias.
+
+Segurança, privacidade e acessibilidade:
+- dados do usuário continuam autorizados por claims server-side e RLS, com filtro explícito por proprietário como defesa adicional e apoio ao plano de consulta;
+- descrição, valor, UUID, e-mail, payload financeiro, token e cookie permanecem proibidos em logs/telemetria;
+- erros públicos são genéricos e intervalos inválidos falham antes da infraestrutura;
+- tabela com ação explícita garante operação completa por teclado; seleção não depende somente de SVG, cor, hover ou tooltip;
+- seletor futuro usa `aria-pressed`, nomes completos, targets de 44 px e rolagem confinada no mobile.
+
+Riscos e mitigação:
+- risco MÉDIO na `UX-CHART-002` por eventos ECharts, concorrência de requests, foco e layout responsivo; mitigado por TDD, listener com cleanup e identidade de request;
+- risco ALTO na `UX-CHART-003` por agregação OHLC, intervalos parciais, performance, RLS e migration; mitigado por ciclo separado, domínio puro, pgTAP e validação de plano/limites;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o TDD local e Preview privado destas features.
+
+Fronteiras preservadas no Dia 1:
+- nenhum código funcional, teste, dependência, migration, RPC, policy, dado, configuração Supabase, commit, push, PR, merge ou deploy foi criado/executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados;
+- o stash histórico `wip: planejamento UX-CHART-002 e UX-CHART-003` permaneceu preservado e não foi aplicado ou removido.
+
+Artefatos e decisões:
+- backlog refinado com `UX-CHART-002` em `IN_PROGRESS` e `UX-CHART-003` em `DISCOVERY` bloqueada;
+- arquitetura e roadmap alinhados;
+- ADR 0019 define o extrato contextual sob demanda;
+- ADR 0020 define períodos e granularidade adaptativa em releases separadas.
+
+Estado de saída:
+- `ARCHITECTURE_READY` para a `UX-CHART-002`;
+- `DISCOVERY` coordenado e bloqueado por dependência para a `UX-CHART-003`;
+- próximo comando válido: `dia 2` para criar a estratégia de testes e os testes essenciais em RED da `UX-CHART-002`.

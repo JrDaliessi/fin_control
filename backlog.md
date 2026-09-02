@@ -6,9 +6,41 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### UX-CHART-002 — Extrato contextual do candle
+- Tipo: UX Improvement / Feature.
+- Descrição objetiva: permitir abrir, a partir de um candle ou de sua linha equivalente na tabela, o extrato do intervalo representado sem sobrecarregar o gráfico.
+- Objetivo de negócio: explicar quais lançamentos produziram a abertura, os extremos, o fechamento e o volume do candle selecionado.
+- Valor esperado: transformar o gráfico em ferramenta de investigação financeira simples, contextual e acionável.
+- Prioridade: Alta; selecionada antes da `UX-CHART-003` porque estabelece o contrato genérico de intervalo consumido pelos períodos futuros.
+- Dependências: SR-015 e UX-SHELL-001 concluídas; sessão server-side, RLS de `transactions`, índice `(user_id, occurred_on, created_at, id)` e primitive compartilhada de contenção de foco existentes.
+- Escopo: seleção por clique/toque no candle; ação equivalente na tabela; bottom sheet abaixo de 768 px; painel lateral a partir de 768 px; resumo OHLC; lista mínima de lançamentos carregada sob demanda; estados loading, empty, error e success.
+- Fora do escopo: editar/excluir transações, pré-carregar descrições no snapshot, notas, exportação, busca, períodos acima de 31 dias, nova RPC, migration ou mudança nos cálculos OHLC.
+- Arquitetura: `FinancialIntervalStatementQueryRepository` como port de application em `financial-analytics`; implementação Supabase server-side com RLS e filtro explícito por proprietário; Server Action como composition root; presentation recebe somente DTO serializável e callback injetado.
+- Segurança e dados: `userId` nunca vem do cliente; claims verificadas fornecem o ator; consulta usa `startOnInclusive`/`endOnExclusive`, projeção mínima e ordenação determinística; erros públicos permanecem genéricos.
+- Acessibilidade: diálogo nomeado; foco inicial/contido/restaurado; botão, `Escape` e backdrop; scroll confinado; targets de 44 px; tabela com botão `Ver extrato` como alternativa integral ao clique no gráfico.
+- Risco: Médio por eventos ECharts, concorrência de requests, foco e layout responsivo; Alto se detalhes forem enviados antecipadamente ou consultados sem ownership.
+- Small releases: `UX-CHART-002A` contratos e consulta sob demanda; `UX-CHART-002B` seleção no gráfico/tabela e painel responsivo; `UX-CHART-002C` concorrência, acessibilidade, responsividade e validação real.
+- Fase recomendada: ciclo atual Dias 1–7.
+- Critério de pronto: candle diário abre exatamente os lançamentos do intervalo; gráfico e tabela convergem para o mesmo painel; estados e navegação funcionam em 320/768/1280 px; isolamento por usuário e todos os quality gates ficam verdes.
+- Status: IN_PROGRESS — Dia 1 concluído com arquitetura pronta para TDD; nenhuma implementação funcional ou migration iniciada.
 
 ## DISCOVERY
+
+### UX-CHART-003 — Períodos e granularidade adaptativa
+- Tipo: UX Improvement / Feature.
+- Descrição objetiva: oferecer seleção rápida de `7D`, `15D`, `Mês`, `3M`, `Ano`, `Tudo` e intervalo personalizado, escolhendo automaticamente a granularidade dos candles.
+- Objetivo de negócio: permitir analisar tendências curtas e históricas com leitura consistente, sem transformar o FinControl em interface de trading.
+- Valor esperado: comparação temporal intuitiva, preservando clareza no celular e desempenho para históricos extensos.
+- Prioridade: Alta após a conclusão da `UX-CHART-002`.
+- Dependências: SR-012 a SR-015; contrato genérico de intervalo da `UX-CHART-002`; nova agregação server-side para períodos acima de 31 dias; migration forward-only e testes pgTAP.
+- Escopo planejado: barra horizontal responsiva; compatibilidade com URLs e períodos atuais; granularidade diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso; limite preferencial de 12–60 pontos.
+- Segurança e dados: a RPC diária atual permanece limitada a 31 dias; períodos longos usam consulta agregada `SECURITY INVOKER`, claims/RLS, allowlist de buckets e limites de intervalo/pontos; nenhum lançamento bruto em massa chega ao browser.
+- Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
+- Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
+- Small releases: `UX-CHART-003A` seletor `7D`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e integração completa com o extrato contextual.
+- Fase recomendada: novo ciclo Dias 1–7 após a `UX-CHART-002`.
+- Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
+- Status: DISCOVERY — arquitetura coordenada registrada, mas execução bloqueada até a conclusão da `UX-CHART-002`.
 
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
