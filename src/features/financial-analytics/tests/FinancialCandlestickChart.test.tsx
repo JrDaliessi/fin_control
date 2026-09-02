@@ -8,6 +8,7 @@ import {
 } from "@jest/globals";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ReactNode } from "react";
 import type { FinancialCandlestickChartModel } from "../presentation/charts/financial-candlestick-chart.model";
 
 jest.mock(
@@ -19,6 +20,7 @@ jest.mock("../presentation/charts/echarts/echarts-client", () => ({
 }));
 
 type ChartOptionStub = Readonly<{ animation: boolean }>;
+type ChartClickHandler = (event: Readonly<{ dataIndex: number }>) => void;
 type BuildOptionStub = (input: Readonly<{
   model: FinancialCandlestickChartModel;
   reducedMotion: boolean;
@@ -31,6 +33,8 @@ type InitializeChartStub = (
   setOption: (option: ChartOptionStub) => void;
   resize: () => void;
   dispose: () => void;
+  on: (eventName: "click", handler: ChartClickHandler) => void;
+  off: (eventName: "click", handler: ChartClickHandler) => void;
 }>;
 
 const { buildFinancialCandlestickOption } = jest.requireMock(
@@ -68,9 +72,12 @@ const model: FinancialCandlestickChartModel = {
 const setOption = jest.fn<(option: ChartOptionStub) => void>();
 const resize = jest.fn<() => void>();
 const dispose = jest.fn<() => void>();
+const chartOn = jest.fn<(eventName: "click", handler: ChartClickHandler) => void>();
+const chartOff = jest.fn<(eventName: "click", handler: ChartClickHandler) => void>();
 const observe = jest.fn();
 const disconnect = jest.fn();
 let notifyResize: ResizeObserverCallback;
+let notifyChartClick: ChartClickHandler | undefined;
 
 class ResizeObserverMock {
   constructor(callback: ResizeObserverCallback) {
@@ -109,8 +116,14 @@ describe("FinancialCandlestickChart", () => {
     jest.mocked(initializeFinancialEvolutionChart).mockReturnValue({
       setOption,
       resize,
-      dispose
+      dispose,
+      on: chartOn,
+      off: chartOff
     });
+    chartOn.mockImplementation((_eventName, handler) => {
+      notifyChartClick = handler;
+    });
+    notifyChartClick = undefined;
   });
 
   afterEach(() => {
@@ -206,5 +219,46 @@ describe("FinancialCandlestickChart", () => {
     );
     expect(initializeFinancialEvolutionChart).not.toHaveBeenCalled();
     expect(buildFinancialCandlestickOption).not.toHaveBeenCalled();
+  });
+
+  it("maps a valid dataIndex to the exact interval and removes the listener", () => {
+    const onSelectInterval = jest.fn<
+      (interval: Readonly<{
+        startOnInclusive: string;
+        endOnExclusive: string;
+      }>) => void
+    >();
+    const selectableModel = {
+      ...model,
+      points: [
+        {
+          ...model.points[0],
+          endOnExclusive: "2026-03-02"
+        }
+      ]
+    };
+    const SelectableFinancialCandlestickChart =
+      FinancialCandlestickChart as unknown as (
+        props: Readonly<{
+          model: typeof selectableModel;
+          onSelectInterval: typeof onSelectInterval;
+        }>
+      ) => ReactNode;
+    const view = render(
+      <SelectableFinancialCandlestickChart
+        model={selectableModel}
+        onSelectInterval={onSelectInterval}
+      />
+    );
+
+    expect(chartOn).toHaveBeenCalledWith("click", expect.any(Function));
+    act(() => notifyChartClick?.({ dataIndex: 0 }));
+    expect(onSelectInterval).toHaveBeenCalledWith({
+      startOnInclusive: "2026-03-01",
+      endOnExclusive: "2026-03-02"
+    });
+
+    view.unmount();
+    expect(chartOff).toHaveBeenCalledWith("click", expect.any(Function));
   });
 });

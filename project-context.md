@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 coordenado da UX-CHART-002/003 concluído; próxima fase válida é o Dia 2 da UX-CHART-002
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da UX-CHART-002 concluído em RED controlado; próxima fase válida é o Dia 3 da UX-CHART-002
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -141,6 +141,7 @@
 - Data da validação final e preparação de release da UX-SHELL-001: 2026-09-01
 - Data de seleção da UX-CHART-002 e refinamento da UX-CHART-003: 2026-09-01
 - Data do discovery e arquitetura coordenados da UX-CHART-002/003: 2026-09-01
+- Data da estratégia de testes e RED controlado da UX-CHART-002: 2026-09-02
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7145,3 +7146,60 @@ Estado de saída:
 - `ARCHITECTURE_READY` para a `UX-CHART-002`;
 - `DISCOVERY` coordenado e bloqueado por dependência para a `UX-CHART-003`;
 - próximo comando válido: `dia 2` para criar a estratégia de testes e os testes essenciais em RED da `UX-CHART-002`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-CHART-002
+
+Small release prioritária:
+- `UX-CHART-002A` — intervalo, consulta sob demanda e composição autenticada;
+- os contratos de `002B/002C` foram registrados como rede de segurança, mas a implementação permanece incremental.
+
+Baseline anterior ao RED:
+- PR `#24` com Quality Gates e Preview Vercel verdes no commit `8610a0c`;
+- 23 suítes e 182 testes de `financial-analytics` verdes, zero snapshots;
+- type-check verde;
+- o wrapper global do npm permanece quebrado no ambiente e o Jest foi executado pelo binário local versionado, sem instalar dependências.
+
+Matriz executável criada:
+- domain: datas civis válidas, intervalo semiaberto, limite inclusivo de 31 dias, limites iguais/invertidos e datas impossíveis;
+- application: uma chamada ao read port, DTO serializável e validação anterior ao repository;
+- infrastructure: tabela `transactions`, projeção mínima, filtro explícito de proprietário, `gte`/`lt`, ordenação determinística e erro sanitizado;
+- composition: claims permanentes, rejeição de sessão ausente/inválida/anônima e descarte de `userId` forjado;
+- mapper: preservação de `endOnExclusive` em cada ponto do candle;
+- ECharts: mapeamento de `dataIndex` para intervalo, listener único e cleanup;
+- tabela: botão `Ver extrato` como alternativa integral de teclado;
+- painel: consulta somente após seleção, loading, empty, success, fechamento nomeado e proteção contra resposta obsoleta;
+- arquitetura: módulos nas camadas aprovadas, presentation sem acesso direto ao Supabase e ausência de `ChartPort` genérico.
+
+Fixtures acrescentadas:
+- proprietário permanente e ID forjado distintos;
+- dois candles diários consecutivos para troca de seleção;
+- linha Supabase com projeção mínima;
+- item serializável de receita sem notas ou dados excedentes.
+
+RED controlado observado:
+- 9 suítes afetadas falharam como esperado;
+- Jest executou 22 contratos nas suítes carregadas: 14 passaram e 8 falharam;
+- cinco suítes foram interrompidas pela ausência deliberada de: validador de intervalo, caso de uso, repository Supabase, Server Action e painel;
+- falhas comportamentais existentes: mapper ainda perde `endOnExclusive`, adapter/hook não registra seleção ECharts e tabela não oferece `Ver extrato`;
+- contrato arquitetural falhou pelos cinco artefatos ainda inexistentes e manteve verdes as fronteiras sem Supabase direto na presentation e sem `ChartPort`;
+- após tipar os mocks pela assinatura futura, o type-check contém somente cinco `TS2307`, sem ruído do harness;
+- lint de toda a pasta de testes de analytics verde com zero warnings;
+- regressão anterior, excluindo as 9 suítes/assertivas afetadas, verde com 20 suítes e 169 testes, zero snapshots;
+- `git diff --check` verde; avisos de normalização LF/CRLF são apenas informativos e seguem a configuração existente do repositório.
+
+Artefatos criados/alterados:
+- estratégia em `docs/ux-chart-002-test-strategy.md`;
+- fixture `financial-interval-statement.fixtures.ts`;
+- testes de domain, application, infrastructure, Server Action, painel e fronteiras;
+- contratos incrementais nos testes existentes de mapper, gráfico e tabela.
+
+Fronteiras preservadas:
+- nenhum código funcional, tipo de produção, componente, migration, RPC, policy, grant, dado, dependência ou configuração Supabase foi criado/alterado;
+- nenhuma mutação remota, commit, push, merge ou deploy foi executado;
+- `UX-CHART-003` permanece em `DISCOVERY`, bloqueada até a conclusão da predecessora;
+- anexos remotos, `rewrite-msgs.sh` e o stash histórico permaneceram intocados.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- `UX-CHART-002` permanece `IN_PROGRESS` com RED controlado;
+- implementação bloqueada até aprovação explícita do `dia 3`.

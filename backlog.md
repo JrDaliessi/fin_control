@@ -22,7 +22,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-CHART-002A` contratos e consulta sob demanda; `UX-CHART-002B` seleção no gráfico/tabela e painel responsivo; `UX-CHART-002C` concorrência, acessibilidade, responsividade e validação real.
 - Fase recomendada: ciclo atual Dias 1–7.
 - Critério de pronto: candle diário abre exatamente os lançamentos do intervalo; gráfico e tabela convergem para o mesmo painel; estados e navegação funcionam em 320/768/1280 px; isolamento por usuário e todos os quality gates ficam verdes.
-- Status: IN_PROGRESS — Dia 1 concluído com arquitetura pronta para TDD; nenhuma implementação funcional ou migration iniciada.
+- Status: IN_PROGRESS — Dia 2 concluído em `TEST_STRATEGY_READY`; matriz, fixtures e testes essenciais estão em RED controlado, sem implementação funcional ou migration.
 
 ## DISCOVERY
 

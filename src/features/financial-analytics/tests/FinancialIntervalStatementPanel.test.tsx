@@ -1,0 +1,138 @@
+import { describe, expect, it, jest } from "@jest/globals";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { FinancialIntervalStatementPanel } from "../presentation/components/FinancialIntervalStatementPanel.client";
+import {
+  nextStatementCandle,
+  statementCandle,
+  statementInterval,
+  statementItem
+} from "./fixtures/financial-interval-statement.fixtures";
+
+type StatementResult = Readonly<{
+  startOnInclusive: string;
+  endOnExclusive: string;
+  items: readonly typeof statementItem[];
+}>;
+type StatementIntervalInput = Readonly<{
+  startOnInclusive: string;
+  endOnExclusive: string;
+}>;
+
+function deferred<T>() {
+  let resolvePromise!: (value: T) => void;
+  const promise = new Promise<T>((resolve) => {
+    resolvePromise = resolve;
+  });
+
+  return { promise, resolve: resolvePromise };
+}
+
+describe("FinancialIntervalStatementPanel", () => {
+  it("does not load anything while no candle is selected", () => {
+    const loadStatement = jest.fn<
+      (input: StatementIntervalInput) => Promise<StatementResult>
+    >();
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={null}
+      />
+    );
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(loadStatement).not.toHaveBeenCalled();
+  });
+
+  it("loads on selection and exposes summary, interval and transactions", async () => {
+    const loadStatement = jest.fn(
+      async (input: StatementIntervalInput): Promise<StatementResult> => {
+        void input;
+        return { ...statementInterval, items: [statementItem] };
+      }
+    );
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent("Carregando extrato");
+    expect(
+      await screen.findByRole("dialog", { name: /extrato de 01\/03\/2026/i })
+    ).toBeInTheDocument();
+    expect(loadStatement).toHaveBeenCalledWith(statementInterval);
+    expect(screen.getByText("Salário")).toBeInTheDocument();
+    expect(screen.getByText(/R\$\s*50,00/)).toBeInTheDocument();
+    expect(screen.getByText(/Abertura.*R\$\s*100,00/i)).toBeInTheDocument();
+  });
+
+  it("shows an honest empty state and closes through a named control", async () => {
+    const user = userEvent.setup();
+    const onClose = jest.fn();
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={jest.fn(
+          async (input: StatementIntervalInput): Promise<StatementResult> => {
+            void input;
+            return { ...statementInterval, items: [] };
+          }
+        )}
+        onClose={onClose}
+        selectedCandle={{ ...statementCandle, transactionCount: 0 }}
+      />
+    );
+
+    expect(
+      await screen.findByText("Nenhum lançamento neste intervalo.")
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Fechar extrato" }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not let an obsolete response replace the latest selection", async () => {
+    const first = deferred<StatementResult>();
+    const second = deferred<StatementResult>();
+    const loadStatement = jest
+      .fn<(input: StatementIntervalInput) => Promise<StatementResult>>()
+      .mockImplementationOnce(() => first.promise)
+      .mockImplementationOnce(() => second.promise);
+    const view = render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    view.rerender(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={nextStatementCandle}
+      />
+    );
+    await act(async () => {
+      second.resolve({
+        startOnInclusive: "2026-03-02",
+        endOnExclusive: "2026-03-03",
+        items: [{ ...statementItem, id: "latest", description: "Mercado" }]
+      });
+    });
+    expect(await screen.findByText("Mercado")).toBeInTheDocument();
+
+    await act(async () => {
+      first.resolve({ ...statementInterval, items: [statementItem] });
+    });
+    await waitFor(() => {
+      expect(screen.queryByText("Salário")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Mercado")).toBeInTheDocument();
+  });
+});
