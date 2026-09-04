@@ -4,6 +4,7 @@ import { handleHorizontalTableKeyDown } from "./horizontal-table-keyboard-scroll
 
 type FinancialCandlesTableProps = Readonly<{
   candles: readonly FinancialCandle[];
+  onSelectInterval?: (candle: FinancialCandle) => void;
 }>;
 
 function formatCivilDate(civilDate: string) {
@@ -23,7 +24,22 @@ function describeVariation(candle: FinancialCandle) {
   return "Estável";
 }
 
-export function FinancialCandlesTable({ candles }: FinancialCandlesTableProps) {
+export function FinancialCandlesTable({
+  candles,
+  onSelectInterval
+}: FinancialCandlesTableProps) {
+  const headings = [
+    "Dia",
+    "Abertura",
+    "Máxima",
+    "Mínima",
+    "Fechamento",
+    "Variação",
+    "Volume",
+    "Movimentos",
+    ...(onSelectInterval ? ["Extrato"] : [])
+  ];
+
   return (
     <div className="grid gap-2">
       <p className="text-xs text-muted-foreground" id="financial-candles-order-note">
@@ -48,16 +64,7 @@ export function FinancialCandlesTable({ candles }: FinancialCandlesTableProps) {
           <caption className="sr-only">Variação financeira por dia</caption>
           <thead className="bg-surface-muted text-left text-muted-foreground">
             <tr>
-              {[
-                "Dia",
-                "Abertura",
-                "Máxima",
-                "Mínima",
-                "Fechamento",
-                "Variação",
-                "Volume",
-                "Movimentos"
-              ].map((heading) => (
+              {headings.map((heading) => (
                 <th className="px-4 py-3 font-semibold" key={heading} scope="col">
                   {heading}
                 </th>
@@ -92,6 +99,18 @@ export function FinancialCandlesTable({ candles }: FinancialCandlesTableProps) {
                 <td className="px-4 py-3 tabular-nums text-foreground">
                   {candle.transactionCount}
                 </td>
+                {onSelectInterval ? (
+                  <td className="px-4 py-3">
+                    <button
+                      aria-label={`Ver extrato de ${formatCivilDate(candle.startOnInclusive)}`}
+                      className="min-h-11 whitespace-nowrap rounded-md border border-border px-3 py-2 font-semibold text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                      onClick={() => onSelectInterval(candle)}
+                      type="button"
+                    >
+                      Ver extrato
+                    </button>
+                  </td>
+                ) : null}
               </tr>
             ))}
           </tbody>

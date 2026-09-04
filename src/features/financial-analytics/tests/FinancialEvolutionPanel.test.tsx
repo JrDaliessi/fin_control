@@ -321,6 +321,7 @@ describe("FinancialEvolutionPanel", () => {
       points: [
         {
           civilDate: "2026-03-01",
+          endOnExclusive: "2026-03-02",
           openInCents: 10_000,
           highInCents: 15_000,
           lowInCents: 10_000,

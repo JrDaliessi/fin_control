@@ -8,10 +8,12 @@ import { toFinancialEvolutionChartModel } from "../charts/to-financial-evolution
 import { toFinancialCandlestickChartModel } from "../charts/to-financial-candlestick-chart-model";
 import { FinancialPeriodSelector } from "./FinancialPeriodSelector";
 import { FinancialVisualizationSwitcher } from "./FinancialVisualizationSwitcher.client";
+import type { FinancialIntervalStatementLoader } from "./FinancialIntervalStatementPanel.client";
 
 type FinancialEvolutionPanelProps = Readonly<{
   result: FinancialEvolutionDto;
   selectedPeriodKind: FinancialPeriodKind;
+  loadStatement?: FinancialIntervalStatementLoader;
 }>;
 
 function movementLabel(count: number) {
@@ -20,7 +22,8 @@ function movementLabel(count: number) {
 
 export function FinancialEvolutionPanel({
   result,
-  selectedPeriodKind
+  selectedPeriodKind,
+  loadStatement
 }: FinancialEvolutionPanelProps) {
   const summaryItems = [
     {
@@ -121,6 +124,7 @@ export function FinancialEvolutionPanel({
             candlestickModel={toFinancialCandlestickChartModel(result)}
             evolutionModel={toFinancialEvolutionChartModel(result)}
             evolutionPoints={result.points}
+            loadStatement={loadStatement}
           />
         </div>
       )}

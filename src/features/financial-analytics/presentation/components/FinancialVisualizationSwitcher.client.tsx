@@ -12,12 +12,17 @@ import { FinancialCandlesTable } from "./FinancialCandlesTable";
 import { FinancialCandlestickChart } from "./FinancialCandlestickChart.client";
 import { FinancialEvolutionChart } from "./FinancialEvolutionChart.client";
 import { FinancialEvolutionTable } from "./FinancialEvolutionTable";
+import {
+  FinancialIntervalStatementPanel,
+  type FinancialIntervalStatementLoader
+} from "./FinancialIntervalStatementPanel.client";
 
 type FinancialVisualizationSwitcherProps = Readonly<{
   evolutionModel: FinancialEvolutionChartModel;
   candlestickModel: FinancialCandlestickChartModel;
   evolutionPoints: readonly FinancialEvolutionPoint[];
   candles: readonly FinancialCandle[];
+  loadStatement?: FinancialIntervalStatementLoader;
 }>;
 
 type VisualizationMode = "evolution" | "candlestick";
@@ -26,9 +31,13 @@ export function FinancialVisualizationSwitcher({
   evolutionModel,
   candlestickModel,
   evolutionPoints,
-  candles
+  candles,
+  loadStatement
 }: FinancialVisualizationSwitcherProps) {
   const [mode, setMode] = useState<VisualizationMode>("evolution");
+  const [selectedCandle, setSelectedCandle] = useState<FinancialCandle | null>(
+    null
+  );
   const showsEvolution = mode === "evolution";
   const evolutionButtonId = useId();
   const candlestickButtonId = useId();
@@ -49,7 +58,10 @@ export function FinancialVisualizationSwitcher({
           aria-pressed={showsEvolution}
           className="min-h-11 rounded-lg px-4 py-2 text-sm font-semibold text-foreground transition-colors aria-pressed:bg-surface aria-pressed:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           id={evolutionButtonId}
-          onClick={() => setMode("evolution")}
+          onClick={() => {
+            setMode("evolution");
+            setSelectedCandle(null);
+          }}
           type="button"
         >
           Evolução do saldo
@@ -98,12 +110,40 @@ export function FinancialVisualizationSwitcher({
                 Abertura, extremos e fechamento do saldo em cada dia.
               </p>
             </div>
-            <FinancialCandlestickChart model={candlestickModel} />
+            <FinancialCandlestickChart
+              model={candlestickModel}
+              onSelectInterval={
+                loadStatement
+                  ? (interval) => {
+                      const candle = candles.find(
+                        (item) =>
+                          item.startOnInclusive === interval.startOnInclusive &&
+                          item.endOnExclusive === interval.endOnExclusive
+                      );
+
+                      if (candle) {
+                        setSelectedCandle(candle);
+                      }
+                    }
+                  : undefined
+              }
+            />
           </Card>
-          <FinancialCandlesTable candles={candles} />
+          <FinancialCandlesTable
+            candles={candles}
+            onSelectInterval={loadStatement ? setSelectedCandle : undefined}
+          />
           </>
         )}
       </div>
+
+      {loadStatement ? (
+        <FinancialIntervalStatementPanel
+          loadStatement={loadStatement}
+          onClose={() => setSelectedCandle(null)}
+          selectedCandle={selectedCandle}
+        />
+      ) : null}
     </div>
   );
 }

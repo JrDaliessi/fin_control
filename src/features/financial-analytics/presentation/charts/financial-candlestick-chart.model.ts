@@ -1,5 +1,6 @@
 export type FinancialCandlestickChartPoint = Readonly<{
   civilDate: string;
+  endOnExclusive?: string;
   openInCents: number;
   highInCents: number;
   lowInCents: number;

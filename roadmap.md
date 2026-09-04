@@ -283,7 +283,7 @@ Evidência do Dia 7: 84 suítes/482 testes, lint, type-check, build e auditorias
 
 Ordem aprovada: `UX-CHART-002 — Extrato contextual do candle` e, depois de seu ciclo completo, `UX-CHART-003 — Períodos e granularidade adaptativa`.
 
-Estado da `UX-CHART-002`: Dia 2 concluído em `TEST_STRATEGY_READY`. Nove suítes cobrem intervalo, application, repository Supabase, claims server-side, mapper, ECharts, tabela, painel e fronteiras; o RED controlado registrou 8 falhas esperadas e 5 módulos funcionais ausentes. A regressão anterior permaneceu verde com 20 suítes/169 testes, e o lint dos testes ficou verde.
+Estado da `UX-CHART-002`: Dia 3 concluído em `IMPLEMENTATION_IN_PROGRESS`. O fluxo mínimo valida o intervalo, consulta o Supabase sob claims permanentes, seleciona o candle pelo gráfico ou tabela e abre o extrato sob demanda em painel adaptativo com proteção contra respostas obsoletas. A regressão completa ficou verde com 92 suítes/532 testes, além de lint, type-check e build globais verdes; nenhuma migration foi necessária.
 
 Small releases da `UX-CHART-002`:
 1. `002A` — contratos, DTO, consulta sob demanda e Server Action;
@@ -294,7 +294,7 @@ Estado da `UX-CHART-003`: `DISCOVERY`, bloqueada até a conclusão da `UX-CHART-
 
 Decisões: `adr/0019-contextual-candle-statement.md` e `adr/0020-adaptive-financial-periods.md`.
 
-Próximo passo: executar o Dia 3 da `UX-CHART-002`, implementando o mínimo necessário para satisfazer os contratos em RED. A `UX-CHART-003` terá ciclo próprio após a conclusão da predecessora.
+Próximo passo: executar o Dia 4 da `UX-CHART-002` para expansão controlada dos estados e interações do painel. A `UX-CHART-003` terá ciclo próprio após a conclusão da predecessora.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

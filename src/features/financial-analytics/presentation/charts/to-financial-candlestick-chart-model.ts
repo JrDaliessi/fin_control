@@ -9,6 +9,7 @@ export function toFinancialCandlestickChartModel(
     endOnExclusive: evolution.period.endOnExclusive,
     points: evolution.candles.map((candle) => ({
       civilDate: candle.startOnInclusive,
+      endOnExclusive: candle.endOnExclusive,
       openInCents: candle.openInCents,
       highInCents: candle.highInCents,
       lowInCents: candle.lowInCents,

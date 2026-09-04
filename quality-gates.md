@@ -1800,3 +1800,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, código funcional, commit, push, merge ou deploy foi alterado.
 - `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` foram preservados fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — UX-CHART-002
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- skill `supabase:supabase` aplicada ao contrato server-side, com claims permanentes, RLS preservada, filtro explícito de proprietário e consulta civil semiaberta.
+- skill `vercel:react-best-practices` aplicada após as alterações TSX; efeitos, refs, listeners, estado assíncrono, acessibilidade e composição foram revisados.
+- segurança: `userId` do cliente é descartado e o ator autenticado sobrescreve tentativa forjada; sessões ausentes, inválidas e anônimas falham antes da consulta.
+- repository usa projeção mínima e ordenação determinística; erros do provider são sanitizados.
+- seleção ECharts registra um listener estreito e o remove no cleanup; a tabela oferece ação integral de teclado.
+- painel carrega somente após seleção, apresenta loading/empty/error/success e rejeita respostas assíncronas obsoletas.
+- contratos focados: 9 suítes e 40 testes verdes.
+- regressão de `financial-analytics`: 29 suítes e 209 testes verdes.
+- regressão completa: 92 suítes e 532 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check e build Next.js 16.3.3 verdes; `git diff --check` verde, salvo avisos informativos de normalização LF/CRLF.
+- o build inicial foi bloqueado somente pelo acesso ao Google Fonts; a reexecução autorizada compilou e gerou todas as rotas, e `next-env.d.ts` foi restaurado ao conteúdo versionado.
+- nenhuma migration, RPC, policy, grant, dado, dependência, configuração Supabase remota, commit, push, merge ou deploy foi criado/executado.
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash histórico permaneceram preservados.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4`.

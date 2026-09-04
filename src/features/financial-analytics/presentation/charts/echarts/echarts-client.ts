@@ -24,7 +24,13 @@ export type FinancialEvolutionChartInstance = Readonly<{
   ) => void;
   resize: () => void;
   dispose: () => void;
+  on: (eventName: "click", handler: FinancialChartClickHandler) => void;
+  off: (eventName: "click", handler: FinancialChartClickHandler) => void;
 }>;
+
+export type FinancialChartClickHandler = (
+  event: Readonly<{ dataIndex: number }>
+) => void;
 
 type InitializeFinancialEvolutionChartOptions = Readonly<{
   renderer: "svg";
@@ -39,6 +45,8 @@ export function initializeFinancialEvolutionChart(
   return {
     setOption: (option) => chart.setOption(option),
     resize: () => chart.resize(),
-    dispose: () => chart.dispose()
+    dispose: () => chart.dispose(),
+    on: (eventName, handler) => chart.on(eventName, handler as never),
+    off: (eventName, handler) => chart.off(eventName, handler as never)
   };
 }

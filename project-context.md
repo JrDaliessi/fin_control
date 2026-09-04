@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da UX-CHART-002 concluído em RED controlado; próxima fase válida é o Dia 3 da UX-CHART-002
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 4 da UX-CHART-002
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -142,6 +142,7 @@
 - Data de seleção da UX-CHART-002 e refinamento da UX-CHART-003: 2026-09-01
 - Data do discovery e arquitetura coordenados da UX-CHART-002/003: 2026-09-01
 - Data da estratégia de testes e RED controlado da UX-CHART-002: 2026-09-02
+- Data da implementação mínima da UX-CHART-002: 2026-09-04
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7203,3 +7204,45 @@ Estado de saída:
 - `TEST_STRATEGY_READY`;
 - `UX-CHART-002` permanece `IN_PROGRESS` com RED controlado;
 - implementação bloqueada até aprovação explícita do `dia 3`.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-CHART-002
+
+Escopo entregue:
+- `UX-CHART-002A`: validador de intervalo civil semiaberto com limite de 31 dias, read port de application, DTO serializável, repository Supabase e Server Action autenticada;
+- `UX-CHART-002B`: `endOnExclusive` preservado no mapper, listener ECharts estreito com cleanup, seleção pelo candle e ação equivalente `Ver extrato` na tabela;
+- mínimo de `UX-CHART-002C`: painel adaptativo com loading, empty, error e success, fechamento nomeado por botão/Escape e identidade de request que impede resposta obsoleta de substituir a seleção atual.
+
+Arquitetura e segurança preservadas:
+- `presentation` recebe somente DTO e callback injetado; nenhum acesso direto ao Supabase foi introduzido na UI;
+- a Server Action deriva o proprietário exclusivamente de claims permanentes, rejeita sessão ausente, inválida ou anônima e sobrescreve qualquer `userId` forjado;
+- a consulta usa projeção mínima, `user_id`, `gte`/`lt` e ordenação decrescente determinística por `occurred_on`, `created_at` e `id`;
+- erros do provider são sanitizados; nenhuma migration, RPC, policy, grant ou alteração remota foi necessária.
+
+Experiência mínima:
+- abaixo de 768 px o extrato ocupa bottom sheet; a partir de 768 px, painel lateral;
+- o resumo OHLC permanece visível e os lançamentos são carregados somente após seleção;
+- a alternativa na tabela mantém o fluxo operável por teclado sem depender de hover, cor ou precisão no SVG;
+- a revisão `vercel:react-best-practices` confirmou efeitos usados apenas para request/listener externo, estado de loading derivado, handlers ECharts removidos e ausência de acesso a refs durante render.
+
+Evidências GREEN:
+- contratos focados: 9 suítes e 40 testes verdes;
+- regressão `financial-analytics`: 29 suítes e 209 testes verdes;
+- regressão completa: 92 suítes e 532 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes; `git diff --check` verde, com avisos informativos de LF/CRLF já esperados no Windows;
+- o primeiro build não alcançou a compilação por bloqueio de rede ao Google Fonts; a reexecução autorizada compilou, tipou e gerou todas as rotas, e `next-env.d.ts` foi restaurado ao conteúdo versionado;
+- o contrato legado de `FinancialEvolutionPanel` foi alinhado ao novo `endOnExclusive` produzido pelo mapper.
+
+Erro operacional registrado e prevenção:
+- ao contornar o shim global quebrado do npm, a tentativa inicial com pnpm começou a isolar dependências instaladas por npm em `node_modules/.ignored`; o processo foi interrompido, todos os pacotes foram restaurados e `.pnpm-store` removido, sem mudança em manifesto ou lockfile;
+- prevenção: em repositório npm com shim global indisponível, executar Jest, TypeScript e ESLint diretamente por seus binários locais usando o Node 22 empacotado do workspace; não alternar o gerenciador de pacotes.
+
+Fronteiras preservadas:
+- `UX-CHART-003` não foi iniciada e permanece em `DISCOVERY`;
+- edição/exclusão, busca, exportação, notas e períodos acima de 31 dias continuam fora do escopo;
+- nenhuma dependência, migration, dado, configuração Supabase, commit, push, merge ou deploy foi criado/executado;
+- anexos remotos, `rewrite-msgs.sh` e o stash histórico permaneceram intocados.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 4` para expansão controlada dos estados, interações e composição do painel, sem iniciar `UX-CHART-003`.
