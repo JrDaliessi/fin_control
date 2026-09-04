@@ -14,9 +14,28 @@ jest.mock(
 jest.mock(
   "../presentation/components/FinancialCandlestickChart.client",
   () => ({
-    FinancialCandlestickChart: jest.fn(() => (
-      <div data-testid="financial-candlestick-chart" />
-    ))
+    FinancialCandlestickChart: jest.fn(
+      (props: {
+        onSelectInterval?: (interval: {
+          startOnInclusive: string;
+          endOnExclusive: string;
+        }) => void;
+      }) => (
+        <div data-testid="financial-candlestick-chart">
+          <button
+            onClick={() =>
+              props.onSelectInterval?.({
+                startOnInclusive: "2026-03-01",
+                endOnExclusive: "2026-03-02"
+              })
+            }
+            type="button"
+          >
+            Selecionar candle no gráfico
+          </button>
+        </div>
+      )
+    )
   }),
   { virtual: true }
 );
@@ -28,9 +47,21 @@ jest.mock("../presentation/components/FinancialEvolutionTable", () => ({
 jest.mock(
   "../presentation/components/FinancialCandlesTable",
   () => ({
-    FinancialCandlesTable: jest.fn(() => (
-      <div data-testid="financial-candles-table" />
-    ))
+    FinancialCandlesTable: jest.fn(
+      (props: {
+        candles: SwitcherProps["candles"];
+        onSelectInterval?: (candle: SwitcherProps["candles"][number]) => void;
+      }) => (
+        <div data-testid="financial-candles-table">
+          <button
+            onClick={() => props.onSelectInterval?.(props.candles[0])}
+            type="button"
+          >
+            Selecionar candle na tabela
+          </button>
+        </div>
+      )
+    )
   }),
   { virtual: true }
 );
@@ -80,10 +111,29 @@ type SwitcherProps = Readonly<{
     volumeInCents: number;
     transactionCount: number;
   }>[];
+  loadStatement?: (input: Readonly<{
+    startOnInclusive: string;
+    endOnExclusive: string;
+  }>) => Promise<Readonly<{
+    startOnInclusive: string;
+    endOnExclusive: string;
+    items: readonly Readonly<{
+      id: string;
+      description: string;
+      amountInCents: number;
+      type: "income" | "expense";
+      occurredOn: string;
+      createdAt: string;
+    }>[];
+  }>>;
 }>;
 
 type FinancialCandlestickChartStub = (props: Readonly<{
   model: SwitcherProps["candlestickModel"];
+  onSelectInterval?: (interval: Readonly<{
+    startOnInclusive: string;
+    endOnExclusive: string;
+  }>) => void;
 }>) => ReactNode;
 
 const { FinancialCandlestickChart: mockFinancialCandlestickChart } =
@@ -222,5 +272,51 @@ describe("FinancialVisualizationSwitcher", () => {
       "Não foi possível carregar o gráfico. Consulte a tabela de variação financeira."
     );
     expect(screen.getByTestId("financial-candles-table")).toBeInTheDocument();
+  });
+
+  it("routes chart and table selection to the same contextual statement", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async (input: {
+      startOnInclusive: string;
+      endOnExclusive: string;
+    }) => ({
+      ...input,
+      items: [
+        {
+          id: "statement-item",
+          description: "Salário",
+          amountInCents: 5_000,
+          type: "income" as const,
+          occurredOn: "2026-03-01",
+          createdAt: "2026-03-01T10:00:00.000Z"
+        }
+      ]
+    }));
+
+    render(
+      <FinancialVisualizationSwitcher
+        {...props}
+        loadStatement={loadStatement}
+      />
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Variação do saldo" })
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Selecionar candle no gráfico" })
+    );
+
+    expect(await screen.findByText("Salário")).toBeInTheDocument();
+    expect(loadStatement).toHaveBeenLastCalledWith({
+      startOnInclusive: "2026-03-01",
+      endOnExclusive: "2026-03-02"
+    });
+    await user.click(screen.getByRole("button", { name: "Fechar extrato" }));
+    await user.click(
+      screen.getByRole("button", { name: "Selecionar candle na tabela" })
+    );
+
+    expect(await screen.findByText("Salário")).toBeInTheDocument();
+    expect(loadStatement).toHaveBeenCalledTimes(2);
   });
 });

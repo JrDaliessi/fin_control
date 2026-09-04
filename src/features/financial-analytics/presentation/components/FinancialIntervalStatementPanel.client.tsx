@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import type { FinancialIntervalStatementDto } from "../../application/use-cases/list-financial-interval-statement.use-case";
 import type { FinancialCandle } from "../../domain/types/financial-evolution.types";
 import { formatCents } from "@/shared/utils/formatCents";
+import { containKeyboardFocus } from "@/shared/utils/containKeyboardFocus";
 
 export type FinancialIntervalStatementLoader = (
   input: Readonly<{
@@ -43,6 +45,9 @@ export function FinancialIntervalStatementPanel({
   onClose
 }: FinancialIntervalStatementPanelProps) {
   const titleId = useId();
+  const panelRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const onCloseRef = useRef(onClose);
   const [reloadAttempt, setReloadAttempt] = useState(0);
   const [loadState, setLoadState] = useState<LoadState>({
     requestKey: "",
@@ -55,6 +60,15 @@ export function FinancialIntervalStatementPanel({
     loadState.requestKey === requestKey
       ? loadState
       : { requestKey, status: "loading" };
+  const isOpen = selectedCandle !== null;
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  const closePanel = useCallback(() => {
+    onCloseRef.current();
+  }, []);
 
   useEffect(() => {
     if (!selectedCandle) {
@@ -85,19 +99,70 @@ export function FinancialIntervalStatementPanel({
   }, [loadStatement, requestKey, selectedCandle]);
 
   useEffect(() => {
-    if (!selectedCandle) {
+    if (!isOpen) {
       return;
     }
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const previousOverflow = document.body.style.overflow;
+    const opener =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const portalRoot = panelRef.current?.closest<HTMLElement>(
+      "[data-financial-statement-portal]"
+    );
+    const backgroundStates = Array.from(document.body.children)
+      .filter(
+        (element): element is HTMLElement =>
+          element instanceof HTMLElement &&
+          element !== portalRoot &&
+          !["SCRIPT", "STYLE"].includes(element.tagName)
+      )
+      .map((element) => ({
+        ariaHidden: element.getAttribute("aria-hidden"),
+        element,
+        hadInertAttribute: element.hasAttribute("inert")
+      }));
+
+    for (const { element } of backgroundStates) {
+      element.setAttribute("aria-hidden", "true");
+      element.setAttribute("inert", "");
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        event.preventDefault();
+        closePanel();
+        return;
       }
+
+      containKeyboardFocus(event, panelRef.current);
     };
 
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [onClose, selectedCandle]);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+
+      for (const { ariaHidden, element, hadInertAttribute } of backgroundStates) {
+        if (ariaHidden === null) {
+          element.removeAttribute("aria-hidden");
+        } else {
+          element.setAttribute("aria-hidden", ariaHidden);
+        }
+
+        if (!hadInertAttribute) {
+          element.removeAttribute("inert");
+        }
+      }
+
+      opener?.focus();
+    };
+  }, [closePanel, isOpen]);
 
   if (!selectedCandle) {
     return null;
@@ -105,14 +170,25 @@ export function FinancialIntervalStatementPanel({
 
   const formattedDate = formatCivilDate(selectedCandle.startOnInclusive);
 
-  return (
-    <div className="fixed inset-0 z-50 bg-navigation/70 md:flex md:justify-end">
-      <section
-        aria-labelledby={titleId}
-        aria-modal={visibleLoadState.status === "loading" ? undefined : "true"}
-        className="absolute inset-x-0 bottom-0 grid max-h-[85dvh] gap-5 overflow-y-auto rounded-t-2xl border border-border bg-surface p-5 shadow-2xl md:static md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-none md:border-y-0 md:border-r-0 md:p-6"
-        role={visibleLoadState.status === "loading" ? undefined : "dialog"}
-      >
+  return createPortal(
+    <div data-financial-statement-portal="">
+      <button
+        aria-hidden="true"
+        aria-label="Fechar extrato pelo fundo"
+        className="fixed inset-0 z-50 cursor-default bg-navigation/70 transition-opacity motion-reduce:transition-none"
+        data-testid="financial-statement-backdrop"
+        onClick={closePanel}
+        tabIndex={-1}
+        type="button"
+      />
+      <div className="pointer-events-none fixed inset-0 z-[60] md:flex md:justify-end">
+        <section
+          aria-labelledby={titleId}
+          aria-modal="true"
+          className="pointer-events-auto absolute inset-x-0 bottom-0 grid max-h-[85dvh] gap-5 overscroll-contain overflow-y-auto rounded-t-2xl border border-border bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-5 shadow-2xl transition-transform motion-reduce:transition-none md:static md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-none md:border-y-0 md:border-r-0 md:p-6"
+          ref={panelRef}
+          role="dialog"
+        >
         <header className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -124,9 +200,9 @@ export function FinancialIntervalStatementPanel({
           </div>
           <button
             aria-label="Fechar extrato"
-            autoFocus
             className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-            onClick={onClose}
+            onClick={closePanel}
+            ref={closeButtonRef}
             type="button"
           >
             <X aria-hidden="true" className="size-5" />
@@ -209,7 +285,9 @@ export function FinancialIntervalStatementPanel({
             )
           ) : null}
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </div>,
+    document.body
   );
 }

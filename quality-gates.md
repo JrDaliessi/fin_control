@@ -1818,3 +1818,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma migration, RPC, policy, grant, dado, dependência, configuração Supabase remota, commit, push, merge ou deploy foi criado/executado.
 - `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash histórico permaneceram preservados.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — UX-CHART-002
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da implementação.
+- skill `vercel:react-best-practices` aplicada após as alterações TSX; portal, efeitos, refs, callbacks, cleanup e estado assíncrono foram revisados.
+- RED controlado observado: 3 dos 7 contratos do painel falharam pela ausência de diálogo durante loading, isolamento/foco/scroll e backdrop.
+- diálogo nomeado e modal preservado durante loading, empty, error e success; retry mantém o intervalo aberto.
+- foco inicial, contenção por teclado, restauração ao acionador, `Escape`, backdrop, bloqueio/restauração de scroll e isolamento/restauração do background cobertos.
+- bottom sheet usa safe areas, overscroll confinado, movimento reduzido e target de 44 px; painel lateral desktop preservado.
+- gráfico e tabela convergem para o mesmo loader e intervalo semiaberto na composição real.
+- contratos direcionados: 2 suítes e 12 testes verdes.
+- regressão de `financial-analytics`: 29 suítes e 213 testes verdes.
+- regressão completa: 92 suítes e 536 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check e build Next.js 16.3.3 verdes; `git diff --check` verde, salvo avisos informativos de LF/CRLF.
+- nenhuma migration, RPC, policy, grant, dado, dependência, configuração Supabase remota, commit, push, merge, deploy ou promoção foi executado.
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5`.

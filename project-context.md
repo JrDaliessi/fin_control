@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 4 da UX-CHART-002
+- Fase atual: Dia 4 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 5 da UX-CHART-002
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -143,6 +143,7 @@
 - Data do discovery e arquitetura coordenados da UX-CHART-002/003: 2026-09-01
 - Data da estratégia de testes e RED controlado da UX-CHART-002: 2026-09-02
 - Data da implementação mínima da UX-CHART-002: 2026-09-04
+- Data da expansão controlada da UX-CHART-002: 2026-09-04
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7246,3 +7247,37 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - `UX-CHART-002` permanece `IN_PROGRESS`;
 - próximo comando válido: `dia 4` para expansão controlada dos estados, interações e composição do painel, sem iniciar `UX-CHART-003`.
+
+## Dia 4 — Expansão Controlada da UX-CHART-002
+
+Escopo entregue:
+- o painel adaptativo passou a ser renderizado em portal, com backdrop independente, bloqueio e restauração do scroll da página;
+- o diálogo permanece nomeado e modal também durante `loading`, preservando uma única superfície estável nos estados `loading`, `empty`, `error` e `success`;
+- foco inicial no botão de fechar, contenção por `Tab`/`Shift+Tab`, fechamento por `Escape`, botão ou backdrop e restauração do foco ao acionador;
+- conteúdo ao fundo recebe isolamento temporário por `aria-hidden` e `inert`, com restauração exata dos atributos anteriores no cleanup;
+- bottom sheet recebeu safe areas laterais/inferior, overscroll confinado, target de 44 px e respeito a movimento reduzido; o painel lateral de desktop foi preservado;
+- o estado de erro permite tentar novamente sem perder o intervalo selecionado;
+- seleção pelo ECharts e pela tabela foi validada na composição real contra o mesmo loader e o mesmo contrato semiaberto.
+
+TDD e revisão React:
+- RED controlado: 3 dos 7 contratos do painel falharam pela ausência deliberada de semântica modal durante loading, isolamento/scroll/foco e backdrop;
+- GREEN direcionado: 2 suítes e 12 testes cobrindo painel e switcher;
+- a revisão `vercel:react-best-practices` confirmou portal e efeitos restritos a sincronização com DOM/request externos, callback estável por ref, cleanup simétrico, estado assíncrono derivado e ausência de nova dependência ou efeito de renderização desnecessário.
+
+Evidências GREEN:
+- regressão `financial-analytics`: 29 suítes e 213 testes verdes;
+- regressão completa: 92 suítes e 536 testes verdes, zero snapshots;
+- lint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; avisos LF/CRLF permanecem apenas informativos no Windows;
+- build compilou, tipou e gerou todas as rotas sem alteração do contrato de navegação.
+
+Fronteiras preservadas:
+- nenhuma regra OHLC, query, Server Action, migration, RPC, policy, grant, dado, dependência ou configuração remota foi alterada;
+- `UX-CHART-003` não foi iniciada e permanece em `DISCOVERY`;
+- edição/exclusão, busca, exportação, notas e intervalos acima de 31 dias permanecem fora do escopo;
+- nenhum commit, push, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem ampliar regras de negócio.
