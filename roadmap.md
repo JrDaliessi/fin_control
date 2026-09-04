@@ -283,7 +283,7 @@ Evidência do Dia 7: 84 suítes/482 testes, lint, type-check, build e auditorias
 
 Ordem aprovada: `UX-CHART-002 — Extrato contextual do candle` e, depois de seu ciclo completo, `UX-CHART-003 — Períodos e granularidade adaptativa`.
 
-Estado da `UX-CHART-002`: Dia 4 concluído em `IMPLEMENTATION_IN_PROGRESS`. Além do fluxo autenticado e da proteção contra respostas obsoletas, o painel em portal mantém semântica modal em todos os estados, foco contido/restaurado, backdrop, scroll e conteúdo ao fundo isolados, safe areas e retry sem perder a seleção. Gráfico e tabela convergem para o mesmo extrato; 92 suítes/536 testes, lint, type-check e build estão verdes, sem migration.
+Estado da `UX-CHART-002`: Dia 5 concluído em `IMPLEMENTATION_IN_PROGRESS`. O lifecycle modal duplicado foi extraído para uma primitive compartilhada, tipada e com callback estável; painel financeiro e painel de conta preservam foco, teclado, scroll, isolamento e layouts existentes. A regressão permanece verde com 92 suítes/536 testes, lint, type-check e build, sem migration ou nova dependência.
 
 Small releases da `UX-CHART-002`:
 1. `002A` — contratos, DTO, consulta sob demanda e Server Action;
@@ -294,7 +294,7 @@ Estado da `UX-CHART-003`: `DISCOVERY`, bloqueada até a conclusão da `UX-CHART-
 
 Decisões: `adr/0019-contextual-candle-statement.md` e `adr/0020-adaptive-financial-periods.md`.
 
-Próximo passo: executar o Dia 5 da `UX-CHART-002` para refatoração e hardening interno sem alterar regras de negócio. A `UX-CHART-003` terá ciclo próprio após a conclusão da predecessora.
+Próximo passo: executar o Dia 6 da `UX-CHART-002` para validação de UX, acessibilidade, responsividade e experiência PWA. A `UX-CHART-003` terá ciclo próprio após a conclusão da predecessora.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

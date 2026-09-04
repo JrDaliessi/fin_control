@@ -1835,3 +1835,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma migration, RPC, policy, grant, dado, dependência, configuração Supabase remota, commit, push, merge, deploy ou promoção foi executado.
 - `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — UX-CHART-002
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da refatoração.
+- baseline de painel e switcher anterior à edição: 2 suítes e 12 testes verdes.
+- duplicação concreta de lifecycle modal identificada entre `AccountPanel` e `FinancialIntervalStatementPanel`.
+- primitive `useModalDialogLifecycle` criada em shared presentation, sem mover regra financeira ou infraestrutura para o hook.
+- portal, foco inicial/contido/restaurado, `Escape`, scroll, `aria-hidden`, `inert` e cleanup permanecem cobertos nos dois consumidores.
+- skill `vercel:react-best-practices` aplicada com leitura das regras de listeners, dependências estreitas e handlers em refs; callback estável usa a implementação externa mais recente sem reinstalar o lifecycle.
+- nenhuma dependência de compartilhamento de eventos foi adicionada porque o contrato mantém um único modal ativo e não há evidência de gargalo.
+- consumidores diretamente afetados: 3 suítes e 25 testes verdes.
+- regressão completa: 92 suítes e 536 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check e build Next.js 16.3.3 verdes.
+- `next-env.d.ts` restaurado ao conteúdo versionado; `git diff --check` verde, salvo avisos LF/CRLF informativos.
+- nenhuma dívida CRÍTICA ou ALTA identificada; nenhuma migration, RPC, policy, grant, dado, dependência, configuração remota, commit, push, merge, deploy ou promoção foi executado.
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
+- `REFACTORING_IN_PROGRESS` encerrado; retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6`.

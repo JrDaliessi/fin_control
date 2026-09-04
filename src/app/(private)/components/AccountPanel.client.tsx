@@ -1,11 +1,11 @@
 "use client";
 
 import { UserRound, X } from "lucide-react";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { SignOutButton } from "@/features/auth/presentation/components/SignOutButton";
 import { ThemeSwitcher } from "@/shared/components/ui/ThemeSwitcher";
-import { containKeyboardFocus } from "@/shared/utils/containKeyboardFocus";
+import { useModalDialogLifecycle } from "@/shared/hooks/useModalDialogLifecycle";
 
 type AccountPanelProps = {
   email: string;
@@ -18,75 +18,20 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
   const titleId = useId();
   const sessionId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
 
-  const closePanel = useCallback(() => {
+  const requestClose = useCallback(() => {
     setIsOpen(false);
   }, []);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    const triggerElement = triggerRef.current;
-    document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
-
-    const portalRoot = panelRef.current?.closest<HTMLElement>(
-      "[data-account-panel-portal]",
-    );
-    const backgroundStates = Array.from(document.body.children)
-      .filter(
-        (element): element is HTMLElement =>
-          element instanceof HTMLElement &&
-          element !== portalRoot &&
-          !["SCRIPT", "STYLE"].includes(element.tagName),
-      )
-      .map((element) => ({
-        ariaHidden: element.getAttribute("aria-hidden"),
-        element,
-        hadInertAttribute: element.hasAttribute("inert"),
-      }));
-
-    for (const { element } of backgroundStates) {
-      element.setAttribute("aria-hidden", "true");
-      element.setAttribute("inert", "");
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closePanel();
-        return;
-      }
-
-      containKeyboardFocus(event, panelRef.current);
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", handleKeyDown);
-
-      for (const { ariaHidden, element, hadInertAttribute } of backgroundStates) {
-        if (ariaHidden === null) {
-          element.removeAttribute("aria-hidden");
-        } else {
-          element.setAttribute("aria-hidden", ariaHidden);
-        }
-
-        if (!hadInertAttribute) {
-          element.removeAttribute("inert");
-        }
-      }
-
-      triggerElement?.focus();
-    };
-  }, [closePanel, isOpen]);
+  const {
+    closeDialog: closePanel,
+    dialogRef: panelRef,
+    initialFocusRef: closeButtonRef,
+    portalRootRef,
+  } = useModalDialogLifecycle<HTMLDivElement, HTMLButtonElement>({
+    isOpen,
+    onClose: requestClose,
+    returnFocusRef: triggerRef,
+  });
 
   return (
     <>
@@ -105,7 +50,7 @@ export function AccountPanel({ email, onSignOut }: AccountPanelProps) {
 
       {isOpen
         ? createPortal(
-            <div data-account-panel-portal="">
+            <div data-account-panel-portal="" ref={portalRootRef}>
               <button
                 aria-hidden="true"
                 aria-label="Fechar painel da conta pelo fundo"

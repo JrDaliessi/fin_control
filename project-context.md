@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 5 da UX-CHART-002
+- Fase atual: Dia 5 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 6 da UX-CHART-002
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -144,6 +144,7 @@
 - Data da estratégia de testes e RED controlado da UX-CHART-002: 2026-09-02
 - Data da implementação mínima da UX-CHART-002: 2026-09-04
 - Data da expansão controlada da UX-CHART-002: 2026-09-04
+- Data da refatoração e hardening interno da UX-CHART-002: 2026-09-04
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7281,3 +7282,45 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
 - `UX-CHART-002` permanece `IN_PROGRESS`;
 - próximo comando válido: `dia 5` para refatoração e hardening interno, sem ampliar regras de negócio.
+
+## Dia 5 — Refatoração e Hardening Interno da UX-CHART-002
+
+Diagnóstico e plano incremental:
+- `FinancialIntervalStatementPanel.client.tsx` tinha 293 linhas e concentrava consulta assíncrona, lifecycle modal e apresentação do extrato;
+- o mesmo lifecycle de foco, teclado, scroll e isolamento do background estava duplicado em `AccountPanel.client.tsx`;
+- a menor refatoração segura escolhida foi extrair somente esse comportamento compartilhado; markup, layout, regras financeiras e contratos de dados permaneceram nos consumidores;
+- extrações adicionais de conteúdo, adapters ou abstrações genéricas foram rejeitadas por não reduzirem risco suficiente neste ciclo.
+
+Refatoração aplicada:
+- criado `src/shared/hooks/useModalDialogLifecycle.ts` como primitive coesa de presentation compartilhada;
+- o hook oferece refs tipadas para portal, diálogo e foco inicial, além de callback estável para fechamento;
+- lifecycle centralizado: bloqueio/restauração do scroll, isolamento/restauração dos filhos do `body`, foco inicial, contenção por teclado, `Escape`, cleanup e retorno do foco;
+- callback externo é atualizado por ref e o efeito principal depende somente de `isOpen` e da função estável, evitando reinstalação por render do consumidor;
+- `AccountPanel` e `FinancialIntervalStatementPanel` passaram a consumir a mesma primitive sem alteração visual ou funcional;
+- a composição JSX do painel financeiro foi realinhada para leitura consistente.
+
+Revisão React, integridade e performance:
+- `vercel:react-best-practices` e as regras de listeners globais, dependências estreitas e event handlers em refs foram consultadas;
+- a aplicação mantém a premissa de um único modal ativo, portanto adicionar SWR ou um gerenciador global de eventos seria complexidade e dependência injustificadas;
+- intervalo semiaberto, request key, DTO, ownership, Server Action e repository não foram alterados;
+- nenhuma nova renderização cara, serialização ou dependência de bundle foi introduzida.
+
+Evidências GREEN:
+- baseline anterior: painel e switcher com 2 suítes/12 testes verdes;
+- consumidores diretamente afetados: 3 suítes/25 testes verdes;
+- regressão completa: 92 suítes/536 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado;
+- `git diff --check` verde, salvo avisos informativos de normalização LF/CRLF no Windows.
+
+Dívida técnica e fronteiras:
+- nenhuma dívida CRÍTICA ou ALTA foi criada ou encontrada neste recorte;
+- `UX-CHART-003` permanece em `DISCOVERY` e não foi iniciada;
+- nenhuma regra de negócio, query, migration, RPC, policy, grant, dado, dependência ou configuração remota foi alterada;
+- nenhum commit, push, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 6` para UX, acessibilidade e PWA.
