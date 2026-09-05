@@ -6,7 +6,20 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### UX-CHART-002D — Volume e insight contextual do intervalo
+- Tipo: Small Release / UX Improvement.
+- Descrição objetiva: ampliar o extrato contextual do candle com volume movimentado, composição entre receitas e despesas, resultado líquido e análise determinística expansível no próprio painel.
+- Objetivo de negócio: transformar os números do intervalo em uma explicação curta e acionável, sem confundir volume com saldo ou abrir uma segunda camada modal.
+- Valor esperado: leitura financeira mais intuitiva e preparação do extrato para os períodos adaptativos da `UX-CHART-003`.
+- Prioridade: Alta, selecionada por decisão humana antes da `UX-CHART-003`.
+- Dependências: `UX-CHART-002` concluída; candles já expõem receitas, despesas, volume e quantidade; comparação histórica depende de baseline agregado confiável.
+- Escopo aprovado: `002D-1` mostra `Volume movimentado`, receitas, despesas e resultado líquido; `002D-2` oferece `Ver análise do intervalo` e exibe no máximo dois insights determinísticos dentro do painel atual.
+- Segurança e dados: apresentação não acessa Supabase; nenhum histórico bruto adicional chega ao browser; uma futura referência histórica será carregada sob demanda por application/infrastructure autenticadas e com agregação mínima.
+- Acessibilidade: controle com alvo mínimo de 44 px, `aria-expanded`, `aria-controls`, foco visível e conteúdo compreensível sem depender de cor.
+- Risco: Médio por semântica financeira e comparação temporal; mitigado por cálculo inteiro em centavos, copy explícita e TDD de domain/application/presentation.
+- Fase recomendada: ciclo próprio Dias 1–7; Dia 1 concluído e Dia 2 aguardando comando humano.
+- Critério de pronto: métricas corretas para zero, somente receitas, somente despesas e combinação; análise limitada, honesta e coerente com o intervalo; estados acessíveis; regressão e quality gates verdes.
+- Status: IN_PROGRESS — arquitetura pronta; aguardando estratégia de testes do Dia 2.
 
 ## DISCOVERY
 

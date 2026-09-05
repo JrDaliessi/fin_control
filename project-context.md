@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-CHART-002 concluído em GREEN; entrega incremental pronta para versionamento final e revisão da PR #24
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da UX-CHART-002D concluído; aguardando comando do Dia 2 para estratégia de testes
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -147,6 +147,8 @@
 - Data da refatoração e hardening interno da UX-CHART-002: 2026-09-04
 - Data da revisão de UX, acessibilidade e PWA da UX-CHART-002: 2026-09-05
 - Data da validação final e preparação de release da UX-CHART-002: 2026-09-05
+- Data de seleção da UX-CHART-002D e pausa da UX-CHART-003: 2026-09-05
+- Data do discovery e arquitetura da UX-CHART-002D: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7414,3 +7416,61 @@ Riscos, fronteiras e saída:
 - `UX-CHART-002` atende ao critério de pronto e passa a `DONE`/`READY_FOR_RELEASE`;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os checks do novo head; após aprovação humana, realizar squash merge em `develop`;
 - `UX-CHART-003` deixa de estar bloqueada pela predecessora e pode iniciar seu próprio Dia 1 somente após comando explícito.
+
+## Seleção da UX-CHART-002D — Volume e insight contextual
+
+- Por decisão humana em 2026-09-05, a extensão `UX-CHART-002D` foi priorizada antes do ciclo próprio da `UX-CHART-003`.
+- O checkpoint documental não commitado da seleção da `UX-CHART-003` foi preservado de forma reversível no stash `checkpoint UX-CHART-003 selecionada antes da UX-CHART-002D`; nenhum código da feature havia sido iniciado.
+- A branch `feature/UX-CHART-002D-volume-insights` foi criada de `origin/develop`, sem herdar o trabalho pausado da `DEMO-001` ou da `UX-CHART-003`.
+- Escopo aprovado: volume movimentado, receitas, despesas, resultado líquido e expansão inline com no máximo dois insights determinísticos e auditáveis.
+- O primeiro incremento reutiliza os agregados existentes do candle e não exige migration, RPC, dependência ou configuração Supabase.
+- Comparação histórica permanece contrato futuro: será carregada sob demanda, com baseline agregado e autenticado, somente após TDD e validação específica; ausência de histórico deve gerar mensagem honesta.
+- Decisão arquitetural registrada no ADR `0021-contextual-interval-volume-insights.md`.
+- Estado de entrada preparado: `FOUNDATION_DEFINED`.
+- Próximo comando válido: `dia 1` para validar discovery, contratos, copy e composição responsiva antes dos testes essenciais.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-002D
+
+Escopo e produto:
+- a extensão explica o fluxo do intervalo selecionado sem transformar o FinControl em interface de trading;
+- OHLC permanece como resumo do saldo; um card separado `Movimentação no intervalo` diferencia o fluxo e mostra volume, receitas, despesas e resultado líquido;
+- `Volume movimentado` é a soma bruta de receitas e despesas e recebe explicação explícita de que não representa resultado líquido;
+- o botão aprovado é `Ver análise do intervalo`, alternando para `Ocultar análise`, com expansão inline e sem diálogo aninhado.
+
+Regras de domínio:
+- `volume = receitas + despesas` e `resultado = receitas - despesas`, sempre em inteiros seguros de centavos;
+- percentuais são inteiros complementares e volume zero não produz divisão nem comparação inválida;
+- divergência entre volume e componentes é entrada inválida, sem correção silenciosa;
+- no máximo dois insights são apresentados: composição e resultado; comparação temporal assume prioridade somente quando houver referência histórica confiável;
+- linguagem é factual, não causal, moralizante, prescritiva ou rotulada como IA.
+
+Arquitetura e dados:
+- o `FinancialCandle` existente é a fonte autoritativa do resumo, que continua disponível se a lista de lançamentos falhar;
+- `domain` terá serviço puro de validação/cálculo/seleção; `presentation` controla apenas expansão e copy, sem fórmulas no JSX;
+- `application` e `infrastructure` não mudam no primeiro incremento; não haverá nova rede ao abrir a análise;
+- comparação histórica fica como extensão posterior com caso de uso e port próprios, retorno agregado mínimo, autenticação, ownership e RLS;
+- nenhuma migration, RPC, policy, grant, dependência ou configuração Supabase é necessária neste ciclo inicial.
+
+UX e acessibilidade:
+- ordem: cabeçalho, OHLC, movimentação, análise expandida e lista de lançamentos;
+- mobile usa volume e resultado em linhas próprias, composição em duas colunas e rolagem interna do bottom sheet;
+- desktop preserva painel lateral de até 448 px e a mesma hierarquia;
+- controle terá alvo mínimo de 44 px, foco visível, `aria-expanded` e `aria-controls`; cor nunca é a única indicação.
+
+Small releases refinadas:
+- `UX-CHART-002D-1`: resumo de fluxo derivado do candle;
+- `UX-CHART-002D-2`: análise determinística inline sem rede;
+- comparação histórica fica fora do ciclo atual até contrato TDD específico coordenado com a `UX-CHART-003`.
+
+Artefatos e fronteiras:
+- discovery detalhado em `docs/ux-chart-002d-discovery.md`;
+- ADR `0021-contextual-interval-volume-insights.md` atualizado para `arquitetura aprovada`;
+- `git diff --check` verde; lint, type-check, testes e build não foram repetidos porque o Dia 1 alterou somente documentação;
+- nenhuma implementação funcional, teste, migration, dado, configuração remota, commit, push, PR, merge ou deploy foi executado;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram privados, não rastreados e fora do escopo;
+- checkpoint da `UX-CHART-003` permanece preservado no stash e a feature continua em `DISCOVERY`.
+
+Estado de saída:
+- `ARCHITECTURE_READY`;
+- Dia 1 concluído sem bloqueio duro;
+- próximo comando válido: `dia 2` para estratégia TDD e testes essenciais em RED.

@@ -290,11 +290,13 @@ Small releases da `UX-CHART-002`:
 2. `002B` — seleção no ECharts/tabela e painel responsivo;
 3. `002C` — concorrência, acessibilidade, responsividade e validação real.
 
-Estado da `UX-CHART-003`: `DISCOVERY`, não mais bloqueada pela predecessora e aguardando comando humano para seu próprio Dia 1. A sequência planejada é `003A` para `7D`/`15D`/`Mês` sem migration, `003B` para `3M`/`Ano` com agregação server-side e `003C` para `Tudo`/personalizado. Granularidade diária, semanal, mensal ou trimestral manterá um volume preferencial de 12–60 pontos e nunca enviará histórico bruto ao browser.
+Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 1 concluído em `ARCHITECTURE_READY`. A entrega adiciona um card de fluxo separado do OHLC, volume movimentado, composição de receitas/despesas, resultado líquido e análise determinística expansível no painel existente. O primeiro incremento reutiliza dados do candle sem migration ou rede adicional; comparação histórica será posterior, agregada e sob demanda.
 
-Decisões: `adr/0019-contextual-candle-statement.md` e `adr/0020-adaptive-financial-periods.md`.
+Estado da `UX-CHART-003`: `DISCOVERY`, pausada antes do Dia 1 enquanto a `UX-CHART-002D` é concluída. A sequência planejada permanece `003A` para `7D`/`15D`/`Mês` sem migration, `003B` para `3M`/`Ano` com agregação server-side e `003C` para `Tudo`/personalizado. Granularidade diária, semanal, mensal ou trimestral manterá um volume preferencial de 12–60 pontos e nunca enviará histórico bruto ao browser.
 
-Próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os novos checks; depois, mediante decisão humana, realizar squash merge em `develop`. A `UX-CHART-003` pode iniciar ciclo próprio após esse fechamento.
+Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md` e `adr/0021-contextual-interval-volume-insights.md`.
+
+Próximo passo: executar o Dia 2 da `UX-CHART-002D` e criar os testes essenciais de domínio e apresentação em RED; após o ciclo e a entrega incremental, restaurar a seleção da `UX-CHART-003` e iniciar seu Dia 1.
 
 ## Hardening pré-produção — SEC-AUTH-001
 
