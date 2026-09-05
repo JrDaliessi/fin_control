@@ -11,6 +11,7 @@ const analyticsRoot = join(
 
 describe("financial interval statement architecture", () => {
   it.each([
+    "domain/services/analyze-financial-interval.ts",
     "domain/services/validate-financial-interval.ts",
     "application/ports/financial-interval-statement-query.repository.ts",
     "application/use-cases/list-financial-interval-statement.use-case.ts",
@@ -24,7 +25,8 @@ describe("financial interval statement architecture", () => {
     const presentationFiles = [
       "presentation/components/FinancialCandlestickChart.client.tsx",
       "presentation/components/FinancialCandlesTable.tsx",
-      "presentation/components/FinancialVisualizationSwitcher.client.tsx"
+      "presentation/components/FinancialVisualizationSwitcher.client.tsx",
+      "presentation/components/FinancialIntervalStatementPanel.client.tsx"
     ];
 
     for (const path of presentationFiles) {

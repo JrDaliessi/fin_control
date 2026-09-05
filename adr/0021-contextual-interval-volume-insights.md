@@ -83,4 +83,4 @@ Essas referências documentam o contrato futuro, mas não autorizam ampliar a RP
 
 ## Próximo passo
 
-Executar o Dia 2 da `UX-CHART-002D` para transformar as regras do discovery em testes essenciais de domínio e apresentação em RED antes de qualquer código funcional.
+Executar o Dia 3 da `UX-CHART-002D` para implementar o mínimo necessário e tornar verdes os contratos de domínio, apresentação e arquitetura criados no Dia 2.

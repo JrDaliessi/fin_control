@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da UX-CHART-002D concluído; aguardando comando do Dia 2 para estratégia de testes
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da UX-CHART-002D concluído; aguardando comando do Dia 3 para implementação mínima orientada pelos testes
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -149,6 +149,7 @@
 - Data da validação final e preparação de release da UX-CHART-002: 2026-09-05
 - Data de seleção da UX-CHART-002D e pausa da UX-CHART-003: 2026-09-05
 - Data do discovery e arquitetura da UX-CHART-002D: 2026-09-05
+- Data da estratégia de testes da UX-CHART-002D: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7474,3 +7475,32 @@ Estado de saída:
 - `ARCHITECTURE_READY`;
 - Dia 1 concluído sem bloqueio duro;
 - próximo comando válido: `dia 2` para estratégia TDD e testes essenciais em RED.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-CHART-002D
+
+Estratégia e contratos:
+- matriz por camada registrada em `docs/ux-chart-002d-test-strategy.md`;
+- domain cobre cálculo inteiro em centavos, percentuais complementares, volume zero, receita/despesa isoladas, equilíbrio, integridade, overflow e intervalo civil inválido;
+- presentation cobre resumo independente da consulta, disclosure acessível, limite de dois insights, ausência de rede adicional e descarte de estado ao trocar o candle;
+- application e infrastructure foram explicitamente classificadas como não aplicáveis neste incremento, pois a análise reutiliza o `FinancialCandle` existente e não introduz novo port;
+- fronteira arquitetural exige serviço puro em domain e impede acesso direto a dados pela presentation.
+
+Evidências TDD:
+- baseline anterior do painel: 1 suíte e 7 testes aprovados;
+- RED direcionado final: 3 suítes falhando de modo planejado, 5 testes falhando, 14 testes anteriores passando e zero snapshots;
+- a suíte de domínio e a fronteira falham pela ausência deliberada de `domain/services/analyze-financial-interval.ts`;
+- os quatro contratos novos do painel falham somente pela ausência do card, disclosure e conteúdo de análise aprovados;
+- ESLint dos três arquivos de teste aprovado sem avisos;
+- type-check contém somente um `TS2307` para o serviço deliberadamente ausente, sem ruído de fixture, mock, runtime ou ambiente;
+- nenhum warning de `act`, erro de console ou falha não planejada permaneceu no RED final.
+
+Escopo preservado:
+- nenhum arquivo funcional, migration, RPC, policy, dado, dependência ou configuração remota foi criado ou alterado;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram privados, não rastreados e intocados;
+- `UX-CHART-003` permanece em `DISCOVERY` e pausada até a conclusão do ciclo atual.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- Dia 2 concluído sem bloqueio duro;
+- próximo comando válido: `dia 3` para implementação mínima orientada por teste.

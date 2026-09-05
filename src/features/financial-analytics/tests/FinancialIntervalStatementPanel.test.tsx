@@ -102,6 +102,140 @@ describe("FinancialIntervalStatementPanel", () => {
     expect(screen.getByText(/Abertura.*R\$\s*100,00/i)).toBeInTheDocument();
   });
 
+  it("shows the movement summary while the statement is still loading", () => {
+    const pendingStatement = deferred<StatementResult>();
+    const loadStatement = jest.fn(() => pendingStatement.promise);
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    expect(within(movementSummary).getByText("Volume movimentado")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*70,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Receitas")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*50,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Despesas")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*20,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Resultado líquido")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*30,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/não representa o resultado líquido/i)).toBeInTheDocument();
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+  });
+
+  it("reveals and hides at most two contextual insights without another load", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async () => ({
+      ...statementInterval,
+      items: [statementItem]
+    }));
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    await screen.findByText("Salário");
+    const showAnalysis = screen.getByRole("button", {
+      name: "Ver análise do intervalo"
+    });
+    expect(showAnalysis).toHaveAttribute("aria-expanded", "false");
+    expect(showAnalysis).toHaveClass("min-h-11");
+    const analysisId = showAnalysis.getAttribute("aria-controls");
+    expect(analysisId).toBeTruthy();
+
+    await user.click(showAnalysis);
+
+    const analysis = document.getElementById(analysisId ?? "");
+    expect(analysis).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Ocultar análise" })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+    expect(within(analysis as HTMLElement).getAllByRole("listitem")).toHaveLength(2);
+    expect(within(analysis as HTMLElement).getByText(/71% do volume correspondeu a receitas/i)).toBeInTheDocument();
+    expect(within(analysis as HTMLElement).getByText(/resultado positivo de R\$\s*30,00/i)).toBeInTheDocument();
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole("button", { name: "Ocultar análise" }));
+
+    expect(screen.getByRole("button", { name: "Ver análise do intervalo" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    );
+    expect(document.getElementById(analysisId ?? "")).toBeNull();
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+  });
+
+  it("collapses the analysis when the selected candle changes", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async (input: StatementIntervalInput) => ({
+      ...input,
+      items: []
+    }));
+    const view = render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    await screen.findByText("Nenhum lançamento neste intervalo.");
+    await user.click(
+      screen.getByRole("button", { name: "Ver análise do intervalo" })
+    );
+    expect(screen.getByText(/71% do volume correspondeu a receitas/i)).toBeInTheDocument();
+
+    view.rerender(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={nextStatementCandle}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Ver análise do intervalo" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    );
+    expect(screen.queryByText(/71% do volume correspondeu a receitas/i)).not.toBeInTheDocument();
+    await waitFor(() => expect(loadStatement).toHaveBeenCalledTimes(2));
+  });
+
+  it("keeps the movement summary available when the statement load fails", async () => {
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={jest.fn(async () => {
+          throw new Error("provider unavailable");
+        })}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    expect(within(movementSummary).getByText(/R\$\s*70,00/)).toBeInTheDocument();
+    expect(
+      within(movementSummary).getByRole("button", {
+        name: "Ver análise do intervalo"
+      })
+    ).toBeInTheDocument();
+  });
+
   it("shows an honest empty state and closes through a named control", async () => {
     const user = userEvent.setup();
     const onClose = jest.fn();
