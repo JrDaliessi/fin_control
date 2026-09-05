@@ -97,8 +97,11 @@ describe("FinancialIntervalStatementPanel", () => {
       "Carregando extrato"
     );
     expect(loadStatement).toHaveBeenCalledWith(statementInterval);
-    expect(await screen.findByText("Salário")).toBeInTheDocument();
-    expect(screen.getByText(/R\$\s*50,00/)).toBeInTheDocument();
+    const statementRow = (await screen.findByText("Salário")).closest("li");
+    expect(statementRow).not.toBeNull();
+    expect(
+      within(statementRow as HTMLElement).getByText(/R\$\s*50,00/)
+    ).toBeInTheDocument();
     expect(screen.getByText(/Abertura.*R\$\s*100,00/i)).toBeInTheDocument();
   });
 
@@ -125,6 +128,8 @@ describe("FinancialIntervalStatementPanel", () => {
     expect(within(movementSummary).getByText(/R\$\s*20,00/)).toBeInTheDocument();
     expect(within(movementSummary).getByText("Resultado líquido")).toBeInTheDocument();
     expect(within(movementSummary).getByText(/R\$\s*30,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("2 movimentos")).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Positivo")).toBeInTheDocument();
     expect(within(movementSummary).getByText(/não representa o resultado líquido/i)).toBeInTheDocument();
     expect(loadStatement).toHaveBeenCalledTimes(1);
   });
@@ -174,6 +179,107 @@ describe("FinancialIntervalStatementPanel", () => {
       "false"
     );
     expect(document.getElementById(analysisId ?? "")).toBeNull();
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    [
+      "despesa dominante",
+      nextStatementCandle,
+      "Negativo",
+      /100% do volume correspondeu a despesas/i,
+      /resultado negativo de R\$\s*50,00/i
+    ],
+    [
+      "volume equilibrado",
+      {
+        ...statementCandle,
+        incomeInCents: 2_000,
+        expenseInCents: 2_000,
+        volumeInCents: 4_000,
+        transactionCount: 2
+      },
+      "Neutro",
+      /volume ficou equilibrado: 50% em receitas e 50% em despesas/i,
+      /resultado líquido neutro/i
+    ]
+  ])(
+    "explains %s with text that does not depend on color",
+    async (_scenario, candle, resultLabel, composition, result) => {
+      const user = userEvent.setup();
+      const loadStatement = jest.fn(async () => ({
+        startOnInclusive: candle.startOnInclusive,
+        endOnExclusive: candle.endOnExclusive,
+        items: []
+      }));
+
+      render(
+        <FinancialIntervalStatementPanel
+          loadStatement={loadStatement}
+          onClose={jest.fn()}
+          selectedCandle={candle}
+        />
+      );
+
+      const movementSummary = screen.getByRole("region", {
+        name: "Movimentação no intervalo"
+      });
+      expect(within(movementSummary).getByText(resultLabel)).toBeInTheDocument();
+
+      await user.click(
+        within(movementSummary).getByRole("button", {
+          name: "Ver análise do intervalo"
+        })
+      );
+
+      const insights = within(movementSummary).getAllByRole("listitem");
+      expect(insights).toHaveLength(2);
+      expect(within(movementSummary).getByText(composition)).toBeInTheDocument();
+      expect(within(movementSummary).getByText(result)).toBeInTheDocument();
+      expect(loadStatement).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it("keeps an honest zero-volume state free of invalid numbers", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async () => ({
+      ...statementInterval,
+      items: []
+    }));
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={{
+          ...statementCandle,
+          incomeInCents: 0,
+          expenseInCents: 0,
+          volumeInCents: 0,
+          transactionCount: 0
+        }}
+      />
+    );
+
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    expect(within(movementSummary).getByText("0 movimentos")).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Sem movimentação")).toBeInTheDocument();
+
+    await user.click(
+      within(movementSummary).getByRole("button", {
+        name: "Ver análise do intervalo"
+      })
+    );
+
+    expect(within(movementSummary).getAllByRole("listitem")).toHaveLength(1);
+    expect(
+      within(movementSummary).getByText(
+        "Nenhuma movimentação foi registrada neste intervalo."
+      )
+    ).toBeInTheDocument();
+    expect(movementSummary).not.toHaveTextContent(/NaN|Infinity/);
     expect(loadStatement).toHaveBeenCalledTimes(1);
   });
 
@@ -331,11 +437,16 @@ describe("FinancialIntervalStatementPanel", () => {
       "pr-[max(1rem,env(safe-area-inset-right))]",
       "pb-[max(1rem,env(safe-area-inset-bottom))]"
     );
+    const showAnalysis = within(dialog).getByRole("button", {
+      name: "Ver análise do intervalo"
+    });
 
+    await user.tab();
+    expect(showAnalysis).toHaveFocus();
     await user.tab();
     expect(closeButton).toHaveFocus();
     await user.tab({ shift: true });
-    expect(closeButton).toHaveFocus();
+    expect(showAnalysis).toHaveFocus();
 
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

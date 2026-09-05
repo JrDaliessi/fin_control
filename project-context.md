@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da UX-CHART-002D concluído; aguardando comando do Dia 3 para implementação mínima orientada pelos testes
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 4 da UX-CHART-002D concluído em GREEN; aguardando comando do Dia 5 para refatoração e hardening interno
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -150,6 +150,8 @@
 - Data de seleção da UX-CHART-002D e pausa da UX-CHART-003: 2026-09-05
 - Data do discovery e arquitetura da UX-CHART-002D: 2026-09-05
 - Data da estratégia de testes da UX-CHART-002D: 2026-09-05
+- Data da implementação mínima orientada por teste da UX-CHART-002D: 2026-09-05
+- Data da expansão controlada da UX-CHART-002D: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1002,6 +1004,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: ao executar os gates paralelos do Dia 4 da UX-CHART-002D, a primeira orquestração resumiu apenas `exit_code` e `output` e descartou os `session_id` retornados pelos processos que excederam 30 segundos, deixando o resultado de duas tarefas indeterminado. Prevenção: quando um executor puder devolver sessão ativa, preservar e inspecionar o objeto completo ou executar o gate longo isoladamente, retomando explicitamente cada `session_id` antes de registrar evidência.
+- Erro: no primeiro GREEN da UX-CHART-002D, uma asserção antiga buscava globalmente o mesmo valor que passou a aparecer no resumo e no lançamento, e o teste de contenção de foco ainda assumia um único controle interativo. Prevenção: ao adicionar informação deliberadamente repetida ou um novo controle acessível, preservar a intenção dos testes anteriores com consultas semânticas escopadas e atualizar a ordem de teclado completa, sem relaxar o contrato de foco.
 - Erro: no RED do Dia 6 da `UX-CHART-002`, o mock inline de `loadStatement` não declarou a assinatura e o TypeScript inferiu o parâmetro como `unknown`, impedindo o spread apesar do GREEN comportamental. Prevenção: mocks de ports opcionais devem reutilizar ou declarar o contrato mínimo de input no momento em que o teste é escrito, antes do primeiro type-check.
 - Erro: na auditoria inicial do Dia 6 da `UX-CHART-002`, a IA repetiu a suposição de `src/app/manifest.ts` mesmo após a busca indicar `public/manifest.webmanifest`, e uma expressão `rg` mal escapada falhou sem produzir evidência. Prevenção: separar descoberta e leitura, abrir somente o caminho confirmado e preferir buscas literais (`rg -F`) ou padrões independentes quando o comando atravessar JavaScript e PowerShell.
 - Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
@@ -7504,3 +7508,85 @@ Estado de saída:
 - `TEST_STRATEGY_READY`;
 - Dia 2 concluído sem bloqueio duro;
 - próximo comando válido: `dia 3` para implementação mínima orientada por teste.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-CHART-002D
+
+Implementação de domínio:
+- criado `domain/services/analyze-financial-interval.ts` como serviço puro, sem dependência de React, Next.js ou Supabase;
+- valores financeiros e contagem são validados como inteiros seguros não negativos;
+- intervalo civil reutiliza o contrato de validação existente e qualquer entrada inválida produz erro do domínio da análise;
+- volume deve ser exatamente a soma segura de receitas e despesas; divergências e overflow são rejeitados sem correção silenciosa;
+- resultado líquido, percentuais complementares e dominância são calculados no domínio;
+- saída contém um insight vazio ou, no máximo, os dois insights aprovados de composição e resultado.
+
+Implementação de apresentação:
+- o painel existente ganhou o card `Movimentação no intervalo` entre OHLC e lista de lançamentos;
+- volume, resultado líquido, receitas e despesas permanecem visíveis enquanto o extrato carrega ou falha;
+- a copy explica que volume não representa resultado líquido;
+- o disclosure `Ver análise do intervalo`/`Ocultar análise` usa alvo mínimo de 44 px, foco visível, `aria-expanded` e `aria-controls`;
+- a análise permanece inline no diálogo atual e não dispara nova consulta;
+- estado de expansão vive em um componente cliente local reiniciado pela chave civil do candle, descartando a análise anterior sem efeito de sincronização;
+- nenhum cálculo financeiro foi movido para JSX; presentation apenas formata os insights tipados produzidos por domain.
+
+Correção do primeiro GREEN:
+- a repetição intencional de R$ 50,00 tornou ambígua uma consulta global antiga; a asserção foi escopada ao lançamento correspondente;
+- o novo disclosure tornou válida uma segunda parada de teclado; o teste passou a verificar a sequência fechar → análise → fechar e o retorno com Shift+Tab;
+- as correções preservaram e ampliaram os contratos anteriores, sem remover expectativas.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 32 testes aprovados, zero snapshots;
+- regressão da feature financial-analytics: 30 suítes e 234 testes aprovados, zero snapshots;
+- regressão completa: 93 suítes e 557 testes aprovados, zero snapshots;
+- ESLint global e type-check global aprovados sem erros ou avisos;
+- skill de Next.js aplicada para preservar a fronteira cliente, estado interativo local e props serializáveis, sem alterar Server Components ou rotas.
+
+Fronteiras e riscos:
+- application, infrastructure, Server Actions, consultas e contratos Supabase permaneceram inalterados;
+- nenhuma migration, RPC, policy, grant, dado, dependência ou configuração remota foi criada ou alterada;
+- comparação histórica e `UX-CHART-003` permaneceram fora do escopo;
+- nenhum commit, push, mudança de PR, merge, deploy ou promoção foi executado;
+- anexos privados e `rewrite-msgs.sh` permaneceram não rastreados e intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada; responsividade e microinterações ficam para as fases próprias.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- Dia 3 concluído sem bloqueio duro;
+- próximo comando válido: `dia 4` para expansão controlada de estados e refinamento da experiência.
+
+## Dia 4 — Expansão Controlada da UX-CHART-002D
+
+Ciclo TDD e estados adicionados:
+- testes foram escritos antes do incremento para contador antecipado, rótulos textuais de resultado e mensagens de despesa dominante, equilíbrio e ausência de volume;
+- RED controlado: 1 suíte carregada, 4 testes falhando pelos estados ainda ausentes e 10 testes anteriores passando;
+- GREEN direcionado: 1 suíte e 14 testes aprovados, zero snapshots;
+- o contador do candle agora fica disponível no card antes de a consulta do extrato terminar e permanece útil durante loading ou erro;
+- o resumo apresenta `Positivo`, `Negativo`, `Neutro` ou `Sem movimentação` em texto, portanto a interpretação não depende de cor;
+- estado sem volume informa `Nenhuma movimentação foi registrada neste intervalo.` sem produzir `NaN` ou `Infinity`;
+- despesa dominante informa 100% de despesas e resultado negativo; equilíbrio informa 50%/50% e resultado líquido neutro;
+- as copies foram alinhadas ao discovery aprovado, sem linguagem causal, moralizante ou prescritiva.
+
+Fluxo e arquitetura:
+- loading, erro, nova tentativa, sucesso, lista de lançamentos, expansão, recolhimento e troca de candle foram preservados;
+- abrir ou fechar a análise continua sem disparar nova consulta e sem criar diálogo aninhado;
+- o Client Component mantém somente estado visual serializável e recebe análise tipada do serviço puro de domain;
+- application, infrastructure, Server Actions e repositórios permaneceram inalterados;
+- não houve alteração no contrato financeiro ou na arquitetura aprovada.
+
+Evidências GREEN:
+- regressão completa: 93 suítes e 560 testes aprovados, zero snapshots;
+- ESLint global aprovado sem erros ou avisos;
+- type-check global aprovado sem erros;
+- diretrizes do skill de Next.js aplicadas à fronteira cliente e ao estado interativo local;
+- `git diff --check` será o gate final documental desta fase.
+
+Fronteiras e riscos:
+- nenhuma migration, RPC, policy, grant, dado, dependência ou configuração Supabase foi criada ou alterada;
+- comparação histórica e `UX-CHART-003` permaneceram fora do escopo;
+- nenhum commit, push, mudança de PR, merge, deploy ou promoção foi executado;
+- anexos privados e `rewrite-msgs.sh` permaneceram não rastreados e intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada; revisão estrutural fica reservada ao Dia 5.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
+- Dia 4 concluído sem bloqueio duro;
+- próximo comando válido: `dia 5` para refatoração, consistência e hardening interno.

@@ -83,4 +83,4 @@ Essas referências documentam o contrato futuro, mas não autorizam ampliar a RP
 
 ## Próximo passo
 
-Executar o Dia 3 da `UX-CHART-002D` para implementar o mínimo necessário e tornar verdes os contratos de domínio, apresentação e arquitetura criados no Dia 2.
+Executar o Dia 5 da `UX-CHART-002D` para revisar estrutura, consistência e robustez interna sem alterar o comportamento financeiro validado.
