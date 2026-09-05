@@ -1852,3 +1852,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma dívida CRÍTICA ou ALTA identificada; nenhuma migration, RPC, policy, grant, dado, dependência, configuração remota, commit, push, merge, deploy ou promoção foi executado.
 - `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
 - `REFACTORING_IN_PROGRESS` encerrado; retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — UX-CHART-002
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional e uso das credenciais aprovados antes da validação autenticada.
+- ciclo TDD direcionado: RED com 3 falhas planejadas; GREEN com 3 suítes e 20 testes.
+- instrução visível orienta seleção pelo candle ou ação `Ver extrato`; descrição acessível apresenta a alternativa integral de teclado.
+- coluna `Extrato` movida para imediatamente após `Dia`, mantendo rolagem horizontal confinada à região da tabela.
+- validação autenticada em 320, 768 e 1280 px sem overflow global; sessão existente reutilizada sem digitar ou persistir credenciais.
+- em 320 px, extrato validado como bottom sheet; em 768/1280 px, painel lateral de 448 px e altura total.
+- foco inicial, contenção por `Tab`/`Shift+Tab`, `Escape`, bloqueio/restauração de scroll e retorno do foco ao acionador confirmados no navegador.
+- estado vazio real e Server Action sob demanda confirmados sem criar ou alterar dados financeiros.
+- PWA: `lang=pt-BR`, viewport, theme colors e manifesto válidos; quatro ícones existentes, incluindo maskable, e dois atalhos. Nenhuma promessa offline ou service worker foi introduzida.
+- console sem erro funcional; apenas diagnóstico conhecido do React em desenvolvimento sob CSP, ausente do build de produção.
+- regressão completa: 92 suítes e 539 testes verdes, zero snapshots.
+- lint global, type-check e build Next.js 16.3.3 verdes; `next-env.d.ts` restaurado ao conteúdo versionado.
+- nenhuma migration, RPC, policy, grant, dado, configuração remota, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.

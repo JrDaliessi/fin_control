@@ -108,8 +108,9 @@ export function FinancialCandlestickChart({
     <ExpandableChartFrame title="Variação do saldo">
       <div className="grid h-full min-h-0 min-w-0 gap-2">
         <p className="sr-only" id={descriptionId}>
-          Visualização complementar. Os mesmos valores permanecem disponíveis na
-          tabela de variação financeira.
+          {onSelectInterval
+            ? "Selecione um candle para abrir o extrato. Pelo teclado, use Ver extrato na tabela de variação financeira."
+            : "Visualização complementar. Os mesmos valores permanecem disponíveis na tabela de variação financeira."}
         </p>
         <div
           aria-describedby={descriptionId}

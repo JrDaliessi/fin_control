@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 6 da UX-CHART-002
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 7 da UX-CHART-002
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -145,6 +145,7 @@
 - Data da implementação mínima da UX-CHART-002: 2026-09-04
 - Data da expansão controlada da UX-CHART-002: 2026-09-04
 - Data da refatoração e hardening interno da UX-CHART-002: 2026-09-04
+- Data da revisão de UX, acessibilidade e PWA da UX-CHART-002: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -997,6 +998,8 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no RED do Dia 6 da `UX-CHART-002`, o mock inline de `loadStatement` não declarou a assinatura e o TypeScript inferiu o parâmetro como `unknown`, impedindo o spread apesar do GREEN comportamental. Prevenção: mocks de ports opcionais devem reutilizar ou declarar o contrato mínimo de input no momento em que o teste é escrito, antes do primeiro type-check.
+- Erro: na auditoria inicial do Dia 6 da `UX-CHART-002`, a IA repetiu a suposição de `src/app/manifest.ts` mesmo após a busca indicar `public/manifest.webmanifest`, e uma expressão `rg` mal escapada falhou sem produzir evidência. Prevenção: separar descoberta e leitura, abrir somente o caminho confirmado e preferir buscas literais (`rg -F`) ou padrões independentes quando o comando atravessar JavaScript e PowerShell.
 - Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
 - Erro: o primeiro RED da `SEC-HARD-001A` carregou `next/experimental/testing/server` sob o `jest-environment-jsdom` global, que não expõe `Request`, e a suíte falhou antes de avaliar qualquer contrato de header. Prevenção: testes da API server-side de configuração do Next.js devem declarar `@jest-environment node` por arquivo, mantendo jsdom apenas para componentes e sem adicionar polyfill global que possa mascarar diferenças reais de runtime.
 - Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
@@ -7324,3 +7327,45 @@ Estado de saída:
 - `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - `UX-CHART-002` permanece `IN_PROGRESS`;
 - próximo comando válido: `dia 6` para UX, acessibilidade e PWA.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-002
+
+Diagnóstico e ciclo TDD:
+- a descoberta do extrato dependia da exploração do gráfico ou de uma ação posicionada após todas as colunas largas da tabela;
+- foram escritos primeiro três contratos para instrução visível, descrição acessível do gráfico e coluna `Extrato` imediatamente após `Dia`;
+- RED controlado: 3 suítes carregadas, 17 testes verdes e 3 falhas planejadas;
+- implementação mínima: instrução curta abaixo do título do candle, alternativa de teclado explicitada para leitores de tela e ação da tabela antecipada sem alterar os dados financeiros.
+
+Validação autenticada e responsiva:
+- a sessão autenticada local existente foi reutilizada; as credenciais autorizadas não precisaram ser digitadas ou persistidas;
+- em 320 px, o documento permaneceu sem overflow global e somente a região da tabela rolou horizontalmente; `Dia` e `Extrato` ficaram como as primeiras colunas;
+- o extrato abriu como bottom sheet de 320 px de largura e 354 px de altura, alinhado ao rodapé;
+- em 768 e 1280 px, abriu como painel lateral de 448 px, ocupando a altura total e sem overflow global;
+- foco inicial no botão `Fechar extrato`, contenção por `Tab`/`Shift+Tab`, fechamento por `Escape`, restauração de scroll e retorno do foco ao acionador foram confirmados no navegador;
+- loading sob demanda chegou à Server Action com intervalo civil semiaberto e o estado vazio real foi apresentado sem dados fictícios;
+- a alternativa textual do gráfico e o botão da tabela mantêm o fluxo operável sem depender de hover, cor, SVG ou precisão de toque.
+
+PWA e acessibilidade:
+- `lang=pt-BR`, viewport responsivo, manifesto e theme colors claro/escuro foram confirmados no DOM;
+- `manifest.webmanifest` é válido, usa `display: standalone`, `start_url`/`scope` em `/`, quatro ícones existentes, incluindo maskable, e dois atalhos;
+- não há service worker nem promessa de funcionamento offline neste recorte; consistência financeira continua priorizada;
+- o único registro do console foi o diagnóstico conhecido do React em desenvolvimento sobre `unsafe-eval` sob CSP; não houve erro funcional, e o build de produção permaneceu verde.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 20 testes verdes;
+- regressão completa: 92 suítes e 539 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices` confirmou condicionais explícitas, ausência de estado derivado em efeito e nenhuma nova dependência.
+
+Fronteiras e riscos:
+- nenhuma regra financeira, query, DTO, migration, RPC, policy, grant, dado, configuração Supabase remota ou dependência foi alterada;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados;
+- `UX-CHART-003` continua em `DISCOVERY` e bloqueada até a conclusão do Dia 7 da predecessora;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada neste recorte.
+
+Estado de saída:
+- `QUALITY_VALIDATION` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS` até o gate final;
+- próximo comando válido: `dia 7` para qualidade final, segurança, observabilidade e preparação da entrega incremental.

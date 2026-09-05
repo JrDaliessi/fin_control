@@ -30,14 +30,14 @@ export function FinancialCandlesTable({
 }: FinancialCandlesTableProps) {
   const headings = [
     "Dia",
+    ...(onSelectInterval ? ["Extrato"] : []),
     "Abertura",
     "Máxima",
     "Mínima",
     "Fechamento",
     "Variação",
     "Volume",
-    "Movimentos",
-    ...(onSelectInterval ? ["Extrato"] : [])
+    "Movimentos"
   ];
 
   return (
@@ -77,6 +77,18 @@ export function FinancialCandlesTable({
                 <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
                   {formatCivilDate(candle.startOnInclusive)}
                 </td>
+                {onSelectInterval ? (
+                  <td className="px-4 py-3">
+                    <button
+                      aria-label={`Ver extrato de ${formatCivilDate(candle.startOnInclusive)}`}
+                      className="min-h-11 whitespace-nowrap rounded-md border border-border px-3 py-2 font-semibold text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                      onClick={() => onSelectInterval(candle)}
+                      type="button"
+                    >
+                      Ver extrato
+                    </button>
+                  </td>
+                ) : null}
                 {[
                   candle.openInCents,
                   candle.highInCents,
@@ -99,18 +111,6 @@ export function FinancialCandlesTable({
                 <td className="px-4 py-3 tabular-nums text-foreground">
                   {candle.transactionCount}
                 </td>
-                {onSelectInterval ? (
-                  <td className="px-4 py-3">
-                    <button
-                      aria-label={`Ver extrato de ${formatCivilDate(candle.startOnInclusive)}`}
-                      className="min-h-11 whitespace-nowrap rounded-md border border-border px-3 py-2 font-semibold text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                      onClick={() => onSelectInterval(candle)}
-                      type="button"
-                    >
-                      Ver extrato
-                    </button>
-                  </td>
-                ) : null}
               </tr>
             ))}
           </tbody>

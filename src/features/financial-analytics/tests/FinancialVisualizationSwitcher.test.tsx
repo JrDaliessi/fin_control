@@ -274,6 +274,35 @@ describe("FinancialVisualizationSwitcher", () => {
     expect(screen.getByTestId("financial-candles-table")).toBeInTheDocument();
   });
 
+  it("explains how pointer and keyboard users open a contextual statement", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FinancialVisualizationSwitcher
+        {...props}
+        loadStatement={jest.fn(
+          async (input: {
+            startOnInclusive: string;
+            endOnExclusive: string;
+          }) => ({
+            startOnInclusive: input.startOnInclusive,
+            endOnExclusive: input.endOnExclusive,
+            items: []
+          })
+        )}
+      />
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Variação do saldo" })
+    );
+
+    expect(
+      screen.getByText(
+        "Selecione um candle no gráfico ou use Ver extrato na tabela."
+      )
+    ).toBeInTheDocument();
+  });
+
   it("routes chart and table selection to the same contextual statement", async () => {
     const user = userEvent.setup();
     const loadStatement = jest.fn(async (input: {

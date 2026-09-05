@@ -22,7 +22,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-CHART-002A` contratos e consulta sob demanda; `UX-CHART-002B` seleção no gráfico/tabela e painel responsivo; `UX-CHART-002C` concorrência, acessibilidade, responsividade e validação real.
 - Fase recomendada: ciclo atual Dias 1–7.
 - Critério de pronto: candle diário abre exatamente os lançamentos do intervalo; gráfico e tabela convergem para o mesmo painel; estados e navegação funcionam em 320/768/1280 px; isolamento por usuário e todos os quality gates ficam verdes.
-- Status: IN_PROGRESS — Dia 5 concluído em `IMPLEMENTATION_IN_PROGRESS`; lifecycle modal duplicado foi centralizado em hook compartilhado tipado, com painel financeiro e painel de conta preservados por 92 suítes/536 testes, sem migration ou nova dependência.
+- Status: IN_PROGRESS — Dia 6 concluído em `QUALITY_VALIDATION`; descoberta, teclado, foco e layouts em 320/768/1280 px foram validados, com 92 suítes/539 testes, lint, type-check e build verdes, sem migration ou nova dependência.
 
 ## DISCOVERY
 

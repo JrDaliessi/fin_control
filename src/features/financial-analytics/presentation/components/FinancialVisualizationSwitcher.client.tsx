@@ -109,6 +109,11 @@ export function FinancialVisualizationSwitcher({
               <p className="text-sm text-muted-foreground">
                 Abertura, extremos e fechamento do saldo em cada dia.
               </p>
+              {loadStatement ? (
+                <p className="text-xs text-muted-foreground">
+                  Selecione um candle no gráfico ou use Ver extrato na tabela.
+                </p>
+              ) : null}
             </div>
             <FinancialCandlestickChart
               model={candlestickModel}

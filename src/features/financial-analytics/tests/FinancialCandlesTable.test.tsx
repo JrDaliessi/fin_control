@@ -125,4 +125,31 @@ describe("FinancialCandlesTable", () => {
 
     expect(onSelectInterval).toHaveBeenCalledWith(candles[0]);
   });
+
+  it("keeps the statement action next to the day on narrow viewports", () => {
+    render(
+      <SelectableFinancialCandlesTable
+        candles={candles}
+        onSelectInterval={jest.fn()}
+      />
+    );
+
+    const table = screen.getByRole("table", {
+      name: "Variação financeira por dia"
+    });
+    expect(
+      within(table)
+        .getAllByRole("columnheader")
+        .slice(0, 2)
+        .map((header) => header.textContent)
+    ).toEqual(["Dia", "Extrato"]);
+
+    const firstDataRow = within(table).getAllByRole("row")[1];
+    const statementCell = within(firstDataRow).getAllByRole("cell")[1];
+    expect(
+      within(statementCell).getByRole("button", {
+        name: "Ver extrato de 01/03/2026"
+      })
+    ).toBeInTheDocument();
+  });
 });

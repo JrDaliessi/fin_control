@@ -261,4 +261,29 @@ describe("FinancialCandlestickChart", () => {
     view.unmount();
     expect(chartOff).toHaveBeenCalledWith("click", expect.any(Function));
   });
+
+  it("describes the table action as the keyboard equivalent for selection", () => {
+    const selectableModel = {
+      ...model,
+      points: [
+        {
+          ...model.points[0],
+          endOnExclusive: "2026-03-02"
+        }
+      ]
+    };
+
+    render(
+      <FinancialCandlestickChart
+        model={selectableModel}
+        onSelectInterval={jest.fn()}
+      />
+    );
+
+    expect(
+      screen.getByRole("img", { name: "Variação do saldo por dia" })
+    ).toHaveAccessibleDescription(
+      "Selecione um candle para abrir o extrato. Pelo teclado, use Ver extrato na tabela de variação financeira."
+    );
+  });
 });
