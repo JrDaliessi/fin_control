@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-CHART-002 concluído em GREEN; entrega incremental pronta para versionamento final e revisão da PR #24
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da DEMO-001 concluído; contratos pgTAP da DEMO-001A em RED controlado e implementação ainda bloqueada
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -147,6 +147,8 @@
 - Data da refatoração e hardening interno da UX-CHART-002: 2026-09-04
 - Data da revisão de UX, acessibilidade e PWA da UX-CHART-002: 2026-09-05
 - Data da validação final e preparação de release da UX-CHART-002: 2026-09-05
+- Data de seleção, discovery e arquitetura da DEMO-001: 2026-09-05
+- Data da estratégia de testes e RED controlado da DEMO-001: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -999,6 +1001,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Recorrência: no Dia 2 da `DEMO-001`, mesmo com o erro anterior já documentado, a IA voltou a usar o fallback `pnpm` em um projeto npm após encontrar o wrapper global quebrado. O processo foi interrompido, todos os pacotes movidos para `node_modules/.ignored` foram restaurados aos caminhos originais e a `.pnpm-store` criada pela tentativa foi removida após validação absoluta dos alvos; nenhum arquivo versionado mudou. Prevenção reforçada: neste projeto, é proibido usar outro gerenciador como substituto operacional; quando `npm` falhar antes de carregar o script, executar exclusivamente os binários locais já instalados em `node_modules/.bin` com o Node 22 do ambiente e validar `git status` imediatamente.
 - Erro: no RED do Dia 6 da `UX-CHART-002`, o mock inline de `loadStatement` não declarou a assinatura e o TypeScript inferiu o parâmetro como `unknown`, impedindo o spread apesar do GREEN comportamental. Prevenção: mocks de ports opcionais devem reutilizar ou declarar o contrato mínimo de input no momento em que o teste é escrito, antes do primeiro type-check.
 - Erro: na auditoria inicial do Dia 6 da `UX-CHART-002`, a IA repetiu a suposição de `src/app/manifest.ts` mesmo após a busca indicar `public/manifest.webmanifest`, e uma expressão `rg` mal escapada falhou sem produzir evidência. Prevenção: separar descoberta e leitura, abrir somente o caminho confirmado e preferir buscas literais (`rg -F`) ou padrões independentes quando o comando atravessar JavaScript e PowerShell.
 - Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
@@ -7414,3 +7417,96 @@ Riscos, fronteiras e saída:
 - `UX-CHART-002` atende ao critério de pronto e passa a `DONE`/`READY_FOR_RELEASE`;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os checks do novo head; após aprovação humana, realizar squash merge em `develop`;
 - `UX-CHART-003` deixa de estar bloqueada pela predecessora e pode iniciar seu próprio Dia 1 somente após comando explícito.
+
+## Conta de demonstração para recrutadores
+
+- Conta compartilhada criada em 2026-09-05 no Supabase Auth com e-mail confirmado e `app_metadata.account_type = demo`.
+- Identificador público de acesso: `recrutador@fincontrol.example`; a senha é distribuída fora do repositório e nunca deve ser versionada.
+- Massa exclusivamente fictícia e isolada por RLS: 3 contas financeiras, 6 categorias e 8 transações recentes.
+- Verificação operacional concluída pelo mesmo fluxo público usado pelo aplicativo: login por senha, leitura de contas/categorias/transações e RPC de evolução financeira passaram com a identidade da conta demo.
+- A conta demo não recebe privilégio administrativo nem bypass de RLS; suas permissões permanecem iguais às de um usuário autenticado permanente.
+- Risco residual: por ser compartilhada e permitir inserções, a massa pode acumular alterações feitas por avaliadores. A `DEMO-001` foi selecionada para restaurar essa massa de forma automática e auditável.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da DEMO-001
+
+Feature: `DEMO-001 — Restauração segura da conta de recrutadores`.
+
+Objetivo e valor:
+- restaurar diariamente uma baseline útil da conta compartilhada, removendo alterações acumuladas sem afetar qualquer usuário real;
+- manter uma demonstração previsível de contas, categorias, transações, resumo, linha, candles e extrato;
+- eliminar manutenção manual recorrente sem introduzir endpoint privilegiado ou segredo no aplicativo.
+
+Estado remoto e dependências confirmados:
+- existe exatamente uma conta Auth com `app_metadata.account_type = demo` e `app_metadata.audience = recruiter`;
+- a conta tem 3 contas financeiras, 6 categorias e 8 transações fictícias, validadas pelo fluxo público e pelas RLS atuais;
+- o banco permanece em UTC e oferece `pg_cron` 1.6.4, ainda desativado;
+- o schema `private` ainda não existe e deverá nascer por migration forward-only;
+- tabelas financeiras preservam RLS habilitada/forçada, ownership composto e exclusão em ordem dependente.
+
+Arquitetura aprovada:
+- criar `private.reset_recruiter_demo_data(p_reference_date date)` como função administrativa `SECURITY INVOKER`, com `search_path` vazio e referências totalmente qualificadas;
+- revogar `EXECUTE` de `PUBLIC`, `anon`, `authenticated` e `service_role`; somente `postgres`, executor do Cron, poderá chamá-la;
+- resolver o alvo exclusivamente por `raw_app_meta_data` administrável, exigindo exatamente uma conta com os marcadores `demo` e `recruiter`; e-mail, senha, UUID fixo e `raw_user_meta_data` ficam fora do contrato;
+- adquirir advisory lock transacional antes de alterar dados; apagar somente transações, categorias e contas do alvo, nessa ordem, e recriar a baseline na mesma transação;
+- usar uma data de referência explícita nos testes e `America/Sao_Paulo` no job, mantendo lançamentos nunca futuros e alinhados ao período civil corrente;
+- ativar o Supabase Cron com job único `reset-recruiter-demo-data-daily`, executado diariamente às `07:00 UTC` (`04:00` em Brasília);
+- manter Auth, senha, sessões e metadados da conta intactos; o reset alcança somente as três tabelas financeiras atuais;
+- não criar API Route, Server Action, Edge Function, botão público, service role no Next.js ou permissão de reset para usuários autenticados.
+
+Small releases:
+1. `DEMO-001A` — contratos pgTAP, função privada determinística, grants mínimos e prova de isolamento em transação com rollback;
+2. `DEMO-001B` — habilitação versionada do `pg_cron`, job diário idempotente e execução persistente inicial controlada;
+3. `DEMO-001C` — concorrência, observabilidade, retenção do histórico do job, smoke test autenticado e rollback operacional documentado.
+
+Contratos e critérios de aceite:
+- zero ou mais de uma conta marcada como demo bloqueiam o reset antes de qualquer exclusão;
+- usuário comum e seus dados permanecem byte a byte inalterados;
+- o alvo termina com exatamente 3 contas, 6 categorias e 8 transações da baseline, independentemente de dados extras anteriores;
+- uma falha intermediária reverte toda a operação; chamadas concorrentes são serializadas;
+- `anon`, `authenticated` e `service_role` não executam nem descobrem a função pela Data API;
+- o job é único, ativo, pertence a `postgres`, usa `0 7 * * *` e não contém segredo, e-mail ou UUID de usuário;
+- login da conta continua válido após o reset e as consultas RLS retornam somente a baseline;
+- Security Advisor, testes pgTAP, lint, type-check, Jest e build permanecem verdes.
+
+Riscos e rollback:
+- risco principal: exclusão com alvo incorreto; mitigado por metadados administrativos duplos, cardinalidade exata, lock, transação única e testes cross-tenant;
+- risco de reset durante uso é reduzido pelo horário de baixa utilização e atomicidade; não existe estado parcialmente restaurado visível;
+- histórico do Cron não é limpo automaticamente; a retenção limitada da própria tarefa será especificada no Dia 2 sem apagar histórico de outros jobs;
+- rollback operacional desativa o job com `cron.alter_job(..., active := false)`; mudanças adicionais seguem migration forward-only, sem `down` destrutivo;
+- nenhuma configuração, extensão, função, job ou dado remoto foi alterado no Dia 1.
+
+Estado de saída:
+- `DEMO-001` em `IN_PROGRESS`, com arquitetura registrada no ADR 0021;
+- máquina de estados em `ARCHITECTURE_READY`;
+- próximo comando válido: `dia 2` para matriz de testes e RED pgTAP, sem implementação funcional antecipada.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da DEMO-001
+
+Escopo executado:
+- a estratégia completa foi registrada em `docs/demo-001-test-strategy.md`, separando os contratos executáveis da `DEMO-001A` dos contratos futuros de Cron, concorrência, observabilidade e smoke test da `DEMO-001B/C`;
+- a baseline foi fixada em conteúdo lógico, com 3 contas, 6 categorias e 8 transações relativas à data de referência, sem e-mail, senha ou UUID operacional;
+- foram criadas fixtures transacionais para um tenant demo, um tenant permanente, cardinalidade zero/múltipla e falha intermediária forçada;
+- nenhuma função, migration, extensão persistente, job, API, UI ou alteração remota permanente foi criada.
+
+Contratos pgTAP escritos antes da implementação:
+- `recruiter_demo_reset_schema.test.sql`: 12 contratos de schema, assinatura, ownership, `SECURITY INVOKER`, `search_path` e ACLs;
+- `recruiter_demo_reset_behavior.test.sql`: 16 contratos de data inválida, atomicidade, baseline, relações, ausência de futuro, isolamento cross-tenant, idempotência e cardinalidade;
+- testes de Cron, duas conexões concorrentes, retenção e login autenticado permanecem especificados na matriz e serão materializados somente nos recortes `DEMO-001B/C`.
+
+RED controlado e segurança:
+- documentação atual do Supabase confirmou pgTAP transacional, função `SECURITY INVOKER`, `search_path` vazio, revogação explícita de `EXECUTE` e contratos atuais de `pg_cron`;
+- RED estrutural: 12 de 12 contratos falharam pela ausência deliberada do schema/função;
+- RED comportamental: 12 de 16 contratos falharam pela mesma ausência; quatro verificações de harness e preservação de estado passaram;
+- cada suíte executou entre `begin` e `rollback`; a checagem posterior confirmou 1 conta marcada e os mesmos 3/6/10 registros financeiros existentes antes do teste;
+- `pgtap` e `pg_cron` continuaram sem extensão persistente habilitada.
+
+Quality gates e incidentes de harness:
+- regressão anterior: 92 suítes e 539 testes Jest verdes, zero snapshots;
+- lint global e type-check verdes;
+- `git diff --check` verde, salvo avisos informativos de normalização LF/CRLF no Windows;
+- a tentativa indevida de fallback por `pnpm` foi interrompida e completamente revertida na pasta de dependências; a recorrência e a prevenção reforçada foram registradas em erros recorrentes.
+
+Estado de saída:
+- máquina de estados em `TEST_STRATEGY_READY`;
+- `DEMO-001` permanece `IN_PROGRESS`, com RED isolado à implementação ausente da `DEMO-001A`;
+- próximo comando válido: `dia 3` para criar por migration a função privada mínima que satisfaça os 28 contratos, sem habilitar Cron nem executar reset persistente.

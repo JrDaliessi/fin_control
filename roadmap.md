@@ -283,7 +283,7 @@ Evidência do Dia 7: 84 suítes/482 testes, lint, type-check, build e auditorias
 
 Ordem aprovada: `UX-CHART-002 — Extrato contextual do candle` e, depois de seu ciclo completo, `UX-CHART-003 — Períodos e granularidade adaptativa`.
 
-Estado da `UX-CHART-002`: Dia 7 concluído em `READY_FOR_RELEASE`. Pipeline, supply chain, threat model, Supabase, observabilidade, Preview e PR foram validados no head `f865576`. A PR `#24` está draft, mergeável, limpa e com checks verdes; produção pública permanece bloqueada pelos hardenings globais já registrados.
+Estado da `UX-CHART-002`: concluída e integrada por squash em `develop` pela PR `#24`; produção pública permanece bloqueada pelos hardenings globais já registrados.
 
 Small releases da `UX-CHART-002`:
 1. `002A` — contratos, DTO, consulta sob demanda e Server Action;
@@ -294,7 +294,20 @@ Estado da `UX-CHART-003`: `DISCOVERY`, não mais bloqueada pela predecessora e a
 
 Decisões: `adr/0019-contextual-candle-statement.md` e `adr/0020-adaptive-financial-periods.md`.
 
-Próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os novos checks; depois, mediante decisão humana, realizar squash merge em `develop`. A `UX-CHART-003` pode iniciar ciclo próprio após esse fechamento.
+Próximo passo do produto: a `UX-CHART-003` pode iniciar ciclo próprio após o hardening operacional selecionado para a conta demo.
+
+## Marco 10B - Ambiente de demonstração para recrutadores
+
+`DEMO-001 — Restauração segura da conta de recrutadores` mantém uma baseline fictícia previsível sem expor operações administrativas no aplicativo.
+
+Estado atual: Dia 2 concluído em `TEST_STRATEGY_READY`. A matriz da `DEMO-001` separa função, Cron e hardening; a `DEMO-001A` possui 12 contratos estruturais e 16 comportamentais em RED controlado. `pg_cron` permanece desativado e nenhuma mudança remota persistente ocorreu.
+
+Sequência:
+1. `DEMO-001A` — testes pgTAP e função privada determinística;
+2. `DEMO-001B` — habilitação do Cron e job idempotente;
+3. `DEMO-001C` — concorrência, observabilidade, retenção e smoke test autenticado.
+
+Próximo passo: executar o Dia 3 para implementar por migration somente `private.reset_recruiter_demo_data(date)` e seus grants mínimos, satisfazendo a `DEMO-001A` sem habilitar ou agendar o Cron.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

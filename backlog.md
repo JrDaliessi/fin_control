@@ -6,7 +6,21 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
+### DEMO-001 — Restauração segura da conta de recrutadores
+- Tipo: Hardening / Security Item / Small Release.
+- Descrição objetiva: restaurar diariamente a baseline financeira da conta compartilhada de demonstração, removendo alterações acumuladas sem atingir usuários reais.
+- Objetivo de negócio: manter o portfólio sempre utilizável e previsível para recrutadores, sem manutenção manual recorrente.
+- Valor esperado: demonstração consistente de contas, categorias, transações, linha, candles e extrato.
+- Prioridade: Alta antes de divulgar amplamente as credenciais da conta demo.
+- Dependências: conta marcada em `raw_app_meta_data`, tabelas e RLS atuais, schema privado, `pg_cron`, migrations forward-only e pgTAP.
+- Escopo: função privada `SECURITY INVOKER`; alvo por metadados administrativos e cardinalidade exata; advisory lock; reset atômico de contas/categorias/transações; baseline com 3/6/8 registros; Cron diário às 07:00 UTC; observabilidade e rollback operacional.
+- Fora do escopo: criar/excluir usuário Auth, trocar senha, revogar sessões, endpoint HTTP, botão público, Edge Function, service role no Next.js, dados reais ou reset de outros usuários.
+- Segurança: nenhum e-mail, senha ou UUID fixo na função/job; `EXECUTE` revogado de `PUBLIC`, `anon`, `authenticated` e `service_role`; executor exclusivo `postgres`; schema não exposto.
+- Risco: Alto por exclusão agendada de dados financeiros; mitigado por alvo administrativo único, transação, ordem referencial, lock, testes cross-tenant e ativação separada.
+- Small releases: `DEMO-001A` função e testes; `DEMO-001B` Cron e ativação; `DEMO-001C` concorrência, observabilidade, retenção e smoke test.
+- Fase recomendada: ciclo atual Dias 1–7; Dia 2 concluído.
+- Critério de pronto: reset idempotente produz 3 contas/6 categorias/8 transações somente no tenant demo; login e RLS continuam válidos; job único está ativo; rollback e monitoramento estão documentados; todos os gates ficam verdes.
+- Status: IN_PROGRESS — Dia 2 concluído em `TEST_STRATEGY_READY`; 28 contratos pgTAP da `DEMO-001A` estão em RED controlado e o próximo passo é o Dia 3 para implementação mínima da função privada, sem Cron.
 
 ## DISCOVERY
 

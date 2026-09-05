@@ -28,3 +28,7 @@ Formato recomendado:
 - `0015-financial-balance-candles.md` — OHLC diário do saldo, snapshot único e seletor Linha/Candles
 - `0016-native-leaked-password-protection.md` — proteção nativa contra senhas vazadas, compatibilidade do login e bloqueio de plano
 - `0017-auth-environment-security-hardening.md` — headers HTTP, CSP e fronteiras para proteção contra abuso do login
+- `0018-responsive-account-panel.md` — cabeçalho privado compacto e painel responsivo da conta
+- `0019-contextual-candle-statement.md` — extrato contextual sob demanda para candles financeiros
+- `0020-adaptive-financial-periods.md` — períodos financeiros e granularidade adaptativa
+- `0021-recruiter-demo-account-reset.md` — restauração privada e agendada da conta de demonstração

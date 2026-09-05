@@ -497,6 +497,19 @@ O projeto deve ter:
 - Troca/recuperação de senha e remediação guiada de usuários existentes permanecem fora deste item e exigem ciclo próprio.
 - Decisão completa: `adr/0016-native-leaked-password-protection.md`.
 
+## Restauração da conta de demonstração — DEMO-001
+
+- A automação pertence ao PostgreSQL/Supabase Cron; o Next.js não recebe endpoint, chave privilegiada, Server Action ou responsabilidade de manutenção da massa demo.
+- O alvo é resolvido exclusivamente por `auth.users.raw_app_meta_data`, exigindo `account_type = demo`, `audience = recruiter` e cardinalidade exatamente igual a um. Dados editáveis pelo usuário, e-mail e UUID fixo não autorizam o reset.
+- A função fica no schema `private`, usa `SECURITY INVOKER`, `search_path` vazio e nomes totalmente qualificados. `PUBLIC`, `anon`, `authenticated` e `service_role` não possuem `EXECUTE`.
+- O job pertence a `postgres`, único ator autorizado a executar a função e a ultrapassar as RLS forçadas para manutenção administrativa deliberada.
+- Advisory lock transacional serializa chamadas. Transações, categorias e contas são removidas nessa ordem e a baseline é recriada na mesma transação, sem estado intermediário observável após commit.
+- A data civil do job é derivada com `America/Sao_Paulo`; testes recebem referência explícita para permanecerem determinísticos.
+- O Cron diário usa nome estável `reset-recruiter-demo-data-daily` e agenda `0 7 * * *` em UTC. O comando não contém segredo, e-mail nem identificador de usuário.
+- Auth, senha, sessão e metadados permanecem intactos. O escopo atual cobre somente `financial_accounts`, `categories` e `transactions`.
+- Rollback operacional desativa o job; alterações estruturais posteriores são forward-only. Execuções e falhas são auditadas em `cron.job_run_details` com retenção limitada à própria tarefa.
+- Decisão completa: `adr/0021-recruiter-demo-account-reset.md`.
+
 ## IA
 A IA deve atuar como análise e recomendação:
 - categorizar transações
