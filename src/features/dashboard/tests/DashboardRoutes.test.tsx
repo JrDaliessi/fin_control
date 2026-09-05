@@ -14,8 +14,14 @@ jest.mock("@/app/(private)/dashboard/load-financial-evolution", () => ({
   loadFinancialEvolution: jest.fn()
 }));
 
+jest.mock(
+  "../../financial-analytics/presentation/components/FinancialVisualizationSwitcher.client",
+  () => ({
+    FinancialVisualizationSwitcher: () => null
+  })
+);
+
 import { AuthSessionProvider } from "../../auth/presentation/providers/AuthSessionProvider";
-import { TransactionSessionProvider } from "../../transactions/presentation/providers/TransactionSessionProvider";
 
 const { loadTransactionsPageAction } = jest.requireMock<
   typeof import("@/app/(private)/transactions/actions")
@@ -38,7 +44,7 @@ function renderRoute(route: React.ReactNode) {
     <AuthSessionProvider
       user={{ id: "user-1", email: "usuario@example.com" }}
     >
-      <TransactionSessionProvider>{route}</TransactionSessionProvider>
+      {route}
     </AuthSessionProvider>
   );
 }
@@ -60,7 +66,8 @@ const financialEvolutionResult = {
     closingBalanceInCents: 2_500,
     transactionCount: 0
   },
-  points: []
+  points: [],
+  candles: []
 };
 
 describe("dashboard routes", () => {

@@ -882,3 +882,276 @@ Interpretação:
 - nenhuma alteração de Supabase, migration, dependência ou regra financeira foi realizada.
 - estado final: `IMPLEMENTATION_IN_PROGRESS`.
 - próximo comando válido: `dia 4`.
+
+## Dia 4 — UI-003
+
+### RED e GREEN direcionados
+
+- RED de apresentação: 2 suítes falharam com 3 contratos comportamentais ainda não satisfeitos.
+- RED transversal: 1 suíte falhou ao exigir a primitive `Button` no error boundary.
+- GREEN direcionado após a implementação mínima: 3 suítes e 17 testes passaram.
+
+### Regressão e gates
+
+- regressão completa: 72 suítes e 388 testes passaram.
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- navegação de ações, loading ocupado e erro recuperável foram refinados sem alterar dados ou cálculos.
+- nenhuma alteração de Supabase, migration, dependência, rota ou regra financeira foi realizada.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 5`.
+
+## Dia 5 — UI-003
+
+### Baseline e RED
+
+- baseline direcionado: 5 suítes e 28 testes passaram.
+- baseline completo: 72 suítes e 388 testes passaram.
+- RED da cadeia cliente legada: 1 falha e 2 testes verdes.
+- RED do provider global sem consumidor: 2 falhas e 2 testes verdes.
+- RED do design system: 1 falha e 8 testes verdes.
+
+### GREEN e regressão
+
+- limpeza inicial: 4 suítes e 20 testes passaram.
+- remoção da fronteira cliente global: 4 suítes e 21 testes passaram.
+- consolidação do seletor com `Button`: 2 suítes e 16 testes passaram.
+- regressão final: 70 suítes e 378 testes passaram.
+- a redução líquida corresponde somente a testes exclusivos de código removido; dois novos contratos arquiteturais foram adicionados.
+
+### Gates
+
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- nenhuma regra financeira, Supabase, migration, dependência, rota ou comportamento foi alterado.
+- estado final: `IMPLEMENTATION_IN_PROGRESS`.
+- próximo comando válido: `dia 6`.
+
+## Dia 6 — UI-003
+
+### Baseline, RED e GREEN
+
+- baseline direcionado: 5 suítes e 28 testes passaram.
+- baseline completo: 70 suítes e 378 testes passaram.
+- RED: 3 suítes executadas, 2 falharam e 1 passou; 5 testes falharam e 14 passaram.
+- GREEN direcionado: 3 suítes e 19 testes passaram.
+- teste transversal de contraste: 1 suíte e 8 casos passou.
+
+### Regressão, browser e gates
+
+- regressão completa: 71 suítes e 386 testes passaram.
+- lint local passou com 0 warnings.
+- type-check passou.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- inspeção visual em 320 x 720 e 1366 x 768 passou sem overflow horizontal e sem erros no console.
+- manifesto respondeu HTTP 200 com `application/manifest+json`.
+- nenhuma regra financeira, Supabase, migration, dependência, gráfico, service worker ou promessa offline foi criada.
+- estado final: `QUALITY_VALIDATION`.
+- próximo comando válido: `dia 7`.
+
+## Dia 7 — UI-003
+
+### Pipeline final
+
+- regressão completa: 71 suítes e 386 testes passaram.
+- lint passou com 0 warnings; type-check passou.
+- auditoria npm de produção passou com 0 vulnerabilidades.
+- auditoria de cadeia de suprimentos verificou assinaturas de 697 pacotes e attestations de 102 pacotes.
+- build Next `16.3.3` passou; `/`, `/dashboard` e `ƒ Proxy (Middleware)` permaneceram preservados.
+- GitHub Actions Quality Gates #60 e Vercel Preview passaram no commit `7f1cd31`.
+
+### Segurança, banco e observabilidade
+
+- seis migrations permaneceram alinhadas; RLS forçada, grants mínimos, policies de ownership e RPC invoker foram confirmados por inspeção somente leitura.
+- Security Advisor manteve somente `SEC-AUTH-001`; os três índices ainda não usados permaneceram informativos.
+- nenhum segredo real, logging direto, `SECURITY DEFINER` público ou tabela financeira em publicação Realtime foi encontrado.
+- preview Vercel atual está `READY` e sem erro de runtime recente; logs recentes do Supabase não apresentaram erro/fatal/5xx.
+- nenhuma migration, configuração Auth, mutação de dados, bypass de preview ou promoção de produção foi executada.
+
+### Resultado
+
+- UI-003 está `READY_FOR_RELEASE` como entrega incremental de código.
+- produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
+- `CI-VERCEL-002` registra o vínculo local antigo e o desalinhamento Node/npm antes de operação direta por CLI ou promoção.
+
+## Dia 7 — SR-015
+
+### Pipeline final
+
+- regressão completa: 84 suítes e 482 testes passaram, sem snapshots.
+- lint passou com zero warnings; type-check passou.
+- auditorias npm completa e de produção passaram com zero vulnerabilidades.
+- build Next `16.3.3` passou e preservou `ƒ Proxy (Middleware)`, `/` e `/dashboard` dinâmicos.
+- analyzer confirmou ECharts/ZRender somente em `/` e `/dashboard`: 525.530 bytes brutos e 179.457 bytes gzip.
+
+### Segurança, banco e entrega
+
+- migrations locais e remotas permaneceram alinhadas; nenhuma migration foi necessária.
+- RPC invoker, ownership, autenticação server-side e ausência de segredo de serviço no cliente foram confirmados por inspeção.
+- Security Advisor manteve somente `SEC-AUTH-001`; logs recentes de Supabase e Vercel não apresentaram erro explícito, fatal ou 5xx.
+- preview Vercel está `READY`; PR `#19` mergeable e checks do head publicado verdes.
+- estado final: `READY_FOR_RELEASE` para entrega incremental; produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`.
+
+## Dia 6 — SEC-HARD-001A
+
+### UX, acessibilidade e PWA
+
+- Preview `READY` validado em 320, 768 e 1280 px sem overflow global, erro ou warning no console.
+- login, sessão, temas, navegação, dashboard, tabela e gráficos permaneceram funcionais sob a CSP.
+- alvos principais de 44 px, tabela rolável por teclado e expansão acessível com foco/scroll restaurados foram confirmados.
+- o fechamento por `Escape` permaneceu verde no teste automatizado; a simulação do navegador protegido foi inconclusiva e não gerou correção sem reprodução confiável.
+- link e metadata PWA foram confirmados no DOM; a abertura isolada do manifesto foi bloqueada pela autenticação SSO da Vercel, enquanto o contrato local permaneceu verde e sem promessa offline.
+
+### Pipeline
+
+- direcionado: 7 suítes e 42 testes passaram.
+- regressão completa: 85 suítes e 494 testes passaram, sem snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- nenhum código funcional ou configuração remota foi alterado; estado final: `QUALITY_VALIDATION`.
+
+## Dia 7 — SEC-HARD-001A
+
+### Pipeline final
+
+- regressão completa: 85 suítes e 494 testes passaram, sem snapshots.
+- lint passou com zero warnings; type-check passou.
+- auditorias npm completa e de produção passaram com zero vulnerabilidades.
+- 701 pacotes tiveram assinaturas verificadas e 102 tiveram attestations verificadas.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+
+### Segurança, observabilidade e entrega
+
+- seis migrations locais/remotas permaneceram alinhadas; RLS, ownership, grants mínimos e RPC invoker foram confirmados por inspeção.
+- Security Advisor manteve apenas a proteção contra senhas vazadas já registrada; três índices sem uso permaneceram informativos.
+- Preview do head `f8049e4` está `READY`, sem cluster de runtime, log `error/fatal` ou resposta 5xx em 24 horas.
+- PR `#22` está aberta, mergeável e com Quality Gates e Vercel verdes.
+- `SEC-HARD-001A` encerrou em `READY_FOR_RELEASE`; produção pública continua bloqueada pelos hardenings externos documentados.
+
+## Dia 2 — UX-SHELL-001
+
+### Baseline
+
+- suíte direcionada do shell antes do RED: 1 suíte e 7 testes passaram.
+- a tentativa inicial por pattern não encontrou o grupo de rota `(private)`; `--runTestsByPath` executou o caminho literal corretamente.
+
+### RED controlado
+
+- suíte direcionada após os novos contratos: 12 testes, 4 passaram e 8 falharam como planejado.
+- as falhas são causadas exclusivamente pela ausência do trigger `Abrir painel da conta`, do diálogo responsivo e das classes compactas ainda não implementadas.
+- regressão completa: 85 suítes, 84 passaram e somente a suíte do shell falhou; 499 testes, 491 passaram e 8 falharam de forma planejada.
+- zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- nenhum componente ou código funcional foi criado; estado final: `TEST_STRATEGY_READY`.
+
+## Dia 3 — UX-SHELL-001
+
+### GREEN direcionado
+
+- suíte do `PrivateAppShell`: 12 testes passaram, sem alterar expectativas.
+- topbar compacta, painel, foco, teclado, scroll, tema, logout e navegação ficaram verdes.
+
+### Regressão e gates
+
+- primeira regressão: 84 suítes/498 testes passaram e somente o contrato global de design system falhou por `bg-black/50`.
+- correção mínima: backdrop migrou para o token semântico `bg-navigation/70`; nenhum teste foi alterado.
+- regressão final: 85 suítes e 499 testes passaram, zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- `next-env.d.ts` foi restaurado após regeneração automática.
+- estado final: `IMPLEMENTATION_IN_PROGRESS` estável em GREEN.
+
+## Dia 4 — UX-SHELL-001
+
+### RED e GREEN direcionados
+
+- baseline: suíte do `PrivateAppShell` com 12 testes verdes.
+- novos contratos: descrição acessível da sessão, fundo inerte/restaurável, safe areas completas e contenção de overscroll.
+- RED controlado: 13 testes, 11 verdes e 2 falhas esperadas antes da implementação.
+- GREEN direcionado: 1 suíte e 13 testes verdes, zero snapshots.
+
+### Validação responsiva real
+
+- 320 × 800 px: header compacto, rota ocultada, trigger ≥ 44 px, bottom sheet em largura total e nenhum overflow horizontal.
+- fechamento por `Escape`: foco no trigger, scroll liberado e ausência de `inert`/`aria-hidden` residual.
+- 768 × 900 px: sidebar visível, navegação inferior oculta e painel de 384 px ancorado à direita.
+- 1280 × 900 px: trigger `Conta`, painel ancorado e ausência de overflow ou overlay de erro.
+- o aviso de `unsafe-eval` ocorreu somente no React Dev sob a CSP segura e não representa erro do build de produção.
+
+### Regressão e gates
+
+- regressão completa: 85 suítes e 500 testes passaram, zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- `next-env.d.ts` foi restaurado após regeneração automática.
+- estado final: `IMPLEMENTATION_IN_PROGRESS` estável em GREEN; próximo passo: Dia 5.
+
+## Dia 5 — UX-SHELL-001
+
+### Baseline e RED
+
+- baseline direcionada: `PrivateAppShell` e `ExpandableChartFrame` com 2 suítes e 23 testes verdes.
+- a nova suíte de `containKeyboardFocus` falhou primeiro porque o utilitário ainda não existia.
+- o contrato do backdrop produziu 1 falha esperada e 12 testes verdes antes do hardening semântico.
+
+### GREEN e refatoração
+
+- utilitário compartilhado aprovado em 5 testes: wrap direto/reverso, posição intermediária, contêiner vazio e entradas ignoradas.
+- `PrivateAppShell`, `ExpandableChartFrame` e utilitário: 3 suítes e 28 testes verdes.
+- os componentes preservaram foco, teclado, scroll, portal, backdrop, Fullscreen API e instâncias existentes.
+
+### Regressão e gates
+
+- regressão completa: 86 suítes e 505 testes passaram, zero snapshots.
+- lint passou com zero warnings; type-check passou.
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy.
+- `next-env.d.ts` foi restaurado após regeneração automática.
+- estado final: retorno estável a `IMPLEMENTATION_IN_PROGRESS`; próximo passo: Dia 6.
+
+## Dia 7 — UX-SHELL-001
+
+### Quality gates finais
+
+- lint e type-check passaram;
+- regressão completa: 86 suítes e 505 testes passaram, zero snapshots;
+- auditoria do lockfile em severidade alta encontrou zero vulnerabilidades;
+- build Next.js `16.3.3` passou e preservou todas as rotas e o Proxy;
+- `git diff --check origin/develop...HEAD` passou e `next-env.d.ts` foi restaurado após o build.
+
+### Segurança e serviços remotos
+
+- diff sem alteração em Auth, Supabase, migrations, RLS, dados financeiros, segredos ou ambiente;
+- Supabase `ACTIVE_HEALTHY`, seis migrations alinhadas, aviso conhecido `SEC-AUTH-001` e três índices sem uso apenas informativos;
+- Preview Vercel `READY`, sem erro de build nem `error/fatal` de runtime em 24 horas;
+- PR `#23` limpa, mergeável e com todos os checks verdes no head publicado.
+
+### Resultado
+
+- `UX-SHELL-001` atingiu `READY_FOR_RELEASE`;
+- `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001B` e `CI-VERCEL-002` permanecem documentados fora do escopo desta UI;
+- nenhum commit, push, merge, deploy ou mutação remota foi executado.
+
+## Dia 2 — UX-CHART-002
+
+### Baseline
+
+- 23 suítes e 182 testes de `financial-analytics` passaram, zero snapshots;
+- type-check passou antes do RED;
+- o Jest foi executado pelo binário local porque o wrapper global do npm permanece quebrado no ambiente.
+
+### Matriz e RED controlado
+
+- 9 suítes afetadas cobrem domain, application, infrastructure, composição autenticada, mapper, ECharts, tabela, painel e fronteiras;
+- resultado: 9 suítes falharam como planejado; 22 contratos foram materializados, com 14 verdes e 8 falhas esperadas nas suítes carregadas;
+- 5 suítes pararam por módulos de produção deliberadamente ausentes: validador, caso de uso, repository, Server Action e painel;
+- comportamentos ausentes confirmados: `endOnExclusive` no ponto visual, listener de seleção do candle e botão `Ver extrato` na tabela;
+- contrato arquitetural confirmou que presentation continua sem Supabase direto e sem `ChartPort` genérico.
+
+### Validação do harness
+
+- type-check ficou somente com 5 erros `TS2307` correspondentes aos módulos futuros; mocks sem assinatura foram corrigidos sem criar implementação;
+- lint de todos os testes de analytics passou com zero warnings;
+- regressão anterior, excluindo as 9 suítes/assertivas afetadas, passou com 20 suítes e 169 testes, zero snapshots;
+- estado final: `TEST_STRATEGY_READY`; implementação permanece bloqueada até o Dia 3.

@@ -342,7 +342,7 @@ O projeto deve ter:
 - Primitives genéricas ficam em `src/shared/components/ui`; componentes com semântica financeira permanecem na feature dona do contrato.
 - Rotas, CTAs, indicadores, gráficos e copy só podem aparecer quando o caso de uso correspondente existir.
 - Domínio e aplicação não dependem de tokens, copy, React ou biblioteca visual.
-- Gráficos continuam bloqueados até o `SP-001`, com adapter de presentation e alternativa tabular acessível.
+- Gráficos de produção dependem do `SP-001` concluído e de uma small release própria, com adapter de presentation e alternativa tabular acessível.
 - Preferência de tema é dado de apresentação; não autoriza persistência de dados financeiros no navegador.
 - A copy segue `informar → explicar → sugerir`, sem culpa, promessa de resultado, IA antecipada ou dado fictício apresentado como real.
 - Na `UI-001`, Geist será entregue por `next/font/google`, com variável CSS e fallback de sistema; não haverá pacote de fonte ou requisição do navegador a um CDN de fontes.
@@ -370,21 +370,132 @@ O projeto deve ter:
 - Nenhuma mudança de domain, application, infrastructure, Supabase, migration, PWA offline ou regra financeira pertence à UI-002.
 - Decisão completa: `adr/0006-responsive-private-shell.md`.
 
+## Cabeçalho Responsivo Compacto — UX-SHELL-001
+
+- `UX-SHELL-001` evolui a topbar criada pela UI-002 sem alterar a matriz de navegação, autenticação ou regras financeiras.
+- A topbar usa uma única linha de até 64 px, além da safe area superior; o `h1` e a descrição continuam pertencendo à página.
+- Mobile exibe marca compacta e trigger de conta. Tablet/desktop preservam contexto discreto da rota e o mesmo trigger, mantendo sidebar/rail existentes.
+- O trigger abre um diálogo responsivo: bottom sheet abaixo de 768 px e painel ancorado à direita a partir de 768 px.
+- O painel recebe semântica de diálogo, e não de menu ARIA, porque compõe identidade, radiogroup de tema e logout.
+- `AccountPanel.client.tsx` permanece específico do shell em `src/app/(private)/components` e concentra somente estado visual, foco, teclado, backdrop, scroll e responsividade.
+- `ThemeSwitcher` e `SignOutButton` são compostos sem alterar seus contratos. O endereço completo da sessão aparece somente dentro do painel.
+- `PrivateAppShell` continua a client composition root e proprietária da orquestração do logout existente; nenhuma nova fronteira Server → Client ou prop não serializável é introduzida.
+- A navegação inferior permanece a única navegação primária mobile; suas rotas não são duplicadas no painel.
+- Nenhuma primitive modal, dependência, rota, Supabase, Auth, migration, RLS, dado ou configuração remota é adicionada neste recorte.
+- O contrato mínimo inclui alvo de 44 px, `aria-expanded`, diálogo nomeado, foco inicial/contido/restaurado, fechamento explícito/`Escape`/backdrop, scroll bloqueado, safe areas e movimento reduzido.
+- Decisão completa: `adr/0018-responsive-account-panel.md`.
+
 ## Dashboard FinControl Pulse — UI-003
 
 - `src/app/(private)/dashboard/compose-dashboard-route.tsx` permanece a composition root server-side compartilhada por `/` e `/dashboard`.
 - A rota aguarda `searchParams`, normaliza o período e carrega `FinancialEvolutionDto` diretamente no servidor; não cria Route Handler nem fetch de leitura no cliente.
 - `DashboardPage` deve ser apresentação pura e server-compatible, recebendo composição por slot React sem importar Auth, transações, analytics, Supabase ou infraestrutura.
 - `FinancialEvolutionPanel` permanece na feature dona da semântica financeira e recebe somente DTO plano e kind aprovado.
-- A UI-003 elimina do dashboard o resumo baseado no `TransactionSessionProvider`, porque o provider começa vazio e não representa a persistência real.
+- A UI-003 elimina o resumo cliente em memória e remove `TransactionSessionProvider` do layout privado, porque não havia consumidor de produção e o estado vazio não representava a persistência real.
 - A única fonte financeira deste recorte é o snapshot da SR-013: abertura, receitas, despesas, líquido, fechamento, contagem e buckets diários.
 - O grid é lógico de 12 colunas e mobile first. Layout não altera cálculos nem replica valores em estado cliente.
 - Loading e error permanecem em arquivos especiais do App Router; `missing_accounts`, `empty` e `success` pertencem ao DTO da aplicação.
 - “Saldo ao fim do período” é a métrica principal. “Disponível de verdade”, comparação, tendência e previsão continuam bloqueados até contratos próprios.
 - Links ficam restritos a `/accounts` e `/transactions`; lista detalhada recente permanece fora até existir projeção server-side alinhada ao período selecionado.
 - Nenhuma mudança de domínio, application financeira, infrastructure, Supabase, migration, RLS, policy, grant ou dependência pertence à UI-003.
-- Gráficos permanecem bloqueados até `SP-001` e SR-014; a tabela acessível continua obrigatória mesmo após gráficos.
+- O SP-001 está concluído; gráficos de produção permanecem bloqueados até a SR-014, e a tabela acessível continua obrigatória mesmo após a integração.
 - Decisão completa: `adr/0011-dashboard-pulse-real-data-composition.md`.
+
+## Adapter de gráficos financeiros — SP-001
+
+- Apache ECharts `6.1.0` é a biblioteca visual escolhida para validação incremental nas SR-014/SR-015.
+- A dependência fica confinada a `financial-analytics/presentation/charts/echarts`; domain, application, infrastructure e App Router não importam ECharts.
+- `FinancialEvolutionPanel` permanece Server Component. Apenas o lifecycle do gráfico forma uma ilha cliente estreita com props planas e serializáveis.
+- Importações usam `echarts/core`, charts/componentes necessários, `AriaComponent` e `SVGRenderer`; import total e wrapper React adicional são proibidos.
+- O adapter mantém datas civis e inteiros em centavos. Formatação de moeda pertence a eixo, tooltip e descrição, não altera cálculos.
+- A tabela acessível permanece presente e equivalente. ARIA/decal do gráfico é complementar; cor ou tooltip nunca são a única forma de transmitir informação.
+- Movimento reduzido, resize, dispose, temas e delta de bundle devem ser comprovados por testes e experimento antes do gráfico de produção.
+- Não existe `ChartPort` genérico nesta fase; nova abstração depende de segundo consumidor real.
+- Decisão completa: `adr/0012-chart-library-presentation-adapter.md`.
+
+## Gráfico de linha da evolução — SR-014
+
+- `composeDashboardRoute` continua sendo a composition root server-side compartilhada por `/` e `/dashboard` e realiza uma única leitura financeira.
+- `FinancialEvolutionPanel` permanece Server Component e converte `FinancialEvolutionDto` por `toFinancialEvolutionChartModel` antes da fronteira cliente.
+- `FinancialEvolutionChart.client.tsx` recebe somente um view model plano com datas civis e saldos de fechamento em centavos; não recebe identidade, token, funções, classes ou objetos `Date`.
+- O painel integra diretamente a ilha cliente aprovada. Um segundo wrapper com `next/dynamic` e `ssr: false` só pode surgir se build ou medição de bundle demonstrarem necessidade concreta.
+- O gráfico renderiza nos estados `success` e `empty`; `missing_accounts` continua sem gráfico ou tabela. Falha de dados usa o error boundary da rota, enquanto falha de ECharts preserva a tabela e exibe fallback local.
+- A linha representa apenas saldo de fechamento diário. Receitas, despesas, comparação, previsão, candles, zoom, exportação e semântica de trading permanecem fora.
+- O gráfico fica em card próprio com heading de nível 3 e descrição; a tabela diária continua visível, equivalente e navegável por teclado.
+- ECharts permanece confinado ao adapter de presentation e deve aparecer somente nos chunks cliente de `/` e `/dashboard`; qualquer vazamento para rotas não relacionadas bloqueia a release.
+- Não há nova leitura cliente, Route Handler, Server Action, Suspense artificial, cache, Supabase, migration ou mudança de regra financeira.
+- Decisão completa: `adr/0013-financial-evolution-line-chart-integration.md`.
+
+## Expansão universal de gráficos — UX-CHART-001
+
+- `ExpandableChartFrame.client.tsx` é uma primitive de presentation compartilhada; não conhece ECharts, DTOs ou regras financeiras.
+- O frame preserva o mesmo elemento e a mesma instância do gráfico ao alternar entre fluxo normal e overlay de viewport.
+- Fullscreen nativo é melhoria progressiva; overlay CSS, botão de saída, `Escape`, foco e scroll formam o contrato mínimo.
+- Solicitações nativas assíncronas recebem identidade de tentativa; resoluções obsoletas encerram qualquer fullscreen adquirido sem reabrir a UI.
+- O overlay respeita `safe-area-inset-*` nos quatro lados e não força orientação.
+- Wrappers e viewports de renderer em grid/flex usam `min-width: 0`; a altura mínima normal é liberada somente durante a expansão.
+- Componentes de gráficos futuros compõem a primitive dentro de suas ilhas cliente, sem ampliar a fronteira de dados Server → Client.
+- A tabela equivalente permanece fora do frame e não pode ser removida pelo modo expandido.
+- Nenhuma dependência, orientação forçada ou abstração de domínio é introduzida.
+- Decisão completa: `adr/0014-expandable-chart-frame.md`.
+
+## Candles financeiros — SR-015
+
+- O candle representa saldo financeiro diário, nunca preço de ativo, ordem de mercado ou recomendação de trading.
+- Um agregador puro do domínio recebe o período resolvido, o saldo de abertura e os movimentos do snapshot; ele não depende de React, Next.js, Supabase ou ECharts.
+- Os movimentos são ordenados por `occurredOn`, `createdAt` e `id`. Como `occurredOn` é data civil, a ordem intradiária representa a ordem de registro no sistema e deve ser explicada na interface.
+- A fronteira Supabase normaliza todo `timestamptz` válido para ISO UTC canônico com `toISOString()` antes de construir o snapshot; o domínio continua rejeitando instantes inválidos e independente das representações textuais do PostgreSQL.
+- Cada candle inclui `open`, `high`, `low`, `close`, receita, despesa, volume e quantidade em inteiros seguros de centavos. Dias vazios preservam o último saldo com volume zero.
+- `ListFinancialEvolutionUseCase` calcula evolução e candles a partir do mesmo `FinancialEvolutionSnapshot`; a SR-015 não cria segunda consulta, Route Handler, Server Action, RPC ou migration.
+- O DTO adiciona uma coleção `candles` plana e serializável. Domain e application permanecem independentes da visualização.
+- `FinancialEvolutionPanel` continua Server Component. Uma ilha cliente estreita recebe os modelos de linha e candles e controla somente o seletor visual e a montagem do modo ativo.
+- A ilha não acessa Supabase, Auth, repository ou rede. Apenas um gráfico e uma tabela equivalentes ficam ativos por vez.
+- O adapter ECharts registra `CandlestickChart` por import modular e preserva SVG, ARIA, tema, movimento reduzido, resize, dispose e isolamento de bundle das rotas não financeiras.
+- `useFinancialChart` é um hook interno de presentation compartilhado somente pelos dois renderers existentes; ele concentra lifecycle e preferências visuais, enquanto builders, temas, modelos, estados e textos permanecem concretos. Ele não constitui nem autoriza um `ChartPort` genérico.
+- Linha e candles reutilizam `ExpandableChartFrame`; expansão não duplica renderer nem dados.
+- A tabela OHLC é a alternativa do tooltip e comunica alta/queda também por texto e valores, nunca somente por cor.
+- O primeiro recorte usa buckets diários nos cinco períodos atuais, todos limitados a 31 dias. Semana/mês para intervalos longos e período customizado permanecem fora.
+- Decisão completa: `adr/0015-financial-balance-candles.md`.
+
+## Extrato contextual do candle — UX-CHART-002
+
+- A seleção preserva o intervalo semiaberto do candle como `{ startOnInclusive, endOnExclusive }`; nenhum componente reconstrói o fim a partir da data inicial.
+- O primeiro recorte cobre somente candles diários nos períodos atuais de até 31 dias.
+- Clique/toque no candle e o botão `Ver extrato` da linha equivalente convergem para a mesma seleção. A tabela é a alternativa integral de teclado.
+- `financial-analytics/application` define um read port específico, `FinancialIntervalStatementQueryRepository`; o repositório de escrita/listagem mensal de transações não é ampliado com responsabilidade analítica.
+- A implementação Supabase fica em infrastructure e aplica projeção mínima, `user_id` explícito, limites `>= start`/`< end` e ordenação determinística sob as policies RLS existentes.
+- Uma Server Action verifica claims, rejeita Auth anônimo e injeta o proprietário. `userId` nunca atravessa a fronteira cliente.
+- Os lançamentos são carregados somente após seleção; o snapshot financeiro e a RPC existente não recebem descrições ou detalhes transacionais.
+- A presentation estende o adapter/hook ECharts somente com registro e cleanup do evento necessário. A decisão não autoriza um `ChartPort` genérico.
+- O extrato usa diálogo responsivo: bottom sheet abaixo de 768 px e painel lateral a partir de 768 px, com estados `loading`, `empty`, `error` e `success` e proteção contra respostas obsoletas.
+- Foco contido/restaurado, `Escape`, backdrop, scroll confinado, safe areas, movimento reduzido e targets de 44 px seguem a primitive comprovada do shell.
+- Não há migration, nova RPC, edição, exclusão, notas, exportação, busca ou períodos longos nesta feature.
+- Decisão completa: `adr/0019-contextual-candle-statement.md`.
+
+## Períodos e granularidade adaptativa — UX-CHART-003
+
+- A feature começa somente após a UX-CHART-002, reutilizando seu contrato genérico de intervalo e extrato sob demanda.
+- `UX-CHART-003A` entrega `7D`, `15D` e `Mês` com a RPC atual e compatibilidade de URL, sem migration.
+- `UX-CHART-003B` entrega `3M` e `Ano` com agregação server-side própria; `UX-CHART-003C` entrega `Tudo`, personalizado e integração completa.
+- A granularidade pertence ao domínio/application: diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso, mantendo preferencialmente 12–60 pontos.
+- Buckets são civis, consecutivos e semiabertos; buckets parciais respeitam exatamente o intervalo selecionado e a ordenação OHLC da SR-015.
+- Cards, linha, candles, tabela e extrato consomem uma única resolução de período representável na URL; valores atuais continuam compatíveis.
+- Períodos longos nunca enviam movimentos brutos ao browser. Uma futura RPC agregadora será `SECURITY INVOKER`, com Auth/RLS, grants mínimos, allowlist de bucket e limites de intervalo/pontos.
+- A RPC diária existente permanece limitada a 31 dias. A migration futura será forward-only e validada por pgTAP.
+- O seletor usa botões com `aria-pressed`, nomes completos, alvos de 44 px e rolagem horizontal confinada no mobile.
+- Decisão completa: `adr/0020-adaptive-financial-periods.md`.
+
+## Proteção contra senhas vazadas — SEC-AUTH-001
+
+- A proteção será fornecida nativamente pelo Supabase Auth e não por código próprio.
+- Nenhuma senha ou hash será enviado a presentation, application, domínio financeiro, Edge Function, banco, log ou observabilidade.
+- A ativação depende de plano Supabase Pro ou superior; a organização atual está no plano Free.
+- O password grant pode devolver sessão válida acompanhada de `weakPassword`; o contrato de infrastructure deve preservar a sessão e continuar falhando fechado quando houver erro real ou usuário ausente.
+- A UI mantém mensagem genérica para falhas de autenticação e não expõe existência de conta, detalhes do provider ou motivos de comprometimento antes de sessão válida.
+- O quality gate remoto exige login sintético sanitizado, logs de Auth sem regressão e Security Advisor sem `auth_leaked_password_protection`.
+- Rollback é exclusivamente operacional: desativar a opção nativa e repetir os mesmos gates. Não existe migration ou rollback de dados.
+- Troca/recuperação de senha e remediação guiada de usuários existentes permanecem fora deste item e exigem ciclo próprio.
+- Decisão completa: `adr/0016-native-leaked-password-protection.md`.
 
 ## IA
 A IA deve atuar como análise e recomendação:
@@ -446,3 +557,13 @@ Regras:
 
 ## ADRs
 Decisões arquiteturais relevantes devem ser registradas em `adr/`.
+
+## Hardening da borda HTTP e autenticação — SEC-HARD-001
+
+- Headers estáticos e CSP pertencem à configuração Next.js, não ao Proxy responsável pela renovação da sessão Supabase.
+- A baseline global inclui CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS de produção e remoção de `X-Powered-By`.
+- A CSP permite conexão somente com a própria origem e com a origem HTTPS exata do projeto Supabase; nenhum wildcard de provider, Realtime ou analytics será antecipado.
+- O login atual chama o Supabase Auth diretamente no navegador. Rate limit da Vercel sobre `/login` não protege o password grant e não substitui os controles nativos do Supabase.
+- CAPTCHA permanece uma integração separada: presentation coleta token efêmero, application orquestra, infrastructure adapta ao Supabase e nenhum segredo chega ao cliente.
+- Não será criado proxy próprio de credenciais. Mensagens públicas continuam genéricas e autorização permanece baseada em claims server-side e RLS.
+- Decisão completa: `adr/0017-auth-environment-security-hardening.md`.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 function readSource(...segments: string[]) {
@@ -7,6 +7,27 @@ function readSource(...segments: string[]) {
 }
 
 describe("financial analytics presentation boundaries", () => {
+  it("does not retain the deprecated client dashboard summary slice", () => {
+    const deprecatedFiles = [
+      ["features", "dashboard", "application", "use-cases", "get-dashboard-summary.use-case.ts"],
+      ["features", "dashboard", "presentation", "components", "DashboardEmptyState.tsx"],
+      ["features", "dashboard", "presentation", "components", "DashboardSummaryPanel.tsx"],
+      ["features", "dashboard", "presentation", "components", "RecentTransactionsList.tsx"],
+      ["features", "dashboard", "presentation", "hooks", "useDashboardSummary.ts"],
+      ["features", "transactions", "presentation", "providers", "TransactionSessionProvider.tsx"]
+    ];
+
+    for (const segments of deprecatedFiles) {
+      expect(existsSync(join(process.cwd(), "src", ...segments))).toBe(false);
+    }
+  });
+
+  it("keeps the private layout free from the deprecated transaction session", () => {
+    const privateLayout = readSource("app", "(private)", "layout.tsx");
+
+    expect(privateLayout).not.toContain("TransactionSessionProvider");
+  });
+
   it("keeps the dashboard page server-compatible and presentation-only", () => {
     const dashboardPage = readSource(
       "features",

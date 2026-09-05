@@ -186,7 +186,7 @@ Saida: dados isolados por usuario e prontos para consultas por periodo.
 
 ## Trilha Transversal — FinControl Pulse
 
-Status: `UI-001` e `UI-002` concluídas; Dia 3 da `UI-003` concluído em 2026-08-27 no estado `IMPLEMENTATION_IN_PROGRESS`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard Pulse mínimo usa fonte real, composição server-side e resumo responsivo.
+Status: `UI-001`, `UI-002` e `UI-003` concluídas; Dia 7 da `UI-003` encerrou em 2026-08-29 no estado `READY_FOR_RELEASE`; `UI-004` a `UI-006` permanecem em `DISCOVERY`. O dashboard Pulse usa fonte real, composição server-side e passou por pipeline, segurança, observabilidade, hardening responsivo, acessível e PWA sem promessa offline.
 
 Objetivo: transformar o app em uma central de decisões financeiras com identidade consistente, navegação responsiva, copy acolhedora e dashboard progressivo, sem antecipar domínios ou dados.
 
@@ -218,7 +218,9 @@ Saída arquitetural da UI-002 no Dia 1:
 - componentes do shell ficam próximos ao App Router até existir reutilização real; nenhuma nova primitive compartilhada foi autorizada;
 - busca, notificações, perfil, configurações, botão “Adicionar” e rotas futuras continuam ausentes.
 
-Próximo passo da trilha: executar o Dia 4 da `UI-003` para expansão controlada dos estados e da experiência; gráficos continuam fora até `SP-001` e SR-014.
+Ciclo concluído: Dia 7 da `SR-014 — Gráfico de linha da evolução` encerrou em `READY_FOR_RELEASE`. O gráfico está integrado, expansível e responsivo em desktop/mobile, com safe areas, fullscreen progressivo, tabela acessível e pipeline verde.
+
+Mudança transversal entregue no Dia 4: `UX-CHART-001` criou um frame expansível reutilizável com overlay CSS e Fullscreen API progressiva. O gráfico de evolução é o primeiro consumidor; candles e histogramas futuros deverão adotar o mesmo contrato em suas próprias releases.
 
 Integrações posteriores:
 
@@ -235,15 +237,85 @@ Governança:
 - nenhuma promessa de IA ou offline antes de capacidade real;
 - a próxima small release continua dependendo de seleção humana explícita entre os itens `READY`/`DISCOVERY` aplicáveis.
 
+### UX-SHELL-001 — Cabeçalho responsivo compacto
+
+Estado atual: Dia 7 concluído em `READY_FOR_RELEASE`. Mobile, tablet e desktop foram validados sem overflow; foco, teclado, backdrop, contraste WCAG AA, PWA, segurança local, Supabase, Preview Vercel e PR ficaram verdes, com 86 suítes/505 testes, lint, type-check, audit e build aprovados.
+
+Objetivo: reduzir a topbar privada a uma única linha e mover sessão, tema e logout para um painel da conta responsivo, recuperando espaço vertical em todas as páginas.
+
+Composição aprovada:
+- mobile: marca compacta, trigger de conta no canto superior direito e bottom sheet;
+- tablet/desktop: contexto discreto da rota, trigger de conta e painel ancorado à direita;
+- navegação inferior e sidebar/rail permanecem como navegação primária e não são duplicadas;
+- o título principal permanece na página, eliminando a repetição no header mobile;
+- nenhuma dependência, rota, Auth, Supabase ou dado novo.
+
+Sequência:
+1. `UX-SHELL-001A` — contratos de apresentação e implementação mínima;
+2. `UX-SHELL-001B` — responsividade, foco, teclado, backdrop e scroll;
+3. `UX-SHELL-001C` — consistência visual, safe areas e validação PWA em 320/768/1280 px.
+
+Próximo passo: versionar a documentação e atualizar a PR `#23`; depois, mediante decisão humana, realizar squash merge em `develop`. Produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
+
 ## Marco 9 - Periodos e Evolucao
 
 Ordem: SR-012 periodos, SR-013 agregacao/tabela acessivel, SP-001 biblioteca de graficos e SR-014 grafico de linha.
 
-Estado atual: SR-013 concluída e Dia 3 da UI-003 concluído em `IMPLEMENTATION_IN_PROGRESS`. O dashboard já consome apenas o snapshot real da evolução e mantém `SP-001`/SR-014 como incrementos posteriores para gráficos.
+Estado atual: SR-013, UI-003, SP-001, SR-014 e SR-015 concluídos. Linha e candles estão integrados, expansíveis, acessíveis, responsivos e isolados em `/` e `/dashboard`. A SR-015 encerrou o Dia 7 em `READY_FOR_RELEASE`, com pipeline local, segurança, Supabase, Vercel, observabilidade e PR validados.
+
+Próximo passo concluído: PR `#19` mesclada por squash em `develop` no commit `496424e`; deployment Vercel da branch ficou `READY` e sem erro/fatal recente.
 
 ## Marco 10 - Candles Financeiros
 
-SR-015 entrega OHLC de saldo, intervalos vazios, tooltip acessivel, volume e seletor Linha/Candles, sem recursos de trading.
+SR-015 entrega OHLC diário de saldo, intervalos vazios, tabela/tooltip acessíveis, volume e seletor Linha/Candles sobre o mesmo snapshot server-side, sem recursos de trading. A primeira release cobre somente os períodos atuais de até 31 dias; granularidades longas dependem de ciclo próprio.
+
+Evidência do Dia 3: agregador determinístico, DTO e mapper, registro modular de Candlestick, seletor local, tabela textual e frame expansível estão integrados; lint, type-check, build, analyzer e 83 suítes/470 testes estão verdes. O chunk ECharts permanece exclusivo de `/` e `/dashboard`, com delta gzip de 7.437 bytes.
+
+Evidência do Dia 4: tooltip rotulado, direção textual, fallback com tabela, vazio, lifecycle, expansão e região ativa nomeada estão cobertos; lint, type-check, build, analyzer e 84 suítes/479 testes permanecem verdes, com delta de apenas 286 bytes gzip.
+
+Evidência do Dia 5: `useFinancialChart` extrai somente inicialização, resize, preferências visuais, atualização e cleanup já duplicados; builders e estados concretos permanecem nas ilhas, sem `ChartPort`. Lint, type-check, build e 84 suítes/480 testes estão verdes; o chunk ficou em 525.257 bytes brutos e 179.344 bytes gzip.
+
+Evidência do Dia 6: o mapper normaliza `timestamptz` válido na fronteira, as duas tabelas executam rolagem horizontal por setas e o dashboard autenticado foi validado em 320, 768 e 1280 px sem overflow global ou erros no console. Expansão/foco, manifesto PWA e pipeline local ficaram verdes com 84 suítes/482 testes.
+
+Evidência do Dia 7: 84 suítes/482 testes, lint, type-check, build e auditorias npm ficaram verdes; bundle permaneceu restrito a `/` e `/dashboard`. Migrations locais/remotas estão alinhadas, logs recentes não indicaram erro explícito/fatal/5xx, preview está `READY` e checks da PR `#19` estão verdes. A entrega incremental pode ser mergeada após a atualização documental e nova validação remota, mas produção pública continua bloqueada pelos hardenings globais já registrados.
+
+## Marco 10A - Interações avançadas dos candles
+
+Ordem aprovada: `UX-CHART-002 — Extrato contextual do candle` e, depois de seu ciclo completo, `UX-CHART-003 — Períodos e granularidade adaptativa`.
+
+Estado da `UX-CHART-002`: Dia 7 concluído em `READY_FOR_RELEASE`. Pipeline, supply chain, threat model, Supabase, observabilidade, Preview e PR foram validados no head `f865576`. A PR `#24` está draft, mergeável, limpa e com checks verdes; produção pública permanece bloqueada pelos hardenings globais já registrados.
+
+Small releases da `UX-CHART-002`:
+1. `002A` — contratos, DTO, consulta sob demanda e Server Action;
+2. `002B` — seleção no ECharts/tabela e painel responsivo;
+3. `002C` — concorrência, acessibilidade, responsividade e validação real.
+
+Estado da `UX-CHART-003`: `DISCOVERY`, não mais bloqueada pela predecessora e aguardando comando humano para seu próprio Dia 1. A sequência planejada é `003A` para `7D`/`15D`/`Mês` sem migration, `003B` para `3M`/`Ano` com agregação server-side e `003C` para `Tudo`/personalizado. Granularidade diária, semanal, mensal ou trimestral manterá um volume preferencial de 12–60 pontos e nunca enviará histórico bruto ao browser.
+
+Decisões: `adr/0019-contextual-candle-statement.md` e `adr/0020-adaptive-financial-periods.md`.
+
+Próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os novos checks; depois, mediante decisão humana, realizar squash merge em `develop`. A `UX-CHART-003` pode iniciar ciclo próprio após esse fechamento.
+
+## Hardening pré-produção — SEC-AUTH-001
+
+Estado atual: Dia 1 concluído com arquitetura registrada no ADR 0016. O Security Advisor confirma proteção contra senhas vazadas desativada, e a organização está no plano Supabase Free.
+
+Bloqueio: o recurso nativo exige Pro ou superior. Nenhuma configuração Auth foi alterada e produção pública permanece bloqueada. Por decisão humana, o upgrade foi adiado enquanto o app permanecer em desenvolvimento e previews privados.
+
+Próximo passo selecionado: executar o Dia 1 da `SEC-HARD-001`. Retomar o Dia 2 da `SEC-AUTH-001` somente após o upgrade humano para Pro ou superior, antes da produção pública.
+
+## Hardening pré-produção — SEC-HARD-001
+
+Estado atual: Dia 7 da `SEC-HARD-001A` concluído em `READY_FOR_RELEASE`. As 85 suítes/494 testes, lint, type-check, auditorias npm e build estão verdes; Supabase, Preview, observabilidade e PR `#22` foram validados no head `f8049e4`, sem regressão crítica.
+
+Sequência aprovada:
+1. `SEC-HARD-001A` — TDD e implementação dos headers determinísticos no Next.js;
+2. validação em Preview da resposta real, hidratação, tema, login, sessão, gráficos e PWA;
+3. `SEC-HARD-001B` — somente após decisão humana sobre CAPTCHA e credenciais externas.
+
+Decisão de borda: rate limit WAF sobre `/login` não protege o password grant enviado pelo browser diretamente ao Supabase. Não será criado proxy próprio de senha para contornar essa fronteira.
+
+Próximo passo: versionar a documentação do Dia 7 e atualizar a PR `#22`; realizar squash merge em `develop` somente após os novos checks verdes. Produção pública permanece condicionada a `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
 
 ## Marco 11 - Distribuicao de Frequencia
 

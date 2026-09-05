@@ -1,6 +1,5 @@
-import { SignOutButton } from "@/features/auth/presentation/components/SignOutButton";
-import { ThemeSwitcher } from "@/shared/components/ui/ThemeSwitcher";
 import { getPrivateNavigationItemForPath } from "../navigation/private-navigation";
+import { AccountPanel } from "./AccountPanel.client";
 
 type PrivateTopbarProps = {
   email: string;
@@ -16,24 +15,18 @@ export function PrivateTopbar({
   const currentItem = getPrivateNavigationItemForPath(pathname);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-8">
-      <div className="flex min-w-0 flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+    <header className="sticky top-0 z-20 min-h-16 border-b border-border bg-surface pt-[env(safe-area-inset-top)]">
+      <div className="flex min-h-16 min-w-0 items-center justify-between gap-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 lg:px-8">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+          <p className="text-sm font-semibold tracking-tight text-primary md:hidden">
             FinControl
           </p>
-          <p className="truncate text-lg font-semibold text-foreground">
+          <p className="hidden truncate text-sm font-semibold text-foreground md:block">
             {currentItem?.desktopLabel ?? "Área financeira"}
           </p>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center xl:justify-end">
-          <p className="min-w-0 truncate text-sm text-muted-foreground">
-            Sessão: <span className="font-medium text-foreground">{email}</span>
-          </p>
-          <ThemeSwitcher />
-          <SignOutButton onSignOut={onSignOut} />
-        </div>
+        <AccountPanel email={email} onSignOut={onSignOut} />
       </div>
     </header>
   );

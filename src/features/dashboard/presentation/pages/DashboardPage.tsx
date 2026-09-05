@@ -8,7 +8,7 @@ type DashboardPageProps = Readonly<{
 
 export function DashboardPage({ children }: DashboardPageProps = {}) {
   return (
-    <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
+    <main className="min-h-screen min-h-dvh bg-background px-4 py-5 text-foreground sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto grid w-full max-w-6xl grid-cols-12 gap-6">
         <header className="col-span-12 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
           <div>
@@ -23,9 +23,12 @@ export function DashboardPage({ children }: DashboardPageProps = {}) {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <nav
+            aria-label="Ações rápidas"
+            className="flex w-full flex-wrap gap-2 sm:w-auto"
+          >
             <Link
-              className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:flex-none"
               href="/accounts"
             >
               <WalletCards aria-hidden="true" size={18} />
@@ -33,13 +36,13 @@ export function DashboardPage({ children }: DashboardPageProps = {}) {
             </Link>
 
             <Link
-              className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:flex-none"
               href="/transactions"
             >
               <Plus aria-hidden="true" size={18} />
               Transações
             </Link>
-          </div>
+          </nav>
         </header>
 
         <div className="col-span-12 min-w-0">{children}</div>

@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UI-003 concluído; implementação mínima do dashboard Pulse validada com pipeline local verde
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UX-CHART-002 concluído em GREEN; entrega incremental pronta para versionamento final e revisão da PR #24
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -95,6 +95,58 @@
 - Data do discovery e arquitetura da UI-003: 2026-08-27
 - Data da estratégia de testes da UI-003: 2026-08-27
 - Data da implementação mínima da UI-003: 2026-08-27
+- Data da expansão controlada da UI-003: 2026-08-28
+- Data da refatoração e hardening da UI-003: 2026-08-29
+- Data da revisão de UX, acessibilidade e PWA da UI-003: 2026-08-29
+- Data da validação final e preparação de release da UI-003: 2026-08-29
+- Data de seleção do SP-001 como próximo ciclo: 2026-08-29
+- Data do discovery e arquitetura do SP-001: 2026-08-29
+- Data da estratégia de testes do SP-001: 2026-08-29
+- Data da implementação mínima do SP-001: 2026-08-29
+- Data da expansão controlada do SP-001: 2026-08-30
+- Data da refatoração e hardening do SP-001: 2026-08-30
+- Data da revisão de UX, acessibilidade e PWA do SP-001: 2026-08-30
+- Data da validação final e preparação de release do SP-001: 2026-08-30
+- Data de seleção da SR-014 como próximo ciclo: 2026-08-30
+- Data do discovery e arquitetura da SR-014: 2026-08-30
+- Data da estratégia de testes e RED controlado da SR-014: 2026-08-30
+- Data da implementação mínima orientada por teste da SR-014: 2026-08-30
+- Data da expansão controlada e fullscreen universal da SR-014: 2026-08-30
+- Data da refatoração e hardening interno da SR-014: 2026-08-30
+- Data da revisão de UX, acessibilidade e PWA da SR-014: 2026-08-30
+- Data da validação final e preparação de release da SR-014: 2026-08-30
+- Data de seleção da SR-015 como próximo ciclo: 2026-08-30
+- Data do discovery e arquitetura da SR-015: 2026-08-30
+- Data da estratégia de testes e RED controlado da SR-015: 2026-08-30
+- Data da implementação mínima orientada por teste da SR-015: 2026-08-30
+- Data da expansão controlada da SR-015: 2026-08-30
+- Data da refatoração e hardening interno da SR-015: 2026-08-31
+- Data da revisão de UX, acessibilidade e PWA da SR-015: 2026-08-31
+- Data da validação final e preparação de release da SR-015: 2026-08-31
+- Data de seleção da SEC-AUTH-001 como próximo ciclo: 2026-08-31
+- Data do discovery e arquitetura da SEC-AUTH-001: 2026-08-31
+- Data do discovery e arquitetura da SEC-HARD-001: 2026-08-31
+- Data da estratégia de testes da SEC-HARD-001A: 2026-08-31
+- Data da implementação mínima orientada por teste da SEC-HARD-001A: 2026-08-31
+- Data da expansão controlada e validação em Preview da SEC-HARD-001A: 2026-09-01
+- Data da refatoração e hardening interno da SEC-HARD-001A: 2026-09-01
+- Data da revisão de UX, acessibilidade e PWA da SEC-HARD-001A: 2026-09-01
+- Data da validação final e preparação de release da SEC-HARD-001A: 2026-09-01
+- Data de seleção, discovery e arquitetura da UX-SHELL-001: 2026-09-01
+- Data da estratégia de testes e RED controlado da UX-SHELL-001: 2026-09-01
+- Data da implementação mínima orientada por teste da UX-SHELL-001: 2026-09-01
+- Data da expansão controlada da UX-SHELL-001: 2026-09-01
+- Data da refatoração e hardening interno da UX-SHELL-001: 2026-09-01
+- Data da revisão de UX, acessibilidade e PWA da UX-SHELL-001: 2026-09-01
+- Data da validação final e preparação de release da UX-SHELL-001: 2026-09-01
+- Data de seleção da UX-CHART-002 e refinamento da UX-CHART-003: 2026-09-01
+- Data do discovery e arquitetura coordenados da UX-CHART-002/003: 2026-09-01
+- Data da estratégia de testes e RED controlado da UX-CHART-002: 2026-09-02
+- Data da implementação mínima da UX-CHART-002: 2026-09-04
+- Data da expansão controlada da UX-CHART-002: 2026-09-04
+- Data da refatoração e hardening interno da UX-CHART-002: 2026-09-04
+- Data da revisão de UX, acessibilidade e PWA da UX-CHART-002: 2026-09-05
+- Data da validação final e preparação de release da UX-CHART-002: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -912,7 +964,7 @@ Sequencia aprovada:
 Regra operacional:
 - cada SR percorre integralmente Dias 1 a 7
 - nenhuma implementacao funcional foi autorizada nesta analise
-- SR-007 foi selecionada e teve o Dia 1 concluído; o próximo comando válido é `dia 2`
+- SR-015 teve o Dia 2 concluído em RED controlado; o próximo comando válido é `dia 3`
 
 ## Backlog Inicial de Alto Nível
 - Dia 1: detalhar produto, domínio, módulos e contratos.
@@ -947,6 +999,37 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no RED do Dia 6 da `UX-CHART-002`, o mock inline de `loadStatement` não declarou a assinatura e o TypeScript inferiu o parâmetro como `unknown`, impedindo o spread apesar do GREEN comportamental. Prevenção: mocks de ports opcionais devem reutilizar ou declarar o contrato mínimo de input no momento em que o teste é escrito, antes do primeiro type-check.
+- Erro: na auditoria inicial do Dia 6 da `UX-CHART-002`, a IA repetiu a suposição de `src/app/manifest.ts` mesmo após a busca indicar `public/manifest.webmanifest`, e uma expressão `rg` mal escapada falhou sem produzir evidência. Prevenção: separar descoberta e leitura, abrir somente o caminho confirmado e preferir buscas literais (`rg -F`) ou padrões independentes quando o comando atravessar JavaScript e PowerShell.
+- Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
+- Erro: o primeiro RED da `SEC-HARD-001A` carregou `next/experimental/testing/server` sob o `jest-environment-jsdom` global, que não expõe `Request`, e a suíte falhou antes de avaliar qualquer contrato de header. Prevenção: testes da API server-side de configuração do Next.js devem declarar `@jest-environment node` por arquivo, mantendo jsdom apenas para componentes e sem adicionar polyfill global que possa mascarar diferenças reais de runtime.
+- Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
+- Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e o mesmo erro de caminho reincidiu no Dia 7 da `UX-CHART-002` mesmo após a listagem correta. Prevenção: separar obrigatoriamente descoberta e leitura em chamadas distintas, copiar o caminho retornado por `rg --files` sem reconstruí-lo pelo nome do job e registrar recorrência quando a regra anterior não impedir nova falha.
+- Erro: no Dia 7 da `UX-CHART-002`, a inspeção Vercel começou pelo ID obsoleto de `.vercel/project.json`, embora `project-context.md` já registrasse o projeto ativo e a dívida `CI-VERCEL-002`. Prevenção: para recursos com drift documentado, pesquisar primeiro o identificador autoritativo no contexto e confirmar pelo conector com `list_projects`; arquivos locais reconhecidamente obsoletos não podem ser usados como fonte primária.
+- Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
+- Erro: no início dos gates do Dia 5 da SR-015, a IA usou o fallback `pnpm` em um projeto gerenciado por npm; o pnpm tentou mover dependências existentes para `node_modules/.ignored` e criar `.pnpm-store` antes de falhar por rede restrita. Prevenção: respeitar sempre o `packageManager` do projeto, invocar Jest/TypeScript/ESLint/Next diretamente com a runtime Node compatível quando o wrapper npm estiver quebrado e nunca usar outro gerenciador apenas como substituto de execução; se ocorrer, interromper, restaurar os pacotes movidos e remover somente os artefatos criados após validar os caminhos absolutos.
+- Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
+- Erro: o Dia 2 da SR-015 adicionou os novos contratos específicos, mas não atualizou fixtures tipadas, mocks server-side e o boundary transversal da SR-014 para a responsabilidade aprovada do `FinancialVisualizationSwitcher`; a regressão ampliada encontrou o drift somente no Dia 3. Prevenção: ao introduzir uma nova fronteira cliente ou mover a composição entre componentes, pesquisar e adaptar no RED todos os consumidores, fixtures e scanners arquiteturais existentes antes de considerar a estratégia de testes concluída.
+- Erro: os contratos TDD criados no Dia 2 da SR-015 usaram `structuredClone` e espionaram `globalThis.fetch`, mas o ambiente `jest-environment-jsdom` do projeto não expunha essas APIs, produzindo quatro falsos negativos após o primeiro GREEN funcional. Prevenção: quando um teste depender de APIs globais do runtime, confirmar sua presença no ambiente Jest durante o RED e centralizar polyfills determinísticos em `tests/setupTests.ts`, sem mascarar chamadas de rede inesperadas.
+- Erro: na inspeção inicial do Dia 1 da SR-015, a IA presumiu nomes inexistentes para um ADR e para um DTO antes de confirmar a árvore real; as leituras falharam sem alterar o projeto. Prevenção: resolver caminhos com `rg --files` antes de abrir artefatos cuja localização não foi confirmada, especialmente após retomadas por contexto resumido.
+- Erro: no Dia 7 da SR-014, após consultar as dependências empacotadas, a IA presumiu que o diretório Node informado também continha `node_modules/npm/bin/npm-cli.js`; o bundle atual expõe Node 24 e não possui esse arquivo, enquanto o projeto exige Node 22. Prevenção: tratar os caminhos retornados como artefatos independentes, validar existência e versão antes de invocar e resolver explicitamente uma runtime compatível com `engines`, sem derivar o caminho do npm a partir do caminho do Node.
+- Erro: após tipar `this` nos doubles de fullscreen do Dia 4 da SR-014, o harness continuou violando `@typescript-eslint/no-this-alias` ao atribuir o receptor a uma variável externa. Prevenção: testes de APIs DOM devem capturar explicitamente o elemento renderizado e fechá-lo no mock, evitando dependência implícita de `this` quando a identidade do alvo já pode ser consultada de forma acessível.
+- Erro: os primeiros doubles de `requestFullscreen()` do Dia 4 da SR-014 dependeram do `this` fornecido pela chamada de método, mas não declararam seu tipo, fazendo o type-check falhar com `TS2683` apesar do GREEN comportamental. Prevenção: mocks de métodos nativos que inspecionam o receptor devem declarar explicitamente `this: HTMLElement` (ou o elemento compatível) na implementação, mantendo o contrato DOM e `noImplicitThis` verdes.
+- Erro: no primeiro GREEN do Dia 4 da SR-014, a integração do frame expansível acrescentou `h-full` ao atributo de classes do container ECharts e rompeu o marcador estático existente que protege `min-h-72 w-full`, embora o comportamento visual pretendido fosse compatível. Prevenção: antes de alterar classes protegidas, pesquisar contratos estáticos transversais; preservar a classe-base aprovada e expressar o preenchimento contextual por estilo ou container externo, sem relaxar a asserção existente.
+- Erro: ao inspecionar o relatório `next experimental-analyze` no Dia 3 da SR-014, a IA presumiu que `analyze.data` continha um único JSON após um cabeçalho fixo de quatro bytes; o arquivo usa framing adicional e o `ConvertFrom-Json` rejeitou bytes posteriores ao primeiro documento. Prevenção: tratar artefatos internos do analyzer como formato opaco, usar os relatórios/manifestos públicos e buscas binárias somente para presença por rota, ou empregar parser oficial antes de extrair métricas; não inferir tamanho de bundle pelo tamanho do arquivo `.data`.
+- Erro: no primeiro GREEN ampliado do Dia 3 da SR-014, a suíte `DashboardRoutes.test.tsx` carregou as páginas server-side com `jest.requireActual()` sem mockar a nova ilha `FinancialEvolutionChart.client`, fazendo o Jest tentar interpretar o ESM real de `echarts/charts` antes de executar os testes. Prevenção: todo teste de composição ou rota que atravesse `FinancialEvolutionPanel` deve registrar o mock da ilha cliente antes de carregar a página, mantendo ECharts real restrito às suítes específicas da ilha e ao build; pesquisar consumidores server-side ao integrar uma nova fronteira cliente.
+- Erro: ao retomar o RED direcionado do Dia 2 da SR-014, a IA enviou caminhos Windows em uma string JavaScript comum, fazendo sequências como `\n`, `\b`, `\f` e `\t` corromperem o comando antes da criação do processo. Prevenção: ao orquestrar PowerShell pelo executor JavaScript, usar `String.raw` para comandos e caminhos Windows com barras invertidas, validando que o processo realmente iniciou antes de interpretar o resultado como evidência do projeto.
+- Erro: após detectar o npm global quebrado no Dia 2 da SR-014, a IA chamou o alias descontinuado `codex_app__load_workspace_dependencies`; a ferramenta orientou usar o endpoint MCP atual e não executou ação. Prevenção: neste host, descobrir runtimes empacotadas exclusivamente por `mcp__codex_app__load_workspace_dependencies`, ignorando o alias legado ainda exposto no catálogo.
+- Erro: ao iniciar a baseline do Dia 2 da SR-014, a IA executou `npm run test:ci` apesar de o contexto já registrar que o wrapper global do npm está quebrado; o comando falhou antes de carregar Jest. Prevenção: antes de qualquer gate Node neste host, consultar a runtime empacotada do workspace e invocar seus executáveis/binários locais, sem tentar primeiro o npm global conhecido como inválido.
+- Erro: na inspeção inicial do Dia 1 da SR-014, a IA passou `src/app/(private)/dashboard/compose-dashboard-route.tsx` ao PowerShell sem `-LiteralPath`, e o shell interpretou `(private)` como expressão, interrompendo somente essa leitura. Prevenção: caminhos Windows com parênteses ou outros metacaracteres devem ser passados com `Get-Content -LiteralPath` e aspas, mesmo quando já foram confirmados por `rg --files`.
+- Erro: na auditoria inicial do Dia 6 do SP-001, a IA tentou ler `src/app/manifest.ts` apesar de a descoberta no mesmo comando apontar `public/manifest.webmanifest` como manifesto real. Prevenção: separar descoberta e leitura de artefatos opcionais; somente abrir caminhos confirmados por `rg --files`, sem presumir convenções alternativas do Next.js.
+- Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
+- Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
+- Erro: o primeiro adapter ECharts importou `use` com o nome original e o ESLint o classificou como React Hook chamado no topo do módulo. Prevenção: APIs externas homônimas a hooks devem receber alias sem prefixo `use`, deixando explícita sua função de registro e evitando falsos positivos sem desabilitar regras.
+- Erro: o primeiro fallback da ilha ECharts chamou `setInitializationFailed` sincronamente dentro de `useEffect`, violando o gate React 19 de `set-state-in-effect`. Prevenção: inicialização estritamente ligada ao elemento deve usar callback ref estável com cleanup de ref do React 19; effects permanecem apenas para sincronizar opções após a instância existir.
+- Erro: no primeiro GREEN do SP-001, `FinancialEvolutionChart.test.tsx` importou estaticamente o componente e os adapters antes de registrar os mocks; o transformador Next/Jest carregou o ESM real de `echarts/charts` e falhou em `export` antes de executar os testes. Prevenção: testes de ilhas cliente com dependências ESM devem registrar `jest.mock()` antes do carregamento e obter componente/adapters com `jest.requireActual()`/`jest.requireMock()`, mantendo a biblioteca real reservada aos testes de integração/build.
+- Erro: o primeiro mock de `MediaQueryList` do Dia 2 do SP-001 usou `jest.fn()` sem retorno para `dispatchEvent`, mas o contrato DOM exige booleano; a primeira correção nomeou um argumento não utilizado e gerou warning de lint. Prevenção: mocks de APIs do browser devem satisfazer explicitamente as assinaturas nativas com a menor função compatível, sem bindings artificiais, para que type-check e lint contenham somente sinais funcionais planejados.
+- Erro: o primeiro contrato arquitetural RED do SP-001 varreu a própria pasta `tests` e interpretou a expressão usada para detectar imports de ECharts como uma violação real. Prevenção: scanners estáticos de fronteira devem limitar a coleta a arquivos de produção ou excluir explicitamente fixtures e testes antes de avaliar padrões de import; a suíte deve ser repetida após a correção do harness, sem alterar o contrato de produção.
 - Erro: o Dia 2 da UI-003 atualizou os contratos específicos do dashboard, mas não revisou o teste transversal que ainda exigia `FeedbackMessage` no `DashboardPage`; a regressão completa só expôs o drift após o GREEN direcionado. Prevenção: toda mudança de responsabilidade entre componentes deve pesquisar e atualizar contratos arquiteturais e de design system transversais no RED, validando a suíte completa imediatamente após o primeiro GREEN sem reintroduzir imports artificiais.
 - Erro: a primeira integração real do repository da SR-013 tipou `rpc` como `Promise`, enquanto o cliente Supabase retorna um builder aguardável (`PromiseLike`), fazendo o type-check falhar apesar do comportamento correto. Prevenção: modelar adapters externos pelo menor contrato aguardável real, validar a implementação concreta no primeiro GREEN integrado e não ampliar o port de application com tipos do provider.
 - Erro: o teste agregado das rotas do Dia 4 da SR-013 importou as páginas estaticamente e o transformador Next/Jest carregou o loader real antes do mock, tentando acessar `cookies()` fora de request scope. Prevenção: em testes de Server Components, registrar o mock antes e carregar página/loader com `jest.requireActual()`/`jest.requireMock()` quando a ordem de avaliação fizer parte do isolamento.
@@ -5145,3 +5228,2189 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS`
 - UI-003 permanece `IN_PROGRESS`
 - próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+TDD e expansão incremental:
+- testes foram escritos antes das alterações de apresentação
+- RED direcionado confirmou 3 falhas comportamentais em 2 suítes e 1 falha no contrato transversal de design system
+- as ações reais de Contas e Transações passaram a compor uma navegação nomeada, responsiva, com alvos mínimos de toque e foco visível
+- o loading do App Router agora preserva o contexto “Visão geral”, anuncia ocupação com `aria-busy` e mantém feedback vivo
+- o error boundary associa título e descrição ao alerta e reutiliza a primitive compartilhada `Button` para recuperação
+- os estados `missing_accounts`, `empty` e `success` existentes foram preservados sem criar zeros, métricas, mensagens financeiras ou regras novas
+
+Evidências finais:
+- GREEN direcionado: 3 suítes e 17 testes passaram
+- regressão completa: 72 suítes e 388 testes passaram
+- lint local passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou; `/` e `/dashboard` permanecem dinâmicos e `ƒ Proxy (Middleware)` foi preservado
+- revisão Next.js/React confirmou `error.tsx` cliente somente pela API `reset`, dashboard/loading server-compatible, props serializáveis, ausência de fetch/hooks/estado cliente novos e reutilização do design system
+
+Escopo preservado:
+- nenhuma regra financeira, rota, API, Supabase, migration, RLS, policy, grant, persistência, dependência, gráfico, previsão ou comparação foi criada
+- nenhum commit, push, merge, PR ou deploy foi executado nesta fase
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- UI-003 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Checkpoint e baseline:
+- PR #13 do Dia 4 foi mesclado por merge commit após todos os checks verdes
+- branch `codex/ui-003-day5-hardening` foi criada a partir de `develop` atualizado
+- baseline direcionado: 5 suítes e 28 testes passaram
+- baseline completo: 72 suítes e 388 testes passaram; lint, type-check e build passaram
+- a primeira tentativa de build falhou somente porque o sandbox não alcançou o Google Fonts; a repetição autorizada com rede passou sem mudança de código
+
+Refatoração guiada por testes:
+- RED arquitetural comprovou que a antiga cadeia cliente do dashboard ainda existia sem consumidores de produção
+- foram removidos `GetDashboardSummaryUseCase`, `useDashboardSummary`, `DashboardSummaryPanel`, `RecentTransactionsList` e `DashboardEmptyState`, além do teste exclusivo do caso de uso obsoleto
+- segundo RED comprovou que `TransactionSessionProvider` permanecia no layout privado sem qualquer consumidor; provider e teste exclusivo foram removidos e o layout deixou de enviar esse estado vazio para todas as rotas
+- terceiro RED registrou a inconsistência do botão manual do seletor; `FinancialPeriodSelector` agora reutiliza a primitive compartilhada `Button`
+- contratos arquiteturais impedem o retorno da cadeia legada e do provider global sem consumidor
+
+Evidências finais:
+- GREEN direcionado da limpeza inicial: 4 suítes e 20 testes
+- GREEN direcionado da fronteira cliente: 4 suítes e 21 testes
+- GREEN do design system: 2 suítes e 16 testes
+- regressão final: 70 suítes e 378 testes passaram
+- a redução líquida de 2 suítes e 10 testes decorre somente da remoção de código morto; 2 novos testes arquiteturais preservam a não regressão
+- lint passou com 0 warnings; type-check e build Next `16.3.3` passaram
+- `/`, `/dashboard` e `ƒ Proxy (Middleware)` permanecem dinâmicos/preservados
+- revisão Next.js/React confirmou menos JavaScript cliente, nenhuma prop não serializável, hook, effect, fetch cliente ou cálculo financeiro novo
+
+Escopo preservado:
+- nenhum comportamento financeiro, copy, rota, Supabase, migration, RLS, policy, grant, persistência, dependência ou gráfico foi alterado
+- nenhuma abstração nova foi criada; links permaneceram links porque `Button` não possui composição polimórfica aprovada
+- `rewrite-msgs.sh` permaneceu fora do escopo
+- nenhum commit, push, PR, merge adicional ou deploy foi executado após o início técnico do Dia 5
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- UI-003 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Checkpoint e baseline:
+- PR #14 do Dia 5 foi mesclado por merge commit `32d8343a478ef31ab47863664e48ff33eaaba64b`
+- branch `codex/ui-003-day6-accessibility-pwa` foi criada a partir de `develop` atualizado
+- baseline direcionado: 5 suítes e 28 testes passaram
+- baseline completo: 70 suítes e 378 testes passaram; lint, type-check e build passaram
+
+TDD e melhorias aplicadas:
+- RED direcionado: 3 suítes executadas, 2 falharam, 1 passou; 5 testes falharam e 14 passaram
+- o dashboard passou a respeitar a altura dinâmica do viewport com `min-h-dvh`
+- o seletor de período usa 16 px no mobile para evitar zoom automático em navegadores móveis e retorna ao tamanho compacto em `sm`
+- CTA do estado sem contas ocupa a largura disponível no mobile e volta ao tamanho intrínseco em telas maiores
+- cards e valores financeiros aceitam conteúdo estreito sem overflow; valores longos podem quebrar linha
+- a tabela diária preserva rolagem horizontal explícita, habilita gesto de toque e mantém a orientação disponível para leitores de tela e teclado
+- novo teste transversal verifica oito combinações de cores: texto normal com razão mínima 4,5:1 e foco/não texto com razão mínima 3:1
+- GREEN direcionado: 3 suítes e 19 testes passaram
+
+PWA, responsividade e navegador:
+- manifesto existente permaneceu honesto: `standalone`, `pt-BR`, ícones raster/maskable, atalhos reais e nenhuma promessa de offline
+- `manifest.webmanifest` respondeu HTTP 200 com `application/manifest+json`
+- inspeção real em 320 x 720 e 1366 x 768 confirmou ausência de overflow horizontal, inputs móveis com 16 px, botão principal com 44 px e console sem warnings ou erros
+- rota privada sem sessão redirecionou corretamente de `/dashboard` para `/login`
+- credenciais não foram transmitidas pelo agente no navegador; a superfície autenticada permaneceu validada pelos testes determinísticos de dashboard, shell, analytics e rotas
+- nenhum service worker, cache ou comportamento offline foi criado
+
+Evidências finais:
+- regressão completa: 71 suítes e 386 testes passaram
+- lint passou com 0 warnings
+- type-check passou
+- build Next `16.3.3` passou; `/`, `/dashboard` e `ƒ Proxy (Middleware)` permanecem dinâmicos/preservados
+- revisão Next.js/React confirmou Server Components preservados, ausência de hooks/effects/fetch cliente novos e nenhuma ampliação do bundle financeiro
+- `git diff --check` passou; artefatos gerados por `next dev`/`next build` foram restaurados ou removidos
+
+Escopo preservado:
+- nenhuma regra financeira, métrica, gráfico, rota, dependência, Supabase, migration, RLS, policy, persistência, analytics, service worker ou promessa offline foi adicionada
+- `rewrite-msgs.sh` permaneceu fora do escopo
+- nenhum commit, push, PR ou deploy foi executado após o início técnico do Dia 6
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- UI-003 permanece `IN_PROGRESS` até o Dia 7
+- próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UI-003
+
+Small release: `UI-003 — Dashboard FinControl Pulse`.
+
+Integração e branch da fase:
+- PR #15 do Dia 6 foi mesclado por squash no `develop` com commit `38430ecdb11c8c5882991d2dfbe3235778d5b862`
+- branch `codex/ui-003-day7-release-readiness` foi criada a partir do `develop` atualizado
+- commit validado da implementação: `7f1cd31d008e96f70065753abf45f47817aa4a33`
+
+Pipeline e cadeia de suprimentos:
+- regressão completa: 71 suítes e 386 testes passaram
+- lint passou com 0 warnings; type-check passou
+- build Next `16.3.3` passou e preservou `/`, `/dashboard` e `ƒ Proxy (Middleware)`
+- auditoria npm de produção passou com 0 vulnerabilidades
+- 697 pacotes tiveram assinaturas de registro verificadas e 102 tiveram attestations verificadas
+- GitHub Actions e Vercel Preview concluíram com sucesso no commit validado
+
+Segurança e Supabase:
+- as três tabelas públicas financeiras mantêm RLS habilitada e forçada, grants mínimos para `authenticated`, nenhum grant para `anon` e policies de ownership com bloqueio de Auth anônimo
+- a RPC `load_financial_evolution_snapshot` permanece `SECURITY INVOKER`, com search path vazio e execução limitada a `authenticated`
+- nenhum `SECURITY DEFINER` público, tabela pública em publicação Realtime ou segredo versionado foi encontrado
+- migrations locais/remotas permanecem alinhadas nas seis versões esperadas
+- Security Advisor manteve somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`
+- Performance Advisor manteve três índices ainda não usados como informação, sem evidência para remoção antecipada
+- logs recentes de Auth, API e Postgres não apresentaram erro, fatal ou resposta 5xx
+
+Vercel e observabilidade:
+- preview `dpl_FjFhZDd3P7aYtjy8gJRazK6BqSRj` está `READY`, associado à PR #15 e ao commit exato da fase
+- não houve erro de runtime no preview atual; um erro histórico de evolução financeira ficou restrito a deployment de produção anterior
+- o preview protegido redireciona para Vercel SSO, portanto nenhuma sessão autenticada ou bypass foi criado durante a auditoria
+- projeto Vercel atual usa `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`; o vínculo local aponta para projeto antigo e foi registrado em `CI-VERCEL-002`
+- configuração do projeto declara Node 24, mas `package.json` força Node 22; o build usa Node 22 e apresenta aviso porque o npm 10 da imagem não satisfaz o npm 11 declarado
+- no plano Hobby, a baseline permanece em build logs, runtime errors e logs/advisors do Supabase; captura externa sanitizada continua em `HARD-OBS-001`
+
+Threat model e hardening:
+- autorização continua derivada de claims validados no servidor e RLS, sem confiar em metadata de usuário para permissão
+- ownership, Auth anônimo, escalada por `service_role`, exposição de dados e segredos permanecem bloqueados pelas fronteiras existentes
+- a aplicação ainda não define CSP, frame policy, referrer policy ou permissions policy em `next.config.mjs`; validação e adoção permanecem em `SEC-HARD-001`
+- produção pública permanece bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001`
+- `CI-VERCEL-002` é dívida MÉDIA e não bloqueia merge de código, mas deve ser resolvida antes de operação direta por CLI ou promoção de produção
+
+Escopo preservado:
+- nenhuma feature, regra financeira, dependência, migration, policy, grant, configuração Auth, dado, analytics, bypass de preview ou deploy de produção foi criado ou alterado
+- `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- UI-003 concluída como entrega incremental de código
+- próximo passo recomendado: seleção humana do `SP-001 — Biblioteca de gráficos`, sem iniciar automaticamente outro ciclo
+
+## Próximo Ciclo Selecionado — SP-001 Biblioteca de Gráficos
+
+Spike selecionado: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Objetivo:
+- reduzir a incerteza técnica antes da SR-014, comparando opções adequadas a linha financeira, candles futuros, responsividade e acessibilidade
+- definir uma fronteira de adapter exclusiva da presentation, sem acoplar domain ou application a uma biblioteca visual
+- preservar a tabela acessível como representação equivalente e obrigatória dos dados
+
+Dependências confirmadas:
+- SR-013 e UI-003 concluídas em `READY_FOR_RELEASE`
+- `FinancialEvolutionDto` já fornece buckets diários serializáveis e sem dependência visual
+- PR #16 incorporada ao `develop` com Quality Gates verdes
+
+Escopo da seleção:
+- branch `codex/sp-001-chart-library-spike` criada a partir do `develop` atualizado
+- nenhuma biblioteca foi instalada e nenhum gráfico de produção foi criado
+- comparação, critérios, experimento limitado e ADR pertencem ao Dia 1; implementação da SR-014 permanece separada
+
+Estado de entrada:
+- máquina de estados permanece `READY_FOR_RELEASE`
+- SP-001 está `IN_PROGRESS` apenas como ciclo selecionado
+- próximo comando válido: `dia 1`
+
+## Dia 1 — Contexto, Discovery e Arquitetura do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Diagnóstico:
+- o snapshot da SR-013 entrega até 31 buckets diários como objetos planos com datas civis e valores inteiros em centavos
+- `composeDashboardRoute` e `FinancialEvolutionPanel` permanecem server-side; somente a futura superfície interativa precisa ser cliente
+- a tabela diária já é a representação acessível e não pode ser removida pelo gráfico
+- SR-014 exige linha; SR-015 exige OHLC financeiro sem semântica de trading
+
+Comparação ponderada:
+- Apache ECharts 6.1: `4,10/5`; linha e candlestick nativos, SVG/Canvas, ARIA/decal, TypeScript e imports modulares
+- Recharts 3.10: `3,90/5`; melhor ergonomia React/SVG, mas candle depende de composição manual com `Bar` e `ErrorBar`
+- Lightweight Charts 5.2: `3,90/5`; foco financeiro e bundle enxuto, mas Canvas, acessibilidade própria e atribuição TradingView obrigatória
+
+Decisão:
+- adotar `echarts@6.1.0` diretamente e sem wrapper React, condicionado ao experimento e aos testes das próximas fases
+- usar importações tree-shakeable e `SVGRenderer`; nenhum import total de `echarts` será permitido
+- criar adapter específico em `financial-analytics/presentation/charts/echarts`, sem `ChartPort` genérico prematuro
+- preservar o DTO e os centavos; mapper de presentation produzirá view model plano e serializável
+- manter `FinancialEvolutionPanel` como Server Component e limitar `use client` ao componente de lifecycle do gráfico
+- manter a tabela sempre renderizada; ARIA/decal, descrição, teclado, contraste e movimento reduzido complementam a alternativa textual
+
+Contratos planejados:
+- `FinancialEvolutionDto -> toFinancialEvolutionChartModel -> FinancialEvolutionChartModel -> FinancialEvolutionChart.client -> buildEChartsOption`
+- domain, application, infrastructure, Supabase e App Router não importam ECharts
+- temas chegam como tokens resolvidos pela ilha cliente; nenhuma regra financeira é recalculada na biblioteca
+- lifecycle deve cobrir init, resize, update e dispose sem listeners órfãos
+
+Evidências e limites:
+- documentação oficial de ECharts, Recharts, Lightweight Charts e Next.js foi confrontada com o código e o roadmap atuais
+- ADR `0012-chart-library-presentation-adapter.md` registra matriz, decisão, estrutura e alternativas
+- nenhuma dependência, implementação, teste funcional, migration, dado, commit, push, PR ou deploy foi criado nesta fase
+- `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Escopo testável aprovado:
+- mapper puro entre `FinancialEvolutionDto` e um view model gráfico com datas civis e saldos inteiros em centavos
+- option builder puro para linha de saldo, rótulos/tooltip formatados apenas na borda, ARIA/decal e movimento reduzido
+- ilha cliente estreita com inicialização SVG, `ResizeObserver`, atualização e descarte do chart
+- contrato arquitetural que limita ECharts ao adapter de presentation, fixa `echarts@6.1.0` e proíbe wrapper React/import total
+- preservação do Server Component e da tabela acessível já existentes
+
+Cobertura por camada:
+- domain: nenhum contrato novo; `civil-date` e agregação existentes continuam sendo a fonte das invariantes financeiras
+- application: nenhum caso de uso novo; `ListFinancialEvolutionUseCase` continua responsável pelo DTO serializável consumido pelo mapper
+- presentation pura: mapper e option builder possuem cenários de ordem, centavos, saldo negativo, vazio, imutabilidade, moeda, ARIA e movimento reduzido
+- presentation cliente: lifecycle cobre SVG, nome/descrição acessíveis, `setOption`, atualização sem reinicialização, resize, preferência de movimento, cleanup e fallback de erro orientado à tabela
+- arquitetura/bundle: cinco arquivos permitidos, dependência exata, ausência de wrapper e imports modulares são contratos executáveis
+
+Evidências RED:
+- baseline antes dos novos testes: 71 suítes e 386 testes verdes
+- rede de segurança direcionada de domain/application: 3 suítes e 38 testes verdes
+- quatro novas suítes foram criadas antes de qualquer implementação funcional
+- RED direcionado final: 4 suítes vermelhas; o contrato arquitetural executou 9 testes, com 7 falhas esperadas e 2 invariantes existentes verdes; as outras 3 suítes pararam exclusivamente nos módulos planejados ausentes
+- type-check RED: 7 erros `TS2307`, todos referentes aos cinco módulos planejados ainda ausentes
+- lint dos quatro novos arquivos: verde, 0 warnings
+- regressão anterior excluindo somente as quatro suítes RED: 71 suítes e 386 testes verdes
+- o primeiro scanner e o primeiro mock DOM produziram ruído de harness; ambos foram registrados em erros recorrentes e corrigidos antes de aceitar o RED
+- o `npm` global estava quebrado no host; os gates foram executados com o runtime Node empacotado, sem alterar dependências
+
+Implementação bloqueada até o Dia 3:
+- instalar `echarts@6.1.0`
+- criar model, mapper, option builder, adapter ECharts ou ilha cliente
+- integrar qualquer gráfico ao dashboard ou iniciar a SR-014
+- alterar domain, application, infrastructure, Supabase, migrations ou dados
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Testes do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Implementação mínima:
+- `echarts@6.1.0` instalado diretamente e fixado no lockfile, sem wrapper React
+- view model plano com datas civis e saldos inteiros em centavos
+- mapper puro de `FinancialEvolutionDto` para o view model, sem mutação ou formatação monetária antecipada
+- option builder puro com linha de saldo, tokens de tema resolvidos, ARIA/decal, moeda na borda e movimento reduzido
+- adapter ECharts modular com `LineChart`, `AriaComponent`, `GridComponent`, `TooltipComponent` e `SVGRenderer`
+- ilha cliente síncrona com props serializáveis, callback ref/cleanup do React 19, `ResizeObserver`, update sem reinicialização e fallback acessível orientado à tabela
+
+Fronteiras preservadas:
+- `FinancialEvolutionPanel` continua Server Component e não importa a ilha experimental
+- nenhuma rota ou chunk de produção importa ECharts nesta etapa
+- domain, application, infrastructure, App Router e Supabase permanecem inalterados
+- nenhum gráfico de produção foi criado; integração continua reservada à SR-014
+- nenhuma abstração genérica de chart foi introduzida
+
+Evidências GREEN:
+- RED reconfirmado antes da implementação: 4 suítes vermelhas, 7 falhas arquiteturais esperadas e 2 invariantes verdes
+- primeiro GREEN parcial: 3 suítes verdes e 15 testes; a suíte cliente expôs carregamento ESM anterior ao mock
+- correções de harness e integração foram documentadas em erros recorrentes antes de serem aplicadas
+- GREEN direcionado final: 4 suítes e 20 testes verdes
+- regressão completa: 75 suítes e 406 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde, rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais; delta efetivo de bundle das rotas de produção igual a zero
+- pacote auditado localmente: licença Apache-2.0; dependências diretas do pacote limitadas a `tslib` e `zrender`
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Influência da skill `vercel:nextjs`:
+- manteve a ilha cliente não assíncrona e concentrou hooks/APIs de browser nela
+- preservou o painel server-side e a passagem exclusiva de objetos, arrays, strings e números serializáveis
+- confirmou que uma biblioteca client-only não deve entrar em rotas antes de existir integração funcional aprovada
+
+Riscos e próximos controles:
+- o npm disponível no host é 10.9.2, abaixo do npm 11 declarado; a instalação foi executada pelo CLI local e o desvio continua relacionado ao hardening `CI-VERCEL-002`
+- o bundle precisa ser medido novamente quando a SR-014 importar a ilha em uma rota real
+- tema dinâmico, integração painel+tabela e experiência visual real pertencem às fases seguintes, não a este GREEN mínimo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Expansão test-first:
+- baseline do experimento antes dos novos cenários: 4 suítes e 20 testes verdes
+- dois testes foram escritos antes da implementação para estado vazio e alteração de `data-theme`
+- RED observado: 1 suíte executada, 2 falhas esperadas e 5 testes verdes; a ilha ainda renderizava/inicializava o gráfico vazio e não observava o tema
+- GREEN do componente: 1 suíte e 7 testes verdes
+- GREEN direcionado final: 4 suítes e 22 testes verdes
+
+Comportamentos consolidados:
+- modelo sem pontos apresenta status textual explícito e não inicializa ECharts nem constrói opções
+- alteração do atributo raiz `data-theme` reaplica os tokens CSS na instância existente, sem recriar o gráfico
+- o `MutationObserver` observa somente `data-theme` e é desconectado no cleanup
+- sucesso continua expondo gráfico nomeado e descrição associada; falha de inicialização continua orientando o usuário à tabela acessível
+- resize, atualização de modelo, movimento reduzido e descarte da instância permanecem cobertos
+- estado de loading não foi criado porque o experimento não possui operação assíncrona; simular espera seria um estado falso
+
+Fronteiras preservadas:
+- `FinancialEvolutionPanel` e as rotas continuam sem importar a ilha experimental
+- nenhuma integração com dashboard ou SR-014 foi antecipada
+- domain, application, infrastructure, Supabase, migrations e dados permaneceram inalterados
+- nenhuma abstração genérica, candle ou nova regra financeira foi adicionada
+- validação visual em navegador não se aplica nesta fase porque o componente ainda não possui rota aprovada
+
+Quality Gates:
+- regressão completa: 75 suítes e 408 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Diagnóstico estrutural:
+- os cinco arquivos de produção permanecem pequenos e coesos; o maior, `FinancialEvolutionChart.client.tsx`, possui 165 linhas após o hardening
+- nenhum arquivo monolítico, duplicação relevante ou abstração genérica necessária foi identificado
+- a suíte cliente possui 371 linhas e dez cenários de lifecycle; permanece coesa e não justifica fragmentação enquanto o adapter continuar isolado
+- domain, application e infrastructure continuam sem dependência de ECharts; datas civis e centavos inteiros não foram alterados
+- a fronteira Server/Client continua mínima, síncrona e com props planas serializáveis
+
+Hardening test-first:
+- baseline: 4 suítes e 22 testes verdes
+- três contratos foram adicionados antes da implementação: IDs únicos por instância, reação dinâmica a redução de movimento e descarte transacional quando `ResizeObserver` falha
+- RED observado: 1 suíte, 3 falhas planejadas e 7 testes anteriores verdes
+- GREEN do componente: 1 suíte e 10 testes verdes
+- GREEN direcionado final: 4 suítes e 25 testes verdes
+
+Melhorias aplicadas:
+- `useId` substitui o ID global fixo e preserva relações `aria-describedby` únicas quando há múltiplos gráficos
+- mudanças de `prefers-reduced-motion` reaplicam opções na instância existente e removem o listener no unmount
+- inicialização ECharts e configuração de `ResizeObserver` formam uma aquisição transacional: falha intermediária desconecta recursos, descarta a instância e mostra o fallback existente
+- callbacks de resize e cleanup operam sobre a instância local adquirida, evitando interferência com uma referência posterior
+- nenhum novo arquivo, helper genérico, dependência, regra financeira ou estado visual foi criado
+
+Influência da skill `vercel:nextjs`:
+- manteve browser APIs e hooks exclusivamente na ilha cliente
+- preservou o componente cliente como função síncrona e o view model como prop serializável
+- confirmou novamente ausência de ECharts no bundle das rotas enquanto não existe integração aprovada
+
+Quality Gates:
+- regressão completa: 75 suítes e 411 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Riscos remanescentes:
+- o custo real de bundle precisa ser medido quando a SR-014 importar a ilha em uma rota
+- validação visual, responsividade e acessibilidade em navegador pertencem ao Dia 6; não existe rota de experimento autorizada nesta fase
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 6`
+
+## Dia 6 — Experiência, Acessibilidade e PWA do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Auditoria de experiência:
+- container do gráfico permanece mobile first com `w-full`, altura mínima estável e `ResizeObserver`
+- estados vazio e erro usam status textual; o gráfico possui nome e descrição únicos; a tabela server-side permanece como representação equivalente
+- a série única não depende de distinção entre múltiplas cores e o option builder mantém ARIA/decal e movimento reduzido
+- contraste medido entre tokens principais: `5,47:1` e `5,12:1` no tema claro; `9,53:1` e `6,92:1` no tema escuro
+- não há interação por teclado a adicionar porque a superfície é uma imagem informativa, sem controles próprios
+
+Melhoria test-first:
+- baseline: 4 suítes e 25 testes verdes
+- contratos adicionais preservam classes responsivas e impedem fetch, Supabase, storage ou promessa offline dentro da ilha cliente
+- RED direcionado: 2 suítes executadas, 1 falha planejada e 20 testes verdes; faltavam tokens e assinatura de `forced-colors`
+- GREEN de componente/fronteira: 2 suítes e 21 testes verdes
+- GREEN com manifesto PWA: 5 suítes e 29 testes verdes
+- alto contraste agora usa `Canvas`, `CanvasText` e `Highlight`, acompanha mudanças do sistema e remove o listener no cleanup
+
+Experiência PWA:
+- manifesto real em `public/manifest.webmanifest` continua válido, instalável, em `pt-BR`, com ícones raster/maskable e atalhos apenas para fluxos existentes
+- a ilha é determinística a partir de props serializáveis e não acessa fonte de dados, storage, service worker ou rede
+- nenhum service worker ou cache financeiro foi criado; o produto não promete funcionamento offline sem estratégia de consistência
+- o erro inicial de leitura do caminho do manifesto foi registrado em erros recorrentes antes da correção da auditoria
+
+Limites preservados:
+- nenhuma rota, dashboard ou integração SR-014 foi criada
+- validação visual end-to-end em navegador não se aplica ao spike isolado; deverá ocorrer quando a SR-014 fornecer uma rota real
+- domain, application, infrastructure, Supabase, migrations, dados e dependências permaneceram inalterados
+
+Quality Gates:
+- regressão completa: 75 suítes e 413 testes verdes
+- type-check e lint global: verdes, 0 warnings
+- audit de produção: 0 vulnerabilidades
+- build Next.js 16.3.3: verde; rotas e `ƒ Proxy (Middleware)` preservados
+- `next experimental-analyze --output`: nenhum módulo ECharts ou arquivo do experimento nas rotas/chunks atuais
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SP-001 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega do SP-001
+
+Spike: `SP-001 — Avaliar biblioteca de gráficos`.
+
+Decisão final:
+- Apache ECharts `6.1.0` foi aceita para a SR-014 e para a futura SR-015, atrás do adapter específico de presentation registrado no ADR 0012
+- o experimento demonstrou import modular, `SVGRenderer`, lifecycle controlado, alto contraste, movimento reduzido, responsividade e fallback acessível sem contaminar domain, application ou infrastructure
+- a tabela server-side continua obrigatória; o gráfico será uma representação complementar, nunca a única fonte da informação financeira
+- nenhuma abstração `ChartPort`, wrapper React ou integração com rota foi antecipada
+
+Quality Gates finais:
+- regressão completa: 75 suítes e 413 testes verdes
+- type-check e lint global: verdes, com 0 warnings
+- build Next.js `16.3.3`: verde; `/`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e `ƒ Proxy (Middleware)` preservados
+- auditoria npm completa: 0 vulnerabilidades; 701 pacotes com assinaturas de registro e 102 com attestations verificadas
+- ECharts `6.1.0`, ZRender `6.1.0` e suas licenças/dependências foram inspecionados; não há vulnerabilidade conhecida reportada pelo lockfile
+- análise de bundle confirmou que ECharts e o experimento não entram nos chunks das rotas atuais; o delta real deverá ser medido quando a SR-014 importar a ilha
+- GitHub Actions Quality Gates #69 e status Vercel passaram no commit `ce41b301120c44db91b451d530ac0d2d9b25ef6e`
+- Preview Vercel `dpl_2JyLQ9bTgP8S4T7hTybUB5Sp8nZj` está `READY`; `/login` respondeu HTTP 200 e não houve erro/fatal nem runtime error na janela disponível de 1 hora
+- `git diff --check` permaneceu verde; `next-env.d.ts` foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Revisão básica de segurança:
+- o adapter não usa rede, Supabase, storage, service worker, `eval`, HTML arbitrário ou logging de dados financeiros
+- nenhum segredo ou arquivo de ambiente sensível foi adicionado; somente `.env.example`, com valores vazios, permanece rastreado
+- a superfície nova recebe view model serializável com datas civis e centavos inteiros; não recebe identidade, token, repository ou payload de infraestrutura
+- falhas de inicialização descartam recursos e expõem fallback textual acessível
+- nenhum risco crítico específico do SP-001 foi identificado
+
+Baseline de observabilidade:
+- como o experimento não pertence a uma rota, instrumentação de produto e telemetria cliente permanecem bloqueadas nesta fase
+- na SR-014, métricas técnicas poderão registrar apenas sucesso/falha de inicialização, faixa de duração, renderer, faixa de pontos, rota, release e ambiente
+- datas, valores, saldos, categorias, contas, e-mail, UUID, tokens e payloads financeiros são proibidos em logs ou eventos
+- o plano Hobby limita a retenção operacional disponível e não oferece drains; a captura externa sanitizada permanece rastreada em `HARD-OBS-001` antes de produção pública
+
+Riscos e bloqueios remanescentes:
+- o custo real de bundle, a renderização visual end-to-end e o comportamento da rota só podem ser comprovados na SR-014
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando promoção pública de produção, mas não a entrega incremental deste código
+- `CI-VERCEL-002` continua como dívida MÉDIA: o vínculo local `.vercel/project.json` aponta para projeto antigo e deve ser corrigido antes de operação direta por CLI ou promoção
+- o erro histórico `financial evolution unavailable` pertence a deployment de produção anterior, não ao Preview atual nem ao experimento sem rota
+
+Estado de saída:
+- `READY_FOR_RELEASE`
+- SP-001 está `DONE`
+- próximo passo recomendado: refinar e iniciar humanamente a `SR-014 — Gráfico de linha da evolução`, começando pelo Dia 1; nenhuma nova fase foi iniciada automaticamente
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-014
+
+Small release: `SR-014 — Gráfico de linha da evolução`.
+
+Entrada e reconciliação:
+- PR #17 do SP-001 confirmado como squash merge na `develop` pelo commit `f741e680234f3182bfe6f6d8bc9201bb2baf9927`
+- `develop` local avançada por fast-forward e branch `codex/sr-014-financial-evolution-chart` criada a partir da base integrada
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo
+- SR-013, UI-003 e SP-001 estão concluídos; não existe bloqueio duro para o TDD da integração
+
+Objetivo de produto:
+- tornar a evolução do saldo de fechamento diário visualmente legível no dashboard
+- complementar, e nunca substituir, a tabela de evolução financeira
+- reutilizar os cinco períodos existentes e os dados reais já carregados no servidor
+
+Escopo mínimo aprovado:
+- integrar a ilha `FinancialEvolutionChart` ao `FinancialEvolutionPanel` nas rotas compartilhadas `/` e `/dashboard`
+- representar uma única linha de saldo de fechamento por data civil
+- renderizar o gráfico para estados `success` e `empty`; em `empty`, a linha plana continua informativa porque os saldos diários existem
+- preservar `missing_accounts` sem gráfico ou dados financeiros, com o CTA de cadastro existente
+- compor o gráfico em card próprio, com título de nível 3 e descrição objetiva, antes da tabela visível
+- manter fallback textual do chart apontando para a tabela quando a inicialização falhar
+
+Fora do escopo:
+- nova consulta, caso de uso, DTO, repository, RPC, migration, policy, grant ou dado
+- linhas de receitas/despesas, comparação entre períodos, previsão, tendência calculada ou “disponível de verdade”
+- candles, OHLC, volume, zoom, brush, exportação, toggle de visualização ou semântica de trading
+- analytics de produto, telemetria financeira, cache, service worker ou promessa offline
+- alteração de período customizado, timezone ou regras de saldo
+
+Contratos arquiteturais:
+- `composeDashboardRoute` continua realizando uma única leitura server-side e entrega o mesmo `FinancialEvolutionDto` ao painel
+- `FinancialEvolutionPanel` permanece Server Component, chama `toFinancialEvolutionChartModel` no servidor e passa somente strings, números, arrays e objetos planos à ilha
+- `FinancialEvolutionChart.client.tsx` permanece a única fronteira React cliente do recurso e não recebe DTO de infrastructure, identidade, token, função ou `Date`
+- a ilha não realiza fetch, Server Action, Supabase, storage ou transformação financeira; browser APIs permanecem limitadas a lifecycle, resize e preferências visuais
+- a importação direta da ilha pelo painel é a opção inicial; `next/dynamic` com um segundo wrapper não será criado sem evidência de incompatibilidade ou custo material no bundle
+- ECharts continua restrito a `presentation/charts/echarts`, com imports modulares e `SVGRenderer`
+- nenhuma abstração `ChartPort` será criada antes de um segundo consumidor real
+
+Estados e experiência:
+- loading de dados continua pertencendo ao `loading.tsx` da rota; não será simulado dentro de uma ilha síncrona
+- `missing_accounts`: CTA existente, sem gráfico ou tabela
+- `empty`: feedback honesto, resumo, linha plana e tabela de saldos
+- `success`: resumo, linha de saldo e tabela equivalente
+- falha de dados: error boundary existente; falha apenas do ECharts: fallback local e tabela preservada
+- o gráfico é uma imagem informativa, sem controles próprios; não será adicionado foco de teclado artificial
+- contraste, alto contraste, movimento reduzido, descrição associada e responsividade permanecem contratos herdados do SP-001
+
+Estratégia de bundle:
+- medir baseline e delta depois da primeira integração funcional com `next experimental-analyze --output`
+- ECharts pode aparecer somente nos chunks cliente de `/` e `/dashboard`; presença em `/login`, `/accounts`, `/categories` ou `/transactions` bloqueia aceitação
+- o delta bruto e comprimido disponível deve ser documentado antes da conclusão; não será inventado limite numérico sem baseline real
+- lazy loading adicional só será considerado com evidência de custo ou regressão, preservando o menor número de fronteiras cliente
+
+Fatiamento interno:
+- `SR-014A`: testes de integração e implementação mínima painel + mapper + ilha + tabela
+- `SR-014B`: estados, layout, bundle, validação visual, acessibilidade e hardening até o Dia 7
+
+Matriz planejada para o Dia 2:
+- painel `success` renderiza gráfico e tabela a partir do mesmo DTO
+- painel `empty` mantém feedback, linha plana e tabela
+- painel `missing_accounts` não renderiza ilha nem tabela
+- mapper é executado na fronteira server-side e a ilha recebe somente o view model serializável
+- falha de inicialização do chart mantém a tabela consultável
+- rotas `/` e `/dashboard` continuam compartilhando a mesma composição e uma única leitura
+- contrato estático preserva RSC, imports ECharts confinados e ausência de fontes de dados na ilha
+- build/análise posterior comprovam isolamento dos chunks por rota
+
+Influência da skill `vercel:nextjs`:
+- leitura continua no Server Component, sem Route Handler ou fetch cliente
+- props Server → Client permanecem JSON-serializáveis e excluem classes, funções, `Date`, `Map` ou `Set`
+- componente cliente continua síncrono; APIs do browser não atravessam para o servidor
+- um segundo dynamic wrapper foi rejeitado por enquanto para evitar fronteira e loading artificiais sem evidência
+
+Artefatos e validação do Dia 1:
+- ADR 0013 registra a integração do gráfico de linha
+- arquitetura, backlog, roadmap, estratégia de testes, quality gates e especificação de produto foram atualizados
+- nenhum arquivo funcional, teste executável, dependência, banco, commit, push, PR ou deploy foi criado nesta fase
+- `git diff --check` é o gate aplicável; lint, type-check, testes e build não precisam ser repetidos para uma entrega exclusivamente documental
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-014 está `IN_PROGRESS`
+- próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-014
+
+Small release: `SR-014A — Integração mínima do gráfico de evolução`.
+
+Critérios de entrada confirmados:
+- Dia 1 da SR-014 concluído em `ARCHITECTURE_READY`
+- DTO, mapper, ilha ECharts, tabela e contratos de composição já existentes e delimitados
+- regra financeira inalterada; a fase exige somente contratos novos de integração na presentation
+- declaração operacional aprovada antes da execução
+
+Matriz executada:
+- `FinancialEvolutionPanel` deve renderizar heading de nível 3, gráfico e tabela a partir do mesmo resultado `success`
+- o estado `empty` deve preservar feedback, linha plana e tabela
+- o estado `missing_accounts` deve continuar sem gráfico ou tabela
+- falha local do gráfico deve manter fallback textual e tabela consultável
+- o Server Component deve possuir o mapper e a composição da ilha sem `next/dynamic` e sem importar ECharts diretamente
+- props da ilha permanecem restritas ao view model plano e serializável já coberto pelas suítes do SP-001
+
+TDD observado:
+- baseline completa anterior ao RED: 75 suítes e 413 testes verdes
+- 4 novos contratos foram adicionados em 2 suítes, sem alteração funcional
+- RED direcionado: 2 suítes falharam; 4 testes falharam e 17 passaram, totalizando 21 testes
+- causas exclusivas do RED: painel ainda não usa o mapper, não compõe a ilha, não apresenta o heading aprovado e não expõe o fallback local do chart
+- rede anterior, excluindo somente as 2 suítes RED: 73 suítes e 396 testes verdes
+- lint dos testes alterados e type-check permaneceram verdes
+
+Fronteiras preservadas:
+- nenhum arquivo de production code foi alterado
+- domain, application, infrastructure, App Router, Supabase, migrations, RLS, policies, grants e dados permaneceram inalterados
+- nenhum teste existente foi removido, ignorado ou relaxado
+- build, bundle e browser permanecem reservados às fases posteriores ao GREEN funcional
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo
+
+Incidentes operacionais registrados antes da correção:
+- wrapper npm global conhecido como inválido foi chamado antes da runtime empacotada
+- alias legado de descoberta da runtime foi chamado antes do endpoint MCP atual
+- retomada do Jest usou string JavaScript sem `String.raw` e corrompeu caminhos Windows antes de iniciar o processo
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-014 permanece `IN_PROGRESS`
+- implementação funcional permanece bloqueada até aprovação explícita do Dia 3
+- próximo comando válido: `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-014
+
+Small release: `SR-014A — Integração mínima do gráfico de evolução`.
+
+Implementação mínima:
+- `FinancialEvolutionPanel` permaneceu Server Component e passou a executar `toFinancialEvolutionChartModel` somente no ramo com dados
+- `FinancialEvolutionChart` foi composta em card próprio, com heading de nível 3 e descrição objetiva, antes da tabela
+- o view model enviado à ilha contém somente strings, números, arrays e objetos planos
+- `success` e `empty` exibem gráfico e tabela; `missing_accounts` continua sem ambos
+- o fallback local já existente na ilha mantém a tabela como representação consultável
+- nenhuma regra financeira, consulta, DTO, repository, RPC, migration, policy, grant ou dado foi alterado
+
+TDD RED → GREEN:
+- os 4 contratos do Dia 2 passaram sem remoção, relaxamento ou alteração de expectativa
+- GREEN direcionado inicial: 2 suítes e 21 testes verdes
+- a regressão ampliada revelou que `DashboardRoutes.test.tsx` carregava o ESM real do ECharts sem mockar a ilha; o erro foi registrado antes da correção do harness
+- GREEN direcionado ampliado: 3 suítes e 25 testes verdes
+- regressão completa final: 75 suítes e 417 testes verdes
+- lint global com 0 warnings e type-check verdes
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e `ƒ Proxy (Middleware)` preservados
+
+Bundle e fronteiras:
+- `next experimental-analyze --output` concluiu com sucesso
+- o único chunk contendo ECharts/ZRender mede 500.653 bytes brutos e 170.071 bytes em gzip
+- esse chunk aparece somente nos manifests cliente de `/` e `/dashboard`
+- `/login`, `/accounts`, `/categories` e `/transactions` não referenciam o chunk
+- `next/dynamic`, wrapper adicional, import direto de ECharts no Server Component e abstração genérica permaneceram ausentes
+- uma tentativa de interpretar o formato interno `analyze.data` como JSON simples foi registrada como erro operacional; nenhuma métrica foi inferida desses arquivos opacos
+
+Fronteiras e escopo preservados:
+- produção alterada somente em `FinancialEvolutionPanel.tsx`
+- harness de rota alterado somente para mockar a fronteira cliente antes do carregamento server-side
+- `next-env.d.ts` gerado pelo build foi restaurado ao conteúdo versionado
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo
+- nenhuma validação visual, expansão de estado, refatoração ampla, deploy, commit, push ou PR foi executado nesta fase
+
+Influência da skill `vercel:nextjs`:
+- a leitura permaneceu no Server Component e nenhuma busca cliente foi criada
+- a fronteira cliente recebe somente um objeto serializável e não conhece DTO, identidade ou infraestrutura
+- o wrapper cliente existente isolou a dependência browser-only; não houve necessidade comprovada de `next/dynamic`
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-014 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`
+
+## Mudança de Escopo Aprovada — UX-CHART-001 no Dia 4 da SR-014
+
+Solicitação aprovada:
+- todos os gráficos atuais e futuros devem oferecer expansão para ocupar a tela
+- a primeira entrega ocorrerá na `SR-014B`, usando o gráfico de evolução como consumidor real
+
+Impacto arquitetural:
+- criar uma primitive cliente compartilhada de presentation, sem ECharts ou semântica financeira
+- manter `FinancialEvolutionPanel` server-side e o view model serializável existente
+- reutilizar a mesma instância ECharts e o `ResizeObserver`; não duplicar o gráfico em modal ou portal
+- usar overlay CSS como baseline e Fullscreen API como melhoria progressiva
+- preservar tabela equivalente, foco, teclado, cleanup, movimento reduzido e controle do usuário
+
+Escopo permitido no Dia 4:
+- registrar `UX-CHART-001` e ADR 0014
+- criar testes antes da implementação
+- implementar expandir/recolher, fallback, `Escape`, foco e scroll
+- integrar somente o gráfico de evolução como primeiro consumidor
+- executar regressão, lint, type-check e build
+
+Fora do escopo:
+- alterar gráficos futuros ainda inexistentes
+- regras financeiras, DTOs, data fetching, Supabase, migrations ou dependências
+- forçar orientação, duplicar instância ECharts ou remover a tabela
+- validação final de mobile/acessibilidade, reservada ao Dia 6
+
+Estado durante a execução:
+- `IMPLEMENTATION_IN_PROGRESS`
+- Dia 4 aprovado; TDD obrigatório antes do código funcional
+
+## Dia 4 — Expansão Controlada da SR-014 com UX-CHART-001
+
+Incremento entregue:
+- `ExpandableChartFrame.client.tsx` criado como primitive compartilhada e independente de provider
+- overlay CSS ocupa o viewport como baseline; Fullscreen API nativa é solicitada somente quando disponível
+- rejeição ou indisponibilidade da API mantém o overlay funcional
+- botão único alterna expandir/recolher, preserva foco e oferece rótulos acessíveis
+- `Escape` fecha o fallback; `fullscreenchange` sincroniza a saída controlada pelo navegador
+- scroll do documento é bloqueado apenas durante a expansão e restaurado no fechamento ou unmount
+- focus trap impede navegação por teclado para controles atrás do diálogo
+- o mesmo nó e a mesma instância ECharts são preservados; `ResizeObserver` continua responsável pelo resize
+- dois frames mantêm estado independente
+
+TDD observado:
+- RED inicial: 3 suítes falharam; 2 testes falharam e 22 passaram, enquanto a nova suíte não carregou porque a primitive ainda não existia
+- primeiro GREEN: 31 de 32 testes passaram; um contrato estático antigo detectou alteração indevida na classe-base do viewport
+- a classe-base foi preservada sem relaxar o teste e o comportamento de altura expandida foi mantido
+- revisão React encontrou ausência de focus trap; novo RED reproduziu 1 falha em 9 testes da primitive
+- GREEN direcionado final: 3 suítes e 33 testes verdes
+- regressão completa: 76 suítes e 428 testes verdes
+- lint global com 0 warnings e type-check verdes
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados
+
+Bundle:
+- analyzer de produção verde
+- ECharts/ZRender continua somente nos manifests cliente de `/` e `/dashboard`
+- chunk anterior: 500.653 bytes brutos e 170.071 bytes gzip
+- chunk atual: 503.674 bytes brutos e 171.266 bytes gzip
+- delta do incremento: +3.021 bytes brutos e +1.195 bytes gzip
+- `/login`, `/accounts`, `/categories` e `/transactions` permanecem sem referência ao chunk
+
+Arquitetura e governança:
+- ADR 0014 registra a decisão universal para gráficos atuais e futuros
+- `FinancialEvolutionChart.client.tsx` é o primeiro consumidor; gráficos inexistentes não foram antecipados
+- `FinancialEvolutionPanel`, mapper, model, option builder, adapter, domain, application, infrastructure e Supabase não mudaram
+- nenhuma dependência, migration, orientação forçada, duplicação de dados ou nova fonte de leitura foi introduzida
+- revisão `vercel:react-best-practices` confirmou callbacks estáveis, listeners condicionais, cleanup e ausência de dados duplicados
+- validação visual real, mobile e acessibilidade aprofundada permanecem reservadas ao Dia 6
+- `next-env.d.ts` gerado pelo build foi restaurado e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até hardening e validação final
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Diagnóstico de Refatoração e Hardening da SR-014
+
+Diagnóstico inicial:
+- baseline direcionado permaneceu verde com 3 suítes e 33 testes
+- `ExpandableChartFrame.client.tsx` concentra 200 linhas, mas suas responsabilidades ainda pertencem ao mesmo frame; nenhuma extração ampla está justificada sem evidência adicional
+- a revisão assíncrona encontrou uma corrida real entre recolher o overlay e a resolução tardia de `requestFullscreen()`
+- no comportamento do Dia 4, uma solicitação nativa pendente pode resolver após o frame já ter sido recolhido, deixando o navegador em fullscreen sem o diálogo correspondente
+
+Regra preventiva adicionada:
+- toda solicitação assíncrona de fullscreen deve ter identidade de tentativa e ser invalidada ao recolher ou desmontar o frame
+- se uma tentativa obsoleta adquirir fullscreen tardiamente, o componente deve encerrá-lo sem reabrir a UI, sem atualizar estado desmontado e sem rejeição não tratada
+- a correção deve nascer de teste de regressão RED e preservar o overlay CSS como baseline
+
+Incidente operacional desta fase:
+- o wrapper npm global inválido foi acionado na primeira tentativa do baseline e não encontrou `npm-cli.js`
+- a execução foi retomada com a runtime Node empacotada do workspace; o incidente não representa falha do projeto
+
+Plano aplicado e resultado:
+- nenhuma extração de hook, adapter ou helper genérico foi realizada: o componente permanece coeso e ainda não existe evidência para ampliar a abstração
+- cada tentativa de `requestFullscreen()` passou a receber uma identidade monotônica invalidada ao recolher o frame
+- uma tentativa obsoleta que adquire fullscreen tardiamente encerra o modo nativo sem reabrir a UI
+- a saída nativa trata resolução e rejeição sem deixar promessa rejeitada sem observação
+- foco, scroll, overlay CSS, `Escape`, `fullscreenchange`, focus trap, mesma instância ECharts e múltiplos frames permaneceram protegidos
+
+TDD e quality gates:
+- baseline direcionado: 3 suítes e 33 testes verdes
+- RED de regressão: 1 suíte com 1 falha esperada e 9 testes verdes; a tentativa tardia não chamava `exitFullscreen()`
+- GREEN da primitive: 1 suíte e 10 testes verdes
+- GREEN direcionado: 3 suítes e 34 testes verdes
+- regressão completa: 76 suítes e 429 testes verdes
+- lint global com 0 warnings, type-check e build Next.js `16.3.3` verdes
+- analyzer verde; ECharts/ZRender permanece somente em `/` e `/dashboard`
+- chunk do Dia 5: 503.929 bytes brutos e 171.551 bytes gzip; delta sobre o Dia 4: +255 bytes brutos e +285 bytes gzip
+- `next-env.d.ts` gerado pelo build foi restaurado; `rewrite-msgs.sh` permaneceu fora do escopo
+
+Fronteiras preservadas:
+- nenhum domain, application, infrastructure, DTO, mapper, repository, Supabase, migration, policy, grant, dado ou dependência mudou
+- nenhuma validação visual/browser, alteração de UX ampla, commit, push, PR ou deploy foi executado
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em fluxo estável após o hardening
+- SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até UX/acessibilidade e quality gate final
+- próximo comando válido: `dia 6`
+
+## Dia 6 — Diagnóstico de UX, Acessibilidade e PWA da SR-014
+
+Baseline e experiência PWA:
+- baseline direcionado: 4 suítes e 36 testes verdes
+- manifesto permanece instalável, sem orientação forçada, service worker, cache financeiro ou promessa offline
+- movimento reduzido, alto contraste, descrição acessível, tabela equivalente e alvos mínimos já possuem cobertura anterior
+
+Falhas de responsividade identificadas antes da correção:
+- o overlay expandido usa padding fixo e não reserva `safe-area-inset-*`, podendo aproximar título e controle de recortes físicos em PWA/mobile
+- o viewport ECharts mantém `min-h-72` mesmo dentro do frame expandido; em mobile paisagem ou viewport de baixa altura, essa altura mínima pode exceder o espaço útil e ser recortada pelo container
+
+Regras preventivas adicionadas:
+- o frame expandido deve aplicar safe areas nos quatro lados, preservando espaçamento mínimo do design system
+- o consumidor deve manter `min-h-72` no fluxo normal e liberar `min-height` somente quando estiver dentro do frame expandido
+- orientação não será forçada; o layout deve se adaptar à altura e à largura disponíveis
+- correções devem nascer em RED e preservar a mesma instância ECharts, a tabela equivalente e o overlay CSS
+
+Incidente operacional desta fase:
+- uma busca `rg` recebeu wildcard incompatível com PowerShell/Windows e retornou erro de sintaxe para `*.config.*`
+- buscas posteriores devem usar caminhos explícitos ou descoberta prévia com `rg --files`; o incidente não representa falha do projeto
+- o Next dev gerou `AGENTS.md` e `CLAUDE.md` na raiz por configuração automática; ambos foram removidos por estarem fora do escopo e `next-env.d.ts` foi restaurado ao conteúdo versionado
+
+Falha visual real identificada no navegador:
+- após expandir em desktop, recolher e reduzir para `390 x 844`, a página passou a medir 1.367 px de largura para 375 px úteis
+- a primitive e os cards estavam limitados, mas o viewport ECharts e sua grade interna não tinham `min-width: 0`
+- o SVG preservou 1.334 px como tamanho intrínseco, ampliou os grids ancestrais e criou overflow horizontal
+
+Regra preventiva adicionada:
+- todo viewport de renderer dentro de grid/flex responsivo deve declarar `min-width: 0` em si e no wrapper interno que contém o renderer
+- a correção deve ser protegida por teste antes do código e revalidada no navegador após HMR/reload
+
+Implementação e TDD:
+- o frame expandido recebeu safe areas nos quatro lados, com espaçamento mínimo de 1 rem em mobile e 1,5 rem a partir de 640 px
+- o frame tornou-se um named group; o viewport mantém `min-h-72` no fluxo normal e usa `min-h-0` somente quando expandido
+- a grade interna e o viewport ECharts receberam `min-w-0`, permitindo resize real sem largura intrínseca residual do SVG
+- primeiro RED: 3 suítes falharam, com 4 falhas esperadas e 30 testes anteriores verdes
+- segundo RED do overflow real: 2 suítes falharam, com 2 falhas esperadas e 22 testes anteriores verdes
+- GREEN direcionado final: 5 suítes e 45 testes verdes
+
+Validação real no navegador:
+- dashboard autenticado carregou com conteúdo real, sem tela vazia, overlay de erro, warning ou erro de console
+- desktop padrão não apresentou overflow; expansão preservou diálogo nomeado, foco no controle, scroll bloqueado, renderer e padding de 24 px
+- mobile retrato `390 x 844`: largura útil de 375 px, sem overflow; expandido com viewport do gráfico de 358 x 760 px e padding de 16 px
+- mobile paisagem `844 x 390`: sem overflow; gráfico expandido com 796 x 290 px e padding de 24 px
+- botão expandir/recolher manteve 52 x 44 px; foco permaneceu preso no único controle e foi restaurado ao fechar pelo botão
+- a superfície de automação não propagou `Escape` físico; o fechamento por `Escape` permanece coberto pelo teste executável da primitive e não foi declarado como validação browser
+- temas claro, escuro e sistema alternaram sem erros; a preferência `system` foi restaurada
+- `lang=pt-BR`, viewport responsivo, dois `theme-color`, manifest, nomes acessíveis e ausência de IDs duplicados foram confirmados
+
+PWA e quality gates:
+- manifesto continua `standalone`, sem orientação forçada, promessa offline ou service worker
+- regressão completa: 76 suítes e 429 testes verdes
+- lint global com 0 warnings e type-check verdes
+- build Next.js `16.3.3` verde após repetir com rede para obter Geist; a primeira falha foi exclusivamente ambiental no download da fonte
+- analyzer verde; ECharts/ZRender permanece somente em `/` e `/dashboard`
+- chunk do Dia 6: 504.020 bytes brutos e 171.587 bytes gzip; delta sobre o Dia 5: +91 bytes brutos e +36 bytes gzip
+- `next-env.d.ts` foi restaurado, artefatos automáticos foram removidos e `rewrite-msgs.sh` permaneceu fora do escopo
+
+Fronteiras preservadas:
+- nenhum domain, application, infrastructure, DTO, mapper, repository, Supabase, migration, policy, grant, dado ou dependência mudou
+- nenhuma orientação foi forçada e nenhuma capacidade offline foi prometida
+- nenhum commit, push, PR ou deploy foi executado
+
+Estado de saída:
+- `QUALITY_VALIDATION`
+- SR-014 e UX-CHART-001 permanecem `IN_PROGRESS` até o gate final
+- próximo comando válido: `dia 7`
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-014
+
+Quality gates locais:
+- lint global verde com zero warnings
+- type-check verde
+- regressão completa verde com 76 suítes e 429 testes; nenhum teste ignorado ou snapshot pendente
+- `npm audit --audit-level=high` consultou o registry e retornou zero vulnerabilidades
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados
+- `next experimental-analyze --output` verde; o único chunk com ECharts/ZRender possui 504.020 bytes brutos e permanece referenciado somente por `/` e `/dashboard`
+- `next-env.d.ts` gerado pelo build foi restaurado ao conteúdo versionado e `rewrite-msgs.sh` permaneceu fora do escopo
+- `git diff --check` verde; somente os quatro artefatos de governança da fase foram alterados
+
+Segurança e fronteiras:
+- a revisão do diff não encontrou acesso novo a Supabase, autenticação, autorização, RLS, migrations, variáveis públicas, storage, rede, HTML arbitrário ou persistência local
+- a primitive compartilhada manipula somente fullscreen, foco, listeners e scroll, com cleanup, rejeições e corrida assíncrona cobertos por testes
+- nenhuma regra financeira, DTO, mapper, repository, dado, dependência ou segredo foi alterado
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` continuam bloqueando produção pública, mas não o merge incremental desta release
+
+CI, deploy e observabilidade:
+- PR #18 está aberto, não é draft, está `MERGEABLE` e aponta de `codex/sr-014-financial-evolution-chart` para `develop`
+- GitHub `validate`, Vercel e Vercel Preview Comments estão verdes no commit `ff4bb73`
+- deployment `dpl_2qV1zdyc8bdLpJqVYxfEw3trT6K4` está `READY`, associado ao commit e ao PR corretos
+- `/login` respondeu HTTP 200 no preview, com HSTS, `noindex`, manifest e metadados PWA esperados
+- a consulta Vercel das últimas 24 horas não encontrou clusters de erro de runtime nem logs `error`/`fatal` do ambiente preview; não existem comentários não resolvidos na Toolbar da branch
+- o plano Hobby não oferece drains; runtime logs e dashboard permanecem a baseline disponível, enquanto captura externa sanitizada continua em `HARD-OBS-001`
+- o vínculo local `.vercel/project.json` ainda aponta para um projeto antigo; o projeto ativo é `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`
+- a Vercel respeitou `engines.node` e executou Node 22, mas o projeto remoto continua configurado como 24.x e o install remoto usa npm 10.9.8 apesar do npm 11 declarado; o drift permanece classificado em `CI-VERCEL-002`
+
+Estado de saída:
+- `READY_FOR_RELEASE` para entrega incremental de código
+- SR-014 e UX-CHART-001 concluídas e movidas para `DONE`
+- merge recomendado: squash do PR #18 em `develop` após commit/push desta documentação e nova confirmação dos checks
+- produção pública e promoção manual permanecem fora do escopo e bloqueadas pelos hardenings documentados
+- próximo ciclo recomendado: refinar humanamente a `SR-015 — Candles financeiros` antes de iniciar seu Dia 1
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SR-015
+
+Small release: `SR-015 — Candles financeiros`.
+
+Objetivo aprovado:
+- permitir alternar entre “Evolução do saldo” e “Variação do saldo” no painel financeiro;
+- representar abertura, máxima, mínima e fechamento do saldo por dia, sem semântica de preço ou trading;
+- manter volume, receitas, despesas e quantidade de transações como informação financeira explicável;
+- preservar tabela textual equivalente, expansão universal e os estados existentes do dashboard.
+
+Escopo fechado para o primeiro incremento:
+- todos os cinco períodos atuais (`week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`) usam buckets diários, pois o contrato vigente limita o intervalo a no máximo 31 dias;
+- `open` é o saldo no início do dia; `close` é o saldo após o último lançamento ordenado daquele dia;
+- `high` e `low` incluem o saldo de abertura e cada saldo intermediário;
+- `volumeInCents` é a soma absoluta dos valores efetivados, equivalente a receitas mais despesas no domínio atual;
+- dia vazio mantém `open = high = low = close`, com receita, despesa, volume e quantidade iguais a zero;
+- dentro da mesma data civil, a ordem determinística é `createdAt` ascendente e depois `id` ascendente;
+- como o modelo atual não registra horário bancário do evento, máximas e mínimas intradiárias descrevem a ordem de registro no FinControl, não uma linha temporal bancária inferida.
+
+Contratos de camada:
+- `domain`: um agregador puro recebe período, saldo de abertura e movimentos, valida entradas, ordena deterministicamente e devolve candles diários contínuos em centavos seguros;
+- `application`: `ListFinancialEvolutionUseCase` reutiliza o único `FinancialEvolutionSnapshot` já carregado e acrescenta `candles` ao DTO, sem segundo repository call;
+- `infrastructure`: o RPC existente já fornece saldo de abertura e movimentos necessários; nenhuma migration, policy, grant ou nova consulta foi aprovada;
+- `presentation`: um seletor cliente controla somente o modo visual, recebe modelos planos e serializáveis e monta apenas o gráfico/tabela ativos, sem buscar dados;
+- ECharts continua isolado em `financial-analytics/presentation/charts/echarts`, agora com `CandlestickChart` modular além de `LineChart`;
+- linha e candles reutilizam `ExpandableChartFrame`; não há renderer, fonte de dados ou instância simultânea duplicada;
+- a tabela OHLC apresenta a mesma informação do tooltip e permanece utilizável sem depender de cor, hover ou sucesso do renderer.
+
+Estados e comportamento:
+- `success`: seletor, modo ativo, tabela equivalente e resumo existentes;
+- `empty`: candles planos por dia e volume zero, com feedback já existente;
+- `missing_accounts`: nenhum seletor, gráfico ou tabela financeira;
+- erro da leitura: error boundary sanitizada da rota;
+- erro local de ECharts: fallback textual e tabela ativa preservada;
+- loading continua pertencendo à rota, sem spinner cliente artificial.
+
+Small releases internas:
+- `SR-015A`: testes RED e implementação mínima do agregador OHLC, DTO e mapper do modelo de candles a partir do snapshot único;
+- `SR-015B`: seletor Linha/Candles, gráfico ECharts, tabela OHLC, expansão, estados, acessibilidade, bundle e validação visual.
+
+Decisões e exclusões:
+- granularidade semanal/mensal, período customizado, zoom, brush, indicadores técnicos, previsão e exportação permanecem fora;
+- nenhum `ChartPort` genérico será criado; o segundo tipo visual compartilha somente primitives e adapters concretos que já possuem uso real;
+- nenhuma nova dependência é necessária;
+- a decisão completa está no ADR 0015.
+
+Riscos:
+- ALTO: interpretar máxima/mínima como horário real da transação; mitigado por copy explícita sobre ordem de registro e por testes de desempate;
+- MÉDIO: crescimento do chunk ECharts ao registrar candlestick; deve ser medido contra a baseline de 504.020 bytes brutos no Dia 3 e novamente no Dia 7;
+- MÉDIO: tabela larga em mobile; responsividade, navegação e leitura por tecnologia assistiva são gates do Dia 4 ao Dia 6;
+- os bloqueios pré-produção `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001` e a dívida `CI-VERCEL-002` permanecem inalterados.
+
+Artefatos e validação do Dia 1:
+- contexto, backlog, roadmap, arquitetura, especificação de produto, estratégia planejada e quality gate atualizados;
+- ADR 0015 criado e índice de ADRs corrigido para incluir 0014 e 0015;
+- erro de caminhos presumidos registrado antes da correção;
+- nenhum código funcional, teste executável, dependência, Supabase, migration, dado, commit, push, PR ou deploy foi criado;
+- lint, type-check, testes e build não foram repetidos porque a entrega é exclusivamente documental; `git diff --check` é o gate aplicável.
+
+Estado de saída:
+- `ARCHITECTURE_READY`
+- SR-015 está `IN_PROGRESS`
+- próximo comando válido: `dia 2`
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SR-015
+
+Small release prioritária: `SR-015A — Agregação OHLC, DTO e mapper`.
+
+Baseline anterior ao RED:
+- Node `22.14.0` compatível com `engines`; binários locais usados porque o wrapper global do npm permanece quebrado;
+- regressão completa verde com 76 suítes e 429 testes;
+- type-check verde;
+- lint global verde com zero warnings.
+
+Matriz executável criada:
+- domain: OHLC, volume, continuidade diária, ordem por `createdAt`/`id`, imutabilidade, saldo negativo, calendário, validação e overflow;
+- application: pontos e candles derivados do mesmo snapshot, uma única chamada ao repository, `missing_accounts` e `empty`;
+- presentation mapper: datas civis, centavos inteiros, dados de tooltip, imutabilidade e série ausente;
+- adapter: tupla ECharts `[open, close, low, high]`, estilos de alta/queda, formatação na borda, ARIA e movimento reduzido;
+- tabela: equivalência OHLC, scroll por teclado, direção textual e explicação sobre ordem de registro;
+- seletor: linha como padrão, troca para candles, um modo ativo e ausência de rede;
+- arquitetura: artefatos aprovados, ECharts confinado ao adapter, painel server-side e ilha cliente sem fonte de dados.
+
+Fixtures acrescentadas:
+- receita posterior no mesmo dia para provar novo extremo após queda intermediária;
+- despesa e receita com o mesmo `createdAt`, desempatadas por IDs estáveis;
+- cenários locais cobrem vazio, saldo negativo, cruzamento de zero, data inválida e limites de inteiro seguro.
+
+RED observado:
+- sete suítes novas executadas; sete falharam como esperado;
+- Jest materializou 14 contratos antes de a resolução de módulos interromper cinco suítes: 13 falharam e um contrato arquitetural já passou;
+- falhas funcionais: `candles` ainda ausente no DTO nos estados `success`, `empty` e `missing_accounts`;
+- falhas estruturais: agregador, mapper, model, builder, tabela, chart, switcher e registro `CandlestickChart` ainda inexistentes;
+- type-check contém somente cinco `TS2307` correspondentes aos módulos de produção deliberadamente ausentes;
+- lint direcionado dos oito arquivos de teste/fixture está verde com zero warnings;
+- regressão anterior, excluindo apenas as sete suítes RED, permaneceu verde com 76 suítes e 429 testes;
+- `git diff --check` verde.
+
+Arquivos de teste criados:
+- `aggregate-financial-candles.test.ts`;
+- `list-financial-candles.use-case.test.ts`;
+- `to-financial-candlestick-chart-model.test.ts`;
+- `build-financial-candlestick-option.test.ts`;
+- `FinancialCandlesTable.test.tsx`;
+- `FinancialVisualizationSwitcher.test.tsx`;
+- `financial-candles-boundaries.test.ts`.
+
+Restrições preservadas:
+- nenhum código funcional, tipo de produção, DTO, adapter, componente ou dependência foi criado;
+- nenhum Supabase, RPC, migration, RLS, dado, commit, push, PR ou deploy foi executado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`
+- SR-015 permanece `IN_PROGRESS`
+- implementação permanece bloqueada até aprovação explícita do `dia 3`
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SR-015
+
+Small release implementada: `SR-015A — Agregação OHLC, DTO e mapper`, com a integração mínima da `SR-015B` necessária para o fluxo funcional.
+
+Implementação entregue:
+- `FinancialCandle` e `aggregateFinancialCandles` validam período, IDs, instantes, tipos, valores e inteiros seguros;
+- movimentos são ordenados em cópia por data civil, `createdAt` e `id`, preservando o input;
+- todos os dias do período recebem OHLC, totais, volume absoluto e quantidade, incluindo dias vazios e saldos negativos;
+- `ListFinancialEvolutionUseCase` deriva linha e candles do mesmo `FinancialEvolutionSnapshot` e mantém exatamente uma chamada ao repository;
+- DTO, model e mapper transportam somente valores planos e serializáveis;
+- ECharts registra `CandlestickChart` no adapter modular existente e usa tuplas `[open, close, low, high]`;
+- painel permanece Server Component e entrega os dois modelos ao seletor cliente;
+- seletor usa linha como padrão, alterna localmente sem rede e monta somente gráfico/tabela ativos;
+- tabela OHLC expressa alta, queda e estabilidade em texto e explica que extremos seguem a ordem de registro;
+- o novo gráfico reutiliza `ExpandableChartFrame`, movimento reduzido, cores forçadas, tema e fallback textual.
+
+Evidência TDD e correções de harness:
+- primeiro GREEN funcional: 37 de 41 contratos passaram; quatro falsos negativos vieram de APIs globais ausentes no jsdom;
+- `tests/setupTests.ts` passou a fornecer clones determinísticos e um `fetch` que falha explicitamente quando chamado;
+- fixtures tipadas, mocks server-side e o boundary transversal foram alinhados à responsabilidade aprovada do seletor;
+- ambas as falhas de harness foram documentadas em Erros Recorrentes antes da correção;
+- GREEN direcionado final: sete suítes e 41 testes;
+- GREEN transversal: três suítes e 26 testes;
+- regressão completa: 83 suítes e 470 testes, sem snapshots.
+
+Quality gates locais:
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde, com todas as rotas e Proxy preservados;
+- `next experimental-analyze --output` verde;
+- único chunk ECharts/ZRender com 525.017 bytes brutos e 179.024 bytes gzip, delta de +20.997/+7.437 bytes sobre a baseline da SR-014;
+- chunk continua referenciado somente nos manifests cliente de `/` e `/dashboard`;
+- `git diff --check` verde; `next-env.d.ts` gerado pelo build foi restaurado ao conteúdo versionado;
+- revisão `vercel:nextjs` e `vercel:react-best-practices` confirmou Server Component, props serializáveis, ausência de fetch cliente, estado derivado e imports diretos.
+
+Riscos, pendências e escopo preservado:
+- custo incremental do candlestick é controlado e não justifica `next/dynamic` ou wrapper adicional neste recorte;
+- duplicação do ciclo de vida entre as duas ilhas ECharts foi registrada para avaliação no Dia 5, sem abstração prematura;
+- estados, teclado, mobile, alto contraste e comportamento visual real devem ser aprofundados nos Dias 4 e 6;
+- nenhum Supabase, RPC, migration, RLS, dado, dependência, período novo, recurso de trading, deploy, commit, push ou PR foi executado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-015 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 4`
+
+## Dia 4 — Expansão Controlada da SR-015
+
+Objetivo executado:
+- tornar a visualização de candles mais explicável, resiliente e semanticamente navegável sem alterar o contrato OHLC, o snapshot ou as fronteiras aprovadas.
+
+TDD e implementação:
+- RED direcionado: três suítes com duas falhas esperadas e 12 testes verdes;
+- falhas planejadas: tooltip ainda sem formatter financeiro e controles sem relação semântica com a região ativa;
+- GREEN final direcionado: três suítes e 15 testes verdes;
+- `FinancialCandlestickChart.test.tsx` protege inicialização SVG, descrição acessível, resize, cleanup, atualização sem nova instância, expansão, fallback e vazio;
+- tooltip passa a explicar data, abertura, máxima, mínima, fechamento, direção textual, volume e quantidade de movimentos;
+- formatter retorna mensagem estável quando ECharts não fornece um índice válido;
+- ambos os botões usam `aria-controls` e a região ativa é nomeada pelo controle selecionado com IDs únicos do React;
+- seletor mantém somente o modo como estado, deriva a seleção durante o render e continua montando apenas um renderer/tabela;
+- falha local do candlestick preserva a tabela OHLC ativa.
+
+Quality gates:
+- regressão completa: 84 suítes e 479 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- analyzer verde; único chunk ECharts/ZRender com 525.841 bytes brutos e 179.310 bytes gzip;
+- delta sobre o Dia 3: +824 bytes brutos e +286 bytes gzip;
+- chunk permanece somente nos manifests cliente de `/` e `/dashboard`;
+- `git diff --check` verde e `next-env.d.ts` restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices` confirmou hooks estáveis, renderização condicional explícita, ausência de fetch/persistência cliente e uma única visualização montada.
+
+Erros, riscos e escopo preservado:
+- ruído inicial de tipos no harness foi documentado em Erros Recorrentes antes da correção;
+- validação browser, mobile, contraste e tecnologia assistiva aprofundada permanece reservada ao Dia 6;
+- `TECH-CHART-002` permanece para decisão no Dia 5, sem refatoração antecipada;
+- nenhum domain, application, infrastructure, Supabase, RPC, migration, RLS, dado, dependência, período, recurso de trading, deploy, commit, push ou PR foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`
+- SR-015 permanece `IN_PROGRESS`
+- próximo comando válido: `dia 5`
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SR-015
+
+Objetivo executado:
+- eliminar duplicação comprovada do ciclo de vida das duas ilhas ECharts sem criar uma abstração universal, alterar fórmulas financeiras ou ampliar a fronteira cliente.
+
+TDD e refatoração:
+- baseline direcionada anterior permaneceu verde com sete suítes e 53 testes;
+- um contrato arquitetural foi acrescentado antes da implementação e falhou pela ausência do hook compartilhado;
+- `useFinancialChart` centraliza inicialização SVG, `ResizeObserver`, aplicação de opções, tema, movimento reduzido, cores forçadas, falha de inicialização e cleanup;
+- `FinancialEvolutionChart` e `FinancialCandlestickChart` mantêm builders, temas, modelos, textos, acessibilidade e estados concretos;
+- nenhum `ChartPort`, renderer genérico, fetch, persistência ou estado derivado adicional foi introduzido;
+- GREEN direcionado final: sete suítes e 54 testes.
+
+Quality gates:
+- regressão completa: 84 suítes e 480 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- chunk ECharts/ZRender: 525.257 bytes brutos e 179.344 bytes gzip;
+- delta sobre o Dia 4: -584 bytes brutos e +34 bytes gzip, sem impacto material;
+- revisão `vercel:react-best-practices`: listeners únicos com cleanup, dependências estreitas e ausência de estado derivado por efeito;
+- `next-env.d.ts` restaurado ao conteúdo versionado.
+
+Integridade, riscos e escopo preservado:
+- `TECH-CHART-002` foi encerrada como `DONE` com hook interno tipado e contrato estático contra `ChartPort`;
+- o incidente do gerenciador incompatível foi registrado; dependências foram restauradas e `.pnpm-store`/`.ignored` criados nessa tentativa foram removidos;
+- validação browser, mobile, contraste e tecnologia assistiva aprofundada permanece reservada ao Dia 6;
+- nenhum domain, application, infrastructure, Supabase, RPC, migration, RLS, dado, dependência, regra OHLC, período, recurso de trading, deploy, commit, push ou PR foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado;
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS`;
+- SR-015 permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 6`.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SR-015
+
+Objetivo executado:
+- validar a visualização financeira real em mobile, tablet e desktop, fortalecer a navegação por teclado das tabelas e confirmar a base PWA sem prometer offline.
+
+TDD, integridade e implementação:
+- baseline direcionada de UX/PWA iniciou verde com cinco suítes e 25 testes;
+- o navegador autenticado revelou `movement createdAt is invalid` antes da renderização, porque um `timestamptz` PostgreSQL válido com offset atravessava a fronteira sem normalização;
+- após aprovação humana explícita, um teste RED reproduziu o valor `2026-03-01T07:00:00-03:00` e o mapper passou a entregá-lo como `2026-03-01T10:00:00.000Z`;
+- a correção permaneceu em infrastructure, rejeita instantes inválidos e não altera ordenação, fórmulas OHLC, RPC, RLS, migration ou dados;
+- o navegador mostrou que a região focável das tabelas não executava de forma determinística a rolagem prometida pelas setas;
+- dois testes RED foram adicionados antes do handler compartilhado de presentation; `ArrowRight` avança e `ArrowLeft` retorna sem interceptar outras teclas;
+- GREEN direcionado final das duas tabelas: duas suítes e 14 testes.
+
+Validação real no navegador:
+- `/` autenticado renderizou o dashboard com dois movimentos reais e sem overlay, erro ou warning no console;
+- em 320 px, não houve overflow global; os dois botões do seletor mediram 44 px de altura e a tabela conteve seu próprio overflow horizontal;
+- em 768 px e 1280 px, não houve overflow global e os controles mantiveram 44 px;
+- alternância Linha/Candles atualizou `aria-pressed`, preservou gráfico e tabela equivalentes e manteve somente o modo ativo;
+- expansão do candlestick abriu diálogo modal, bloqueou o scroll do body, moveu foco ao controle de recolher e restaurou foco/scroll ao fechar;
+- a tabela OHLC focada rolou 216 px com `ArrowRight` e voltou a zero com `ArrowLeft` no viewport de 320 px;
+- o manifesto servido respondeu HTTP 200 como `application/manifest+json`, com `display: standalone`, quatro ícones, dois atalhos e sem promessa de offline.
+
+Quality gates:
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde após regenerar exclusivamente o cache corrompido de tipos do Next.js;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- `git diff --check` verde e `next-env.d.ts` restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices`: handlers estáveis, nenhuma assinatura global, efeito ou estado derivado adicional e responsabilidade restrita à interação da presentation.
+
+Riscos e escopo preservado:
+- o `Escape` permanece coberto deterministicamente por Jest; a automação do navegador integrado não propagou essa tecla de modo confiável ao documento, mas o fechamento pelo controle e a restauração de foco foram confirmados no navegador real;
+- nenhum RPC, migration, RLS, dado, dependência, regra OHLC, período, recurso de trading, deploy, commit, push ou PR foi criado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `QUALITY_VALIDATION`;
+- SR-015 permanece `IN_PROGRESS`;
+- `BUG-ANALYTICS-001` encerrado como `DONE`;
+- próximo comando válido: `dia 7`.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SR-015
+
+Objetivo executado:
+- validar a SR-015 como entrega incremental, incluindo pipeline local, dependências, segurança, banco, observabilidade, preview e prontidão da PR, sem promover produção.
+
+Pipeline e bundle:
+- regressão completa: 84 suítes e 482 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- auditorias npm completa e de produção verdes, ambas com zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde; rotas e Proxy preservados;
+- analyzer verde; chunk único ECharts/ZRender com 525.530 bytes brutos e 179.457 bytes gzip;
+- delta sobre a baseline do Dia 5: +273 bytes brutos e +113 bytes gzip, sem impacto material;
+- chunk permanece restrito aos manifests cliente de `/` e `/dashboard`.
+
+Segurança e Supabase, somente leitura:
+- migrations locais e remotas permanecem alinhadas até `20260826190714_create_financial_evolution_snapshot`; nenhuma migration é necessária para esta etapa;
+- RPC financeira continua `SECURITY INVOKER`, deriva `auth.uid()`, rejeita sessão ausente/anônima, limita intervalos a 31 dias e mantém ownership;
+- nenhuma chave de serviço é usada pelo código cliente; `.env.local` permanece ignorado e nenhum valor de segredo foi exposto;
+- Security Advisor mantém somente `auth_leaked_password_protection`, já rastreado em `SEC-AUTH-001`;
+- Performance Advisor mantém três índices ainda não usados como informação, sem evidência para remoção;
+- logs de Auth, API e Postgres das últimas 24 horas não apresentaram erro explícito, fatal ou 5xx.
+
+Vercel, GitHub e observabilidade:
+- preview do commit `22df2d6` está `READY`, com manifesto válido e sem erro/fatal de runtime nas últimas 24 horas;
+- PR `#19` está aberta, não draft e mergeable; Quality Gates, Vercel e Vercel Preview Comments estão verdes no head publicado;
+- nenhum comentário pendente da toolbar foi encontrado;
+- baseline operacional permanece em GitHub Actions, build/runtime logs da Vercel e logs/advisors do Supabase;
+- captura externa sanitizada, alertas e teste sintético continuam em `HARD-OBS-001` antes de produção pública.
+
+Riscos e escopo preservado:
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública, mas não o merge incremental da SR-015;
+- `CI-VERCEL-002` permanece dívida MÉDIA e deve ser resolvida antes de operação direta por CLI ou promoção;
+- nenhum domínio, regra OHLC, dependência, migration, RLS, dado, configuração Auth, commit, push, merge, deploy ou promoção de produção foi alterado nesta fase;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `READY_FOR_RELEASE`;
+- SR-015 concluída como entrega incremental;
+- próximo passo recomendado: commit e push documental do Dia 7, atualização da PR `#19` e merge somente após os checks do novo head permanecerem verdes.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SEC-AUTH-001
+
+Security item: `SEC-AUTH-001 — Ativar proteção contra senhas vazadas`.
+
+Diagnóstico confirmado:
+- projeto Supabase `fin_control` ativo e saudável em `sa-east-1`;
+- organização `JrDaliessi's Org` confirmada pelo MCP no plano `free`;
+- Security Advisor retorna exclusivamente `auth_leaked_password_protection` como `WARN` externo;
+- documentação atual exige plano Pro ou superior para “Prevent use of leaked passwords”;
+- o recurso usa a Pwned Passwords API do Have I Been Pwned e não requer migration, RLS ou armazenamento adicional.
+
+Impacto no fluxo atual:
+- o FinControl possui somente login por e-mail/senha; cadastro, recuperação e troca de senha não estão implementados;
+- a versão instalada de `@supabase/auth-js` transporta `weakPassword` junto de uma sessão válida no password grant;
+- o gateway atual aceita a sessão quando `error` é nulo e o usuário existe, portanto não há evidência de quebra automática do login;
+- o Dia 2 deverá formalizar essa compatibilidade em teste antes de qualquer ativação;
+- mensagens de credenciais inválidas permanecem genéricas e nenhum detalhe do provider será exposto.
+
+Decisão arquitetural:
+- usar exclusivamente a proteção nativa do Supabase Auth;
+- não consultar Have I Been Pwned no browser, Server Action, Edge Function ou banco;
+- não ler, testar, registrar ou transmitir senhas existentes;
+- ativar somente após upgrade humano explícito para Pro ou superior;
+- validar por teste do contrato, login sintético, logs de Auth e ausência do alerta no Security Advisor;
+- rollback por desativação isolada da opção, sem migration ou restauração de dados;
+- decisão completa registrada no ADR 0016.
+
+Small releases:
+- `SEC-AUTH-001A`: contrato TDD que preserva sessão válida com `weakPassword` e mantém erro público genérico;
+- `SEC-AUTH-001B`: ativação remota nativa, smoke test sanitizado, revisão de logs e confirmação do advisor;
+- remediação guiada/troca de senha para usuários existentes será item separado e não será improvisada neste ciclo.
+
+Bloqueio duro:
+- a organização está no plano Free e o recurso é exclusivo do Pro ou superior;
+- nenhuma ferramenta disponível pode autorizar compra ou mudança de assinatura em nome do usuário;
+- ação mínima de desbloqueio: o usuário aprovar e concluir o upgrade do plano Supabase, depois informar que está pronto para revalidação.
+
+Escopo preservado:
+- nenhuma configuração Auth, usuário, senha, sessão, migration, RLS, dado, segredo, dependência ou código funcional foi alterado;
+- changelog e documentação atuais foram consultados; nenhum breaking change aplicável altera a decisão;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- arquitetura `ARCHITECTURE_READY` documentada;
+- `SEC-AUTH-001` permanece em `BLOCKED` pela dependência externa de plano, sem bloquear trabalho local ou previews privados;
+- por decisão humana, o upgrade foi adiado até a preparação para produção pública;
+- a máquina global retorna a `READY_FOR_RELEASE`, mantendo a promoção pública bloqueada;
+- próximo passo selecionado: iniciar o Dia 1 da `SEC-HARD-001`; retomar o Dia 2 da `SEC-AUTH-001` somente após upgrade explícito.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da SEC-HARD-001
+
+Security item: `SEC-HARD-001 — Hardening do ambiente de autenticação`.
+
+Diagnóstico confirmado:
+- `next.config.mjs` define somente `reactStrictMode`; não existem headers de segurança do aplicativo nem testes específicos;
+- `src/proxy.ts` delega exclusivamente à renovação/proteção de sessão do Supabase e não deve absorver política HTTP estática;
+- a resposta pública de `/login` confirma HTTPS e HSTS da Vercel, mas não apresenta CSP, frame policy, `nosniff`, referrer policy ou permissions policy;
+- a resposta de proteção SSO dos previews possui headers próprios da Vercel e não é evidência da resposta do aplicativo;
+- o login usa `createBrowserClient` e `signInWithPassword`, enviando o password grant diretamente ao Supabase Auth;
+- o Security Advisor permanece somente com `auth_leaked_password_protection`, já isolado em `SEC-AUTH-001`.
+
+Decisões arquiteturais:
+- headers globais serão configurados em `next.config.mjs`; o Proxy continuará focado em sessão;
+- CSP será aplicada em enforcement e testada com as rotas reais, usando a origem Supabase exata em `connect-src`;
+- framing, objetos e recursos não usados serão negados; políticas legadas serão mantidas quando agregarem defesa em profundidade;
+- não será criado proxy de credenciais, nem será considerada uma regra WAF de `/login` como proteção do password grant;
+- CAPTCHA nativo será uma small release separada e exige decisão humana de provedor e credenciais externas;
+- rollback não envolve migration ou dados; cada camada pode ser revertida isoladamente;
+- decisão completa registrada no ADR 0017.
+
+Small releases:
+- `SEC-HARD-001A` — headers determinísticos, CSP, origem Supabase e validação em Preview: `READY`;
+- `SEC-HARD-001B` — inventário de rate limits e CAPTCHA nativo: `BLOCKED` até escolha humana do provedor e configuração segura de credenciais.
+
+Estratégia prevista para o Dia 2:
+- testes de composição e aplicação global dos headers;
+- falha fechada para origem Supabase ausente ou inválida;
+- contratos de CSP, framing, MIME sniffing, referrer, permissions, HSTS de produção e remoção de `X-Powered-By`;
+- matriz futura de CAPTCHA cobrindo token ausente/válido/expirado, reset, `429` e mensagem genérica, sem implementar o provedor antecipadamente.
+
+Evidências e escopo preservado:
+- documentação atual de Next.js, Supabase Auth e Vercel WAF consultada;
+- projeto Vercel e resposta pública inspecionados somente para leitura;
+- nenhum header, Proxy, Auth, rate limit, CAPTCHA, usuário, senha, sessão, segredo, migration, RLS, dado, dependência, deploy, commit adicional, push ou PR desta branch foi alterado;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo.
+
+Estado de saída:
+- `ARCHITECTURE_READY`;
+- `SEC-HARD-001A` pronta para o Dia 2;
+- `SEC-HARD-001B` explicitamente bloqueada por decisão/credenciais externas;
+- próximo comando válido: `dia 2` da `SEC-HARD-001A`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da SEC-HARD-001A
+
+Small release: `SEC-HARD-001A — Headers determinísticos do aplicativo`.
+
+Baseline e fronteira:
+- a baseline anterior à nova suíte permaneceu verde com 84 suítes e 482 testes;
+- `next.config.mjs` continua sem implementação de headers e `src/proxy.ts` permanece responsável somente por sessão;
+- os contratos exercitam a configuração real do Next.js com `unstable_getResponseFromNextConfig`, em ambiente Node isolado;
+- a declaração TypeScript de `next.config.mjs` foi adicionada apenas para tipar a importação do arquivo de configuração no teste.
+
+Matriz implementada no RED:
+- remoção de `X-Powered-By` por `poweredByHeader: false`;
+- baseline global em `/login`, `/dashboard` e `/manifest.webmanifest` com `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`;
+- CSP em enforcement com negação de framing/objetos e fontes compatíveis com o runtime atual do Next.js;
+- `connect-src` limitado a `'self'` e à origem HTTPS exata e normalizada do Supabase, sem wildcard;
+- falha fechada para `NEXT_PUBLIC_SUPABASE_URL` ausente, malformada ou fora de HTTPS;
+- HSTS e `upgrade-insecure-requests` somente em produção;
+- contrato arquitetural garantindo que headers estáticos não migrem para o Proxy.
+
+Evidência TDD:
+- suíte direcionada: 1 suíte em RED válido, 11 falhas intencionais, 1 teste de fronteira aprovado e 12 casos totais;
+- regressão ampliada: somente a nova suíte falhou; as 84 suítes anteriores passaram, totalizando 483 testes verdes e 11 vermelhos planejados em 494 testes;
+- as falhas apontam exclusivamente a ausência de `headers()`, `poweredByHeader` e respectivas políticas no `next.config.mjs`;
+- lint global e type-check ficaram verdes após alinhar o ambiente e os imports do harness às convenções existentes;
+- zero snapshots.
+
+Escopo preservado:
+- nenhum header, Proxy, Auth, CAPTCHA, rate limit, usuário, senha, sessão, segredo, migration, RLS, dado, dependência ou deploy foi alterado;
+- `SEC-HARD-001B` continua bloqueada até decisão humana sobre provedor e credenciais;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit, push ou PR foi executado nesta fase.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- testes essenciais da `SEC-HARD-001A` existem em RED controlado;
+- próximo comando válido: `dia 3` para implementar o mínimo em `next.config.mjs` e levar os contratos a GREEN.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da SEC-HARD-001A
+
+Objetivo executado:
+- implementar o mínimo em `next.config.mjs` para satisfazer os contratos do Dia 2 sem deslocar a política HTTP para o Proxy nem antecipar CAPTCHA.
+
+Implementação:
+- `poweredByHeader` foi desativado;
+- `headers()` aplica a baseline global de framing, MIME sniffing, referrer, permissions e CSP;
+- a origem de `NEXT_PUBLIC_SUPABASE_URL` é normalizada para `URL.origin`, exige HTTPS e falha fechada quando ausente ou inválida;
+- `connect-src` permite somente `'self'` e a origem Supabase exata, sem wildcard;
+- HSTS e `upgrade-insecure-requests` são adicionados somente quando `VERCEL_ENV=production`;
+- `src/proxy.ts` permaneceu responsável exclusivamente por sessão.
+
+TDD e quality gates:
+- GREEN direcionado: 1 suíte e 12 testes verdes, sem alterar expectativas;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas preservadas;
+- a primeira tentativa de build foi bloqueada somente pelo acesso isolado ao Google Fonts; a repetição autorizada concluiu sem erro de código ou configuração;
+- documentação oficial atual de headers do Next.js e changelog do Supabase foram verificados; nenhum breaking change aplicável alterou a solução.
+
+Escopo preservado:
+- nenhuma mudança em UI, domain, application, infrastructure, Proxy, Auth remoto, CAPTCHA, rate limit, usuário, senha, sessão, migration, RLS, dado, segredo ou dependência;
+- `next-env.d.ts` foi restaurado após a regeneração automática do build;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana e credenciais externas;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS`;
+- `SEC-HARD-001A` funcional localmente com pipeline verde;
+- próximo comando válido: `dia 4` para expansão controlada e validação dos estados reais em Preview antes de merge.
+
+## Dia 4 — Expansão Controlada e Validação em Preview da SEC-HARD-001A
+
+Objetivo executado:
+- validar a resposta HTTP real e os fluxos principais do FinControl no deployment Preview correspondente ao commit `9604e44`, sob a CSP implementada no Dia 3, sem antecipar CAPTCHA ou alterar a proteção do projeto.
+
+Evidência remota:
+- deployment `dpl_4fgmbZgiKjdW62xJmnmdCQFxichL` confirmado como `READY`, associado à branch `codex/sec-hard-001a-security-headers` e à PR `#22`;
+- Vercel Authentication permaneceu ativa; a integração oficial forneceu somente um link autenticado efêmero com expiração automática em 23 horas, sem segredo persistente ou mudança de configuração;
+- login real com o usuário de validação concluiu em `/dashboard`, com sessão identificada e snapshot financeiro de três movimentos;
+- gráfico de linha e gráfico Candlestick renderizaram com suas tabelas acessíveis;
+- expansão do Candlestick abriu diálogo nomeado, moveu o foco para `Recolher gráfico`, bloqueou o scroll e, ao recolher, restaurou foco e rolagem;
+- temas escuro e sistema alternaram sem perda do fluxo; não houve overlay do Next.js nem bloqueio funcional atribuído à CSP;
+- `/login` respondeu `200` com CSP em enforcement, framing negado, `nosniff`, política de referrer/permissões, HSTS e sem `X-Powered-By`;
+- `/manifest.webmanifest` respondeu `200` como `application/manifest+json`, sob os mesmos headers; o manifesto versionado preserva `display: standalone`, quatro ícones e dois atalhos.
+
+Validação complementar e quality gates:
+- execução autenticada local do mesmo build confirmou login, sessão, dados reais, linha/candles, expansão, foco, rolagem, temas, manifesto e redirecionamento privado, sem erro ou warning no console;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` isolado verde, com todas as rotas e o Proxy preservados;
+- a primeira tentativa de build concorreu com Jest e falhou após compilar por erro de escrita do ambiente; a repetição isolada concluiu integralmente, sem alteração de código.
+
+Escopo preservado:
+- nenhum código funcional, Auth remoto, CAPTCHA, rate limit, configuração permanente da Vercel, Supabase remoto, migration, RLS, dado, segredo, dependência, merge ou deploy foi alterado;
+- as credenciais de validação não foram persistidas nem documentadas;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana e credenciais externas;
+- `rewrite-msgs.sh` permaneceu não rastreado e fora do escopo;
+- nenhum commit ou push foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável;
+- Dia 4 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem expansão de regra de negócio.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da SEC-HARD-001A
+
+Objetivo executado:
+- auditar duplicação, acoplamento, fronteiras e consistência da configuração de headers sem alterar o comportamento validado no Preview nem antecipar a `SEC-HARD-001B`.
+
+Auditoria estrutural e decisão:
+- `next.config.mjs` permanece curto e coeso, com a composição da CSP, normalização da origem Supabase e baseline HTTP concentradas na fronteira correta do Next.js;
+- os helpers locais são puros, pequenos e usados por uma única configuração; extraí-los para um módulo genérico ou criar uma abstração adicional aumentaria a superfície sem reduzir duplicação, acoplamento ou risco;
+- `src/proxy.ts` continua responsável somente por sessão e não contém política estática de headers;
+- a URL pública do Supabase continua normalizada por `URL.origin`, exige HTTPS e falha fechada quando ausente ou inválida;
+- HSTS e `upgrade-insecure-requests` continuam exclusivos de `VERCEL_ENV=production`;
+- nenhuma refatoração funcional foi aplicada porque não surgiu evidência técnica que a justificasse.
+
+TDD e quality gates:
+- baseline direcionada: 1 suíte e 12 testes verdes;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- `git diff --check` verde após a atualização documental.
+
+Ocorrência operacional e prevenção:
+- a primeira tentativa direcionada não iniciou o Jest porque o shim global de `npm` apontava para `C:\Users\junio\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js`, que não existe;
+- a falha era externa ao repositório e não representava regressão do produto;
+- prevenção: nesta estação, executar os binários locais de Jest, ESLint, TypeScript e Next.js com o runtime Node empacotado do workspace quando o shim global estiver indisponível.
+
+Fronteiras preservadas:
+- nenhum header, CSP, Proxy, UI, domain, application, infrastructure, Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo ou dependência foi alterado;
+- `UX-CHART-002` e `UX-CHART-003` permanecem somente em `DISCOVERY` e suas alterações documentais locais foram preservadas;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram não rastreados e fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável após o hardening;
+- Dia 5 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade e PWA, sem expansão de regra de negócio.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da SEC-HARD-001A
+
+Objetivo executado:
+- validar que os headers de segurança já implementados não degradam login, sessão, dashboard, temas, gráficos, responsividade, acessibilidade essencial ou o contrato PWA, sem antecipar CAPTCHA, rate limit ou offline.
+
+Validação real no Preview:
+- deployment `dpl_Bg9ZwECGhPPr9L3SAyQwTmqhA6at`, associado ao commit `f4506dc` e à PR `#22`, confirmado em estado `READY`;
+- `/login` e dashboard autenticado carregaram sem erro ou warning no console;
+- em 320, 768 e 1280 px não houve overflow horizontal global; navegação mobile/desktop, cards, gráfico e tabela mantiveram composição coerente;
+- campos e ações principais preservaram alvos mínimos de 44 px; `lang=pt-BR`, landmark principal, rótulos, viewport, manifesto e cores de tema permaneceram presentes;
+- temas claro, escuro e sistema foram alternados com estado selecionado consistente;
+- tabela larga manteve overflow confinado e avançou 216 px com `ArrowRight` em 320 px;
+- gráfico de candles expandiu como diálogo nomeado, bloqueou o scroll do body, manteve foco no recolhimento e restaurou foco e scroll ao fechar;
+- a automação de navegador não reproduziu de forma conclusiva o fechamento por `Escape` no Preview protegido; o contrato permanece coberto e verde no Jest, e nenhum defeito funcional foi inferido sem evidência reproduzível;
+- a proteção SSO da Vercel bloqueou a abertura isolada de `manifest.webmanifest` em uma nova navegação; a presença do link foi validada no DOM e o conteúdo permaneceu coberto pelo contrato local, sem promessa de offline ou service worker.
+
+TDD e quality gates:
+- sete suítes direcionadas e 42 testes de headers, PWA, design system, temas, dashboard e frame expansível ficaram verdes;
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- nenhuma falha funcional foi reproduzida, portanto nenhum código de produto ou teste foi alterado;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a geração automática do build.
+
+Fronteiras e riscos:
+- nenhum Auth remoto, CAPTCHA, rate limit, Supabase remoto, migration, RLS, dado, segredo, dependência, configuração permanente da Vercel, commit, push, merge ou deploy foi alterado;
+- o vínculo local antigo da Vercel continua registrado em `CI-VERCEL-002` como dívida MÉDIA e não afetou o Preview validado pelo conector;
+- `SEC-HARD-001B` permanece bloqueada por decisão humana sobre provedor e credenciais externas;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo.
+
+Estado de saída:
+- `QUALITY_VALIDATION`;
+- Dia 6 da `SEC-HARD-001A` concluído em GREEN;
+- próximo comando válido: `dia 7` para segurança final, observabilidade e preparação da entrega incremental.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da SEC-HARD-001A
+
+Objetivo executado:
+- validar o head publicado da PR `#22` como entrega incremental dos headers determinísticos, sem promover produção, antecipar CAPTCHA ou alterar serviços externos.
+
+Pipeline e cadeia de suprimentos:
+- regressão completa: 85 suítes e 494 testes verdes, sem snapshots;
+- lint global verde com zero warnings; type-check verde;
+- auditorias npm completa e de produção com zero vulnerabilidades;
+- 701 pacotes com assinaturas verificadas e 102 pacotes com attestations verificadas;
+- build Next.js `16.3.3` com Turbopack verde; todas as rotas e o Proxy foram preservados;
+- GitHub Actions `Quality Gates`, Vercel e Vercel Preview Comments verdes no head `f8049e4`.
+
+Revisão de segurança:
+- CSP em enforcement, framing negado, `nosniff`, referrer/permissions policies, HSTS de produção e remoção de `X-Powered-By` permanecem cobertos por teste;
+- Proxy continua isolado em sessão, usa claims verificadas, exige `sub` válido e rejeita Auth anônimo;
+- nenhum segredo de serviço ou chave privada foi encontrado nos arquivos rastreados; frontend usa somente configuração pública do Supabase;
+- migrations locais e remotas permanecem alinhadas nas mesmas seis versões;
+- RLS habilitada e forçada, ownership por `auth.uid()`, grants mínimos e RPC `SECURITY INVOKER` permanecem preservados;
+- Security Advisor mantém somente `auth_leaked_password_protection`, já registrado em `SEC-AUTH-001` e bloqueado pelo plano atual;
+- três índices sem uso permanecem informativos e não justificam remoção sem evidência de carga.
+
+Observabilidade e entrega:
+- projeto Supabase `fin_control` confirmado `ACTIVE_HEALTHY`; logs recentes de Auth, API e Postgres não apresentaram erro explícito, fatal ou resposta 5xx relevante ao fluxo;
+- deployment `dpl_DnyxprjAaichYi5NuEjoUYEbimpG` corresponde ao commit `f8049e4`, está `READY` e não possui cluster de runtime, log `error/fatal` ou resposta 5xx na janela de 24 horas;
+- PR `#22` está aberta, não draft, mergeável e direcionada a `develop`;
+- o build remoto concluiu; os avisos de Node/npm e o vínculo local antigo continuam classificados em `CI-VERCEL-002` como dívida MÉDIA antes de CLI/promoção;
+- a mudança futura do endpoint Management API `logs.all` não afeta o conector MCP usado nesta validação; demais breaking changes recentes do Supabase não atingem este recorte.
+
+Riscos e fronteiras:
+- `SEC-HARD-001A` está pronta para release incremental e pode ser mergeada após versionar esta documentação e os checks do novo head permanecerem verdes;
+- produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e pela `SEC-HARD-001B` ainda não executada;
+- nenhum Auth remoto, CAPTCHA, rate limit, migration, RLS, dado, segredo, dependência, configuração da Vercel, commit, push, merge, deploy ou promoção foi executado nesta fase;
+- `UX-CHART-002/003`, `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo da entrega de segurança.
+
+Estado de saída:
+- `READY_FOR_RELEASE` para a entrega incremental da `SEC-HARD-001A`;
+- Dia 7 concluído em GREEN;
+- próximo passo recomendado: versionar somente a documentação do Dia 7, atualizar a PR `#22` e fazer squash merge em `develop` apenas após os novos checks verdes.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-SHELL-001
+
+Small release: `UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta`.
+
+Problema validado:
+- em viewport mobile, a topbar empilha marca, título da rota, e-mail, três opções de tema e logout, consumindo uma parcela desproporcional da primeira tela;
+- `Visão geral` aparece na topbar e novamente como `h1` da página, aumentando ruído sem acrescentar orientação;
+- a navegação principal já está resolvida na barra inferior, portanto um menu hambúrguer com as mesmas rotas criaria duplicação e ambiguidade.
+
+Objetivo e decisão de experiência:
+- reduzir a topbar a uma linha de até 64 px, além da safe area superior quando instalada como PWA;
+- no mobile, mostrar a marca compacta à esquerda e um trigger de conta à direita; o título principal permanece responsabilidade da página;
+- a partir de 768 px, manter a sidebar/rail existente e usar uma topbar de uma linha com contexto de rota discreto e o mesmo trigger de conta;
+- o trigger usa ícone de conta ou iniciais derivadas somente para apresentação, com nome acessível `Abrir painel da conta`;
+- ao abrir, mobile usa bottom sheet e tablet/desktop usa painel ancorado à direita;
+- o painel contém título `Conta e aparência`, e-mail da sessão, `ThemeSwitcher` e `SignOutButton`, com logout visualmente separado no final;
+- a estrutura usa semântica de diálogo, não `role=menu`, porque contém um radiogroup e informação de sessão, não apenas comandos de menu.
+
+Contratos de interação e acessibilidade:
+- trigger mínimo de 44 × 44 px, foco visível, `aria-expanded` e `aria-controls`;
+- painel fechado não deixa controles ocultos alcançáveis por teclado;
+- abertura move o foco para um controle previsível do painel e bloqueia o scroll do documento no mobile;
+- `Tab` e `Shift+Tab` permanecem contidos enquanto o diálogo estiver aberto;
+- botão explícito, backdrop e `Escape` fecham o painel e restauram foco ao trigger;
+- o painel respeita `safe-area-inset-bottom`, movimento reduzido e contraste dos tokens existentes;
+- troca de tema não fecha o painel nem perde foco; logout conserva carregamento, erro e redirecionamento atuais;
+- a navegação inferior continua sendo a única navegação primária mobile e não é repetida dentro do painel.
+
+Arquitetura e fronteiras:
+- `PrivateAppShell` continua client composition root por já depender de `usePathname`, `useRouter` e do fluxo de logout;
+- `PrivateTopbar` fica responsável apenas pela composição visual compacta e recebe props serializáveis/funções já internas à fronteira cliente;
+- `AccountPanel.client.tsx`, próximo ao App Router em `src/app/(private)/components`, concentra abertura, fechamento, foco, scroll e variação responsiva;
+- `ThemeSwitcher` e `SignOutButton` são reutilizados sem mudar seus contratos;
+- nenhuma primitive modal genérica será criada no Dia 3; a possível extração de comportamento comum com `ExpandableChartFrame` só será avaliada no Dia 5 se houver duplicação concreta e testes como rede de segurança;
+- nenhuma camada de domain, application financeira ou infrastructure muda; Auth, Supabase, RLS, migrations, dados e rotas permanecem intactos;
+- nenhuma dependência nova é autorizada: React, Tailwind e Lucide existentes cobrem o recorte.
+
+Small releases:
+- `UX-SHELL-001A`: testes de contrato e implementação mínima da topbar/painel;
+- `UX-SHELL-001B`: estados responsivos, foco, scroll, `Escape`, backdrop e restauração;
+- `UX-SHELL-001C`: consistência visual, safe areas, movimento reduzido e validação real em 320/768/1280 px.
+
+Critérios de aceite:
+- topbar mobile permanece em uma linha e ocupa no máximo 64 px além da safe area;
+- `Visão geral` deixa de ser repetido no header mobile e continua como `h1` da página;
+- e-mail, tema e logout ficam disponíveis dentro do painel em todos os viewports;
+- abrir, navegar, alterar tema e fechar funcionam por toque e teclado;
+- foco e scroll são restaurados sem vazamento de interação para o conteúdo de fundo;
+- navegação inferior, sidebar, logout, tema, skip link e único landmark `main` permanecem funcionais;
+- nenhuma nova rota, configuração remota, dependência ou acesso Supabase é introduzido;
+- Jest, lint, type-check e build permanecem verdes.
+
+Riscos e pendências:
+- risco MÉDIO de regressão em foco/scroll; o Dia 2 deverá transformar cada contrato crítico em teste antes de código funcional;
+- a geração de iniciais a partir do e-mail deve ter fallback neutro e nunca expor o endereço fora do painel;
+- a captura anexada inclui chrome do navegador, que não pertence ao app; a altura controlável começa na topbar do FinControl;
+- `UX-CHART-002/003` permanece preservada separadamente e não entra nesta branch;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueios independentes de produção pública.
+
+Estado de saída:
+- `ARCHITECTURE_READY`;
+- `UX-SHELL-001` refinada e em `IN_PROGRESS`, sem código funcional;
+- próximo comando válido: `dia 2` para matriz de testes e RED controlado da apresentação.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-SHELL-001
+
+Small release: `UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta`.
+
+Matriz por camada:
+- domain: não aplicável; nenhuma regra financeira ou entidade nasce neste recorte;
+- application: não aplicável; o caso de uso de logout existente não muda;
+- infrastructure: não aplicável; Supabase Auth e o gateway existente permanecem intactos;
+- presentation: cobertura obrigatória concentrada na composição real de `PrivateAppShell`, incluindo topbar, painel da conta, tema, logout, foco, teclado, scroll, responsividade, navegação e landmarks.
+
+Baseline antes do RED:
+- suíte direcionada existente: 1 suíte, 7 testes verdes e zero snapshots;
+- a primeira tentativa com pattern comum não encontrou o caminho porque `(private)` foi interpretado pelo Jest; `--runTestsByPath` executou a suíte literal corretamente;
+- nenhuma implementação foi alterada para preparar o harness.
+
+Contratos criados primeiro:
+- topbar de uma linha, marca compacta, contexto de rota oculto no mobile e trigger `Abrir painel da conta`;
+- trigger com alvo mínimo, `aria-expanded` e `aria-controls`;
+- painel ausente do DOM enquanto fechado, sem e-mail, tema ou logout alcançáveis;
+- diálogo `Conta e aparência` com `aria-modal`, sessão, radiogroup de tema, logout e classes responsivas de bottom sheet/painel ancorado;
+- foco inicial no fechamento e scroll do documento bloqueado durante a abertura;
+- fechamento por `Escape`, botão explícito e backdrop, sempre restaurando foco e scroll;
+- contenção circular de `Tab` e `Shift+Tab`;
+- mudança para tema escuro sem fechar o painel;
+- logout acessado dentro do painel, preservando provider, redirecionamento e refresh existentes;
+- navegação desktop/mobile, skip link, reserva inferior, único `main` e fallback de rota desconhecida preservados.
+
+Evidência RED:
+- suíte direcionada: 12 testes totais, 4 verdes e 8 vermelhos planejados;
+- as falhas apontam para o trigger/painel inexistentes e para as classes compactas ainda não aplicadas;
+- regressão completa: 85 suítes, 84 verdes e somente a suíte do shell vermelha; 499 testes, 491 verdes e 8 vermelhos planejados;
+- zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde.
+
+Fronteiras preservadas:
+- nenhum `AccountPanel.client.tsx`, header compacto, foco, scroll, estilo funcional ou código de produto foi criado;
+- nenhum teste foi flexibilizado para reproduzir o comportamento atual;
+- nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, commit, push, merge ou deploy foi alterado;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram fora do escopo;
+- o planejamento `UX-CHART-002/003` continua preservado em stash separado.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- RED controlado isolado à implementação ausente da `UX-SHELL-001`;
+- próximo comando válido: `dia 3` para implementar o mínimo necessário e levar os contratos a GREEN sem expansão de escopo.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-SHELL-001
+
+Objetivo executado:
+- implementar o menor recorte capaz de levar os oito contratos planejados de RED para GREEN, sem alterar expectativas nem ampliar o shell com novas rotas ou integrações.
+
+Implementação:
+- `PrivateTopbar` passou a usar uma única linha de 64 px mais safe area superior;
+- mobile exibe somente a marca compacta e o trigger da conta; o contexto da rota permanece discreto a partir de `md`;
+- e-mail, tema e logout deixaram de ocupar permanentemente o header;
+- `AccountPanel.client.tsx` concentra trigger, portal, diálogo, backdrop, foco, teclado, scroll e composição de `ThemeSwitcher`/`SignOutButton`;
+- mobile usa bottom sheet; tablet/desktop usa painel ancorado ao canto superior direito;
+- o portal mantém o painel acima da navegação inferior, enquanto um contêiner fixo de viewport preserva a âncora após scroll;
+- o backdrop fica fora da sequência de Tab; fechamento explícito, `Escape` e backdrop restauram foco ao trigger;
+- `Tab`/`Shift+Tab` ficam contidos, e o overflow anterior do body é restaurado ao fechar ou desmontar;
+- nenhum endereço é exposto no header fechado; a sessão aparece somente dentro do diálogo.
+
+Arquitetura e revisão React/Next.js:
+- a client composition root existente continua em `PrivateAppShell`; nenhuma nova fronteira Server → Client foi criada;
+- `PrivateTopbar` ficou focada em composição visual e `AccountPanel` em comportamento interativo;
+- `closePanel` foi estabilizado com `useCallback` para o listener global depender de uma referência consistente;
+- o overlay usa `bg-navigation/70`, token semântico do design system, em vez de literal de paleta;
+- classes de animação dependentes de plugin foram removidas; nenhuma dependência foi adicionada;
+- nenhuma primitive modal genérica foi extraída prematuramente.
+
+TDD e quality gates:
+- primeiro GREEN direcionado: 1 suíte e 12 testes verdes, sem alterar testes;
+- a primeira regressão ampliada encontrou somente `bg-black/50` pelo contrato do design system; a implementação foi corrigida para token semântico e os testes permaneceram intactos;
+- regressão final: 85 suítes e 499 testes verdes, zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- `next-env.d.ts` foi restaurado após as duas regenerações automáticas do build.
+
+Fronteiras preservadas:
+- nenhum teste foi alterado no Dia 3;
+- nenhuma rota, regra financeira, domain, application, infrastructure, Auth, Supabase, migration, RLS, dado, configuração remota ou dependência foi alterada;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
+- fluxo principal da `UX-SHELL-001A` funcional e aderente ao ADR 0018;
+- próximo comando válido: `dia 4` para expansão controlada, estados auxiliares e validação visual responsiva, sem ampliar o produto.
+
+## Dia 4 — Expansão Controlada da UX-SHELL-001
+
+Objetivo executado:
+- fortalecer a experiência responsiva e a acessibilidade modal do painel da conta, preservando o comportamento entregue no Dia 3 e sem ampliar rotas, integrações ou regras de negócio.
+
+TDD e implementação incremental:
+- baseline direcionada: 1 suíte e 12 testes verdes;
+- os novos contratos foram escritos primeiro e produziram RED controlado com 13 testes, 11 verdes e 2 falhas esperadas por descrição acessível e safe areas ainda ausentes;
+- o diálogo passou a descrever formalmente a sessão atual por `aria-describedby`;
+- enquanto aberto, todos os elementos visíveis de fundo fora do portal recebem `inert` e `aria-hidden=true`, com preservação e restauração dos estados anteriores no cleanup;
+- a restauração do foco ocorre somente depois da remoção do estado inerte, usando referência estável capturada pelo efeito;
+- painel e topbar passaram a respeitar safe areas laterais; o painel ancorado inclui a safe area superior, contém overscroll e mantém a safe area inferior no bottom sheet;
+- GREEN direcionado final: 1 suíte e 13 testes verdes, zero snapshots.
+
+Validação real no navegador:
+- em 320 × 800 px, header com 65 px incluindo borda, trigger de 46 × 44 px, contexto da rota oculto, ausência de overflow horizontal e bottom sheet com 320 px ancorado ao rodapé;
+- o painel mobile moveu foco ao fechamento, bloqueou o scroll, tornou o fundo inerte e restaurou foco, scroll e atributos ao fechar por `Escape`;
+- em 768 × 900 px, sidebar visível, navegação inferior oculta, contexto da rota visível e painel de 384 px ancorado a 16 px da direita e 64 px do topo;
+- em 1280 × 900 px, trigger textual `Conta`, sidebar e painel ancorado permaneceram consistentes, sem overflow horizontal ou overlay de erro;
+- o único log do navegador foi o aviso de desenvolvimento do React por a CSP de produção bloquear `unsafe-eval`; a CSP não foi enfraquecida e o build de produção não depende desse recurso.
+
+Quality gates:
+- regressão completa: 85 suítes e 500 testes verdes, zero snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- o shim global do npm continuou indisponível e o runtime Node empacotado do workspace executou os gates;
+- `next-env.d.ts` foi restaurado após regeneração automática; os arquivos auxiliares gerados pelo dev server foram removidos.
+
+Fronteiras preservadas:
+- nenhuma dependência, rota, regra financeira, domain, application, infrastructure, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterada;
+- nenhuma primitive modal comum foi extraída; essa avaliação permanece reservada ao Dia 5 com testes como rede de segurança;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` estável em GREEN;
+- `UX-SHELL-001A` e `UX-SHELL-001B` funcionais; `UX-SHELL-001C` validada nos três viewports planejados;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem nova regra de negócio.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UX-SHELL-001
+
+Objetivo executado:
+- remover somente a duplicação comprovada de contenção de foco e reforçar a semântica do backdrop, sem transformar painel e fullscreen de gráficos em uma primitive modal artificial.
+
+Auditoria e decisão estrutural:
+- `AccountPanel` e `ExpandableChartFrame` eram grandes, mas possuem ciclos de vida distintos: portal/backdrop/inertização no shell e preservação de nó/Fullscreen API nos gráficos;
+- uma abstração modal comum misturaria responsabilidades e aumentaria acoplamento, portanto foi explicitamente rejeitada;
+- a duplicação real limitava-se ao seletor de elementos focáveis e ao algoritmo circular de `Tab`/`Shift+Tab`;
+- `containKeyboardFocus.ts` passou a concentrar somente esse comportamento puro e reutilizável;
+- `AccountPanel` caiu de 202 para 170 linhas e `ExpandableChartFrame` de 220 para 188 linhas; o utilitário compartilhado possui 39 linhas;
+- scroll, foco inicial/restauração, backdrop, `inert`, portal e Fullscreen API continuam dentro de seus componentes concretos.
+
+TDD e hardening:
+- baseline direcionada anterior: 2 suítes e 23 testes verdes;
+- a suíte do utilitário foi criada primeiro e produziu RED pela implementação inexistente;
+- cinco testes cobrem wrap para frente, wrap reverso, ordem intermediária, contêiner vazio, tecla alheia e contêiner ausente;
+- o backdrop exclusivamente visual passou a usar `aria-hidden=true` e permaneceu fora da ordem de Tab; o contrato falhou antes do ajuste e ficou GREEN depois;
+- GREEN direcionado final: 3 suítes e 28 testes verdes, zero snapshots.
+
+Consistência React, visual e de dados:
+- revisão `vercel:react-best-practices` confirmou imports diretos, dependências primitivas dos efeitos e listeners globais com cleanup;
+- os listeners continuam instalados apenas durante o estado modal ativo; nenhuma dependência adicional ou mecanismo global foi criado;
+- varredura confirmou ausência de `any`, cores literais e acesso Supabase nos componentes/utilitário alterados;
+- nenhuma integridade financeira ou persistência foi afetada; domain, application e infrastructure permanecem fora do recorte.
+
+Quality gates:
+- regressão completa: 86 suítes e 505 testes verdes, zero snapshots;
+- lint global verde com zero warnings; type-check verde;
+- build Next.js `16.3.3` com Turbopack verde e todas as rotas/Proxy preservados;
+- `next-env.d.ts` foi restaurado após regeneração automática do build.
+
+Fronteiras preservadas:
+- nenhuma nova regra de negócio, mudança visual ampla, rota, dependência, Auth, Supabase, migration, RLS, dado ou configuração remota foi introduzida;
+- validação aprofundada de UX, acessibilidade e PWA permanece reservada ao Dia 6;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado;
+- retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade e PWA.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-SHELL-001
+
+Objetivo executado:
+- validar em navegador real o cabeçalho compacto e o painel da conta em mobile, tablet e desktop, incluindo responsividade, teclado, foco, contraste, microinterações e metadados PWA.
+
+Validação responsiva real:
+- em `320 x 800`, o header ocupou 65 px incluindo borda, o trigger mediu `46 x 44` px, o menu inferior permaneceu visível e não houve overflow horizontal;
+- o bottom sheet ocupou toda a largura, ficou ancorado ao rodapé e respeitou o limite vertical do viewport;
+- em `768 x 900`, a navegação lateral de 80 px substituiu o menu inferior e o painel passou para `384 x 284` px, ancorado 16 px à direita e abaixo da topbar;
+- em `1280 x 900`, a sidebar de 256 px, o rótulo de rota e o trigger textual `Conta` ficaram visíveis; o painel manteve 384 px, ancoragem e ausência de overflow.
+
+Acessibilidade e microinterações:
+- diálogo nomeado por `Conta e aparência`, descrito pela sessão atual e marcado com `aria-modal=true`;
+- foco inicial no botão de fechar, contenção circular validada com `Tab` e `Shift+Tab`, fechamento por `Escape`, botão e backdrop;
+- após o fechamento, foco retornou ao trigger, `overflow` do body foi restaurado e atributos `inert`/`aria-hidden` temporários foram removidos;
+- fundo ficou inerte durante a abertura e o scroll da página foi bloqueado;
+- targets interativos críticos mantiveram mínimo de 44 px e o skip link, landmarks e navegações preservaram semântica coerente;
+- movimento reduzido e safe areas permanecem cobertos pelas regras globais e classes responsivas existentes.
+
+Temas e contraste:
+- tema claro: corpo `16,68:1`, trigger `16,96:1` e texto secundário `5,12:1`;
+- tema escuro: corpo `17,89:1`, trigger `13,98:1` e texto secundário `6,92:1`;
+- os valores auditados atendem WCAG AA; alternância Claro/Escuro funcionou e a preferência `Sistema` foi restaurada ao final.
+
+Experiência PWA:
+- HTML preserva `lang=pt-BR`, viewport `width=device-width, initial-scale=1`, manifest e metadados Apple;
+- theme colors claro/escuro permanecem alinhados aos tokens visuais;
+- manifest válido em `display=standalone`, `start_url=/`, `scope=/`, quatro ícones e dois atalhos;
+- manifest, ícones SVG/PNG, ícone maskable e Apple Touch Icon responderam HTTP 200 com tipos corretos;
+- não existe service worker nem promessa de funcionamento offline; essa limitação permanece honesta e fora do escopo da small release.
+
+Quality gates:
+- regressão completa: 86 suítes e 505 testes verdes, zero snapshots;
+- lint global verde com zero warnings;
+- type-check verde;
+- único log observado foi o aviso conhecido de CSP/`eval()` exclusivo do React em modo de desenvolvimento; não representa erro do produto e não ocorre no build de produção já validado no Dia 5.
+
+Fronteiras preservadas:
+- nenhum arquivo funcional, dependência, regra de negócio, rota, Auth, Supabase, migration, RLS, dado ou configuração remota foi alterado;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram fora do escopo;
+- nenhum commit, push, merge ou deploy foi executado nesta fase.
+
+Estado de saída:
+- `QUALITY_VALIDATION` em GREEN;
+- `UX-SHELL-001A`, `UX-SHELL-001B` e `UX-SHELL-001C` validadas sem dívida crítica ou alta aberta;
+- próximo comando válido: `dia 7` para segurança, observabilidade, build final e preparação de release.
+
+### Ajuste pós-push — quality gate de dependências
+
+- a primeira execução remota da PR `#23` falhou somente no `npm audit` porque `browserslist 4.28.5`, dependência transitiva de build, recebeu dois advisories de severidade alta;
+- `npm audit fix --package-lock-only --ignore-scripts` atualizou apenas o lockfile: `browserslist` para `4.28.8` e seus cinco pacotes auxiliares compatíveis, sem alterar dependências diretas ou código da aplicação;
+- audit local retornou zero vulnerabilidades; 86 suítes/505 testes, lint, type-check e build de produção permaneceram verdes;
+- a correção é restrita ao pipeline e não altera comportamento, dados financeiros, Auth, Supabase, RLS ou contratos arquiteturais.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-SHELL-001
+
+Objetivo executado:
+- fechar a small release do cabeçalho responsivo com evidência local e remota, sem expandir escopo nem modificar Auth, banco, infraestrutura ou produção.
+
+Quality gates finais:
+- lint global verde com zero warnings;
+- type-check verde;
+- regressão completa verde com 86 suítes, 505 testes e zero snapshots;
+- auditoria do lockfile em severidade alta retornou zero vulnerabilidades;
+- build Next.js `16.3.3` com Turbopack verde, preservando `/`, `/_not-found`, `/accounts`, `/categories`, `/dashboard`, `/login`, `/transactions` e o Proxy;
+- `git diff --check origin/develop...HEAD` verde e `next-env.d.ts` restaurado após a regeneração automática do build.
+
+Revisão de segurança:
+- o diff da branch não altera Auth, Supabase, migrations, RLS, dados financeiros, rotas protegidas, segredos ou variáveis de ambiente;
+- o painel expõe o e-mail somente enquanto o diálogo da conta está aberto e reutiliza os contratos existentes de tema e logout;
+- a apresentação permanece sem acesso direto ao Supabase; o shell continua orquestrando o gateway e o caso de uso já existentes;
+- o Proxy preserva validação por claims, rejeição de sessão anônima, atualização de cookies e falha fechada;
+- CSP e headers globais permanecem ativos, e a varredura não encontrou credencial de `service_role` rastreada;
+- a documentação atual do Supabase foi revisada e nenhuma mudança recente é aplicável ao recorte, que não cria tabela, endpoint OAuth nem integração GraphQL.
+
+Supabase remoto:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) permanece `ACTIVE_HEALTHY`, em `sa-east-1`, PostgreSQL `17.6.1.141`;
+- seis migrations remotas continuam alinhadas até `create_financial_evolution_snapshot`; nenhuma migration foi aplicada nesta fase;
+- o Security Advisor não encontrou falha nova e manteve apenas o aviso conhecido `SEC-AUTH-001` de proteção contra senhas vazadas desativada;
+- o Performance Advisor manteve três índices ainda não utilizados como itens informativos, sem justificar remoção durante esta small release de UI.
+
+Vercel, PR e observabilidade:
+- Preview `dpl_F7b8DgT51THXnShNQdrnDCTDrXMi`, no head `f232e5d`, está `READY` e sem erro de build;
+- os únicos avisos de build são o alinhamento de Node/npm e o vínculo local antigo já registrados em `CI-VERCEL-002` como dívida MÉDIA;
+- logs de runtime do deployment não apresentaram `error` ou `fatal` nas últimas 24 horas;
+- PR `#23` está aberta, não draft, limpa e mergeável, com Quality Gates, Vercel e Vercel Preview Comments verdes no head publicado;
+- baseline atual: GitHub Actions para lint/type-check/testes/audit/build e Vercel para build/runtime; o plano Hobby não oferece drains, e `HARD-OBS-001` continua obrigatório antes de produção pública.
+
+Fronteiras e riscos remanescentes:
+- `UX-SHELL-001A`, `UX-SHELL-001B` e `UX-SHELL-001C` estão concluídas sem dívida crítica ou alta da feature;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta UI;
+- `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção de produção;
+- nenhum Auth remoto, migration, RLS, dado, dependência, configuração permanente, commit, push, merge, deploy ou promoção foi executado;
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` permaneceram preservados fora do escopo.
+
+Estado de saída:
+- `READY_FOR_RELEASE` em GREEN;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#23` e, após decisão humana, realizar squash merge em `develop`;
+- deploy público continua bloqueado pelos hardenings globais já documentados.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-002/003
+
+Objetivo executado:
+- transformar as ideias aprovadas de extrato contextual e períodos selecionáveis em features implementáveis, mantendo a ordem incremental e sem misturar UI, SQL e agregações longas em uma única entrega;
+- selecionar `UX-CHART-002` como feature ativa e deixar `UX-CHART-003` refinada e bloqueada pela predecessora.
+
+Evidência do sistema existente:
+- `FinancialCandle` já preserva `startOnInclusive`, `endOnExclusive`, OHLC, receita, despesa, volume e quantidade;
+- o view model atual perde `endOnExclusive`, portanto essa fronteira deverá ser corrigida por teste antes de habilitar seleção;
+- `FinancialCandlestickChart` e `useFinancialChart` não registram evento de clique, e o adapter expõe apenas lifecycle; a evolução aprovada é estreita e não cria `ChartPort` genérico;
+- `FinancialCandlesTable` já oferece equivalência textual, mas ainda não possui ação por intervalo;
+- o repository transacional existente é orientado a `create` e `findByMonth`; a consulta analítica terá port próprio para preservar coesão;
+- `transactions` possui RLS forçada, policies para `authenticated` e índice cobrindo proprietário/data/ordem; nenhuma migration é necessária para o primeiro recorte;
+- a composição financeira atual já valida claims server-side, rejeita Auth anônimo e injeta `claims.sub`.
+
+Decisão de sequência:
+1. concluir o ciclo Dias 1–7 da `UX-CHART-002`;
+2. somente depois revalidar e iniciar o ciclo da `UX-CHART-003A`;
+3. não antecipar períodos longos, migration ou agregação durante o extrato contextual.
+
+Arquitetura da `UX-CHART-002`:
+- seleção canônica por `{ startOnInclusive, endOnExclusive }`, inicialmente restrita a candles diários e períodos de até 31 dias;
+- `FinancialIntervalStatementQueryRepository` como port de application em `financial-analytics`, separado do repository de comandos/listagem mensal de transações;
+- implementação Supabase em infrastructure com projeção mínima, filtro explícito por proprietário, limites semiabertos e ordenação determinística, sempre sob RLS;
+- Server Action como composition root: valida claims, deriva o ator e nunca aceita `userId` do cliente;
+- detalhes carregados somente após clique/toque no candle ou botão `Ver extrato` na tabela; o snapshot e a RPC atuais permanecem enxutos;
+- adapter/hook ECharts ampliados apenas com registro/cleanup do evento necessário e mapeamento seguro de `dataIndex`;
+- bottom sheet abaixo de 768 px e painel lateral a partir de 768 px, com resumo OHLC e estados `loading`, `empty`, `error` e `success`;
+- foco inicial, contenção/restauração, `Escape`, backdrop, scroll, safe areas, movimento reduzido e alvos de 44 px são contratos obrigatórios;
+- respostas assíncronas obsoletas não podem substituir a seleção atual.
+
+Small releases da `UX-CHART-002`:
+1. `UX-CHART-002A` — contratos, DTO, consulta Supabase sob demanda e Server Action;
+2. `UX-CHART-002B` — seleção no gráfico/tabela e painel responsivo;
+3. `UX-CHART-002C` — concorrência, acessibilidade, responsividade e validação real.
+
+Arquitetura planejada da `UX-CHART-003`:
+- `003A`: `7D`, `15D` e `Mês` usando a RPC diária atual, mantendo compatibilidade de URL e sem migration;
+- `003B`: `3M` e `Ano` com agregação server-side, migration forward-only e pgTAP;
+- `003C`: `Tudo`, intervalo personalizado e integração completa com o extrato contextual;
+- granularidade diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso, preferencialmente entre 12 e 60 pontos;
+- buckets civis, consecutivos e semiabertos; primeiro/último parciais respeitam exatamente o recorte;
+- uma única resolução de período alimenta cards, linha, candles, tabela e extrato;
+- períodos longos usam RPC `SECURITY INVOKER`, Auth/RLS, grants mínimos, allowlist e limites; movimentos brutos não são transferidos em massa ao browser;
+- a RPC diária atual mantém o teto de 31 dias.
+
+Segurança, privacidade e acessibilidade:
+- dados do usuário continuam autorizados por claims server-side e RLS, com filtro explícito por proprietário como defesa adicional e apoio ao plano de consulta;
+- descrição, valor, UUID, e-mail, payload financeiro, token e cookie permanecem proibidos em logs/telemetria;
+- erros públicos são genéricos e intervalos inválidos falham antes da infraestrutura;
+- tabela com ação explícita garante operação completa por teclado; seleção não depende somente de SVG, cor, hover ou tooltip;
+- seletor futuro usa `aria-pressed`, nomes completos, targets de 44 px e rolagem confinada no mobile.
+
+Riscos e mitigação:
+- risco MÉDIO na `UX-CHART-002` por eventos ECharts, concorrência de requests, foco e layout responsivo; mitigado por TDD, listener com cleanup e identidade de request;
+- risco ALTO na `UX-CHART-003` por agregação OHLC, intervalos parciais, performance, RLS e migration; mitigado por ciclo separado, domínio puro, pgTAP e validação de plano/limites;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o TDD local e Preview privado destas features.
+
+Fronteiras preservadas no Dia 1:
+- nenhum código funcional, teste, dependência, migration, RPC, policy, dado, configuração Supabase, commit, push, PR, merge ou deploy foi criado/executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados;
+- o stash histórico `wip: planejamento UX-CHART-002 e UX-CHART-003` permaneceu preservado e não foi aplicado ou removido.
+
+Artefatos e decisões:
+- backlog refinado com `UX-CHART-002` em `IN_PROGRESS` e `UX-CHART-003` em `DISCOVERY` bloqueada;
+- arquitetura e roadmap alinhados;
+- ADR 0019 define o extrato contextual sob demanda;
+- ADR 0020 define períodos e granularidade adaptativa em releases separadas.
+
+Estado de saída:
+- `ARCHITECTURE_READY` para a `UX-CHART-002`;
+- `DISCOVERY` coordenado e bloqueado por dependência para a `UX-CHART-003`;
+- próximo comando válido: `dia 2` para criar a estratégia de testes e os testes essenciais em RED da `UX-CHART-002`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-CHART-002
+
+Small release prioritária:
+- `UX-CHART-002A` — intervalo, consulta sob demanda e composição autenticada;
+- os contratos de `002B/002C` foram registrados como rede de segurança, mas a implementação permanece incremental.
+
+Baseline anterior ao RED:
+- PR `#24` com Quality Gates e Preview Vercel verdes no commit `8610a0c`;
+- 23 suítes e 182 testes de `financial-analytics` verdes, zero snapshots;
+- type-check verde;
+- o wrapper global do npm permanece quebrado no ambiente e o Jest foi executado pelo binário local versionado, sem instalar dependências.
+
+Matriz executável criada:
+- domain: datas civis válidas, intervalo semiaberto, limite inclusivo de 31 dias, limites iguais/invertidos e datas impossíveis;
+- application: uma chamada ao read port, DTO serializável e validação anterior ao repository;
+- infrastructure: tabela `transactions`, projeção mínima, filtro explícito de proprietário, `gte`/`lt`, ordenação determinística e erro sanitizado;
+- composition: claims permanentes, rejeição de sessão ausente/inválida/anônima e descarte de `userId` forjado;
+- mapper: preservação de `endOnExclusive` em cada ponto do candle;
+- ECharts: mapeamento de `dataIndex` para intervalo, listener único e cleanup;
+- tabela: botão `Ver extrato` como alternativa integral de teclado;
+- painel: consulta somente após seleção, loading, empty, success, fechamento nomeado e proteção contra resposta obsoleta;
+- arquitetura: módulos nas camadas aprovadas, presentation sem acesso direto ao Supabase e ausência de `ChartPort` genérico.
+
+Fixtures acrescentadas:
+- proprietário permanente e ID forjado distintos;
+- dois candles diários consecutivos para troca de seleção;
+- linha Supabase com projeção mínima;
+- item serializável de receita sem notas ou dados excedentes.
+
+RED controlado observado:
+- 9 suítes afetadas falharam como esperado;
+- Jest executou 22 contratos nas suítes carregadas: 14 passaram e 8 falharam;
+- cinco suítes foram interrompidas pela ausência deliberada de: validador de intervalo, caso de uso, repository Supabase, Server Action e painel;
+- falhas comportamentais existentes: mapper ainda perde `endOnExclusive`, adapter/hook não registra seleção ECharts e tabela não oferece `Ver extrato`;
+- contrato arquitetural falhou pelos cinco artefatos ainda inexistentes e manteve verdes as fronteiras sem Supabase direto na presentation e sem `ChartPort`;
+- após tipar os mocks pela assinatura futura, o type-check contém somente cinco `TS2307`, sem ruído do harness;
+- lint de toda a pasta de testes de analytics verde com zero warnings;
+- regressão anterior, excluindo as 9 suítes/assertivas afetadas, verde com 20 suítes e 169 testes, zero snapshots;
+- `git diff --check` verde; avisos de normalização LF/CRLF são apenas informativos e seguem a configuração existente do repositório.
+
+Artefatos criados/alterados:
+- estratégia em `docs/ux-chart-002-test-strategy.md`;
+- fixture `financial-interval-statement.fixtures.ts`;
+- testes de domain, application, infrastructure, Server Action, painel e fronteiras;
+- contratos incrementais nos testes existentes de mapper, gráfico e tabela.
+
+Fronteiras preservadas:
+- nenhum código funcional, tipo de produção, componente, migration, RPC, policy, grant, dado, dependência ou configuração Supabase foi criado/alterado;
+- nenhuma mutação remota, commit, push, merge ou deploy foi executado;
+- `UX-CHART-003` permanece em `DISCOVERY`, bloqueada até a conclusão da predecessora;
+- anexos remotos, `rewrite-msgs.sh` e o stash histórico permaneceram intocados.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- `UX-CHART-002` permanece `IN_PROGRESS` com RED controlado;
+- implementação bloqueada até aprovação explícita do `dia 3`.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-CHART-002
+
+Escopo entregue:
+- `UX-CHART-002A`: validador de intervalo civil semiaberto com limite de 31 dias, read port de application, DTO serializável, repository Supabase e Server Action autenticada;
+- `UX-CHART-002B`: `endOnExclusive` preservado no mapper, listener ECharts estreito com cleanup, seleção pelo candle e ação equivalente `Ver extrato` na tabela;
+- mínimo de `UX-CHART-002C`: painel adaptativo com loading, empty, error e success, fechamento nomeado por botão/Escape e identidade de request que impede resposta obsoleta de substituir a seleção atual.
+
+Arquitetura e segurança preservadas:
+- `presentation` recebe somente DTO e callback injetado; nenhum acesso direto ao Supabase foi introduzido na UI;
+- a Server Action deriva o proprietário exclusivamente de claims permanentes, rejeita sessão ausente, inválida ou anônima e sobrescreve qualquer `userId` forjado;
+- a consulta usa projeção mínima, `user_id`, `gte`/`lt` e ordenação decrescente determinística por `occurred_on`, `created_at` e `id`;
+- erros do provider são sanitizados; nenhuma migration, RPC, policy, grant ou alteração remota foi necessária.
+
+Experiência mínima:
+- abaixo de 768 px o extrato ocupa bottom sheet; a partir de 768 px, painel lateral;
+- o resumo OHLC permanece visível e os lançamentos são carregados somente após seleção;
+- a alternativa na tabela mantém o fluxo operável por teclado sem depender de hover, cor ou precisão no SVG;
+- a revisão `vercel:react-best-practices` confirmou efeitos usados apenas para request/listener externo, estado de loading derivado, handlers ECharts removidos e ausência de acesso a refs durante render.
+
+Evidências GREEN:
+- contratos focados: 9 suítes e 40 testes verdes;
+- regressão `financial-analytics`: 29 suítes e 209 testes verdes;
+- regressão completa: 92 suítes e 532 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes; `git diff --check` verde, com avisos informativos de LF/CRLF já esperados no Windows;
+- o primeiro build não alcançou a compilação por bloqueio de rede ao Google Fonts; a reexecução autorizada compilou, tipou e gerou todas as rotas, e `next-env.d.ts` foi restaurado ao conteúdo versionado;
+- o contrato legado de `FinancialEvolutionPanel` foi alinhado ao novo `endOnExclusive` produzido pelo mapper.
+
+Erro operacional registrado e prevenção:
+- ao contornar o shim global quebrado do npm, a tentativa inicial com pnpm começou a isolar dependências instaladas por npm em `node_modules/.ignored`; o processo foi interrompido, todos os pacotes foram restaurados e `.pnpm-store` removido, sem mudança em manifesto ou lockfile;
+- prevenção: em repositório npm com shim global indisponível, executar Jest, TypeScript e ESLint diretamente por seus binários locais usando o Node 22 empacotado do workspace; não alternar o gerenciador de pacotes.
+
+Fronteiras preservadas:
+- `UX-CHART-003` não foi iniciada e permanece em `DISCOVERY`;
+- edição/exclusão, busca, exportação, notas e períodos acima de 31 dias continuam fora do escopo;
+- nenhuma dependência, migration, dado, configuração Supabase, commit, push, merge ou deploy foi criado/executado;
+- anexos remotos, `rewrite-msgs.sh` e o stash histórico permaneceram intocados.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 4` para expansão controlada dos estados, interações e composição do painel, sem iniciar `UX-CHART-003`.
+
+## Dia 4 — Expansão Controlada da UX-CHART-002
+
+Escopo entregue:
+- o painel adaptativo passou a ser renderizado em portal, com backdrop independente, bloqueio e restauração do scroll da página;
+- o diálogo permanece nomeado e modal também durante `loading`, preservando uma única superfície estável nos estados `loading`, `empty`, `error` e `success`;
+- foco inicial no botão de fechar, contenção por `Tab`/`Shift+Tab`, fechamento por `Escape`, botão ou backdrop e restauração do foco ao acionador;
+- conteúdo ao fundo recebe isolamento temporário por `aria-hidden` e `inert`, com restauração exata dos atributos anteriores no cleanup;
+- bottom sheet recebeu safe areas laterais/inferior, overscroll confinado, target de 44 px e respeito a movimento reduzido; o painel lateral de desktop foi preservado;
+- o estado de erro permite tentar novamente sem perder o intervalo selecionado;
+- seleção pelo ECharts e pela tabela foi validada na composição real contra o mesmo loader e o mesmo contrato semiaberto.
+
+TDD e revisão React:
+- RED controlado: 3 dos 7 contratos do painel falharam pela ausência deliberada de semântica modal durante loading, isolamento/scroll/foco e backdrop;
+- GREEN direcionado: 2 suítes e 12 testes cobrindo painel e switcher;
+- a revisão `vercel:react-best-practices` confirmou portal e efeitos restritos a sincronização com DOM/request externos, callback estável por ref, cleanup simétrico, estado assíncrono derivado e ausência de nova dependência ou efeito de renderização desnecessário.
+
+Evidências GREEN:
+- regressão `financial-analytics`: 29 suítes e 213 testes verdes;
+- regressão completa: 92 suítes e 536 testes verdes, zero snapshots;
+- lint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; avisos LF/CRLF permanecem apenas informativos no Windows;
+- build compilou, tipou e gerou todas as rotas sem alteração do contrato de navegação.
+
+Fronteiras preservadas:
+- nenhuma regra OHLC, query, Server Action, migration, RPC, policy, grant, dado, dependência ou configuração remota foi alterada;
+- `UX-CHART-003` não foi iniciada e permanece em `DISCOVERY`;
+- edição/exclusão, busca, exportação, notas e intervalos acima de 31 dias permanecem fora do escopo;
+- nenhum commit, push, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem ampliar regras de negócio.
+
+## Dia 5 — Refatoração e Hardening Interno da UX-CHART-002
+
+Diagnóstico e plano incremental:
+- `FinancialIntervalStatementPanel.client.tsx` tinha 293 linhas e concentrava consulta assíncrona, lifecycle modal e apresentação do extrato;
+- o mesmo lifecycle de foco, teclado, scroll e isolamento do background estava duplicado em `AccountPanel.client.tsx`;
+- a menor refatoração segura escolhida foi extrair somente esse comportamento compartilhado; markup, layout, regras financeiras e contratos de dados permaneceram nos consumidores;
+- extrações adicionais de conteúdo, adapters ou abstrações genéricas foram rejeitadas por não reduzirem risco suficiente neste ciclo.
+
+Refatoração aplicada:
+- criado `src/shared/hooks/useModalDialogLifecycle.ts` como primitive coesa de presentation compartilhada;
+- o hook oferece refs tipadas para portal, diálogo e foco inicial, além de callback estável para fechamento;
+- lifecycle centralizado: bloqueio/restauração do scroll, isolamento/restauração dos filhos do `body`, foco inicial, contenção por teclado, `Escape`, cleanup e retorno do foco;
+- callback externo é atualizado por ref e o efeito principal depende somente de `isOpen` e da função estável, evitando reinstalação por render do consumidor;
+- `AccountPanel` e `FinancialIntervalStatementPanel` passaram a consumir a mesma primitive sem alteração visual ou funcional;
+- a composição JSX do painel financeiro foi realinhada para leitura consistente.
+
+Revisão React, integridade e performance:
+- `vercel:react-best-practices` e as regras de listeners globais, dependências estreitas e event handlers em refs foram consultadas;
+- a aplicação mantém a premissa de um único modal ativo, portanto adicionar SWR ou um gerenciador global de eventos seria complexidade e dependência injustificadas;
+- intervalo semiaberto, request key, DTO, ownership, Server Action e repository não foram alterados;
+- nenhuma nova renderização cara, serialização ou dependência de bundle foi introduzida.
+
+Evidências GREEN:
+- baseline anterior: painel e switcher com 2 suítes/12 testes verdes;
+- consumidores diretamente afetados: 3 suítes/25 testes verdes;
+- regressão completa: 92 suítes/536 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado;
+- `git diff --check` verde, salvo avisos informativos de normalização LF/CRLF no Windows.
+
+Dívida técnica e fronteiras:
+- nenhuma dívida CRÍTICA ou ALTA foi criada ou encontrada neste recorte;
+- `UX-CHART-003` permanece em `DISCOVERY` e não foi iniciada;
+- nenhuma regra de negócio, query, migration, RPC, policy, grant, dado, dependência ou configuração remota foi alterada;
+- nenhum commit, push, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 6` para UX, acessibilidade e PWA.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-002
+
+Diagnóstico e ciclo TDD:
+- a descoberta do extrato dependia da exploração do gráfico ou de uma ação posicionada após todas as colunas largas da tabela;
+- foram escritos primeiro três contratos para instrução visível, descrição acessível do gráfico e coluna `Extrato` imediatamente após `Dia`;
+- RED controlado: 3 suítes carregadas, 17 testes verdes e 3 falhas planejadas;
+- implementação mínima: instrução curta abaixo do título do candle, alternativa de teclado explicitada para leitores de tela e ação da tabela antecipada sem alterar os dados financeiros.
+
+Validação autenticada e responsiva:
+- a sessão autenticada local existente foi reutilizada; as credenciais autorizadas não precisaram ser digitadas ou persistidas;
+- em 320 px, o documento permaneceu sem overflow global e somente a região da tabela rolou horizontalmente; `Dia` e `Extrato` ficaram como as primeiras colunas;
+- o extrato abriu como bottom sheet de 320 px de largura e 354 px de altura, alinhado ao rodapé;
+- em 768 e 1280 px, abriu como painel lateral de 448 px, ocupando a altura total e sem overflow global;
+- foco inicial no botão `Fechar extrato`, contenção por `Tab`/`Shift+Tab`, fechamento por `Escape`, restauração de scroll e retorno do foco ao acionador foram confirmados no navegador;
+- loading sob demanda chegou à Server Action com intervalo civil semiaberto e o estado vazio real foi apresentado sem dados fictícios;
+- a alternativa textual do gráfico e o botão da tabela mantêm o fluxo operável sem depender de hover, cor, SVG ou precisão de toque.
+
+PWA e acessibilidade:
+- `lang=pt-BR`, viewport responsivo, manifesto e theme colors claro/escuro foram confirmados no DOM;
+- `manifest.webmanifest` é válido, usa `display: standalone`, `start_url`/`scope` em `/`, quatro ícones existentes, incluindo maskable, e dois atalhos;
+- não há service worker nem promessa de funcionamento offline neste recorte; consistência financeira continua priorizada;
+- o único registro do console foi o diagnóstico conhecido do React em desenvolvimento sobre `unsafe-eval` sob CSP; não houve erro funcional, e o build de produção permaneceu verde.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 20 testes verdes;
+- regressão completa: 92 suítes e 539 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices` confirmou condicionais explícitas, ausência de estado derivado em efeito e nenhuma nova dependência.
+
+Fronteiras e riscos:
+- nenhuma regra financeira, query, DTO, migration, RPC, policy, grant, dado, configuração Supabase remota ou dependência foi alterada;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados;
+- `UX-CHART-003` continua em `DISCOVERY` e bloqueada até a conclusão do Dia 7 da predecessora;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada neste recorte.
+
+Estado de saída:
+- `QUALITY_VALIDATION` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS` até o gate final;
+- próximo comando válido: `dia 7` para qualidade final, segurança, observabilidade e preparação da entrega incremental.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-CHART-002
+
+Quality gates e supply chain:
+- regressão completa verde com 92 suítes e 539 testes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- auditorias npm completa e de produção com zero vulnerabilidades em 760 dependências contabilizadas;
+- verificação de supply chain sem assinatura inválida ou ausente;
+- CI usa permissões `contents: read`, concorrência cancelável e gates de lint, tipos, testes, audit e build;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado e o worktree permaneceu limpo, exceto pelos dois itens privados não rastreados já preservados.
+
+Revisão de segurança e threat model:
+- ativos protegidos: sessão, identificador do proprietário, descrições e valores dos lançamentos;
+- a Server Action deriva o ator exclusivamente de `claims.sub`, rejeita erro, claim ausente e Auth anônimo e ignora qualquer identidade forjada pelo cliente;
+- intervalo civil semiaberto é validado antes da infraestrutura, aceita no máximo 31 dias e bloqueia datas inválidas, invertidas ou iguais;
+- repository usa projeção mínima, filtro explícito por proprietário, limites `gte`/`lt` e ordenação determinística; notas, conta e categoria não são transferidas;
+- `transactions` mantém RLS habilitada e forçada, policy de leitura com ownership e rejeição de usuário anônimo, além de grants mínimos;
+- query builder evita interpolação SQL, erros públicos são sanitizados e nenhuma credencial, token ou payload financeiro foi introduzido em logs da aplicação;
+- risco de IDOR/BOLA é mitigado por claims server-side, filtro explícito e RLS; abuso autenticado é limitado pelo teto de 31 dias, projeção mínima e índice composto, permanecendo como risco residual baixo em Preview privado;
+- logs operacionais administrados pelo Supabase registram o UUID filtrado na URL da Data API; não registraram descrição, valor, token ou cookie. Esse identificador pseudônimo fica restrito ao plano administrativo e sua política de retenção/redaction permanece coberta por `HARD-OBS-001` antes de produção pública.
+
+Supabase e integridade:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) confirmado `ACTIVE_HEALTHY` em PostgreSQL 17, região `sa-east-1`;
+- seis migrations locais e remotas permanecem alinhadas; nenhuma alteração de schema foi necessária;
+- Security Advisor manteve somente `SEC-AUTH-001`, proteção contra senhas vazadas desativada;
+- Performance Advisor manteve três índices sem uso como informações, sem recomendação de remoção sem carga representativa;
+- últimas 24 horas: 40 chamadas API com HTTP 200, 31 eventos Auth em nível informativo e sem erro, e 23 eventos Postgres rotineiros em nível `LOG`.
+
+Vercel, PR e observabilidade:
+- projeto ativo `fin-control` confirmado como `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`; o vínculo local antigo permanece na dívida MÉDIA `CI-VERCEL-002` e não foi alterado;
+- deployment Preview `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` no commit `f865576` e na PR `#24` confirmado `READY`;
+- nenhum cluster de runtime error e nenhum log `error`, `fatal` ou `warning` do deployment nas últimas 24 horas;
+- build remoto compilou e gerou todas as rotas; avisos de Node 24 configurado versus Node 22 usado e npm 10 versus engine npm 11 continuam em `CI-VERCEL-002`;
+- PR `#24` está aberta, draft, mergeável e `clean`, com `validate` e `Vercel Preview Comments` concluídos em sucesso no head publicado;
+- baseline de observabilidade permanece em GitHub Actions, Vercel runtime/build e advisors/logs Supabase; captura externa com redaction continua em `HARD-OBS-001` antes de produção pública.
+
+Riscos, fronteiras e saída:
+- nenhuma dívida CRÍTICA foi encontrada; `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta feature;
+- `CI-VERCEL-002` permanece dívida MÉDIA antes de relink, CLI ou promoção;
+- nenhuma migration, RLS, dado, configuração remota, dependência, commit, push, mudança da PR, merge, deploy ou promoção foi executado no Dia 7;
+- `UX-CHART-002` atende ao critério de pronto e passa a `DONE`/`READY_FOR_RELEASE`;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os checks do novo head; após aprovação humana, realizar squash merge em `develop`;
+- `UX-CHART-003` deixa de estar bloqueada pela predecessora e pode iniciar seu próprio Dia 1 somente após comando explícito.

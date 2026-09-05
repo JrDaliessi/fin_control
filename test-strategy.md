@@ -479,6 +479,319 @@ Um usuário permanente com claims verificadas cria uma conta própria. A composi
 
 Estado de saída: `TEST_STRATEGY_READY`.
 
+## Dia 2 — SP-001 Biblioteca de Gráficos
+
+## Objetivo
+
+Converter a decisão arquitetural do ADR 0012 em contratos executáveis antes de instalar ECharts ou criar qualquer implementação de gráfico.
+
+## Prioridade por Camada
+
+1. `domain`: preservar datas civis, ordem e valores monetários inteiros; nenhuma regra nova foi introduzida pelo spike.
+2. `application`: preservar o `FinancialEvolutionDto` serializável como entrada estável; nenhum caso de uso novo foi autorizado.
+3. `presentation` pura: testar mapper e option builder sem DOM ou biblioteca carregada.
+4. `presentation` cliente: testar lifecycle por adapter mockado, movimento reduzido e acessibilidade mínima.
+5. `arquitetura/bundle`: impedir import total, wrapper React e vazamento de ECharts para outras camadas.
+
+## Matriz de Testes do SP-001
+
+| Camada | Alvo | Cenários essenciais | Estado no Dia 2 |
+| --- | --- | --- | --- |
+| domain | datas civis e agregação | limites civis, ordem, centavos e saldo negativo | contratos existentes: 2 suítes verdes |
+| application | `FinancialEvolutionDto` | DTO serializável, vazio e ausência de contas | contrato existente: 1 suíte verde |
+| presentation pura | mapper | ordem, datas civis, centavos, saldo negativo, vazio e imutabilidade | 3 cenários RED por módulo ausente |
+| presentation pura | option builder | linha, eixos, tooltip, moeda na borda, imutabilidade, ARIA/decal e movimento reduzido | 3 cenários RED por módulo ausente |
+| presentation cliente | ilha ECharts | SVG, nome/descrição acessíveis, `setOption`, atualização sem reinicialização, reduced motion, resize, dispose e fallback de erro | 5 cenários RED por módulo ausente |
+| arquitetura | fronteiras e bundle | cinco arquivos permitidos, versão fixa, sem wrapper/import total, RSC e tabela preservados | 9 contratos: 7 RED e 2 verdes |
+
+## Cenário Feliz
+
+O DTO server-side é mapeado sem mutação para pontos com data civil e saldo em centavos. O builder cria uma série de linha acessível, a ilha inicializa o renderer SVG, aplica a opção, reage ao resize e libera recursos no unmount.
+
+## Cenários Alternativos
+
+- período sem pontos permanece como série vazia
+- saldo negativo permanece inteiro e é formatado somente no eixo/tooltip
+- preferência por movimento reduzido desativa animação
+- tokens de tema entram como dados resolvidos, sem regra financeira ou acesso direto a CSS dentro do builder puro
+
+## Edge Cases Críticos
+
+- conversão indevida de centavos para ponto flutuante
+- reordenação ou transformação das datas civis
+- mutação do DTO/view model
+- import direto de `echarts` ou uso de `echarts-for-react`
+- import de ECharts fora de `presentation/charts/echarts`
+- Canvas adotado apesar do renderer SVG aprovado
+- observer/listener órfão ou instância sem `dispose`
+- animação ignorando `prefers-reduced-motion`
+- gráfico tratado como substituto da tabela acessível
+
+## Testes Criados
+
+- `src/features/financial-analytics/tests/to-financial-evolution-chart-model.test.ts`
+- `src/features/financial-analytics/tests/build-financial-evolution-option.test.ts`
+- `src/features/financial-analytics/tests/FinancialEvolutionChart.test.tsx`
+- `src/features/financial-analytics/tests/financial-evolution-chart-boundaries.test.ts`
+
+## Resultado Observado do Dia 2 — SP-001
+
+- baseline: 71 suítes e 386 testes verdes
+- domain/application direcionados: 3 suítes e 38 testes verdes
+- RED direcionado: 4 suítes vermelhas; 7 testes arquiteturais falharam como esperado, 2 invariantes existentes passaram e as 3 suítes comportamentais pararam por módulos ausentes
+- type-check RED: 7 `TS2307`, exclusivamente para os módulos planejados ausentes
+- lint dos quatro arquivos novos: verde, 0 warnings
+- rede anterior sem as quatro suítes RED: 71 suítes e 386 testes verdes
+- nenhuma implementação, dependência, integração no dashboard, migration, dado ou configuração foi criada
+
+## Implementação Bloqueada até o Dia 3
+
+- `echarts@6.1.0`
+- model e mapper de presentation
+- option builder e client modular ECharts
+- ilha cliente experimental
+- qualquer integração de produção pertencente à SR-014
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## Resultado GREEN do Dia 3 — SP-001
+
+- `echarts@6.1.0` foi instalado diretamente, sem wrapper React.
+- mapper e option builder permanecem funções puras e preservam datas civis, ordem, centavos e imutabilidade.
+- adapter registra somente linha, ARIA, grid, tooltip e renderer SVG.
+- ilha cliente recebe view model serializável, inicializa uma única instância, atualiza opções, observa resize, respeita movimento reduzido, libera recursos e mantém fallback acessível.
+- primeiro GREEN parcial: 3 suítes e 15 testes verdes; o teste cliente expôs carregamento ESM anterior ao mock.
+- GREEN direcionado final: 4 suítes e 20 testes verdes.
+- regressão completa: 75 suítes e 406 testes verdes.
+- type-check, lint global, audit com 0 vulnerabilidades e build de produção verdes.
+- análise oficial do Next.js não encontrou ECharts nos chunks/rotas atuais, pois a ilha continua isolada do dashboard; delta atual de produção igual a zero.
+- nenhum teste foi removido, relaxado ou ignorado.
+- nenhuma rota, Supabase, migration, regra financeira ou gráfico de produção foi alterado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 4 — SP-001
+
+- baseline antes dos cenários incrementais: 4 suítes e 20 testes verdes.
+- RED test-first: 1 suíte, 2 falhas esperadas e 5 testes verdes; faltavam estado vazio e reação a `data-theme`.
+- estado vazio passou a exibir status textual sem inicializar ECharts ou construir opções.
+- mudança de tema passou a reaplicar tokens CSS na mesma instância, com cleanup do `MutationObserver` validado após unmount.
+- loading foi classificado como não aplicável porque não existe operação assíncrona no experimento.
+- GREEN do componente: 1 suíte e 7 testes verdes.
+- GREEN direcionado: 4 suítes e 22 testes verdes.
+- regressão completa: 75 suítes e 408 testes verdes.
+- nenhum teste foi removido, relaxado ou ignorado; nenhuma rota ou integração de produção foi criada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 5 — SP-001
+
+- baseline direcionado: 4 suítes e 22 testes verdes.
+- RED test-first: 1 suíte, 3 falhas planejadas e 7 testes anteriores verdes.
+- contratos novos cobrem IDs de descrição únicos, mudança de `prefers-reduced-motion` com cleanup e descarte da instância quando a configuração de resize falha.
+- GREEN do componente: 1 suíte e 10 testes verdes.
+- GREEN direcionado: 4 suítes e 25 testes verdes.
+- regressão completa: 75 suítes e 411 testes verdes.
+- integridade de datas civis e centavos, builder puro, imports modulares e painel server-side permaneceram protegidos.
+- nenhum teste foi removido, relaxado ou ignorado; nenhuma rota, dependência ou integração de produção foi criada.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 6 — SP-001
+
+- baseline direcionado: 4 suítes e 25 testes verdes.
+- auditoria confirmou layout fluido, resize reativo, alternativa tabular, estados textuais e contraste WCAG AA dos tokens claros/escuros.
+- RED test-first: 2 suítes, 1 falha planejada e 20 testes verdes; faltavam tokens e listener de `forced-colors`.
+- contratos verdes adicionais preservam classes responsivas e proíbem fonte de dados, storage, service worker ou promessa offline na ilha.
+- GREEN de componente/fronteira: 2 suítes e 21 testes verdes.
+- GREEN com manifesto PWA: 5 suítes e 29 testes verdes.
+- regressão completa: 75 suítes e 413 testes verdes.
+- nenhum teste foi removido, relaxado ou ignorado; nenhuma rota, dependência ou integração de produção foi criada.
+
+Estado de saída: `QUALITY_VALIDATION`.
+
+## Validação Final — SP-001
+
+Objetivo: confirmar que o experimento de Apache ECharts pode ser aceito como decisão técnica sem integrar um gráfico às rotas antes da SR-014.
+
+Evidências finais:
+- quatro suítes específicas do spike cobrem mapper, option builder, lifecycle cliente e fronteiras arquiteturais;
+- os cenários cobrem ordem e precisão dos dados, centavos, datas civis, SVG modular, ARIA/decal, tema, alto contraste, movimento reduzido, resize, cleanup, múltiplas instâncias, empty state e fallback transacional;
+- regressão completa: 75 suítes e 413 testes verdes;
+- lint, type-check, audit e build verdes;
+- análise de bundle confirma ausência de ECharts nas rotas atuais.
+
+Contratos adiados deliberadamente para a SR-014:
+- integração real com `FinancialEvolutionPanel` e a rota do dashboard;
+- presença simultânea do gráfico e da tabela no DOM de produção;
+- teste visual end-to-end nos temas e viewports reais;
+- medição do delta de JavaScript da rota após o dynamic boundary;
+- observabilidade técnica sanitizada da inicialização/fallback, se houver necessidade operacional comprovada.
+
+Critério observado: o SP-001 está `DONE`; a dependência foi aceita para uso controlado e a SR-014 deve iniciar novamente pelo Dia 1 antes de qualquer integração.
+
+## Matriz planejada no Dia 1 — SR-014
+
+Objetivo: integrar o gráfico aprovado ao painel real sem criar código funcional antes dos testes essenciais.
+
+| Camada | Alvo | Contratos a materializar em RED no Dia 2 |
+| --- | --- | --- |
+| application/domain | `FinancialEvolutionDto` e pontos | nenhuma regra nova; datas civis, ordem, centavos, saldo negativo e linha plana permanecem cobertos pelas suítes existentes |
+| presentation server | `FinancialEvolutionPanel` | permanece sem `use client`; mapeia DTO; renderiza heading, gráfico e tabela em `success`/`empty`; omite ambos em `missing_accounts` |
+| presentation client | `FinancialEvolutionChart` | recebe somente model plano; fallback local não remove a tabela; lifecycle herdado continua verde |
+| route | `/` e `/dashboard` | mesma composition root, uma única chamada de `loadFinancialEvolution` e nenhuma leitura cliente adicional |
+| arquitetura | fronteiras | ECharts confinado; sem Supabase/fetch/storage na ilha; sem import do pacote em Server Components |
+| bundle | chunks por rota | ECharts presente apenas em `/` e `/dashboard`; baseline e delta documentados após o GREEN |
+| acessibilidade | gráfico + tabela | heading de nível 3, imagem nomeada/descrita, tabela visível e equivalente, movimento reduzido e alto contraste preservados |
+
+Cenário feliz:
+- um usuário com contas e movimentos abre o dashboard; o servidor carrega um DTO, o painel mostra resumo, linha do saldo e tabela diária a partir desse mesmo resultado.
+
+Cenários alternativos:
+- conta sem movimentos no período gera linha plana, feedback honesto e tabela de saldos;
+- ausência de contas mantém apenas o onboarding existente;
+- falha de inicialização do ECharts mostra fallback e preserva a tabela;
+- saldo negativo permanece inteiro e visualmente identificável sem depender apenas de cor.
+
+Edge cases:
+- um único ponto e até 31 pontos;
+- datas atravessando mês ou ano;
+- valor zero e saldo negativo;
+- viewport de 320 px e valores monetários longos;
+- movimento reduzido, forced colors e troca de tema;
+- ECharts vazando para rotas não relacionadas;
+- suite server-side carregando ESM real antes do mock da ilha.
+
+Estratégia de harness:
+- mockar a ilha cliente antes de carregar `FinancialEvolutionPanel` nos testes de composição, evitando executar ESM do ECharts no Jest server-side;
+- reutilizar as suítes do SP-001 para lifecycle/option builder sem duplicar seus contratos;
+- adicionar somente contratos de integração, rota, acessibilidade conjunta e bundle que ainda não existem.
+
+Implementação bloqueada até o Dia 3:
+- importar mapper ou ilha em `FinancialEvolutionPanel`;
+- criar card/heading do gráfico;
+- alterar layout, estados ou composição da rota;
+- qualquer mudança em Supabase, DTO, domínio, application ou infrastructure.
+
+Estado planejado após o Dia 2: `TEST_STRATEGY_READY`.
+
+## Matriz Executada no Dia 2 — SR-014
+
+Os contratos abaixo foram escritos antes de qualquer alteração funcional no painel:
+
+| Camada | Alvo | Contratos essenciais |
+| --- | --- | --- |
+| presentation server | `FinancialEvolutionPanel` | `success` compõe heading, gráfico e tabela a partir do mesmo DTO; `empty` mantém linha plana e tabela; `missing_accounts` não chama a ilha |
+| presentation client | `FinancialEvolutionChart` como mock de fronteira | recebe o model plano produzido no servidor; uma falha local conserva fallback textual e tabela |
+| arquitetura | `FinancialEvolutionPanel.tsx` | painel possui mapper e ilha; permanece sem `next/dynamic` e sem import direto de ECharts |
+| regressão | suíte anterior | regras financeiras, mapper, lifecycle da ilha, rotas e demais features permanecem cobertos pelas 73 suítes não alteradas |
+
+Resultado observado:
+- baseline completa antes do RED: 75 suítes e 413 testes verdes
+- 4 testes novos adicionados em 2 suítes de integração/arquitetura
+- RED direcionado: 2 suítes falharam; 4 testes falharam e 17 passaram, total de 21 testes
+- falhas exclusivas: mapper, ilha, heading e fallback local ainda não estão compostos pelo painel
+- regressão anterior, excluindo somente as 2 suítes intencionalmente RED: 73 suítes e 396 testes verdes
+- lint dos arquivos alterados e type-check verdes
+
+Implementação bloqueada até o Dia 3:
+- importar e executar `toFinancialEvolutionChartModel` no Server Component
+- compor `FinancialEvolutionChart` em card próprio com heading de nível 3
+- preservar a tabela para `success`, `empty` e falha local da ilha
+- qualquer alteração funcional além do mínimo necessário para satisfazer estes quatro contratos
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## RED/GREEN do Dia 5 — SR-014 / UX-CHART-001
+
+- Baseline direcionado: 3 suítes e 33 testes verdes.
+- Risco reproduzido: recolher o frame enquanto `requestFullscreen()` permanecia pendente permitia aquisição nativa tardia sem diálogo correspondente.
+- RED: 1 suíte com 1 falha esperada e 9 testes verdes; `exitFullscreen()` recebeu zero chamadas.
+- GREEN da primitive: 1 suíte e 10 testes verdes após invalidar tentativas obsoletas.
+- GREEN direcionado: 3 suítes e 34 testes verdes.
+- Regressão completa: 76 suítes e 429 testes verdes.
+- O teste preserva overlay CSS, foco, scroll, Escape, cleanup, múltiplos frames e a mesma instância do renderer.
+- Nenhum teste foi removido, relaxado ou ignorado; nenhuma regra financeira ou fronteira de dados mudou.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.
+
+## RED/GREEN do Dia 6 — SR-014 / UX-CHART-001
+
+- Baseline direcionado: 4 suítes e 36 testes verdes.
+- Primeiro RED: 3 suítes falharam com 4 contratos ausentes e 30 testes anteriores verdes para safe areas e altura expandida adaptável.
+- Primeiro GREEN: frame usa named group e safe areas; viewport mantém altura mínima normal e libera `min-height` expandido.
+- O navegador revelou overflow móvel de 1.367 px após transição desktop → mobile, causado por largura intrínseca do SVG.
+- Segundo RED: 2 suítes falharam com 2 contratos ausentes e 22 testes anteriores verdes para `min-width: 0`.
+- GREEN direcionado final: 5 suítes e 45 testes verdes.
+- Regressão completa: 76 suítes e 429 testes verdes.
+- Desktop, `390 x 844` e `844 x 390` foram validados sem overflow; safe areas, foco, scroll, alvos e renderer permaneceram coerentes.
+- Manifesto, movimento reduzido, alto contraste, tabela equivalente e ausência de promessa offline permaneceram verdes.
+- Nenhum teste foi removido, relaxado ou ignorado; nenhuma regra financeira ou fronteira de dados mudou.
+
+Estado de saída: `QUALITY_VALIDATION`.
+
+## GREEN do Dia 3 — SR-014
+
+- `FinancialEvolutionPanel` permaneceu server-side, passou a executar o mapper e compôs a ilha cliente com view model plano.
+- `success` e `empty` exibem o gráfico antes da tabela; `missing_accounts` não chama a ilha.
+- fallback local do gráfico e tabela permanecem simultaneamente disponíveis.
+- GREEN direcionado inicial: 2 suítes e 21 testes passaram.
+- a regressão reproduziu um carregamento indevido do ESM real de ECharts no harness de rotas; o teste passou a mockar a ilha antes de carregar as páginas, sem mudar comportamento de produção.
+- GREEN direcionado ampliado: 3 suítes e 25 testes passaram.
+- regressão completa: 75 suítes e 417 testes passaram.
+- lint global, type-check e build Next.js `16.3.3` passaram.
+- análise de bundle confirmou ECharts/ZRender somente em `/` e `/dashboard`; o chunk identificado mede 500.653 bytes brutos e 170.071 bytes em gzip.
+- nenhum teste foi removido, ignorado ou relaxado.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Matriz Adicional Aprovada para o Dia 4 — UX-CHART-001
+
+| Área | Contratos antes da implementação |
+| --- | --- |
+| estado | normal, expandido, API nativa indisponível e solicitação rejeitada |
+| teclado | botão acessível, `Escape` no fallback e saída nativa sincronizada por `fullscreenchange` |
+| foco | foco movido ao controle de saída e restaurado ao controle de abertura |
+| scroll | scroll do documento bloqueado somente durante expansão e restaurado no fechamento/unmount |
+| lifecycle | listeners removidos, mesma instância do gráfico e `ResizeObserver` acionado pelo novo tamanho |
+| independência | dois frames não compartilham estado |
+| integração | gráfico de evolução usa a primitive sem duplicar model, ECharts ou fonte de dados |
+| arquitetura | primitive compartilhada não importa ECharts, Supabase, domain ou application |
+
+Implementação bloqueada até a reprodução dos contratos essenciais em RED.
+
+## RED/GREEN do Dia 4 — UX-CHART-001
+
+RED inicial:
+- 3 suítes falharam; 2 testes falharam e 22 passaram
+- a nova suíte da primitive não carregou porque o componente ainda não existia
+- gráfico atual não oferecia controle de expansão e o contrato arquitetural não encontrou o frame
+
+GREEN e refino:
+- primeiro GREEN: 31/32 testes; regressão estática de classe-base corrigida sem relaxar contrato
+- revisão React originou novo RED para focus trap: 1 falha e 8 testes verdes na suíte da primitive
+- GREEN direcionado final: 3 suítes e 33 testes verdes
+- regressão completa: 76 suítes e 428 testes verdes
+- lint global, type-check, build e analyzer verdes
+- expansão preserva o mesmo nó e uma única instância ECharts
+- overlay, API nativa, rejeição, `Escape`, `fullscreenchange`, foco, scroll, cleanup e independência estão cobertos
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Matriz originada no Dia 1 — SP-001
+
+O Dia 1 definiu os contratos que deverão nascer em RED antes de qualquer instalação ou integração funcional:
+
+- mapper puro: preserva ordem, datas civis, centavos, saldo negativo e pontos vazios;
+- option builder: linha de fechamento, eixo/tooltip em moeda, SVG, ARIA e ausência de mutação do modelo;
+- arquitetura: ECharts restrito a `presentation/charts/echarts` e ao componente cliente aprovado;
+- RSC: painel continua server-compatible e envia somente props serializáveis à ilha cliente;
+- lifecycle: init, resize, update, dispose e remoção de listeners com adapter mockado;
+- acessibilidade: tabela permanece presente, descrição associada, informação não depende apenas de cor e movimento reduzido desativa animação;
+- bundle: baseline e delta documentados com imports modulares; import total de `echarts` falha o contrato.
+
+Nenhum desses testes foi criado no Dia 1. A seção executada acima registra sua materialização em RED no Dia 2; a instalação de `echarts@6.1.0` e qualquer implementação permanecem bloqueadas até aprovação do Dia 3.
+
 ## Matriz Executada no Dia 2 — UI-003
 
 Os testes abaixo foram escritos antes de qualquer alteração funcional nos componentes:
@@ -537,6 +850,69 @@ Estado de saída: `TEST_STRATEGY_READY`.
 - nenhum teste foi relaxado; o contrato transversal mudou de proprietário junto com a responsabilidade visual.
 
 Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 4 — UI-003
+
+Contratos adicionados antes da implementação:
+- grupo de ações exposto como navegação “Ações rápidas” e adaptável entre mobile e `sm`
+- links reais com alvo mínimo de 44 px e foco visível
+- loading contextualizado por “Visão geral” e marcado como ocupado
+- alerta de erro associado programaticamente ao título e à descrição
+- recuperação de erro usando a primitive compartilhada `Button`
+
+RED observado:
+- 2 suítes de apresentação confirmaram 3 falhas comportamentais
+- 1 suíte transversal confirmou 1 falha de design system
+
+GREEN observado:
+- execução direcionada: 3 suítes e 17 testes passaram
+- regressão completa: 72 suítes e 388 testes passaram
+- nenhum teste foi relaxado, ignorado ou removido
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 5 — UI-003
+
+Baseline pré-refatoração:
+- 5 suítes direcionadas e 28 testes passaram
+- regressão completa com 72 suítes e 388 testes
+- lint, type-check e build verdes
+
+Contratos arquiteturais adicionados antes da remoção:
+- arquivos da antiga cadeia cliente do dashboard não podem voltar a existir
+- layout privado não pode compor `TransactionSessionProvider` sem consumidor
+- seletor de período deve reutilizar a primitive `Button`
+
+RED observado:
+- cadeia legada: 1 suíte falhou com 1 teste vermelho e 2 verdes
+- provider global: 1 suíte falhou com 2 testes vermelhos e 2 verdes
+- design system: 1 suíte falhou com 1 teste vermelho e 8 verdes
+
+GREEN observado:
+- limpeza inicial: 4 suítes e 20 testes passaram
+- fronteira cliente: 4 suítes e 21 testes passaram
+- design system: 2 suítes e 16 testes passaram
+- regressão final: 70 suítes e 378 testes passaram
+- duas suítes obsoletas foram removidas com seus únicos alvos de produção; dois contratos arquiteturais novos preservam a não regressão
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## RED/GREEN do Dia 6 — UI-003
+
+- baseline direcionado: 5 suítes e 28 testes verdes; baseline completo: 70 suítes e 378 testes verdes
+- RED: 3 suítes executadas, 2 falharam e 1 passou; 5 testes falharam e 14 passaram por contratos responsivos ainda ausentes
+- GREEN direcionado: 3 suítes e 19 testes passaram após a implementação mínima
+- contraste: 8 combinações verificadas automaticamente, com limiares WCAG AA de 4,5:1 para texto normal e 3:1 para foco/não texto
+- dashboard: altura dinâmica do viewport coberta por teste
+- seletor: fonte móvel de 16 px coberta para evitar zoom automático
+- estado sem contas: CTA responsivo e largura segura cobertos
+- resumo: valores longos e cards estreitos protegidos contra overflow
+- tabela: gesto horizontal, teclado, orientação persistente para tecnologia assistiva e ocultação apenas visual em `sm`
+- regressão completa: 71 suítes e 386 testes passaram
+- lint: verde com 0 warnings; type-check: verde; build Next `16.3.3`: verde
+- browser: 320 x 720 e 1366 x 768 sem overflow horizontal; console sem erro; manifesto HTTP 200
+- nenhum teste ou implementação promete offline, cria service worker ou altera cálculo financeiro
+- estado de saída: `QUALITY_VALIDATION`
 
 ## Dia 2 — Estratégia de Testes e Fundação TDD da SR-013
 
@@ -1188,3 +1564,116 @@ pgTAP:
 - qualquer rota, action ou componente de apresentação
 
 Estado de saída: `TEST_STRATEGY_READY`.
+
+## Matriz planejada no Dia 1 — SR-015 Candles Financeiros
+
+Objetivo do próximo Dia 2: criar testes executáveis em RED para `SR-015A` antes de qualquer agregador, DTO ou componente funcional.
+
+| Camada | Alvo | Cenários essenciais planejados |
+| --- | --- | --- |
+| domain | agregador de candles | OHLC com receita/despesa intercaladas; abertura/fechamento; extremos intermediários; volume e quantidade |
+| domain | continuidade diária | dias vazios antes, entre e depois de movimentos; mês civil; saldo inicial negativo e zero |
+| domain | ordem determinística | input embaralhado; `occurredOn`, `createdAt` e `id`; empate de timestamp; imutabilidade |
+| domain | validação numérica | data/instant inválido, movimento fora do período, valor não positivo/não inteiro e overflow de inteiro seguro |
+| application | `ListFinancialEvolutionUseCase` | evolução e candles derivados de um único snapshot e uma única chamada ao repository |
+| presentation | mapper de candles | datas civis e centavos preservados; view model plano, serializável e sem identidade |
+| presentation | seletor e estados | Linha padrão; alternância; `empty`; `missing_accounts`; falha do renderer com tabela preservada |
+| presentation | equivalência acessível | tabela contém OHLC/volume/quantidade do modo ativo; alta/queda não depende somente de cor |
+| arquitetura | fronteiras | ECharts somente em presentation; ilha sem Supabase/rede; Server Component preservado |
+| integração | bundle e renderer | `CandlestickChart` modular; um modo ativo; ECharts somente em `/` e `/dashboard` |
+
+Fixtures mínimas planejadas:
+- saldo de abertura positivo com receita, despesa e nova receita no mesmo dia;
+- movimentos recebidos fora de ordem e dois movimentos com o mesmo `createdAt` desempatable por `id`;
+- sequência de três dias com o dia central vazio;
+- saldo negativo que cruza zero;
+- período sem movimentos;
+- valores próximos ao limite seguro para reproduzir overflow.
+
+Critério RED do Dia 2:
+- os testes novos falham somente pelos módulos/contratos da SR-015 ainda ausentes;
+- a regressão anterior permanece verde quando as novas suítes são excluídas;
+- nenhum código funcional, adapter ECharts ou mudança de DTO é criado antes dessa evidência.
+
+## Matriz executada no Dia 2 — SR-015 Candles Financeiros
+
+| Camada | Suíte | Contratos declarados | RED observado |
+| --- | --- | ---: | --- |
+| domain | `aggregate-financial-candles.test.ts` | 15 | módulo do agregador ausente |
+| application | `list-financial-candles.use-case.test.ts` | 3 | `candles` ausente nos três estados |
+| presentation mapper | `to-financial-candlestick-chart-model.test.ts` | 3 | módulo do mapper ausente |
+| adapter ECharts | `build-financial-candlestick-option.test.ts` | 4 | model e builder ausentes |
+| presentation table | `FinancialCandlesTable.test.tsx` | 3 | tabela ausente |
+| presentation interaction | `FinancialVisualizationSwitcher.test.tsx` | 2 | switcher ausente |
+| arquitetura | `financial-candles-boundaries.test.ts` | 11 | sete artefatos, registro modular e integração ainda ausentes; confinamento atual já verde |
+
+Total planejado após os módulos carregarem: 41 contratos em sete suítes.
+
+Resultado observado:
+- baseline: 76 suítes e 429 testes verdes; type-check e lint verdes;
+- RED direcionado: sete suítes falharam, com 13 testes falhos e um teste verde entre os 14 que Jest conseguiu materializar antes das falhas de resolução;
+- os cinco módulos importados diretamente ainda ausentes geraram somente cinco `TS2307` no type-check;
+- nenhum erro implícito, warning de lint ou falha de harness permaneceu;
+- regressão anterior, excluindo exclusivamente as sete suítes novas, continuou verde com 76 suítes e 429 testes;
+- nenhuma expectativa anterior foi relaxada, ignorada ou removida.
+
+Implementação bloqueada até o Dia 3:
+- `FinancialCandle` e o agregador `aggregateFinancialCandles`;
+- extensão `candles` do `FinancialEvolutionDto` e sua orquestração a partir do snapshot único;
+- model e mapper `FinancialCandlestickChart`;
+- builder/registro modular de `CandlestickChart`;
+- `FinancialCandlesTable`, `FinancialCandlestickChart` e `FinancialVisualizationSwitcher`;
+- integração do painel server-side.
+
+Estado de saída: `TEST_STRATEGY_READY`.
+
+## GREEN executado no Dia 3 — SR-015 Candles Financeiros
+
+- os 41 contratos planejados nas sete suítes da SR-015 passaram;
+- agregador cobre continuidade, ordem estável, imutabilidade, saldos negativos, calendário, validação e overflow;
+- caso de uso prova uma leitura por request e candles corretos nos três estados;
+- mapper, option builder, tabela, seletor e boundaries passaram sem rede ou dependência de cor;
+- quatro falsos negativos iniciais por globais ausentes no jsdom foram corrigidos no setup compartilhado após registro no contexto;
+- contratos transversais antigos foram alinhados à nova responsabilidade do seletor após registro do drift;
+- regressão completa final: 83 suítes e 470 testes verdes;
+- lint, type-check, build e analyzer verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Expansão TDD executada no Dia 4 — SR-015
+
+- RED: duas falhas específicas para formatter financeiro e região controlada; 12 contratos existentes já verdes;
+- GREEN: três suítes e 15 testes;
+- nova suíte caracteriza ciclo de vida, expansão e estados da ilha candlestick;
+- tooltip testa rótulos OHLC, direção, volume, singular/plural e fallback sem índice;
+- seletor testa uma região ativa nomeada, IDs únicos e tabela preservada após falha do renderer;
+- regressão completa: 84 suítes e 479 testes verdes;
+- type-check, lint, build e analyzer verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS`.
+
+## Refatoração protegida por testes no Dia 5 — SR-015
+
+- baseline direcionada: sete suítes e 53 testes verdes antes da mudança;
+- RED: contrato arquitetural novo falhou pela ausência de `useFinancialChart`;
+- GREEN: sete suítes e 54 testes após extrair o lifecycle compartilhado;
+- o contrato exige que as duas ilhas usem o hook, que `ResizeObserver` não permaneça duplicado e que o hook não introduza `ChartPort`, Supabase ou fetch;
+- suítes comportamentais preservam inicialização SVG, resize, cleanup, atualização sem reinicialização, tema, cores forçadas, movimento reduzido, falha e vazio;
+- regressão completa: 84 suítes e 480 testes verdes;
+- type-check, lint, build e orçamento do chunk verdes.
+
+Estado de saída: `IMPLEMENTATION_IN_PROGRESS` estável após hardening.
+
+## RED/GREEN do Dia 6 — SR-015
+
+- baseline de UX/PWA: cinco suítes e 25 testes verdes;
+- RED de integridade: fixture PostgreSQL com offset provou que o mapper preservava representação válida, porém não canônica, de `timestamptz`;
+- GREEN de integridade: mapper converte instantes válidos com `toISOString()` e quatro suítes/32 testes direcionados passaram;
+- RED de acessibilidade: as duas tabelas focáveis não alteravam `scrollLeft` com `ArrowRight`;
+- GREEN de acessibilidade: handler de presentation avança e retorna com `ArrowRight`/`ArrowLeft`; duas suítes/14 testes passaram;
+- navegador real: dashboard autenticado sem erro/warning, viewports 320/768/1280 sem overflow global, seletor Linha/Candles, expansão e foco validados;
+- confirmação real da interação: tabela OHLC avançou 216 px e retornou a zero pelas setas em 320 px;
+- manifesto servido: HTTP 200, `application/manifest+json`, `standalone`, quatro ícones e dois atalhos, sem claim offline;
+- regressão completa: 84 suítes e 482 testes verdes; lint, type-check e build verdes.
+
+Estado de saída: `QUALITY_VALIDATION`.

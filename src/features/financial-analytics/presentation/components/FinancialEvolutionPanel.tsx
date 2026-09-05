@@ -4,12 +4,16 @@ import type { FinancialPeriodKind } from "../../domain/types/financial-period.ty
 import { Card } from "@/shared/components/ui/Card";
 import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { formatCents } from "@/shared/utils/formatCents";
-import { FinancialEvolutionTable } from "./FinancialEvolutionTable";
+import { toFinancialEvolutionChartModel } from "../charts/to-financial-evolution-chart-model";
+import { toFinancialCandlestickChartModel } from "../charts/to-financial-candlestick-chart-model";
 import { FinancialPeriodSelector } from "./FinancialPeriodSelector";
+import { FinancialVisualizationSwitcher } from "./FinancialVisualizationSwitcher.client";
+import type { FinancialIntervalStatementLoader } from "./FinancialIntervalStatementPanel.client";
 
 type FinancialEvolutionPanelProps = Readonly<{
   result: FinancialEvolutionDto;
   selectedPeriodKind: FinancialPeriodKind;
+  loadStatement?: FinancialIntervalStatementLoader;
 }>;
 
 function movementLabel(count: number) {
@@ -18,7 +22,8 @@ function movementLabel(count: number) {
 
 export function FinancialEvolutionPanel({
   result,
-  selectedPeriodKind
+  selectedPeriodKind,
+  loadStatement
 }: FinancialEvolutionPanelProps) {
   const summaryItems = [
     {
@@ -76,7 +81,7 @@ export function FinancialEvolutionPanel({
             Cadastre uma conta para acompanhar sua evolução financeira.
           </p>
           <Link
-            className="inline-flex min-h-11 w-fit items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:w-fit"
             href="/accounts"
           >
             Cadastrar conta
@@ -94,7 +99,7 @@ export function FinancialEvolutionPanel({
             {summaryItems.map(({ className, label, value, valueClassName }) => (
               <Card
                 aria-label={`${label}: ${value}`}
-                className={className}
+                className={`min-w-0 ${className}`}
                 key={label}
                 role="group"
               >
@@ -102,7 +107,7 @@ export function FinancialEvolutionPanel({
                   {label}
                 </dt>
                 <dd
-                  className={`mt-2 font-semibold tabular-nums text-foreground ${valueClassName}`}
+                  className={`mt-2 break-words font-semibold tabular-nums text-foreground ${valueClassName}`}
                 >
                   {value}
                 </dd>
@@ -113,7 +118,14 @@ export function FinancialEvolutionPanel({
           <p className="text-sm text-muted-foreground">
             {movementLabel(result.summary.transactionCount)}
           </p>
-          <FinancialEvolutionTable points={result.points} />
+
+          <FinancialVisualizationSwitcher
+            candles={result.candles}
+            candlestickModel={toFinancialCandlestickChartModel(result)}
+            evolutionModel={toFinancialEvolutionChartModel(result)}
+            evolutionPoints={result.points}
+            loadStatement={loadStatement}
+          />
         </div>
       )}
     </section>

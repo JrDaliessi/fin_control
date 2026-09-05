@@ -6,7 +6,7 @@ describe("DashboardPage", () => {
   it("presents the approved dashboard hierarchy and neutral supporting copy", () => {
     render(<DashboardPage />);
 
-    expect(screen.getByRole("main")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
     expect(
       screen.getByRole("heading", { name: "Visão geral", level: 1 })
     ).toBeInTheDocument();
@@ -21,9 +21,11 @@ describe("DashboardPage", () => {
   it("offers only actions backed by existing account and transaction flows", () => {
     render(<DashboardPage />);
 
-    const actionHrefs = screen
-      .getAllByRole("link")
+    const actions = screen.getByRole("navigation", { name: "Ações rápidas" });
+    const actionLinks = screen.getAllByRole("link");
+    const actionHrefs = actionLinks
       .map((link) => link.getAttribute("href"));
+    expect(actions).toHaveClass("w-full", "sm:w-auto");
     expect(actionHrefs).toHaveLength(2);
     expect(actionHrefs).toEqual(
       expect.arrayContaining(["/accounts", "/transactions"])
@@ -36,6 +38,9 @@ describe("DashboardPage", () => {
       "href",
       "/transactions"
     );
+    for (const link of actionLinks) {
+      expect(link).toHaveClass("min-h-11", "focus-visible:ring-2");
+    }
   });
 
   it("composes server-rendered financial content through its React slot", () => {

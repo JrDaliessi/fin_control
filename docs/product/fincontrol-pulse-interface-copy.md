@@ -674,8 +674,8 @@ Não criar todos antecipadamente. Cada componente nasce com uma necessidade real
 
 - `PrivateAppShell.tsx`: composition root visual com sidebar, topbar, main e navegação mobile; autenticação continua delegada aos casos de uso/gateway.
 - `DashboardPage.tsx`: composição em grid de 12 colunas, sem regra financeira.
-- `DashboardSummaryPanel.tsx`: evolução incremental para hero e métricas após contratos reais.
-- `RecentTransactionsList.tsx`: categoria, conta, agrupamento e ações somente após persistência correspondente.
+- resumo do dashboard: permanece em `FinancialEvolutionPanel` enquanto a fonte real for o snapshot da evolução.
+- movimentações recentes: componente futuro somente após existir projeção server-side alinhada ao período, sem restaurar sessão cliente em memória.
 - `globals.css`: tokens semânticos, tipografia, temas e preferências de movimento.
 - `tailwind.config.ts`: mapear classes aos tokens; não duplicar cores literais.
 - gráficos: nenhuma biblioteca antes do `SP-001`; o spike compara Recharts, Chart.js e alternativas para candles por acessibilidade, peso e SSR.
@@ -706,7 +706,7 @@ Não criar todos antecipadamente. Cada componente nasce com uma necessidade real
 | 9 | SR-023 | FinControl IA | cálculos determinísticos, consentimento e privacidade |
 | 10 | features futuras | cartões, orçamentos, relatórios, importação e configurações | domínios específicos |
 
-`UI-001` e `UI-002` estão concluídas. `UI-003` concluiu o Dia 3 em 2026-08-27 com implementação mínima verde; `UI-004` a `UI-006` permanecem em `DISCOVERY`.
+`UI-001` e `UI-002` estão concluídas. `UI-003` concluiu o Dia 5 em 2026-08-29 com remoção do estado cliente legado e pipeline local verde; `UI-004` a `UI-006` permanecem em `DISCOVERY`.
 
 ### 21.1. Recorte aprovado da UI-001
 
@@ -882,3 +882,16 @@ Dia 7 concluído em 2026-07-15:
 - threat model cobre preferência de tema, hidratação, storage, autenticação e supply chain;
 - observabilidade permanece baseada nos gates de CI e testes determinísticos, sem adicionar rastreamento ou analytics;
 - `UI-001` está `DONE` e `READY_FOR_RELEASE`; `UI-002` a `UI-006` continuam em `DISCOVERY`.
+
+## 26. Estado incremental da UI-003
+
+Dia 6 concluído em 2026-08-29:
+
+- dashboard usa altura dinâmica do viewport e mantém composição server-side com dados reais;
+- seletor evita zoom automático no mobile, CTA contextual ocupa largura segura e valores longos não causam overflow;
+- tabela diária comunica rolagem horizontal para toque, teclado e tecnologia assistiva;
+- contraste essencial foi automatizado com limiares WCAG AA para texto e indicadores de foco;
+- manifesto instalado permanece `standalone`, com ícones e atalhos reais, sem service worker ou promessa offline;
+- telas públicas foram verificadas em 320 px e 1366 px sem overflow horizontal e sem erros de console;
+- gráficos, novas métricas, Supabase, migrations, dependências e regras financeiras permaneceram fora do recorte;
+- `UI-003` entra em `QUALITY_VALIDATION`; o próximo comando válido é `dia 7`.

@@ -6,21 +6,25 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### UI-003 — Dashboard FinControl Pulse
-- Tipo: Small Release / UX Improvement
-- Descrição objetiva: reorganizar o dashboard em grid responsivo, saudação neutra, métricas suportadas, empty state, movimentações e ações disponíveis.
-- Objetivo de negócio: responder com clareza ao estado financeiro realmente calculável.
-- Valor esperado: visão rápida sem promessas ou indicadores fictícios.
-- Prioridade: Alta
-- Dependências: UI-001, UI-002, períodos da SR-012 e agregações da SR-013; gráficos dependem também de SP-001 e da série temporal visual da SR-014.
-- Risco: Alto se “disponível de verdade” ou projeções forem antecipados.
-- Fase atual: Dia 3 concluído; fonte real, hierarquia e resumo responsivo implementados com pipeline local verde.
-- Critério de pronto: apenas dados reais, todos os estados, copy aprovada, seletor de período acessível sem cálculo temporal na UI e pipeline verde.
-- Small releases: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
-- Próximo passo: executar `dia 4` para expandir estados e experiência de forma controlada sem alterar cálculos ou arquitetura.
-- Status: IN_PROGRESS
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
+
+### UX-CHART-003 — Períodos e granularidade adaptativa
+- Tipo: UX Improvement / Feature.
+- Descrição objetiva: oferecer seleção rápida de `7D`, `15D`, `Mês`, `3M`, `Ano`, `Tudo` e intervalo personalizado, escolhendo automaticamente a granularidade dos candles.
+- Objetivo de negócio: permitir analisar tendências curtas e históricas com leitura consistente, sem transformar o FinControl em interface de trading.
+- Valor esperado: comparação temporal intuitiva, preservando clareza no celular e desempenho para históricos extensos.
+- Prioridade: Alta após a conclusão da `UX-CHART-002`.
+- Dependências: SR-012 a SR-015; contrato genérico de intervalo da `UX-CHART-002`; nova agregação server-side para períodos acima de 31 dias; migration forward-only e testes pgTAP.
+- Escopo planejado: barra horizontal responsiva; compatibilidade com URLs e períodos atuais; granularidade diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso; limite preferencial de 12–60 pontos.
+- Segurança e dados: a RPC diária atual permanece limitada a 31 dias; períodos longos usam consulta agregada `SECURITY INVOKER`, claims/RLS, allowlist de buckets e limites de intervalo/pontos; nenhum lançamento bruto em massa chega ao browser.
+- Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
+- Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
+- Small releases: `UX-CHART-003A` seletor `7D`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e integração completa com o extrato contextual.
+- Fase recomendada: novo ciclo Dias 1–7 após a `UX-CHART-002`.
+- Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
+- Status: DISCOVERY — predecessora concluída; próxima feature recomendada, aguardando comando humano explícito para iniciar o Dia 1 próprio.
 
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
@@ -191,39 +195,6 @@ Nenhum item pronto aguardando início no momento.
 - Critério de pronto: confirmação explícita, escopo do arquivo visível, testes, acessibilidade, tratamento seguro e nenhuma URL pública permanente.
 - Status: DISCOVERY
 
-### SP-001 - Avaliar biblioteca de graficos
-- Tipo: Spike
-- Objetivo de negocio: reduzir risco tecnico de linha e candles.
-- Valor esperado: menor dependencia com mobile e acessibilidade.
-- Prioridade: Alta
-- Dependencias: view model da SR-013.
-- Risco: Medio
-- Fase recomendada: investigacao limitada antes da SR-014.
-- Criterio de pronto: ADR comparando opcoes e definindo adapter; sem grafico de producao.
-- Status: DISCOVERY
-
-### SR-014 - Grafico de linha da evolucao
-- Tipo: Small Release
-- Objetivo de negocio: tornar tendencia financeira visual.
-- Valor esperado: leitura rapida sem perder tabela acessivel.
-- Prioridade: Alta
-- Dependencias: SR-013 e SP-001.
-- Risco: Medio
-- Fase recomendada: apos spike.
-- Criterio de pronto: responsivo, acessivel, estados tratados e testes de componente.
-- Status: DISCOVERY
-
-### SR-015 - Candles financeiros
-- Tipo: Small Release
-- Objetivo de negocio: mostrar abertura, maxima, minima e fechamento do saldo.
-- Valor esperado: leitura avancada inspirada em exchanges sem trading.
-- Prioridade: Media
-- Dependencias: SR-013, SR-014, saldo inicial e ordenacao estavel.
-- Risco: Alto
-- Fase recomendada: apos grafico simples.
-- Criterio de pronto: OHLC e vazios testados, tooltip acessivel e sem recursos de trading.
-- Status: DISCOVERY
-
 ### SR-016 - Distribuicao de frequencia continua
 - Tipo: Small Release
 - Objetivo de negocio: revelar concentracao de despesas por faixa.
@@ -364,6 +335,24 @@ Nenhum item pronto aguardando início no momento.
 
 Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial e sem decisão de provedor.
 
+### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
+- Tipo: Security Item
+- Descrição objetiva: habilitar a proteção nativa do Supabase Auth contra senhas presentes na base Pwned Passwords do Have I Been Pwned, sem processar credenciais no FinControl.
+- Objetivo de negócio: impedir uso de credenciais conhecidamente comprometidas.
+- Valor esperado: reduzir risco de account takeover.
+- Prioridade: Alta antes de produção pública
+- Dependências: upgrade humano da organização Supabase do plano Free para Pro ou superior; ADR 0016; contratos TDD do login.
+- Risco: Médio no ambiente atual; Alto em produção pública.
+- Fase recomendada: hardening de autenticação antes do deploy público.
+- Critério de pronto: contrato de sessão válida com `weakPassword` protegido por teste; proteção ativada; login sintético e logs de Auth sem regressão; advisor sem `auth_leaked_password_protection`.
+- Small releases:
+  - `SEC-AUTH-001A`: testes de compatibilidade do password grant e erro genérico.
+  - `SEC-AUTH-001B`: ativação nativa, smoke test sanitizado e advisor limpo.
+- Motivo do bloqueio: organização confirmada no plano Free; o recurso nativo está disponível somente no Pro ou superior.
+- Decisão de priorização: upgrade adiado enquanto o app permanecer em desenvolvimento e previews privados; retomar antes da produção pública.
+- Ação mínima de desbloqueio: aprovar e concluir o upgrade Supabase, sem compartilhar credenciais ou senhas com o agente.
+- Status: BLOCKED
+
 ## DÍVIDA TÉCNICA
 
 ### SEC-DEPS-001 — Atualizar dependências com vulnerabilidades altas
@@ -411,17 +400,6 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Resultado: a composition root passou a consultar transações uma vez e `calculateMonthlySummary` deriva o resumo do conjunto já carregado; 61 suítes e 292 testes permaneceram verdes.
 - Status: DONE
 
-### SEC-AUTH-001 — Ativar proteção contra senhas vazadas
-- Tipo: Security Item
-- Objetivo de negócio: impedir uso de credenciais conhecidamente comprometidas.
-- Valor esperado: reduzir risco de account takeover.
-- Prioridade: Alta antes de produção pública
-- Dependências: configuração do Supabase Auth.
-- Risco: Médio no ambiente atual; Alto em produção pública.
-- Fase recomendada: hardening de autenticação antes do deploy público.
-- Critério de pronto: proteção ativada no Supabase e advisor de segurança sem o alerta `auth_leaked_password_protection`.
-- Status: READY
-
 ### DB-PERF-001 — Investigar advisor `auth_rls_initplan` das contas
 - Tipo: Dívida Técnica / Hardening
 - Descrição: o advisor de performance sinaliza as policies `financial_accounts_select_own` e `financial_accounts_insert_own`, embora `auth.uid()` e a leitura de `auth.jwt()` estejam encapsuladas em subconsultas.
@@ -451,12 +429,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Tipo: Security Item / Dívida Técnica
 - Objetivo de negócio: reduzir abuso de login e fortalecer a borda HTTP antes de tráfego público.
 - Valor esperado: menor risco de credential stuffing, clickjacking e exposição operacional.
-- Prioridade: Média
-- Dependências: ambiente de deploy e configuração do projeto Supabase.
-- Risco: Médio antes de produção pública.
-- Fase recomendada: Dia 7 antes do primeiro deploy público.
-- Critério de pronto: rate limits/CAPTCHA avaliados no Supabase, baseline de headers CSP/frame/referrer/HSTS validada e URL HTTPS confirmada.
-- Status: DISCOVERY
+- Prioridade: Alta antes de produção pública.
+- Dependências: Next.js/Vercel atuais; configuração Auth do Supabase; decisão humana de provedor para CAPTCHA.
+- Risco: Médio em previews privados; Alto em produção pública sem headers e proteção contra abuso.
+- Fase recomendada: ciclo dedicado Dias 1–7 antes da promoção pública.
+- Small releases:
+  - `SEC-HARD-001A`: headers globais, CSP compatível, contrato da origem Supabase e validação real em Preview — `READY_FOR_RELEASE`, com Dia 7 concluído em GREEN; pipeline, segurança, Supabase, observabilidade, Preview e PR validados no head `f8049e4`.
+  - `SEC-HARD-001B`: inventário dos rate limits e CAPTCHA nativo com token efêmero — `BLOCKED` até decisão humana de provedor e credenciais seguras.
+- Critério de pronto: headers validados na resposta do app, console sem violação CSP, HTTPS/HSTS confirmados, login/sessão/PWA/gráficos sem regressão e controles de abuso explicitamente verificados.
+- Limite: WAF de `/login` não será tratado como proteção do password grant direto ao Supabase; nenhum proxy próprio de senha será criado.
+- ADR: `adr/0017-auth-environment-security-hardening.md`.
+- Status: `SEC-HARD-001A` pronta para release incremental; `SEC-HARD-001B` continua `BLOCKED`, mantendo o item agregado bloqueado para produção pública
 
 ### CI-HARD-001 — Fixar ações do GitHub por SHA
 - Tipo: Dívida Técnica
@@ -469,7 +452,115 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Critério de pronto: `checkout` e `setup-node` fixados por SHA e Dependabot/Renovate configurado para atualização controlada.
 - Status: DISCOVERY
 
+### CI-VERCEL-002 — Alinhar vínculo local e runtime da Vercel
+- Tipo: Dívida Técnica / Hardening
+- Descrição objetiva: o `.vercel/project.json` local referencia um projeto antigo, enquanto o projeto ativo `fin-control` usa outro ID; o projeto declara Node 24, o `package.json` força Node 22 e a imagem de build usa npm 10 apesar do engine npm 11.
+- Objetivo de negócio: tornar inspeções, previews e futuras promoções por CLI determinísticas e direcionadas ao projeto correto.
+- Valor esperado: remover avisos de engine e reduzir risco de operar no projeto Vercel incorreto.
+- Prioridade: Média
+- Dependências: autorização para relink local e ajuste das configurações do projeto Vercel.
+- Risco: Médio antes de operação direta por CLI ou promoção de produção; baixo para o preview atual já validado.
+- Severidade: MÉDIA
+- Fase recomendada: próximo hardening de CI/deploy, antes do primeiro deploy público.
+- Critério de pronto: vínculo local aponta para `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`, Node/npm estão alinhados entre Vercel, `package.json` e CI, build passa sem `EBADENGINE` e preview continua associado ao repositório correto.
+- Status: DISCOVERY
+
 ## DONE
+
+### UX-CHART-002 — Extrato contextual do candle
+- Tipo: Small Release / UX Improvement.
+- Resultado: candle e linha equivalente da tabela abrem o mesmo extrato civil sob demanda, com resumo OHLC e estados loading, empty, error e success.
+- Arquitetura e segurança: contrato application, repository Supabase, Server Action autenticada, claims permanentes, RLS forçada, ownership explícito, intervalo máximo de 31 dias e projeção mínima preservados.
+- UX/PWA: instrução visível e acessível, `Extrato` após `Dia`, bottom sheet em 320 px, painel lateral em 768/1280 px, foco, teclado, Escape, scroll e manifesto validados.
+- Evidência final: 92 suítes/539 testes, lint, type-check, build e auditorias npm verdes; nenhuma vulnerabilidade ou assinatura inválida/ausente.
+- Evidência remota: Supabase saudável e migrations alinhadas; Preview `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` `READY`; PR `#24` draft, mergeável, limpa e com checks verdes no head `f865576`.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de CLI/promoção.
+- Data de conclusão: 2026-09-05.
+- Status: DONE / READY_FOR_RELEASE.
+
+### UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta
+- Tipo: Small Release / UX Improvement.
+- Resultado: topbar privada reduzida a uma linha e sessão, tema e logout consolidados em painel acionado no canto superior direito, com bottom sheet no mobile e popover ancorado em tablet/desktop.
+- Arquitetura: `PrivateAppShell` preservado como composition root; apresentação sem acesso direto ao Supabase; contratos existentes de tema, logout e sessão reutilizados sem regra financeira nova.
+- UX/PWA: 320/768/1280 px sem overflow; targets de 44 px, foco circular/restaurado, `Escape`, backdrop, scroll bloqueado, contraste WCAG AA e manifesto/assets PWA validados.
+- Evidência final: lint, type-check, audit e build verdes; regressão completa com 86 suítes/505 testes e zero snapshots.
+- Evidência remota: Supabase `ACTIVE_HEALTHY` e migrations alinhadas; Preview Vercel `READY`, logs sem `error/fatal` em 24 horas e checks da PR `#23` verdes no head publicado.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de CLI/promoção, mas nenhum deles bloqueia o merge incremental da UI.
+- Data de conclusão: 2026-09-01.
+- Status: DONE.
+
+### SR-015 — Candles financeiros
+- Tipo: Small Release
+- Resultado: saldo diário apresentado como linha ou candles OHLC sobre o mesmo snapshot server-side, com seletor, tooltip explicável, tabela equivalente e frame expansível.
+- Integridade: abertura, máxima, mínima e fechamento seguem ordem determinística de registro; intervalos vazios, overflow e timestamps PostgreSQL com offset estão cobertos sem semântica de trading.
+- UX/PWA: 320, 768 e 1280 px sem overflow global; controles de 44 px, teclado horizontal, foco modal, manifesto standalone e fallback textual validados.
+- Evidência final: 84 suítes/482 testes, lint, type-check, build e auditorias npm verdes; chunk ECharts/ZRender restrito a `/` e `/dashboard` com 179.457 bytes gzip.
+- Evidência remota: migrations alinhadas, advisors/logs revisados, preview `READY` e checks da PR `#19` verdes no head publicado.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- Data de conclusão: 2026-08-31
+- Status: DONE
+
+### BUG-ANALYTICS-001 — Normalizar `timestamptz` do snapshot financeiro
+- Tipo: Bug / Data Integrity
+- Resultado: o mapper converte todo instante válido recebido do PostgreSQL para ISO UTC canônico antes de construir o snapshot e continua rejeitando valores inválidos.
+- Limites preservados: nenhuma mudança em RPC, migration, RLS, dados, ordenação, fórmulas financeiras ou contrato do domínio.
+- Evidência TDD: teste com offset falhou antes da correção; quatro suítes/32 testes direcionados e regressão completa de 84 suítes/482 testes ficaram verdes.
+- Evidência real: dashboard autenticado renderizou dois movimentos sem overlay, erro ou warning após a correção.
+- Data de conclusão: 2026-08-31
+- Status: DONE
+
+### TECH-CHART-002 — Ciclo de vida compartilhado das ilhas ECharts
+- Tipo: Dívida Técnica / Refatoração
+- Resultado: `useFinancialChart` centraliza inicialização SVG, resize, preferências visuais, atualização e cleanup das duas ilhas existentes.
+- Limites preservados: builders, temas, modelos, copy e estados continuam concretos; nenhum `ChartPort`, fetch, persistência ou regra financeira foi criado.
+- Evidência TDD: contrato arquitetural falhou antes da extração e passou depois; sete suítes/54 testes direcionados e regressão completa de 84 suítes/480 testes verdes.
+- Bundle: 525.257 bytes brutos e 179.344 bytes gzip, variação imaterial de -584/+34 bytes sobre o Dia 4.
+- Data de conclusão: 2026-08-31
+- Status: DONE
+
+### SR-014 — Gráfico de linha da evolução
+- Tipo: Small Release
+- Resultado: linha do saldo de fechamento diário integrada ao painel real em `/` e `/dashboard`, junto da tabela acessível e com uma única leitura server-side.
+- Arquitetura: Server Component, mapper serializável, ilha ECharts e adapter específico preservam as fronteiras; ECharts permanece ausente das rotas não relacionadas.
+- Experiência: estados vazio/erro, tema, movimento reduzido, alto contraste, responsividade e expansão progressiva validados em TDD e navegador real.
+- Quality gates: 76 suítes/429 testes, lint, type-check, auditoria com zero vulnerabilidades, build, analyzer, GitHub Actions e Vercel Preview verdes.
+- Segurança: sem alteração em Supabase, Auth, RLS, migrations, dados, regras financeiras, secrets ou dependências.
+- Observabilidade: deployment `ff4bb73` em `READY`, `/login` HTTP 200, sem erro/fatal ou cluster de runtime nas últimas 24 horas e sem comentário Vercel pendente.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- ADR: `adr/0013-financial-evolution-line-chart-integration.md`.
+- Status: DONE
+
+### UX-CHART-001 — Expansão universal de gráficos
+- Tipo: Small Release / UX Improvement transversal
+- Resultado: primitive reutilizável com overlay CSS, Fullscreen API progressiva, safe areas e adaptação a mobile retrato/paisagem.
+- Acessibilidade: diálogo nomeado, controle acessível, focus trap, restauração de foco e scroll, `Escape` testado e tabela equivalente preservada.
+- Robustez: mesma instância ECharts, resize por observer, múltiplos frames independentes e resolução tardia de fullscreen protegida.
+- Quality gates: coberta pela regressão de 429 testes, browser real, lint, type-check, build e preview verdes da SR-014.
+- ADR: `adr/0014-expandable-chart-frame.md`.
+- Status: DONE
+
+### SP-001 — Avaliar biblioteca de gráficos
+- Tipo: Spike
+- Resultado: Apache ECharts `6.1.0` aceita por decisão auditável, com adapter modular específico de presentation e experimento isolado das rotas.
+- Arquitetura: domain, application, infrastructure e App Router permanecem sem dependência de ECharts; a ilha cliente recebe somente view model plano e serializável.
+- Acessibilidade e experiência: tabela server-side obrigatória, nomes e descrições únicos, estados vazio/erro, alto contraste, movimento reduzido, responsividade e PWA sem promessa offline validados.
+- Quality gates: 75 suítes/413 testes, lint, type-check, auditoria com 0 vulnerabilidades, assinaturas/attestations npm, build, GitHub Actions e Vercel Preview verdes.
+- Segurança: sem Supabase, rede, storage, HTML arbitrário, logging financeiro, secrets, migrations ou dados; nenhum risco crítico específico identificado.
+- Observabilidade: Preview respondeu HTTP 200 e não mostrou erro/fatal na janela disponível; telemetria financeira permanece proibida e a instrumentação técnica só será considerada com rota real.
+- Riscos residuais: bundle e validação visual end-to-end deverão ser medidos na SR-014; hardenings globais `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001` e `CI-VERCEL-002` permanecem rastreados.
+- Fora do escopo preservado: integração no dashboard, gráfico de produção, candles, analytics, Supabase, migrations, dados, promoção e merge.
+- Status: DONE
+
+### UI-003 — Dashboard FinControl Pulse
+- Tipo: Small Release / UX Improvement
+- Resultado: dashboard reorganizado com fonte financeira real, composição server-side, grid responsivo, estados honestos, ações disponíveis e experiência acessível/PWA sem promessa offline.
+- Escopo concluído: `UI-003A` fonte real e hierarquia; `UI-003B` resumo responsivo do período; `UI-003C` hardening visual.
+- Quality gates: 71 suítes/386 testes, lint, type-check, auditoria com 0 vulnerabilidades, assinaturas/attestations npm, build, GitHub Actions e Vercel Preview verdes.
+- Segurança: UI sem acesso direto ao Supabase; RLS/grants/RPC revalidados; nenhum segredo, migration, configuração Auth ou dado foi alterado.
+- Observabilidade: preview atual sem erro de runtime e logs recentes de Supabase sem erro/fatal/5xx; baseline externa sanitizada permanece rastreada.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de operação direta por CLI ou promoção.
+- Fora do escopo preservado: gráficos, comparações, projeções, IA, analytics, service worker, offline e novas regras financeiras.
+- Status: DONE
 
 ### SR-013 — Agregação da evolução financeira
 - Tipo: Small Release

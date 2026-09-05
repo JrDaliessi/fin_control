@@ -87,7 +87,9 @@ type FinancialCandle = {
 - `volume`: soma absoluta das movimentacoes efetivadas;
 - intervalo vazio preserva saldo: `open = close = high = low`, com volume zero.
 
-Granularidade: dia para semana/quinzena/mes, semana para 3-6 meses, mes para ano e automatica para personalizado.
+Granularidade da SR-015: dia para os cinco períodos atuais, todos limitados a 31 dias. Semana para 3-6 meses, mês para ano e agregação automática para personalizado dependem da ampliação futura do contrato de períodos e não entram na primeira release.
+
+Dentro de uma data civil, os extremos seguem a ordem determinística de registro (`createdAt`, depois `id`). Como o modelo atual não armazena horário bancário do evento, a interface deve explicar que máxima e mínima intradiárias refletem a sequência registrada no FinControl.
 
 Nao incluir trading, ordens, alavancagem ou indicadores tecnicos. Alta/queda nao dependem so de cor e o tooltip possui alternativa textual.
 
@@ -256,5 +258,6 @@ Trading, indicadores tecnicos, ranking publico, recompensa monetaria, classes to
 
 ## 14. Decisoes pendentes
 
-Biblioteca de graficos, timezone, status/estorno/transferencia, saldo inicial consolidado, preferencias, provedor de IA e observabilidade de producao.
+A biblioteca de gráficos foi resolvida pelo `SP-001` no ADR 0012: Apache ECharts modular, SVG e adapter de presentation. A SR-014 definiu no ADR 0013 a integração de uma única linha de saldo diário, com painel server-side, ilha cliente serializável, tabela visível e medição obrigatória do bundle por rota. A SR-015 definiu no ADR 0015 o OHLC diário a partir do mesmo snapshot, a ordem intradiária por registro e o seletor Linha/Candles sem nova leitura cliente.
 
+Permanecem pendentes: granularidades longas/customizadas, timezone configurável, status/estorno/transferência adicionais, preferências, provedor de IA e observabilidade de produção.

@@ -1,5 +1,6 @@
 import type { FinancialEvolutionPoint } from "../../domain/types/financial-evolution.types";
 import { formatCents } from "@/shared/utils/formatCents";
+import { handleHorizontalTableKeyDown } from "./horizontal-table-keyboard-scroll";
 
 type FinancialEvolutionTableProps = Readonly<{
   points: readonly FinancialEvolutionPoint[];
@@ -16,15 +17,17 @@ export function FinancialEvolutionTable({
   return (
     <div className="grid gap-2">
       <p
-        className="text-xs text-muted-foreground sm:hidden"
+        className="text-xs text-muted-foreground sm:sr-only"
         id="financial-evolution-table-hint"
       >
-        Deslize horizontalmente para consultar todas as colunas.
+        Deslize horizontalmente ou use as setas do teclado para consultar todas
+        as colunas.
       </p>
       <div
         aria-describedby="financial-evolution-table-hint"
         aria-label="Evolução financeira por dia"
-        className="overflow-x-auto overscroll-x-contain rounded-xl border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+        className="touch-pan-x overflow-x-auto overscroll-x-contain rounded-xl border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+        onKeyDown={handleHorizontalTableKeyDown}
         role="region"
         tabIndex={0}
       >
