@@ -1870,3 +1870,22 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma migration, RPC, policy, grant, dado, configuração remota, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
 - `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
 - estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — UX-CHART-002
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 92 suítes e 539 testes verdes, zero snapshots.
+- lint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- auditorias npm completa e de produção: zero vulnerabilidades; supply chain sem assinatura inválida ou ausente.
+- revisão estática confirmou claims permanentes, rejeição de Auth anônimo, intervalo civil semiaberto limitado a 31 dias, projeção mínima, erro sanitizado e ausência de acesso Supabase na presentation.
+- tabela `transactions` mantém RLS habilitada/forçada, ownership, grants mínimos e índice composto; seis migrations locais/remotas alinhadas.
+- projeto Supabase `ACTIVE_HEALTHY`; Security Advisor manteve somente `SEC-AUTH-001`; três índices sem uso seguem informativos.
+- logs Supabase em 24 horas: 40 chamadas API HTTP 200, 31 eventos Auth informativos sem erro e 23 eventos Postgres rotineiros.
+- logs administrados da Data API registram o UUID do filtro de ownership, sem descrição, valor, token ou cookie; retenção/redaction permanece em `HARD-OBS-001` antes de produção pública.
+- deployment `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` no commit `f865576` e PR `#24` está `READY`; não há runtime errors nem logs `error/fatal/warning` em 24 horas.
+- PR `#24` aberta, draft, mergeável e `clean`; checks `validate` e `Vercel Preview Comments` concluídos em sucesso.
+- drift de vínculo local, Node e npm permanece dívida MÉDIA `CI-VERCEL-002`; não afeta o Preview, mas bloqueia CLI/promoção até correção.
+- nenhum código funcional, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
+- `UX-CHART-002` pronta para release incremental; produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#24`.

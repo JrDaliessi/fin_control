@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UX-CHART-002 concluído em GREEN; próxima fase válida é o Dia 7 da UX-CHART-002
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UX-CHART-002 concluído em GREEN; entrega incremental pronta para versionamento final e revisão da PR #24
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -146,6 +146,7 @@
 - Data da expansão controlada da UX-CHART-002: 2026-09-04
 - Data da refatoração e hardening interno da UX-CHART-002: 2026-09-04
 - Data da revisão de UX, acessibilidade e PWA da UX-CHART-002: 2026-09-05
+- Data da validação final e preparação de release da UX-CHART-002: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -1003,7 +1004,8 @@ Regra operacional:
 - Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
 - Erro: o primeiro RED da `SEC-HARD-001A` carregou `next/experimental/testing/server` sob o `jest-environment-jsdom` global, que não expõe `Request`, e a suíte falhou antes de avaliar qualquer contrato de header. Prevenção: testes da API server-side de configuração do Next.js devem declarar `@jest-environment node` por arquivo, mantendo jsdom apenas para componentes e sem adicionar polyfill global que possa mascarar diferenças reais de runtime.
 - Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
-- Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e depois incluiu o diretório opcional inexistente `scripts` em uma busca. Prevenção: resolver arquivos e diretórios opcionais ou operacionais com `rg --files` antes da leitura/busca e só então usar os caminhos confirmados, inclusive quando o nome do job remoto difere do nome do arquivo local.
+- Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e o mesmo erro de caminho reincidiu no Dia 7 da `UX-CHART-002` mesmo após a listagem correta. Prevenção: separar obrigatoriamente descoberta e leitura em chamadas distintas, copiar o caminho retornado por `rg --files` sem reconstruí-lo pelo nome do job e registrar recorrência quando a regra anterior não impedir nova falha.
+- Erro: no Dia 7 da `UX-CHART-002`, a inspeção Vercel começou pelo ID obsoleto de `.vercel/project.json`, embora `project-context.md` já registrasse o projeto ativo e a dívida `CI-VERCEL-002`. Prevenção: para recursos com drift documentado, pesquisar primeiro o identificador autoritativo no contexto e confirmar pelo conector com `list_projects`; arquivos locais reconhecidamente obsoletos não podem ser usados como fonte primária.
 - Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
 - Erro: no início dos gates do Dia 5 da SR-015, a IA usou o fallback `pnpm` em um projeto gerenciado por npm; o pnpm tentou mover dependências existentes para `node_modules/.ignored` e criar `.pnpm-store` antes de falhar por rede restrita. Prevenção: respeitar sempre o `packageManager` do projeto, invocar Jest/TypeScript/ESLint/Next diretamente com a runtime Node compatível quando o wrapper npm estiver quebrado e nunca usar outro gerenciador apenas como substituto de execução; se ocorrer, interromper, restaurar os pacotes movidos e remover somente os artefatos criados após validar os caminhos absolutos.
 - Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
@@ -7369,3 +7371,46 @@ Estado de saída:
 - `QUALITY_VALIDATION` em GREEN;
 - `UX-CHART-002` permanece `IN_PROGRESS` até o gate final;
 - próximo comando válido: `dia 7` para qualidade final, segurança, observabilidade e preparação da entrega incremental.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-CHART-002
+
+Quality gates e supply chain:
+- regressão completa verde com 92 suítes e 539 testes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- auditorias npm completa e de produção com zero vulnerabilidades em 760 dependências contabilizadas;
+- verificação de supply chain sem assinatura inválida ou ausente;
+- CI usa permissões `contents: read`, concorrência cancelável e gates de lint, tipos, testes, audit e build;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado e o worktree permaneceu limpo, exceto pelos dois itens privados não rastreados já preservados.
+
+Revisão de segurança e threat model:
+- ativos protegidos: sessão, identificador do proprietário, descrições e valores dos lançamentos;
+- a Server Action deriva o ator exclusivamente de `claims.sub`, rejeita erro, claim ausente e Auth anônimo e ignora qualquer identidade forjada pelo cliente;
+- intervalo civil semiaberto é validado antes da infraestrutura, aceita no máximo 31 dias e bloqueia datas inválidas, invertidas ou iguais;
+- repository usa projeção mínima, filtro explícito por proprietário, limites `gte`/`lt` e ordenação determinística; notas, conta e categoria não são transferidas;
+- `transactions` mantém RLS habilitada e forçada, policy de leitura com ownership e rejeição de usuário anônimo, além de grants mínimos;
+- query builder evita interpolação SQL, erros públicos são sanitizados e nenhuma credencial, token ou payload financeiro foi introduzido em logs da aplicação;
+- risco de IDOR/BOLA é mitigado por claims server-side, filtro explícito e RLS; abuso autenticado é limitado pelo teto de 31 dias, projeção mínima e índice composto, permanecendo como risco residual baixo em Preview privado;
+- logs operacionais administrados pelo Supabase registram o UUID filtrado na URL da Data API; não registraram descrição, valor, token ou cookie. Esse identificador pseudônimo fica restrito ao plano administrativo e sua política de retenção/redaction permanece coberta por `HARD-OBS-001` antes de produção pública.
+
+Supabase e integridade:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) confirmado `ACTIVE_HEALTHY` em PostgreSQL 17, região `sa-east-1`;
+- seis migrations locais e remotas permanecem alinhadas; nenhuma alteração de schema foi necessária;
+- Security Advisor manteve somente `SEC-AUTH-001`, proteção contra senhas vazadas desativada;
+- Performance Advisor manteve três índices sem uso como informações, sem recomendação de remoção sem carga representativa;
+- últimas 24 horas: 40 chamadas API com HTTP 200, 31 eventos Auth em nível informativo e sem erro, e 23 eventos Postgres rotineiros em nível `LOG`.
+
+Vercel, PR e observabilidade:
+- projeto ativo `fin-control` confirmado como `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`; o vínculo local antigo permanece na dívida MÉDIA `CI-VERCEL-002` e não foi alterado;
+- deployment Preview `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` no commit `f865576` e na PR `#24` confirmado `READY`;
+- nenhum cluster de runtime error e nenhum log `error`, `fatal` ou `warning` do deployment nas últimas 24 horas;
+- build remoto compilou e gerou todas as rotas; avisos de Node 24 configurado versus Node 22 usado e npm 10 versus engine npm 11 continuam em `CI-VERCEL-002`;
+- PR `#24` está aberta, draft, mergeável e `clean`, com `validate` e `Vercel Preview Comments` concluídos em sucesso no head publicado;
+- baseline de observabilidade permanece em GitHub Actions, Vercel runtime/build e advisors/logs Supabase; captura externa com redaction continua em `HARD-OBS-001` antes de produção pública.
+
+Riscos, fronteiras e saída:
+- nenhuma dívida CRÍTICA foi encontrada; `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta feature;
+- `CI-VERCEL-002` permanece dívida MÉDIA antes de relink, CLI ou promoção;
+- nenhuma migration, RLS, dado, configuração remota, dependência, commit, push, mudança da PR, merge, deploy ou promoção foi executado no Dia 7;
+- `UX-CHART-002` atende ao critério de pronto e passa a `DONE`/`READY_FOR_RELEASE`;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os checks do novo head; após aprovação humana, realizar squash merge em `develop`;
+- `UX-CHART-003` deixa de estar bloqueada pela predecessora e pode iniciar seu próprio Dia 1 somente após comando explícito.

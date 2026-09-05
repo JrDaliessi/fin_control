@@ -6,23 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### UX-CHART-002 — Extrato contextual do candle
-- Tipo: UX Improvement / Feature.
-- Descrição objetiva: permitir abrir, a partir de um candle ou de sua linha equivalente na tabela, o extrato do intervalo representado sem sobrecarregar o gráfico.
-- Objetivo de negócio: explicar quais lançamentos produziram a abertura, os extremos, o fechamento e o volume do candle selecionado.
-- Valor esperado: transformar o gráfico em ferramenta de investigação financeira simples, contextual e acionável.
-- Prioridade: Alta; selecionada antes da `UX-CHART-003` porque estabelece o contrato genérico de intervalo consumido pelos períodos futuros.
-- Dependências: SR-015 e UX-SHELL-001 concluídas; sessão server-side, RLS de `transactions`, índice `(user_id, occurred_on, created_at, id)` e primitive compartilhada de contenção de foco existentes.
-- Escopo: seleção por clique/toque no candle; ação equivalente na tabela; bottom sheet abaixo de 768 px; painel lateral a partir de 768 px; resumo OHLC; lista mínima de lançamentos carregada sob demanda; estados loading, empty, error e success.
-- Fora do escopo: editar/excluir transações, pré-carregar descrições no snapshot, notas, exportação, busca, períodos acima de 31 dias, nova RPC, migration ou mudança nos cálculos OHLC.
-- Arquitetura: `FinancialIntervalStatementQueryRepository` como port de application em `financial-analytics`; implementação Supabase server-side com RLS e filtro explícito por proprietário; Server Action como composition root; presentation recebe somente DTO serializável e callback injetado.
-- Segurança e dados: `userId` nunca vem do cliente; claims verificadas fornecem o ator; consulta usa `startOnInclusive`/`endOnExclusive`, projeção mínima e ordenação determinística; erros públicos permanecem genéricos.
-- Acessibilidade: diálogo nomeado; foco inicial/contido/restaurado; botão, `Escape` e backdrop; scroll confinado; targets de 44 px; tabela com botão `Ver extrato` como alternativa integral ao clique no gráfico.
-- Risco: Médio por eventos ECharts, concorrência de requests, foco e layout responsivo; Alto se detalhes forem enviados antecipadamente ou consultados sem ownership.
-- Small releases: `UX-CHART-002A` contratos e consulta sob demanda; `UX-CHART-002B` seleção no gráfico/tabela e painel responsivo; `UX-CHART-002C` concorrência, acessibilidade, responsividade e validação real.
-- Fase recomendada: ciclo atual Dias 1–7.
-- Critério de pronto: candle diário abre exatamente os lançamentos do intervalo; gráfico e tabela convergem para o mesmo painel; estados e navegação funcionam em 320/768/1280 px; isolamento por usuário e todos os quality gates ficam verdes.
-- Status: IN_PROGRESS — Dia 6 concluído em `QUALITY_VALIDATION`; descoberta, teclado, foco e layouts em 320/768/1280 px foram validados, com 92 suítes/539 testes, lint, type-check e build verdes, sem migration ou nova dependência.
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -40,7 +24,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-CHART-003A` seletor `7D`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e integração completa com o extrato contextual.
 - Fase recomendada: novo ciclo Dias 1–7 após a `UX-CHART-002`.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: DISCOVERY — arquitetura coordenada registrada, mas execução bloqueada até a conclusão da `UX-CHART-002`.
+- Status: DISCOVERY — predecessora concluída; próxima feature recomendada, aguardando comando humano explícito para iniciar o Dia 1 próprio.
 
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
@@ -482,6 +466,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### UX-CHART-002 — Extrato contextual do candle
+- Tipo: Small Release / UX Improvement.
+- Resultado: candle e linha equivalente da tabela abrem o mesmo extrato civil sob demanda, com resumo OHLC e estados loading, empty, error e success.
+- Arquitetura e segurança: contrato application, repository Supabase, Server Action autenticada, claims permanentes, RLS forçada, ownership explícito, intervalo máximo de 31 dias e projeção mínima preservados.
+- UX/PWA: instrução visível e acessível, `Extrato` após `Dia`, bottom sheet em 320 px, painel lateral em 768/1280 px, foco, teclado, Escape, scroll e manifesto validados.
+- Evidência final: 92 suítes/539 testes, lint, type-check, build e auditorias npm verdes; nenhuma vulnerabilidade ou assinatura inválida/ausente.
+- Evidência remota: Supabase saudável e migrations alinhadas; Preview `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` `READY`; PR `#24` draft, mergeável, limpa e com checks verdes no head `f865576`.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de CLI/promoção.
+- Data de conclusão: 2026-09-05.
+- Status: DONE / READY_FOR_RELEASE.
 
 ### UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta
 - Tipo: Small Release / UX Improvement.
