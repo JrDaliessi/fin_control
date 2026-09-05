@@ -10,6 +10,22 @@ Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
+### UX-CHART-003 — Períodos e granularidade adaptativa
+- Tipo: UX Improvement / Feature.
+- Descrição objetiva: oferecer seleção rápida de `7D`, `15D`, `Mês`, `3M`, `Ano`, `Tudo` e intervalo personalizado, escolhendo automaticamente a granularidade dos candles.
+- Objetivo de negócio: permitir analisar tendências curtas e históricas com leitura consistente, sem transformar o FinControl em interface de trading.
+- Valor esperado: comparação temporal intuitiva, preservando clareza no celular e desempenho para históricos extensos.
+- Prioridade: Alta após a conclusão da `UX-CHART-002`.
+- Dependências: SR-012 a SR-015; contrato genérico de intervalo da `UX-CHART-002`; nova agregação server-side para períodos acima de 31 dias; migration forward-only e testes pgTAP.
+- Escopo planejado: barra horizontal responsiva; compatibilidade com URLs e períodos atuais; granularidade diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso; limite preferencial de 12–60 pontos.
+- Segurança e dados: a RPC diária atual permanece limitada a 31 dias; períodos longos usam consulta agregada `SECURITY INVOKER`, claims/RLS, allowlist de buckets e limites de intervalo/pontos; nenhum lançamento bruto em massa chega ao browser.
+- Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
+- Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
+- Small releases: `UX-CHART-003A` seletor `7D`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e integração completa com o extrato contextual.
+- Fase recomendada: novo ciclo Dias 1–7 após a `UX-CHART-002`.
+- Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
+- Status: DISCOVERY — predecessora concluída; próxima feature recomendada, aguardando comando humano explícito para iniciar o Dia 1 próprio.
+
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
 - Descrição objetiva: consolidar identidade visual, navegação, dashboard, páginas internas e copywriting em uma experiência moderna e coerente.
@@ -450,6 +466,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### UX-CHART-002 — Extrato contextual do candle
+- Tipo: Small Release / UX Improvement.
+- Resultado: candle e linha equivalente da tabela abrem o mesmo extrato civil sob demanda, com resumo OHLC e estados loading, empty, error e success.
+- Arquitetura e segurança: contrato application, repository Supabase, Server Action autenticada, claims permanentes, RLS forçada, ownership explícito, intervalo máximo de 31 dias e projeção mínima preservados.
+- UX/PWA: instrução visível e acessível, `Extrato` após `Dia`, bottom sheet em 320 px, painel lateral em 768/1280 px, foco, teclado, Escape, scroll e manifesto validados.
+- Evidência final: 92 suítes/539 testes, lint, type-check, build e auditorias npm verdes; nenhuma vulnerabilidade ou assinatura inválida/ausente.
+- Evidência remota: Supabase saudável e migrations alinhadas; Preview `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` `READY`; PR `#24` draft, mergeável, limpa e com checks verdes no head `f865576`.
+- Riscos residuais: `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` bloqueiam produção pública; `CI-VERCEL-002` deve ser resolvida antes de CLI/promoção.
+- Data de conclusão: 2026-09-05.
+- Status: DONE / READY_FOR_RELEASE.
 
 ### UX-SHELL-001 — Cabeçalho responsivo compacto e painel da conta
 - Tipo: Small Release / UX Improvement.

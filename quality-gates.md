@@ -1800,3 +1800,92 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma dependência, rota, Auth, Supabase, migration, RLS, dado, configuração remota, código funcional, commit, push, merge ou deploy foi alterado.
 - `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash de `UX-CHART-002/003` foram preservados fora do escopo.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3`.
+
+## Gate do Dia 3 — UX-CHART-002
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação.
+- skill `supabase:supabase` aplicada ao contrato server-side, com claims permanentes, RLS preservada, filtro explícito de proprietário e consulta civil semiaberta.
+- skill `vercel:react-best-practices` aplicada após as alterações TSX; efeitos, refs, listeners, estado assíncrono, acessibilidade e composição foram revisados.
+- segurança: `userId` do cliente é descartado e o ator autenticado sobrescreve tentativa forjada; sessões ausentes, inválidas e anônimas falham antes da consulta.
+- repository usa projeção mínima e ordenação determinística; erros do provider são sanitizados.
+- seleção ECharts registra um listener estreito e o remove no cleanup; a tabela oferece ação integral de teclado.
+- painel carrega somente após seleção, apresenta loading/empty/error/success e rejeita respostas assíncronas obsoletas.
+- contratos focados: 9 suítes e 40 testes verdes.
+- regressão de `financial-analytics`: 29 suítes e 209 testes verdes.
+- regressão completa: 92 suítes e 532 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check e build Next.js 16.3.3 verdes; `git diff --check` verde, salvo avisos informativos de normalização LF/CRLF.
+- o build inicial foi bloqueado somente pelo acesso ao Google Fonts; a reexecução autorizada compilou e gerou todas as rotas, e `next-env.d.ts` foi restaurado ao conteúdo versionado.
+- nenhuma migration, RPC, policy, grant, dado, dependência, configuração Supabase remota, commit, push, merge ou deploy foi criado/executado.
+- `.codex-remote-attachments/`, `rewrite-msgs.sh` e o stash histórico permaneceram preservados.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4`.
+
+## Gate do Dia 4 — UX-CHART-002
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da implementação.
+- skill `vercel:react-best-practices` aplicada após as alterações TSX; portal, efeitos, refs, callbacks, cleanup e estado assíncrono foram revisados.
+- RED controlado observado: 3 dos 7 contratos do painel falharam pela ausência de diálogo durante loading, isolamento/foco/scroll e backdrop.
+- diálogo nomeado e modal preservado durante loading, empty, error e success; retry mantém o intervalo aberto.
+- foco inicial, contenção por teclado, restauração ao acionador, `Escape`, backdrop, bloqueio/restauração de scroll e isolamento/restauração do background cobertos.
+- bottom sheet usa safe areas, overscroll confinado, movimento reduzido e target de 44 px; painel lateral desktop preservado.
+- gráfico e tabela convergem para o mesmo loader e intervalo semiaberto na composição real.
+- contratos direcionados: 2 suítes e 12 testes verdes.
+- regressão de `financial-analytics`: 29 suítes e 213 testes verdes.
+- regressão completa: 92 suítes e 536 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check e build Next.js 16.3.3 verdes; `git diff --check` verde, salvo avisos informativos de LF/CRLF.
+- nenhuma migration, RPC, policy, grant, dado, dependência, configuração Supabase remota, commit, push, merge, deploy ou promoção foi executado.
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5`.
+
+## Gate do Dia 5 — UX-CHART-002
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da refatoração.
+- baseline de painel e switcher anterior à edição: 2 suítes e 12 testes verdes.
+- duplicação concreta de lifecycle modal identificada entre `AccountPanel` e `FinancialIntervalStatementPanel`.
+- primitive `useModalDialogLifecycle` criada em shared presentation, sem mover regra financeira ou infraestrutura para o hook.
+- portal, foco inicial/contido/restaurado, `Escape`, scroll, `aria-hidden`, `inert` e cleanup permanecem cobertos nos dois consumidores.
+- skill `vercel:react-best-practices` aplicada com leitura das regras de listeners, dependências estreitas e handlers em refs; callback estável usa a implementação externa mais recente sem reinstalar o lifecycle.
+- nenhuma dependência de compartilhamento de eventos foi adicionada porque o contrato mantém um único modal ativo e não há evidência de gargalo.
+- consumidores diretamente afetados: 3 suítes e 25 testes verdes.
+- regressão completa: 92 suítes e 536 testes verdes, sem snapshots.
+- lint global verde com zero warnings; type-check e build Next.js 16.3.3 verdes.
+- `next-env.d.ts` restaurado ao conteúdo versionado; `git diff --check` verde, salvo avisos LF/CRLF informativos.
+- nenhuma dívida CRÍTICA ou ALTA identificada; nenhuma migration, RPC, policy, grant, dado, dependência, configuração remota, commit, push, merge, deploy ou promoção foi executado.
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
+- `REFACTORING_IN_PROGRESS` encerrado; retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6`.
+
+## Gate do Dia 6 — UX-CHART-002
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional e uso das credenciais aprovados antes da validação autenticada.
+- ciclo TDD direcionado: RED com 3 falhas planejadas; GREEN com 3 suítes e 20 testes.
+- instrução visível orienta seleção pelo candle ou ação `Ver extrato`; descrição acessível apresenta a alternativa integral de teclado.
+- coluna `Extrato` movida para imediatamente após `Dia`, mantendo rolagem horizontal confinada à região da tabela.
+- validação autenticada em 320, 768 e 1280 px sem overflow global; sessão existente reutilizada sem digitar ou persistir credenciais.
+- em 320 px, extrato validado como bottom sheet; em 768/1280 px, painel lateral de 448 px e altura total.
+- foco inicial, contenção por `Tab`/`Shift+Tab`, `Escape`, bloqueio/restauração de scroll e retorno do foco ao acionador confirmados no navegador.
+- estado vazio real e Server Action sob demanda confirmados sem criar ou alterar dados financeiros.
+- PWA: `lang=pt-BR`, viewport, theme colors e manifesto válidos; quatro ícones existentes, incluindo maskable, e dois atalhos. Nenhuma promessa offline ou service worker foi introduzida.
+- console sem erro funcional; apenas diagnóstico conhecido do React em desenvolvimento sob CSP, ausente do build de produção.
+- regressão completa: 92 suítes e 539 testes verdes, zero snapshots.
+- lint global, type-check e build Next.js 16.3.3 verdes; `next-env.d.ts` restaurado ao conteúdo versionado.
+- nenhuma migration, RPC, policy, grant, dado, configuração remota, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo; `UX-CHART-003` continua em `DISCOVERY`.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — UX-CHART-002
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 92 suítes e 539 testes verdes, zero snapshots.
+- lint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- auditorias npm completa e de produção: zero vulnerabilidades; supply chain sem assinatura inválida ou ausente.
+- revisão estática confirmou claims permanentes, rejeição de Auth anônimo, intervalo civil semiaberto limitado a 31 dias, projeção mínima, erro sanitizado e ausência de acesso Supabase na presentation.
+- tabela `transactions` mantém RLS habilitada/forçada, ownership, grants mínimos e índice composto; seis migrations locais/remotas alinhadas.
+- projeto Supabase `ACTIVE_HEALTHY`; Security Advisor manteve somente `SEC-AUTH-001`; três índices sem uso seguem informativos.
+- logs Supabase em 24 horas: 40 chamadas API HTTP 200, 31 eventos Auth informativos sem erro e 23 eventos Postgres rotineiros.
+- logs administrados da Data API registram o UUID do filtro de ownership, sem descrição, valor, token ou cookie; retenção/redaction permanece em `HARD-OBS-001` antes de produção pública.
+- deployment `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` no commit `f865576` e PR `#24` está `READY`; não há runtime errors nem logs `error/fatal/warning` em 24 horas.
+- PR `#24` aberta, draft, mergeável e `clean`; checks `validate` e `Vercel Preview Comments` concluídos em sucesso.
+- drift de vínculo local, Node e npm permanece dívida MÉDIA `CI-VERCEL-002`; não afeta o Preview, mas bloqueia CLI/promoção até correção.
+- nenhum código funcional, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
+- `UX-CHART-002` pronta para release incremental; produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#24`.

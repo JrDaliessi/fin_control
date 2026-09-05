@@ -14,6 +14,10 @@ import {
 
 type FinancialCandlestickChartProps = Readonly<{
   model: FinancialCandlestickChartModel;
+  onSelectInterval?: (interval: Readonly<{
+    startOnInclusive: string;
+    endOnExclusive: string;
+  }>) => void;
 }>;
 
 const FORCED_COLORS_THEME: FinancialCandlestickChartTheme = {
@@ -51,7 +55,8 @@ function resolveChartTheme(
 }
 
 export function FinancialCandlestickChart({
-  model
+  model,
+  onSelectInterval
 }: FinancialCandlestickChartProps) {
   const descriptionId = useId();
   const hasPoints = model.points.length > 0;
@@ -67,7 +72,19 @@ export function FinancialCandlestickChart({
   );
   const { attachChart, initializationFailed } = useFinancialChart({
     buildOption,
-    enabled: hasPoints
+    enabled: hasPoints,
+    onDataPointSelect: onSelectInterval
+      ? (dataIndex) => {
+          const point = model.points[dataIndex];
+
+          if (point?.endOnExclusive) {
+            onSelectInterval({
+              startOnInclusive: point.civilDate,
+              endOnExclusive: point.endOnExclusive
+            });
+          }
+        }
+      : undefined
   });
 
   if (!hasPoints) {
@@ -91,8 +108,9 @@ export function FinancialCandlestickChart({
     <ExpandableChartFrame title="Variação do saldo">
       <div className="grid h-full min-h-0 min-w-0 gap-2">
         <p className="sr-only" id={descriptionId}>
-          Visualização complementar. Os mesmos valores permanecem disponíveis na
-          tabela de variação financeira.
+          {onSelectInterval
+            ? "Selecione um candle para abrir o extrato. Pelo teclado, use Ver extrato na tabela de variação financeira."
+            : "Visualização complementar. Os mesmos valores permanecem disponíveis na tabela de variação financeira."}
         </p>
         <div
           aria-describedby={descriptionId}

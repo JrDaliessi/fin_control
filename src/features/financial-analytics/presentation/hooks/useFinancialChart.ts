@@ -5,6 +5,7 @@ import type { FinancialCandlestickChartOption } from "../charts/echarts/build-fi
 import type { FinancialEvolutionChartOption } from "../charts/echarts/build-financial-evolution-option";
 import {
   initializeFinancialEvolutionChart,
+  type FinancialChartClickHandler,
   type FinancialEvolutionChartInstance
 } from "../charts/echarts/echarts-client";
 
@@ -25,57 +26,85 @@ type UseFinancialChartInput = Readonly<{
     preferences: FinancialChartVisualPreferences
   ) => FinancialChartOption;
   enabled: boolean;
+  onDataPointSelect?: (dataIndex: number) => void;
 }>;
 
 export function useFinancialChart({
   buildOption,
-  enabled
+  enabled,
+  onDataPointSelect
 }: UseFinancialChartInput) {
   const chartRef = useRef<FinancialEvolutionChartInstance | null>(null);
+  const onDataPointSelectRef = useRef(onDataPointSelect);
   const [initializationFailed, setInitializationFailed] = useState(false);
+  const selectionEnabled = typeof onDataPointSelect === "function";
 
-  const attachChart = useCallback((container: HTMLDivElement | null) => {
-    if (!container) {
-      return;
-    }
+  useEffect(() => {
+    onDataPointSelectRef.current = onDataPointSelect;
+  }, [onDataPointSelect]);
 
-    let chart: FinancialEvolutionChartInstance | undefined;
-    let resizeObserver: ResizeObserver | undefined;
-
-    try {
-      chart = initializeFinancialEvolutionChart(container, {
-        renderer: "svg"
-      });
-      chartRef.current = chart;
-
-      resizeObserver = new ResizeObserver(() => {
-        chart?.resize();
-      });
-      resizeObserver.observe(container);
-    } catch {
-      resizeObserver?.disconnect();
-      chart?.dispose();
-
-      if (chartRef.current === chart) {
-        chartRef.current = null;
+  const attachChart = useCallback(
+    (container: HTMLDivElement | null) => {
+      if (!container) {
+        return;
       }
 
-      setInitializationFailed(true);
-      return;
-    }
+      let chart: FinancialEvolutionChartInstance | undefined;
+      let resizeObserver: ResizeObserver | undefined;
+      let handleClick: FinancialChartClickHandler | undefined;
 
-    const initializedChart = chart;
-    const initializedResizeObserver = resizeObserver;
+      try {
+        chart = initializeFinancialEvolutionChart(container, {
+          renderer: "svg"
+        });
+        chartRef.current = chart;
 
-    return () => {
-      initializedResizeObserver.disconnect();
-      initializedChart.dispose();
+        if (selectionEnabled) {
+          handleClick = ({ dataIndex }) => {
+            if (Number.isInteger(dataIndex) && dataIndex >= 0) {
+              onDataPointSelectRef.current?.(dataIndex);
+            }
+          };
+          chart.on("click", handleClick);
+        }
 
-      if (chartRef.current === initializedChart) {
-        chartRef.current = null;
+        resizeObserver = new ResizeObserver(() => {
+          chart?.resize();
+        });
+        resizeObserver.observe(container);
+      } catch {
+        resizeObserver?.disconnect();
+        if (handleClick) {
+          chart?.off("click", handleClick);
+        }
+        chart?.dispose();
+
+        if (chartRef.current === chart) {
+          chartRef.current = null;
+        }
+
+        setInitializationFailed(true);
+        return;
       }
-    };
-  }, []);
+
+      const initializedChart = chart;
+      const initializedResizeObserver = resizeObserver;
+      const initializedClickHandler = handleClick;
+
+      return () => {
+        initializedResizeObserver.disconnect();
+        if (initializedClickHandler) {
+          initializedChart.off("click", initializedClickHandler);
+        }
+        initializedChart.dispose();
+
+        if (chartRef.current === initializedChart) {
+          chartRef.current = null;
+        }
+      };
+    },
+    [selectionEnabled]
+  );
 
   const applyCurrentOption = useCallback(() => {
     const chart = chartRef.current;

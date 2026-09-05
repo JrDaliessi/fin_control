@@ -457,6 +457,34 @@ O projeto deve ter:
 - O primeiro recorte usa buckets diários nos cinco períodos atuais, todos limitados a 31 dias. Semana/mês para intervalos longos e período customizado permanecem fora.
 - Decisão completa: `adr/0015-financial-balance-candles.md`.
 
+## Extrato contextual do candle — UX-CHART-002
+
+- A seleção preserva o intervalo semiaberto do candle como `{ startOnInclusive, endOnExclusive }`; nenhum componente reconstrói o fim a partir da data inicial.
+- O primeiro recorte cobre somente candles diários nos períodos atuais de até 31 dias.
+- Clique/toque no candle e o botão `Ver extrato` da linha equivalente convergem para a mesma seleção. A tabela é a alternativa integral de teclado.
+- `financial-analytics/application` define um read port específico, `FinancialIntervalStatementQueryRepository`; o repositório de escrita/listagem mensal de transações não é ampliado com responsabilidade analítica.
+- A implementação Supabase fica em infrastructure e aplica projeção mínima, `user_id` explícito, limites `>= start`/`< end` e ordenação determinística sob as policies RLS existentes.
+- Uma Server Action verifica claims, rejeita Auth anônimo e injeta o proprietário. `userId` nunca atravessa a fronteira cliente.
+- Os lançamentos são carregados somente após seleção; o snapshot financeiro e a RPC existente não recebem descrições ou detalhes transacionais.
+- A presentation estende o adapter/hook ECharts somente com registro e cleanup do evento necessário. A decisão não autoriza um `ChartPort` genérico.
+- O extrato usa diálogo responsivo: bottom sheet abaixo de 768 px e painel lateral a partir de 768 px, com estados `loading`, `empty`, `error` e `success` e proteção contra respostas obsoletas.
+- Foco contido/restaurado, `Escape`, backdrop, scroll confinado, safe areas, movimento reduzido e targets de 44 px seguem a primitive comprovada do shell.
+- Não há migration, nova RPC, edição, exclusão, notas, exportação, busca ou períodos longos nesta feature.
+- Decisão completa: `adr/0019-contextual-candle-statement.md`.
+
+## Períodos e granularidade adaptativa — UX-CHART-003
+
+- A feature começa somente após a UX-CHART-002, reutilizando seu contrato genérico de intervalo e extrato sob demanda.
+- `UX-CHART-003A` entrega `7D`, `15D` e `Mês` com a RPC atual e compatibilidade de URL, sem migration.
+- `UX-CHART-003B` entrega `3M` e `Ano` com agregação server-side própria; `UX-CHART-003C` entrega `Tudo`, personalizado e integração completa.
+- A granularidade pertence ao domínio/application: diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso, mantendo preferencialmente 12–60 pontos.
+- Buckets são civis, consecutivos e semiabertos; buckets parciais respeitam exatamente o intervalo selecionado e a ordenação OHLC da SR-015.
+- Cards, linha, candles, tabela e extrato consomem uma única resolução de período representável na URL; valores atuais continuam compatíveis.
+- Períodos longos nunca enviam movimentos brutos ao browser. Uma futura RPC agregadora será `SECURITY INVOKER`, com Auth/RLS, grants mínimos, allowlist de bucket e limites de intervalo/pontos.
+- A RPC diária existente permanece limitada a 31 dias. A migration futura será forward-only e validada por pgTAP.
+- O seletor usa botões com `aria-pressed`, nomes completos, alvos de 44 px e rolagem horizontal confinada no mobile.
+- Decisão completa: `adr/0020-adaptive-financial-periods.md`.
+
 ## Proteção contra senhas vazadas — SEC-AUTH-001
 
 - A proteção será fornecida nativamente pelo Supabase Auth e não por código próprio.

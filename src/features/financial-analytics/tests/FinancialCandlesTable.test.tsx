@@ -1,5 +1,7 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ReactNode } from "react";
 import { FinancialCandlesTable } from "../presentation/components/FinancialCandlesTable";
 
 const candles = [
@@ -40,6 +42,13 @@ const candles = [
     transactionCount: 0
   }
 ];
+
+const SelectableFinancialCandlesTable = FinancialCandlesTable as unknown as (
+  props: Readonly<{
+    candles: typeof candles;
+    onSelectInterval: (candle: (typeof candles)[number]) => void;
+  }>
+) => ReactNode;
 
 describe("FinancialCandlesTable", () => {
   it("provides a keyboard-scrollable OHLC equivalent to the chart tooltip", () => {
@@ -98,5 +107,49 @@ describe("FinancialCandlesTable", () => {
     expect(screen.getByText(/máximas e mínimas.*ordem de registro/i)).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: /R\$\s*150,00/ })).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "2" })).toBeInTheDocument();
+  });
+
+  it("offers a keyboard action that selects the exact candle interval", async () => {
+    const user = userEvent.setup();
+    const onSelectInterval = jest.fn<(candle: (typeof candles)[number]) => void>();
+
+    render(
+      <SelectableFinancialCandlesTable
+        candles={candles}
+        onSelectInterval={onSelectInterval}
+      />
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Ver extrato de 01/03/2026" })
+    );
+
+    expect(onSelectInterval).toHaveBeenCalledWith(candles[0]);
+  });
+
+  it("keeps the statement action next to the day on narrow viewports", () => {
+    render(
+      <SelectableFinancialCandlesTable
+        candles={candles}
+        onSelectInterval={jest.fn()}
+      />
+    );
+
+    const table = screen.getByRole("table", {
+      name: "Variação financeira por dia"
+    });
+    expect(
+      within(table)
+        .getAllByRole("columnheader")
+        .slice(0, 2)
+        .map((header) => header.textContent)
+    ).toEqual(["Dia", "Extrato"]);
+
+    const firstDataRow = within(table).getAllByRole("row")[1];
+    const statementCell = within(firstDataRow).getAllByRole("cell")[1];
+    expect(
+      within(statementCell).getByRole("button", {
+        name: "Ver extrato de 01/03/2026"
+      })
+    ).toBeInTheDocument();
   });
 });

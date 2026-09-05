@@ -279,6 +279,23 @@ Evidência do Dia 6: o mapper normaliza `timestamptz` válido na fronteira, as d
 
 Evidência do Dia 7: 84 suítes/482 testes, lint, type-check, build e auditorias npm ficaram verdes; bundle permaneceu restrito a `/` e `/dashboard`. Migrations locais/remotas estão alinhadas, logs recentes não indicaram erro explícito/fatal/5xx, preview está `READY` e checks da PR `#19` estão verdes. A entrega incremental pode ser mergeada após a atualização documental e nova validação remota, mas produção pública continua bloqueada pelos hardenings globais já registrados.
 
+## Marco 10A - Interações avançadas dos candles
+
+Ordem aprovada: `UX-CHART-002 — Extrato contextual do candle` e, depois de seu ciclo completo, `UX-CHART-003 — Períodos e granularidade adaptativa`.
+
+Estado da `UX-CHART-002`: Dia 7 concluído em `READY_FOR_RELEASE`. Pipeline, supply chain, threat model, Supabase, observabilidade, Preview e PR foram validados no head `f865576`. A PR `#24` está draft, mergeável, limpa e com checks verdes; produção pública permanece bloqueada pelos hardenings globais já registrados.
+
+Small releases da `UX-CHART-002`:
+1. `002A` — contratos, DTO, consulta sob demanda e Server Action;
+2. `002B` — seleção no ECharts/tabela e painel responsivo;
+3. `002C` — concorrência, acessibilidade, responsividade e validação real.
+
+Estado da `UX-CHART-003`: `DISCOVERY`, não mais bloqueada pela predecessora e aguardando comando humano para seu próprio Dia 1. A sequência planejada é `003A` para `7D`/`15D`/`Mês` sem migration, `003B` para `3M`/`Ano` com agregação server-side e `003C` para `Tudo`/personalizado. Granularidade diária, semanal, mensal ou trimestral manterá um volume preferencial de 12–60 pontos e nunca enviará histórico bruto ao browser.
+
+Decisões: `adr/0019-contextual-candle-statement.md` e `adr/0020-adaptive-financial-periods.md`.
+
+Próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os novos checks; depois, mediante decisão humana, realizar squash merge em `develop`. A `UX-CHART-003` pode iniciar ciclo próprio após esse fechamento.
+
 ## Hardening pré-produção — SEC-AUTH-001
 
 Estado atual: Dia 1 concluído com arquitetura registrada no ADR 0016. O Security Advisor confirma proteção contra senhas vazadas desativada, e a organização está no plano Supabase Free.

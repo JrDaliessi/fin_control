@@ -55,6 +55,7 @@ describe("toFinancialCandlestickChartModel", () => {
       points: [
         {
           civilDate: "2026-03-01",
+          endOnExclusive: "2026-03-02",
           openInCents: 10_000,
           highInCents: 15_000,
           lowInCents: 10_000,
@@ -66,6 +67,7 @@ describe("toFinancialCandlestickChartModel", () => {
         },
         {
           civilDate: "2026-03-02",
+          endOnExclusive: "2026-03-03",
           openInCents: 15_000,
           highInCents: 15_000,
           lowInCents: -2_500,

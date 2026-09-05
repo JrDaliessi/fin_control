@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-SHELL-001 concluído em GREEN; próxima ação válida é versionar a documentação e atualizar a PR #23
+- Fase atual: Dia 7 da UX-CHART-002 concluído em GREEN; entrega incremental pronta para versionamento final e revisão da PR #24
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -139,6 +139,14 @@
 - Data da refatoração e hardening interno da UX-SHELL-001: 2026-09-01
 - Data da revisão de UX, acessibilidade e PWA da UX-SHELL-001: 2026-09-01
 - Data da validação final e preparação de release da UX-SHELL-001: 2026-09-01
+- Data de seleção da UX-CHART-002 e refinamento da UX-CHART-003: 2026-09-01
+- Data do discovery e arquitetura coordenados da UX-CHART-002/003: 2026-09-01
+- Data da estratégia de testes e RED controlado da UX-CHART-002: 2026-09-02
+- Data da implementação mínima da UX-CHART-002: 2026-09-04
+- Data da expansão controlada da UX-CHART-002: 2026-09-04
+- Data da refatoração e hardening interno da UX-CHART-002: 2026-09-04
+- Data da revisão de UX, acessibilidade e PWA da UX-CHART-002: 2026-09-05
+- Data da validação final e preparação de release da UX-CHART-002: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -991,10 +999,13 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: no RED do Dia 6 da `UX-CHART-002`, o mock inline de `loadStatement` não declarou a assinatura e o TypeScript inferiu o parâmetro como `unknown`, impedindo o spread apesar do GREEN comportamental. Prevenção: mocks de ports opcionais devem reutilizar ou declarar o contrato mínimo de input no momento em que o teste é escrito, antes do primeiro type-check.
+- Erro: na auditoria inicial do Dia 6 da `UX-CHART-002`, a IA repetiu a suposição de `src/app/manifest.ts` mesmo após a busca indicar `public/manifest.webmanifest`, e uma expressão `rg` mal escapada falhou sem produzir evidência. Prevenção: separar descoberta e leitura, abrir somente o caminho confirmado e preferir buscas literais (`rg -F`) ou padrões independentes quando o comando atravessar JavaScript e PowerShell.
 - Erro: o teste inicial da `SEC-HARD-001A` usou globais Jest implícitas, embora o `tsconfig` do projeto não carregue esses tipos e as suítes existentes importem de `@jest/globals`; o RED comportamental executou, mas o type-check ganhou ruído não planejado. Prevenção: ao criar uma suíte, copiar a convenção real do harness e importar `describe`, `it`, `expect` e hooks explicitamente, mantendo o type-check independente de tipos globais do runner.
 - Erro: o primeiro RED da `SEC-HARD-001A` carregou `next/experimental/testing/server` sob o `jest-environment-jsdom` global, que não expõe `Request`, e a suíte falhou antes de avaliar qualquer contrato de header. Prevenção: testes da API server-side de configuração do Next.js devem declarar `@jest-environment node` por arquivo, mantendo jsdom apenas para componentes e sem adicionar polyfill global que possa mascarar diferenças reais de runtime.
 - Erro: no Dia 7 da SR-015, a IA assumiu que a resposta de `vercel_list_deployments` expunha `deployments` como array direto e tentou aplicar `filter`, mas o conector retornou uma estrutura aninhada; ao resumir logs do Supabase, o primeiro parser também capturou a menção explicativa ao marcador de dados não confiáveis em vez do bloco real. Prevenção: antes de transformar respostas de conectores, inspecionar somente chaves e tipos do envelope, confirmar a estrutura aninhada e, quando houver marcadores repetidos no texto, extrair o último bloco de abertura com seu fechamento correspondente, sem presumir o formato por memória ou por exemplos de outra API.
-- Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e depois incluiu o diretório opcional inexistente `scripts` em uma busca. Prevenção: resolver arquivos e diretórios opcionais ou operacionais com `rg --files` antes da leitura/busca e só então usar os caminhos confirmados, inclusive quando o nome do job remoto difere do nome do arquivo local.
+- Erro: na auditoria inicial do Dia 7 da SR-015, a IA presumiu que o workflow se chamava `.github/workflows/quality-gates.yml`, embora o arquivo real seja `.github/workflows/ci.yml`, e o mesmo erro de caminho reincidiu no Dia 7 da `UX-CHART-002` mesmo após a listagem correta. Prevenção: separar obrigatoriamente descoberta e leitura em chamadas distintas, copiar o caminho retornado por `rg --files` sem reconstruí-lo pelo nome do job e registrar recorrência quando a regra anterior não impedir nova falha.
+- Erro: no Dia 7 da `UX-CHART-002`, a inspeção Vercel começou pelo ID obsoleto de `.vercel/project.json`, embora `project-context.md` já registrasse o projeto ativo e a dívida `CI-VERCEL-002`. Prevenção: para recursos com drift documentado, pesquisar primeiro o identificador autoritativo no contexto e confirmar pelo conector com `list_projects`; arquivos locais reconhecidamente obsoletos não podem ser usados como fonte primária.
 - Erro: os testes da SR-015 usaram somente instantes já canônicos com `.000Z`, enquanto o mapper aceitava e preservava outras representações válidas de `timestamptz`; em dados reais, o agregador rejeitou o valor antes de renderizar o dashboard. Prevenção: normalizar instantes válidos para `toISOString()` na fronteira de infrastructure antes de entregá-los ao domain e incluir fixtures com offset PostgreSQL, mantendo o domínio independente de formatos do banco.
 - Erro: no início dos gates do Dia 5 da SR-015, a IA usou o fallback `pnpm` em um projeto gerenciado por npm; o pnpm tentou mover dependências existentes para `node_modules/.ignored` e criar `.pnpm-store` antes de falhar por rede restrita. Prevenção: respeitar sempre o `packageManager` do projeto, invocar Jest/TypeScript/ESLint/Next diretamente com a runtime Node compatível quando o wrapper npm estiver quebrado e nunca usar outro gerenciador apenas como substituto de execução; se ocorrer, interromper, restaurar os pacotes movidos e remover somente os artefatos criados após validar os caminhos absolutos.
 - Erro: os primeiros testes do Dia 4 da SR-015 usaram a flag regex `s` incompatível com o target do projeto, tiparam `jest.fn().mockImplementation` com parâmetro mais estreito que `UnknownFunction` e aplicaram `toHaveBeenCalledWith` diretamente a um mock cujo tipo alcança `ComposeOption`, causando ruído no type-check apesar do GREEN comportamental. Prevenção: manter regex compatível com o target, usar função DOM estrutural simples quando não é necessário inspecionar o mock e verificar argumentos de adapters ECharts pela tupla mínima de `mock.calls`, evitando expansão de tipos externos profundos.
@@ -7069,3 +7080,337 @@ Estado de saída:
 - `READY_FOR_RELEASE` em GREEN;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#23` e, após decisão humana, realizar squash merge em `develop`;
 - deploy público continua bloqueado pelos hardenings globais já documentados.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-002/003
+
+Objetivo executado:
+- transformar as ideias aprovadas de extrato contextual e períodos selecionáveis em features implementáveis, mantendo a ordem incremental e sem misturar UI, SQL e agregações longas em uma única entrega;
+- selecionar `UX-CHART-002` como feature ativa e deixar `UX-CHART-003` refinada e bloqueada pela predecessora.
+
+Evidência do sistema existente:
+- `FinancialCandle` já preserva `startOnInclusive`, `endOnExclusive`, OHLC, receita, despesa, volume e quantidade;
+- o view model atual perde `endOnExclusive`, portanto essa fronteira deverá ser corrigida por teste antes de habilitar seleção;
+- `FinancialCandlestickChart` e `useFinancialChart` não registram evento de clique, e o adapter expõe apenas lifecycle; a evolução aprovada é estreita e não cria `ChartPort` genérico;
+- `FinancialCandlesTable` já oferece equivalência textual, mas ainda não possui ação por intervalo;
+- o repository transacional existente é orientado a `create` e `findByMonth`; a consulta analítica terá port próprio para preservar coesão;
+- `transactions` possui RLS forçada, policies para `authenticated` e índice cobrindo proprietário/data/ordem; nenhuma migration é necessária para o primeiro recorte;
+- a composição financeira atual já valida claims server-side, rejeita Auth anônimo e injeta `claims.sub`.
+
+Decisão de sequência:
+1. concluir o ciclo Dias 1–7 da `UX-CHART-002`;
+2. somente depois revalidar e iniciar o ciclo da `UX-CHART-003A`;
+3. não antecipar períodos longos, migration ou agregação durante o extrato contextual.
+
+Arquitetura da `UX-CHART-002`:
+- seleção canônica por `{ startOnInclusive, endOnExclusive }`, inicialmente restrita a candles diários e períodos de até 31 dias;
+- `FinancialIntervalStatementQueryRepository` como port de application em `financial-analytics`, separado do repository de comandos/listagem mensal de transações;
+- implementação Supabase em infrastructure com projeção mínima, filtro explícito por proprietário, limites semiabertos e ordenação determinística, sempre sob RLS;
+- Server Action como composition root: valida claims, deriva o ator e nunca aceita `userId` do cliente;
+- detalhes carregados somente após clique/toque no candle ou botão `Ver extrato` na tabela; o snapshot e a RPC atuais permanecem enxutos;
+- adapter/hook ECharts ampliados apenas com registro/cleanup do evento necessário e mapeamento seguro de `dataIndex`;
+- bottom sheet abaixo de 768 px e painel lateral a partir de 768 px, com resumo OHLC e estados `loading`, `empty`, `error` e `success`;
+- foco inicial, contenção/restauração, `Escape`, backdrop, scroll, safe areas, movimento reduzido e alvos de 44 px são contratos obrigatórios;
+- respostas assíncronas obsoletas não podem substituir a seleção atual.
+
+Small releases da `UX-CHART-002`:
+1. `UX-CHART-002A` — contratos, DTO, consulta Supabase sob demanda e Server Action;
+2. `UX-CHART-002B` — seleção no gráfico/tabela e painel responsivo;
+3. `UX-CHART-002C` — concorrência, acessibilidade, responsividade e validação real.
+
+Arquitetura planejada da `UX-CHART-003`:
+- `003A`: `7D`, `15D` e `Mês` usando a RPC diária atual, mantendo compatibilidade de URL e sem migration;
+- `003B`: `3M` e `Ano` com agregação server-side, migration forward-only e pgTAP;
+- `003C`: `Tudo`, intervalo personalizado e integração completa com o extrato contextual;
+- granularidade diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso, preferencialmente entre 12 e 60 pontos;
+- buckets civis, consecutivos e semiabertos; primeiro/último parciais respeitam exatamente o recorte;
+- uma única resolução de período alimenta cards, linha, candles, tabela e extrato;
+- períodos longos usam RPC `SECURITY INVOKER`, Auth/RLS, grants mínimos, allowlist e limites; movimentos brutos não são transferidos em massa ao browser;
+- a RPC diária atual mantém o teto de 31 dias.
+
+Segurança, privacidade e acessibilidade:
+- dados do usuário continuam autorizados por claims server-side e RLS, com filtro explícito por proprietário como defesa adicional e apoio ao plano de consulta;
+- descrição, valor, UUID, e-mail, payload financeiro, token e cookie permanecem proibidos em logs/telemetria;
+- erros públicos são genéricos e intervalos inválidos falham antes da infraestrutura;
+- tabela com ação explícita garante operação completa por teclado; seleção não depende somente de SVG, cor, hover ou tooltip;
+- seletor futuro usa `aria-pressed`, nomes completos, targets de 44 px e rolagem confinada no mobile.
+
+Riscos e mitigação:
+- risco MÉDIO na `UX-CHART-002` por eventos ECharts, concorrência de requests, foco e layout responsivo; mitigado por TDD, listener com cleanup e identidade de request;
+- risco ALTO na `UX-CHART-003` por agregação OHLC, intervalos parciais, performance, RLS e migration; mitigado por ciclo separado, domínio puro, pgTAP e validação de plano/limites;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o TDD local e Preview privado destas features.
+
+Fronteiras preservadas no Dia 1:
+- nenhum código funcional, teste, dependência, migration, RPC, policy, dado, configuração Supabase, commit, push, PR, merge ou deploy foi criado/executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados;
+- o stash histórico `wip: planejamento UX-CHART-002 e UX-CHART-003` permaneceu preservado e não foi aplicado ou removido.
+
+Artefatos e decisões:
+- backlog refinado com `UX-CHART-002` em `IN_PROGRESS` e `UX-CHART-003` em `DISCOVERY` bloqueada;
+- arquitetura e roadmap alinhados;
+- ADR 0019 define o extrato contextual sob demanda;
+- ADR 0020 define períodos e granularidade adaptativa em releases separadas.
+
+Estado de saída:
+- `ARCHITECTURE_READY` para a `UX-CHART-002`;
+- `DISCOVERY` coordenado e bloqueado por dependência para a `UX-CHART-003`;
+- próximo comando válido: `dia 2` para criar a estratégia de testes e os testes essenciais em RED da `UX-CHART-002`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-CHART-002
+
+Small release prioritária:
+- `UX-CHART-002A` — intervalo, consulta sob demanda e composição autenticada;
+- os contratos de `002B/002C` foram registrados como rede de segurança, mas a implementação permanece incremental.
+
+Baseline anterior ao RED:
+- PR `#24` com Quality Gates e Preview Vercel verdes no commit `8610a0c`;
+- 23 suítes e 182 testes de `financial-analytics` verdes, zero snapshots;
+- type-check verde;
+- o wrapper global do npm permanece quebrado no ambiente e o Jest foi executado pelo binário local versionado, sem instalar dependências.
+
+Matriz executável criada:
+- domain: datas civis válidas, intervalo semiaberto, limite inclusivo de 31 dias, limites iguais/invertidos e datas impossíveis;
+- application: uma chamada ao read port, DTO serializável e validação anterior ao repository;
+- infrastructure: tabela `transactions`, projeção mínima, filtro explícito de proprietário, `gte`/`lt`, ordenação determinística e erro sanitizado;
+- composition: claims permanentes, rejeição de sessão ausente/inválida/anônima e descarte de `userId` forjado;
+- mapper: preservação de `endOnExclusive` em cada ponto do candle;
+- ECharts: mapeamento de `dataIndex` para intervalo, listener único e cleanup;
+- tabela: botão `Ver extrato` como alternativa integral de teclado;
+- painel: consulta somente após seleção, loading, empty, success, fechamento nomeado e proteção contra resposta obsoleta;
+- arquitetura: módulos nas camadas aprovadas, presentation sem acesso direto ao Supabase e ausência de `ChartPort` genérico.
+
+Fixtures acrescentadas:
+- proprietário permanente e ID forjado distintos;
+- dois candles diários consecutivos para troca de seleção;
+- linha Supabase com projeção mínima;
+- item serializável de receita sem notas ou dados excedentes.
+
+RED controlado observado:
+- 9 suítes afetadas falharam como esperado;
+- Jest executou 22 contratos nas suítes carregadas: 14 passaram e 8 falharam;
+- cinco suítes foram interrompidas pela ausência deliberada de: validador de intervalo, caso de uso, repository Supabase, Server Action e painel;
+- falhas comportamentais existentes: mapper ainda perde `endOnExclusive`, adapter/hook não registra seleção ECharts e tabela não oferece `Ver extrato`;
+- contrato arquitetural falhou pelos cinco artefatos ainda inexistentes e manteve verdes as fronteiras sem Supabase direto na presentation e sem `ChartPort`;
+- após tipar os mocks pela assinatura futura, o type-check contém somente cinco `TS2307`, sem ruído do harness;
+- lint de toda a pasta de testes de analytics verde com zero warnings;
+- regressão anterior, excluindo as 9 suítes/assertivas afetadas, verde com 20 suítes e 169 testes, zero snapshots;
+- `git diff --check` verde; avisos de normalização LF/CRLF são apenas informativos e seguem a configuração existente do repositório.
+
+Artefatos criados/alterados:
+- estratégia em `docs/ux-chart-002-test-strategy.md`;
+- fixture `financial-interval-statement.fixtures.ts`;
+- testes de domain, application, infrastructure, Server Action, painel e fronteiras;
+- contratos incrementais nos testes existentes de mapper, gráfico e tabela.
+
+Fronteiras preservadas:
+- nenhum código funcional, tipo de produção, componente, migration, RPC, policy, grant, dado, dependência ou configuração Supabase foi criado/alterado;
+- nenhuma mutação remota, commit, push, merge ou deploy foi executado;
+- `UX-CHART-003` permanece em `DISCOVERY`, bloqueada até a conclusão da predecessora;
+- anexos remotos, `rewrite-msgs.sh` e o stash histórico permaneceram intocados.
+
+Estado de saída:
+- `TEST_STRATEGY_READY`;
+- `UX-CHART-002` permanece `IN_PROGRESS` com RED controlado;
+- implementação bloqueada até aprovação explícita do `dia 3`.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-CHART-002
+
+Escopo entregue:
+- `UX-CHART-002A`: validador de intervalo civil semiaberto com limite de 31 dias, read port de application, DTO serializável, repository Supabase e Server Action autenticada;
+- `UX-CHART-002B`: `endOnExclusive` preservado no mapper, listener ECharts estreito com cleanup, seleção pelo candle e ação equivalente `Ver extrato` na tabela;
+- mínimo de `UX-CHART-002C`: painel adaptativo com loading, empty, error e success, fechamento nomeado por botão/Escape e identidade de request que impede resposta obsoleta de substituir a seleção atual.
+
+Arquitetura e segurança preservadas:
+- `presentation` recebe somente DTO e callback injetado; nenhum acesso direto ao Supabase foi introduzido na UI;
+- a Server Action deriva o proprietário exclusivamente de claims permanentes, rejeita sessão ausente, inválida ou anônima e sobrescreve qualquer `userId` forjado;
+- a consulta usa projeção mínima, `user_id`, `gte`/`lt` e ordenação decrescente determinística por `occurred_on`, `created_at` e `id`;
+- erros do provider são sanitizados; nenhuma migration, RPC, policy, grant ou alteração remota foi necessária.
+
+Experiência mínima:
+- abaixo de 768 px o extrato ocupa bottom sheet; a partir de 768 px, painel lateral;
+- o resumo OHLC permanece visível e os lançamentos são carregados somente após seleção;
+- a alternativa na tabela mantém o fluxo operável por teclado sem depender de hover, cor ou precisão no SVG;
+- a revisão `vercel:react-best-practices` confirmou efeitos usados apenas para request/listener externo, estado de loading derivado, handlers ECharts removidos e ausência de acesso a refs durante render.
+
+Evidências GREEN:
+- contratos focados: 9 suítes e 40 testes verdes;
+- regressão `financial-analytics`: 29 suítes e 209 testes verdes;
+- regressão completa: 92 suítes e 532 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes; `git diff --check` verde, com avisos informativos de LF/CRLF já esperados no Windows;
+- o primeiro build não alcançou a compilação por bloqueio de rede ao Google Fonts; a reexecução autorizada compilou, tipou e gerou todas as rotas, e `next-env.d.ts` foi restaurado ao conteúdo versionado;
+- o contrato legado de `FinancialEvolutionPanel` foi alinhado ao novo `endOnExclusive` produzido pelo mapper.
+
+Erro operacional registrado e prevenção:
+- ao contornar o shim global quebrado do npm, a tentativa inicial com pnpm começou a isolar dependências instaladas por npm em `node_modules/.ignored`; o processo foi interrompido, todos os pacotes foram restaurados e `.pnpm-store` removido, sem mudança em manifesto ou lockfile;
+- prevenção: em repositório npm com shim global indisponível, executar Jest, TypeScript e ESLint diretamente por seus binários locais usando o Node 22 empacotado do workspace; não alternar o gerenciador de pacotes.
+
+Fronteiras preservadas:
+- `UX-CHART-003` não foi iniciada e permanece em `DISCOVERY`;
+- edição/exclusão, busca, exportação, notas e períodos acima de 31 dias continuam fora do escopo;
+- nenhuma dependência, migration, dado, configuração Supabase, commit, push, merge ou deploy foi criado/executado;
+- anexos remotos, `rewrite-msgs.sh` e o stash histórico permaneceram intocados.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 4` para expansão controlada dos estados, interações e composição do painel, sem iniciar `UX-CHART-003`.
+
+## Dia 4 — Expansão Controlada da UX-CHART-002
+
+Escopo entregue:
+- o painel adaptativo passou a ser renderizado em portal, com backdrop independente, bloqueio e restauração do scroll da página;
+- o diálogo permanece nomeado e modal também durante `loading`, preservando uma única superfície estável nos estados `loading`, `empty`, `error` e `success`;
+- foco inicial no botão de fechar, contenção por `Tab`/`Shift+Tab`, fechamento por `Escape`, botão ou backdrop e restauração do foco ao acionador;
+- conteúdo ao fundo recebe isolamento temporário por `aria-hidden` e `inert`, com restauração exata dos atributos anteriores no cleanup;
+- bottom sheet recebeu safe areas laterais/inferior, overscroll confinado, target de 44 px e respeito a movimento reduzido; o painel lateral de desktop foi preservado;
+- o estado de erro permite tentar novamente sem perder o intervalo selecionado;
+- seleção pelo ECharts e pela tabela foi validada na composição real contra o mesmo loader e o mesmo contrato semiaberto.
+
+TDD e revisão React:
+- RED controlado: 3 dos 7 contratos do painel falharam pela ausência deliberada de semântica modal durante loading, isolamento/scroll/foco e backdrop;
+- GREEN direcionado: 2 suítes e 12 testes cobrindo painel e switcher;
+- a revisão `vercel:react-best-practices` confirmou portal e efeitos restritos a sincronização com DOM/request externos, callback estável por ref, cleanup simétrico, estado assíncrono derivado e ausência de nova dependência ou efeito de renderização desnecessário.
+
+Evidências GREEN:
+- regressão `financial-analytics`: 29 suítes e 213 testes verdes;
+- regressão completa: 92 suítes e 536 testes verdes, zero snapshots;
+- lint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; avisos LF/CRLF permanecem apenas informativos no Windows;
+- build compilou, tipou e gerou todas as rotas sem alteração do contrato de navegação.
+
+Fronteiras preservadas:
+- nenhuma regra OHLC, query, Server Action, migration, RPC, policy, grant, dado, dependência ou configuração remota foi alterada;
+- `UX-CHART-003` não foi iniciada e permanece em `DISCOVERY`;
+- edição/exclusão, busca, exportação, notas e intervalos acima de 31 dias permanecem fora do escopo;
+- nenhum commit, push, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados.
+
+Estado de saída:
+- `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 5` para refatoração e hardening interno, sem ampliar regras de negócio.
+
+## Dia 5 — Refatoração e Hardening Interno da UX-CHART-002
+
+Diagnóstico e plano incremental:
+- `FinancialIntervalStatementPanel.client.tsx` tinha 293 linhas e concentrava consulta assíncrona, lifecycle modal e apresentação do extrato;
+- o mesmo lifecycle de foco, teclado, scroll e isolamento do background estava duplicado em `AccountPanel.client.tsx`;
+- a menor refatoração segura escolhida foi extrair somente esse comportamento compartilhado; markup, layout, regras financeiras e contratos de dados permaneceram nos consumidores;
+- extrações adicionais de conteúdo, adapters ou abstrações genéricas foram rejeitadas por não reduzirem risco suficiente neste ciclo.
+
+Refatoração aplicada:
+- criado `src/shared/hooks/useModalDialogLifecycle.ts` como primitive coesa de presentation compartilhada;
+- o hook oferece refs tipadas para portal, diálogo e foco inicial, além de callback estável para fechamento;
+- lifecycle centralizado: bloqueio/restauração do scroll, isolamento/restauração dos filhos do `body`, foco inicial, contenção por teclado, `Escape`, cleanup e retorno do foco;
+- callback externo é atualizado por ref e o efeito principal depende somente de `isOpen` e da função estável, evitando reinstalação por render do consumidor;
+- `AccountPanel` e `FinancialIntervalStatementPanel` passaram a consumir a mesma primitive sem alteração visual ou funcional;
+- a composição JSX do painel financeiro foi realinhada para leitura consistente.
+
+Revisão React, integridade e performance:
+- `vercel:react-best-practices` e as regras de listeners globais, dependências estreitas e event handlers em refs foram consultadas;
+- a aplicação mantém a premissa de um único modal ativo, portanto adicionar SWR ou um gerenciador global de eventos seria complexidade e dependência injustificadas;
+- intervalo semiaberto, request key, DTO, ownership, Server Action e repository não foram alterados;
+- nenhuma nova renderização cara, serialização ou dependência de bundle foi introduzida.
+
+Evidências GREEN:
+- baseline anterior: painel e switcher com 2 suítes/12 testes verdes;
+- consumidores diretamente afetados: 3 suítes/25 testes verdes;
+- regressão completa: 92 suítes/536 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado;
+- `git diff --check` verde, salvo avisos informativos de normalização LF/CRLF no Windows.
+
+Dívida técnica e fronteiras:
+- nenhuma dívida CRÍTICA ou ALTA foi criada ou encontrada neste recorte;
+- `UX-CHART-003` permanece em `DISCOVERY` e não foi iniciada;
+- nenhuma regra de negócio, query, migration, RPC, policy, grant, dado, dependência ou configuração remota foi alterada;
+- nenhum commit, push, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS`;
+- próximo comando válido: `dia 6` para UX, acessibilidade e PWA.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-002
+
+Diagnóstico e ciclo TDD:
+- a descoberta do extrato dependia da exploração do gráfico ou de uma ação posicionada após todas as colunas largas da tabela;
+- foram escritos primeiro três contratos para instrução visível, descrição acessível do gráfico e coluna `Extrato` imediatamente após `Dia`;
+- RED controlado: 3 suítes carregadas, 17 testes verdes e 3 falhas planejadas;
+- implementação mínima: instrução curta abaixo do título do candle, alternativa de teclado explicitada para leitores de tela e ação da tabela antecipada sem alterar os dados financeiros.
+
+Validação autenticada e responsiva:
+- a sessão autenticada local existente foi reutilizada; as credenciais autorizadas não precisaram ser digitadas ou persistidas;
+- em 320 px, o documento permaneceu sem overflow global e somente a região da tabela rolou horizontalmente; `Dia` e `Extrato` ficaram como as primeiras colunas;
+- o extrato abriu como bottom sheet de 320 px de largura e 354 px de altura, alinhado ao rodapé;
+- em 768 e 1280 px, abriu como painel lateral de 448 px, ocupando a altura total e sem overflow global;
+- foco inicial no botão `Fechar extrato`, contenção por `Tab`/`Shift+Tab`, fechamento por `Escape`, restauração de scroll e retorno do foco ao acionador foram confirmados no navegador;
+- loading sob demanda chegou à Server Action com intervalo civil semiaberto e o estado vazio real foi apresentado sem dados fictícios;
+- a alternativa textual do gráfico e o botão da tabela mantêm o fluxo operável sem depender de hover, cor, SVG ou precisão de toque.
+
+PWA e acessibilidade:
+- `lang=pt-BR`, viewport responsivo, manifesto e theme colors claro/escuro foram confirmados no DOM;
+- `manifest.webmanifest` é válido, usa `display: standalone`, `start_url`/`scope` em `/`, quatro ícones existentes, incluindo maskable, e dois atalhos;
+- não há service worker nem promessa de funcionamento offline neste recorte; consistência financeira continua priorizada;
+- o único registro do console foi o diagnóstico conhecido do React em desenvolvimento sobre `unsafe-eval` sob CSP; não houve erro funcional, e o build de produção permaneceu verde.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 20 testes verdes;
+- regressão completa: 92 suítes e 539 testes verdes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado;
+- revisão `vercel:react-best-practices` confirmou condicionais explícitas, ausência de estado derivado em efeito e nenhuma nova dependência.
+
+Fronteiras e riscos:
+- nenhuma regra financeira, query, DTO, migration, RPC, policy, grant, dado, configuração Supabase remota ou dependência foi alterada;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos remotos e `rewrite-msgs.sh` permaneceram intocados e não rastreados;
+- `UX-CHART-003` continua em `DISCOVERY` e bloqueada até a conclusão do Dia 7 da predecessora;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada neste recorte.
+
+Estado de saída:
+- `QUALITY_VALIDATION` em GREEN;
+- `UX-CHART-002` permanece `IN_PROGRESS` até o gate final;
+- próximo comando válido: `dia 7` para qualidade final, segurança, observabilidade e preparação da entrega incremental.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-CHART-002
+
+Quality gates e supply chain:
+- regressão completa verde com 92 suítes e 539 testes, zero snapshots;
+- lint global, type-check e build Next.js 16.3.3 verdes;
+- auditorias npm completa e de produção com zero vulnerabilidades em 760 dependências contabilizadas;
+- verificação de supply chain sem assinatura inválida ou ausente;
+- CI usa permissões `contents: read`, concorrência cancelável e gates de lint, tipos, testes, audit e build;
+- `next-env.d.ts` regenerado pelo build foi restaurado ao conteúdo versionado e o worktree permaneceu limpo, exceto pelos dois itens privados não rastreados já preservados.
+
+Revisão de segurança e threat model:
+- ativos protegidos: sessão, identificador do proprietário, descrições e valores dos lançamentos;
+- a Server Action deriva o ator exclusivamente de `claims.sub`, rejeita erro, claim ausente e Auth anônimo e ignora qualquer identidade forjada pelo cliente;
+- intervalo civil semiaberto é validado antes da infraestrutura, aceita no máximo 31 dias e bloqueia datas inválidas, invertidas ou iguais;
+- repository usa projeção mínima, filtro explícito por proprietário, limites `gte`/`lt` e ordenação determinística; notas, conta e categoria não são transferidas;
+- `transactions` mantém RLS habilitada e forçada, policy de leitura com ownership e rejeição de usuário anônimo, além de grants mínimos;
+- query builder evita interpolação SQL, erros públicos são sanitizados e nenhuma credencial, token ou payload financeiro foi introduzido em logs da aplicação;
+- risco de IDOR/BOLA é mitigado por claims server-side, filtro explícito e RLS; abuso autenticado é limitado pelo teto de 31 dias, projeção mínima e índice composto, permanecendo como risco residual baixo em Preview privado;
+- logs operacionais administrados pelo Supabase registram o UUID filtrado na URL da Data API; não registraram descrição, valor, token ou cookie. Esse identificador pseudônimo fica restrito ao plano administrativo e sua política de retenção/redaction permanece coberta por `HARD-OBS-001` antes de produção pública.
+
+Supabase e integridade:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) confirmado `ACTIVE_HEALTHY` em PostgreSQL 17, região `sa-east-1`;
+- seis migrations locais e remotas permanecem alinhadas; nenhuma alteração de schema foi necessária;
+- Security Advisor manteve somente `SEC-AUTH-001`, proteção contra senhas vazadas desativada;
+- Performance Advisor manteve três índices sem uso como informações, sem recomendação de remoção sem carga representativa;
+- últimas 24 horas: 40 chamadas API com HTTP 200, 31 eventos Auth em nível informativo e sem erro, e 23 eventos Postgres rotineiros em nível `LOG`.
+
+Vercel, PR e observabilidade:
+- projeto ativo `fin-control` confirmado como `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`; o vínculo local antigo permanece na dívida MÉDIA `CI-VERCEL-002` e não foi alterado;
+- deployment Preview `dpl_CZqRhecqZKsv8BTZKWeszs3jdhRc` no commit `f865576` e na PR `#24` confirmado `READY`;
+- nenhum cluster de runtime error e nenhum log `error`, `fatal` ou `warning` do deployment nas últimas 24 horas;
+- build remoto compilou e gerou todas as rotas; avisos de Node 24 configurado versus Node 22 usado e npm 10 versus engine npm 11 continuam em `CI-VERCEL-002`;
+- PR `#24` está aberta, draft, mergeável e `clean`, com `validate` e `Vercel Preview Comments` concluídos em sucesso no head publicado;
+- baseline de observabilidade permanece em GitHub Actions, Vercel runtime/build e advisors/logs Supabase; captura externa com redaction continua em `HARD-OBS-001` antes de produção pública.
+
+Riscos, fronteiras e saída:
+- nenhuma dívida CRÍTICA foi encontrada; `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta feature;
+- `CI-VERCEL-002` permanece dívida MÉDIA antes de relink, CLI ou promoção;
+- nenhuma migration, RLS, dado, configuração remota, dependência, commit, push, mudança da PR, merge, deploy ou promoção foi executado no Dia 7;
+- `UX-CHART-002` atende ao critério de pronto e passa a `DONE`/`READY_FOR_RELEASE`;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os checks do novo head; após aprovação humana, realizar squash merge em `develop`;
+- `UX-CHART-003` deixa de estar bloqueada pela predecessora e pode iniciar seu próprio Dia 1 somente após comando explícito.

@@ -1132,3 +1132,26 @@ Interpretação:
 - `UX-SHELL-001` atingiu `READY_FOR_RELEASE`;
 - `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001B` e `CI-VERCEL-002` permanecem documentados fora do escopo desta UI;
 - nenhum commit, push, merge, deploy ou mutação remota foi executado.
+
+## Dia 2 — UX-CHART-002
+
+### Baseline
+
+- 23 suítes e 182 testes de `financial-analytics` passaram, zero snapshots;
+- type-check passou antes do RED;
+- o Jest foi executado pelo binário local porque o wrapper global do npm permanece quebrado no ambiente.
+
+### Matriz e RED controlado
+
+- 9 suítes afetadas cobrem domain, application, infrastructure, composição autenticada, mapper, ECharts, tabela, painel e fronteiras;
+- resultado: 9 suítes falharam como planejado; 22 contratos foram materializados, com 14 verdes e 8 falhas esperadas nas suítes carregadas;
+- 5 suítes pararam por módulos de produção deliberadamente ausentes: validador, caso de uso, repository, Server Action e painel;
+- comportamentos ausentes confirmados: `endOnExclusive` no ponto visual, listener de seleção do candle e botão `Ver extrato` na tabela;
+- contrato arquitetural confirmou que presentation continua sem Supabase direto e sem `ChartPort` genérico.
+
+### Validação do harness
+
+- type-check ficou somente com 5 erros `TS2307` correspondentes aos módulos futuros; mocks sem assinatura foram corrigidos sem criar implementação;
+- lint de todos os testes de analytics passou com zero warnings;
+- regressão anterior, excluindo as 9 suítes/assertivas afetadas, passou com 20 suítes e 169 testes, zero snapshots;
+- estado final: `TEST_STRATEGY_READY`; implementação permanece bloqueada até o Dia 3.
