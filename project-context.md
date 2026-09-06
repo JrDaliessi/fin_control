@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UX-CHART-002D concluído em GREEN; aguardando comando do Dia 7 para qualidade final e entrega incremental
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UX-CHART-002D concluído em GREEN; aguardando versionamento e atualização da PR `#26`
+- Data da validação final e preparação de release da UX-CHART-002D: 2026-09-06
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -7674,6 +7675,39 @@ Fronteiras e riscos:
 - nenhum commit, push, mudança de PR, merge, deploy ou promoção foi executado;
 - anexos privados e `rewrite-msgs.sh` permaneceram não rastreados e intocados;
 - não há dívida CRÍTICA ou ALTA; resta somente a confirmação visual autenticada no Preview como risco BAIXO para o Dia 7.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-CHART-002D
+
+Qualidade e supply chain:
+- regressão completa aprovada com 93 suítes e 562 testes, zero snapshots;
+- ESLint global sem avisos, type-check sem erros e build Next.js 16.3.3 com Turbopack aprovado para todas as rotas e o Proxy;
+- `npm audit --audit-level=high` retornou zero vulnerabilidades;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado depois do build.
+
+Arquitetura e segurança:
+- revisão estática não encontrou chave `service_role`, private key ou segredo equivalente no código e na configuração versionada;
+- acessos Supabase permanecem restritos a `infrastructure` e aos clients compartilhados; `presentation` não consulta banco;
+- o resumo continua derivado em centavos e sem histórico bruto, rede, HTML arbitrário ou armazenamento de dados financeiros no browser;
+- migrations preservam RLS habilitada e forçada, ownership por `(select auth.uid())`, grants mínimos e `search_path` explícito na função financeira.
+
+Supabase e integridade:
+- projeto `fin_control` confirmado em `ACTIVE_HEALTHY`, Postgres 17, com RLS habilitada em `financial_accounts`, `categories` e `transactions`;
+- as seis migrations remotas permanecem alinhadas às seis migrations locais; nenhuma migration ou dado foi alterado;
+- Security Advisor manteve somente `SEC-AUTH-001`, proteção contra senhas vazadas desativada;
+- Performance Advisor reportou apenas `financial_accounts_user_created_id_idx` sem uso, aviso informativo sem regressão desta UI.
+
+Vercel, PR e observabilidade:
+- Preview `dpl_AXTEHPDNfd3sS92FWQVbsUWWciqM` da PR `#26`, no commit `5d17de9`, está `READY`, sem erro de build impeditivo;
+- não houve erro de runtime nem log `error/fatal` no deployment nas últimas 24 horas;
+- o build remoto mantém o aviso conhecido de desalinhamento Node/npm coberto por `CI-VERCEL-002`; o vínculo local antigo não foi alterado;
+- a validação visual autenticada não pôde ser repetida porque o conector do navegador falhou antes da inicialização por caminho local de assets ausente. O desvio permanece risco BAIXO, mitigado pelos testes responsivos/acessíveis, pelo build e pelo Preview verdes.
+
+Saída e governança:
+- nenhuma dívida CRÍTICA foi encontrada; `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental da feature;
+- nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado no Dia 7;
+- `.codex-remote-attachments/` e `rewrite-msgs.sh` permaneceram preservados fora do escopo;
+- estado de saída: `READY_FOR_RELEASE`;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#26` e aguardar os checks do novo head; depois, mediante decisão humana, realizar squash merge em `develop` e retomar o Dia 1 da `UX-CHART-003`.
 
 Estado de saída:
 - `QUALITY_VALIDATION`;

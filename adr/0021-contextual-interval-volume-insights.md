@@ -85,4 +85,4 @@ Essas referências documentam o contrato futuro, mas não autorizam ampliar a RP
 
 ## Próximo passo
 
-Executar o Dia 7 da `UX-CHART-002D` para quality gate final, segurança, observabilidade, confirmação visual autenticada no Preview e preparação da entrega incremental.
+Versionar a documentação do Dia 7, atualizar a PR `#26` e aguardar os checks do novo head. Após aprovação humana, realizar squash merge em `develop` e retomar o Dia 1 da `UX-CHART-003`.

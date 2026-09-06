@@ -6,20 +6,7 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### UX-CHART-002D — Volume e insight contextual do intervalo
-- Tipo: Small Release / UX Improvement.
-- Descrição objetiva: ampliar o extrato contextual do candle com volume movimentado, composição entre receitas e despesas, resultado líquido e análise determinística expansível no próprio painel.
-- Objetivo de negócio: transformar os números do intervalo em uma explicação curta e acionável, sem confundir volume com saldo ou abrir uma segunda camada modal.
-- Valor esperado: leitura financeira mais intuitiva e preparação do extrato para os períodos adaptativos da `UX-CHART-003`.
-- Prioridade: Alta, selecionada por decisão humana antes da `UX-CHART-003`.
-- Dependências: `UX-CHART-002` concluída; candles já expõem receitas, despesas, volume e quantidade; comparação histórica depende de baseline agregado confiável.
-- Escopo aprovado: `002D-1` mostra `Volume movimentado`, receitas, despesas e resultado líquido; `002D-2` oferece `Ver análise do intervalo` e exibe no máximo dois insights determinísticos dentro do painel atual.
-- Segurança e dados: apresentação não acessa Supabase; nenhum histórico bruto adicional chega ao browser; uma futura referência histórica será carregada sob demanda por application/infrastructure autenticadas e com agregação mínima.
-- Acessibilidade: controle com alvo mínimo de 44 px, `aria-expanded`, `aria-controls`, foco visível e conteúdo compreensível sem depender de cor.
-- Risco: Médio por semântica financeira e comparação temporal; mitigado por cálculo inteiro em centavos, copy explícita e TDD de domain/application/presentation.
-- Fase recomendada: ciclo próprio Dias 1–7; Dia 6 concluído e Dia 7 aguardando comando humano.
-- Critério de pronto: métricas corretas para zero, somente receitas, somente despesas e combinação; análise limitada, honesta e coerente com o intervalo; estados acessíveis; regressão e quality gates verdes.
-- Status: IN_PROGRESS — `QUALITY_VALIDATION`; hierarquia móvel, reduced motion, teclado, contraste e PWA validados com 93 suítes/562 testes, lint, type-check e build verdes. Confirmação visual autenticada no Preview permanece risco BAIXO do Dia 7.
+Nenhum item em andamento no momento.
 
 ## DISCOVERY
 
@@ -479,6 +466,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### UX-CHART-002D — Volume e insight contextual do intervalo
+- Tipo: Small Release / UX Improvement.
+- Resultado: o extrato contextual apresenta volume movimentado, receitas, despesas e resultado líquido, além de até dois insights determinísticos expansíveis no painel atual.
+- Arquitetura e segurança: cálculo puro em centavos, presentation sem Supabase, nenhum histórico bruto adicional, rede, storage financeiro ou diálogo aninhado.
+- UX/PWA: hierarquia responsiva, alvo mínimo de 44 px, foco visível, `aria-expanded`, `aria-controls`, reduced motion e conteúdo compreensível sem depender de cor.
+- Evidência final: 93 suítes/562 testes, ESLint, type-check, auditoria npm e build Next.js 16.3.3 verdes.
+- Evidência remota: Supabase `ACTIVE_HEALTHY`, RLS ativa e seis migrations alinhadas; Preview `dpl_AXTEHPDNfd3sS92FWQVbsUWWciqM` da PR `#26` `READY`, sem runtime error ou log `error/fatal` em 24 horas.
+- Risco residual: confirmação visual autenticada não repetida por falha local do conector; risco BAIXO mitigado por testes responsivos/acessíveis, build e Preview verdes. `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública.
+- Data de conclusão: 2026-09-06.
+- Status: DONE / READY_FOR_RELEASE.
 
 ### UX-CHART-002 — Extrato contextual do candle
 - Tipo: Small Release / UX Improvement.
