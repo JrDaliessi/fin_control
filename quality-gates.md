@@ -1920,3 +1920,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; anexos privados e `rewrite-msgs.sh` preservados fora do escopo.
 - produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`, sem impedir o merge incremental da feature.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#26`.
+
+## Gate do Dia 1 — UX-CHART-003A
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- PR `#26` confirmada como squash merge `70fd53c` em `origin/develop`; branch da `UX-CHART-003` avançada da base antiga sem descartar commits próprios.
+- stash documental antigo foi somente inspecionado e permaneceu preservado para evitar reaplicar contexto obsoleto.
+- discovery separou `003A` para barra dos cinco períodos atuais, `003B` para `3M/Ano` agregados e `003C` para `Tudo/Personalizado` com drill-down.
+- `003A` preserva os cinco valores de URL, resolver civil, composition root, caso de uso e RPC diária limitada a 31 dias.
+- arquitetura mantém seletor como Server Component e navegação GET progressiva, sem estado cliente ou acesso Supabase na presentation.
+- baseline atual aprovada com 3 suítes e 30 testes, zero snapshots, cobrindo resolver de período, composição financeira e rotas.
+- projeto Supabase `ACTIVE_HEALTHY`, três tabelas sob RLS e seis migrations locais/remotas alinhadas; nenhuma mutação remota foi executada.
+- futura RPC de `003B` condicionada a `SECURITY INVOKER`, `search_path = ''`, ownership, grants mínimos, pgTAP, advisors e plano medido antes de novo índice.
+- erro documental residual da predecessora foi registrado em erros recorrentes e corrigido antes da saída.
+- nenhum código funcional, teste, migration, dado, dependência, commit, push, PR, merge remoto, deploy ou promoção foi criado/executado.
+- `docs/ux-chart-003-discovery.md`, ADR 0020, backlog, roadmap e contexto central compõem os artefatos do Dia 1.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2` da `UX-CHART-003A`.

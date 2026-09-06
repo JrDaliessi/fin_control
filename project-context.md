@@ -1,9 +1,10 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-CHART-002D concluído em GREEN; aguardando versionamento e atualização da PR `#26`
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da UX-CHART-003A concluído; aguardando comando do Dia 2 para estratégia TDD
 - Data da validação final e preparação de release da UX-CHART-002D: 2026-09-06
+- Data do discovery e arquitetura da UX-CHART-003A: 2026-09-06
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -1007,6 +1008,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: ao registrar o Dia 7 da `UX-CHART-002D`, o bloco final do Dia 6 permaneceu depois da nova seção e contradisse o estado `READY_FOR_RELEASE` já correto no topo. Prevenção: ao inserir uma fase no fim do contexto, verificar em conjunto o cabeçalho, as últimas linhas, backlog e roadmap; cada seção deve encerrar com seu próprio estado antes da próxima fase e nenhum estado histórico pode permanecer como instrução operacional corrente.
 - Erro: ao executar os gates paralelos do Dia 4 da UX-CHART-002D, a primeira orquestração resumiu apenas `exit_code` e `output` e descartou os `session_id` retornados pelos processos que excederam 30 segundos, deixando o resultado de duas tarefas indeterminado. Prevenção: quando um executor puder devolver sessão ativa, preservar e inspecionar o objeto completo ou executar o gate longo isoladamente, retomando explicitamente cada `session_id` antes de registrar evidência.
 - Erro: no primeiro GREEN da UX-CHART-002D, uma asserção antiga buscava globalmente o mesmo valor que passou a aparecer no resumo e no lançamento, e o teste de contenção de foco ainda assumia um único controle interativo. Prevenção: ao adicionar informação deliberadamente repetida ou um novo controle acessível, preservar a intenção dos testes anteriores com consultas semânticas escopadas e atualizar a ordem de teclado completa, sem relaxar o contrato de foco.
 - Erro: no RED do Dia 6 da `UX-CHART-002`, o mock inline de `loadStatement` não declarou a assinatura e o TypeScript inferiu o parâmetro como `unknown`, impedindo o spread apesar do GREEN comportamental. Prevenção: mocks de ports opcionais devem reutilizar ou declarar o contrato mínimo de input no momento em que o teste é escrito, antes do primeiro type-check.
@@ -7709,7 +7711,46 @@ Saída e governança:
 - estado de saída: `READY_FOR_RELEASE`;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#26` e aguardar os checks do novo head; depois, mediante decisão humana, realizar squash merge em `develop` e retomar o Dia 1 da `UX-CHART-003`.
 
-Estado de saída:
-- `QUALITY_VALIDATION`;
-- Dia 6 concluído sem bloqueio duro;
-- próximo comando válido: `dia 7` para qualidade final, segurança, observabilidade e entrega incremental.
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-003A
+
+Entrada e base Git:
+- a PR `#26` foi confirmada como mesclada por squash em `origin/develop` no commit `70fd53c`;
+- a branch `feature/UX-CHART-003-periodos-adaptativos` não possuía commits próprios e foi avançada com segurança para a nova base antes de qualquer edição;
+- o stash `checkpoint UX-CHART-003 selecionada antes da UX-CHART-002D` foi apenas inspecionado e permaneceu preservado, sem reaplicar estado obsoleto sobre o merge;
+- `UX-CHART-002D` permanece concluída e o bloqueio de dependência da `UX-CHART-003` foi removido.
+
+Discovery e escopo aprovado:
+- `UX-CHART-003A` é a única small release ativa neste ciclo;
+- o primeiro recorte substitui o `select` e o botão `Atualizar período` por uma barra imediata com `Semana`, `7D`, `Quinzena`, `15D` e `Mês`;
+- os cinco valores de URL atuais e suas diferenças semânticas são preservados: semana/quinzena civis não se confundem com sete/quinze dias móveis;
+- o controle será um formulário GET server-rendered, com ações de 44 px, foco visível, `aria-pressed`, nomes acessíveis completos e rolagem horizontal confinada em 320 px;
+- cards, linha, candles, tabela e extrato continuam recebendo a mesma resposta do caso de uso;
+- `003A` não altera domain, application, infrastructure, RPC, migration, RLS, dados ou dependências.
+
+Arquitetura futura refinada:
+- `UX-CHART-003B` adicionará `3M` como três meses civis com bucket semanal e `Ano` como ano civil com bucket mensal;
+- períodos longos serão agregados no PostgreSQL por RPC `SECURITY INVOKER`, com `search_path = ''`, identidade permanente, RLS, allowlist, grants mínimos e resposta somente agregada;
+- o índice composto existente deverá ser medido com `EXPLAIN (ANALYZE, BUFFERS)` antes de qualquer índice novo;
+- `UX-CHART-003C` adicionará `Tudo`, intervalo personalizado e drill-down de trimestre para mês antes do extrato limitado a 31 dias;
+- a política para históricos que excedam 60 buckets trimestrais permanece decisão formal do ciclo `003C`; truncamento silencioso é proibido.
+
+Supabase, segurança e fontes atuais:
+- projeto `fin_control` confirmado em `ACTIVE_HEALTHY`, Postgres 17, com RLS nas três tabelas e seis migrations locais/remotas alinhadas;
+- Security Advisor manteve apenas `SEC-AUTH-001`; Performance Advisor manteve um índice de contas sem uso como informação, sem relação com a `003A`;
+- documentação atual do Supabase confirmou preferência por `SECURITY INVOKER`, `search_path` explícito, grants restritos e RLS com ownership;
+- apresentação não aceitará `userId`, não acessará Supabase e não receberá histórico bruto.
+
+Artefatos e contratos:
+- criado `docs/ux-chart-003-discovery.md` com jornada, semântica, granularidade, camadas, segurança, riscos e dez cenários essenciais da `003A`;
+- ADR `0020-adaptive-financial-periods.md` atualizado para arquitetura aprovada da `003A`;
+- backlog e roadmap atualizados para separar os ciclos `003A`, `003B` e `003C`;
+- baseline dos contratos atuais aprovada com 3 suítes e 30 testes, cobrindo resolver de período, composição financeira e rotas do dashboard;
+- a inconsistência documental residual entre os estados dos Dias 6 e 7 da predecessora foi registrada em erros recorrentes e corrigida antes desta saída.
+
+Fronteiras e saída:
+- nenhum código funcional, teste, migration, RPC, policy, grant, dado, dependência ou configuração remota foi criado ou alterado;
+- nenhum commit, push, PR, merge remoto, deploy ou promoção foi executado nesta fase;
+- anexos privados e `rewrite-msgs.sh` permaneceram não rastreados e intocados;
+- risco da `003A`: MÉDIO e restrito a navegação, acessibilidade e responsividade; `003B/C` continuam com risco ALTO e fora do ciclo atual;
+- estado de saída: `ARCHITECTURE_READY`;
+- próximo comando válido: `dia 2` para criar os testes essenciais da `UX-CHART-003A` em RED antes de alterar `FinancialPeriodSelector`.

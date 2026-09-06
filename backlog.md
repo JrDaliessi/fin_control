@@ -6,10 +6,6 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
-
-## DISCOVERY
-
 ### UX-CHART-003 — Períodos e granularidade adaptativa
 - Tipo: UX Improvement / Feature.
 - Descrição objetiva: oferecer seleção rápida de `7D`, `15D`, `Mês`, `3M`, `Ano`, `Tudo` e intervalo personalizado, escolhendo automaticamente a granularidade dos candles.
@@ -21,10 +17,12 @@ Nenhum item em andamento no momento.
 - Segurança e dados: a RPC diária atual permanece limitada a 31 dias; períodos longos usam consulta agregada `SECURITY INVOKER`, claims/RLS, allowlist de buckets e limites de intervalo/pontos; nenhum lançamento bruto em massa chega ao browser.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
-- Small releases: `UX-CHART-003A` seletor `7D`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e integração completa com o extrato contextual.
-- Fase recomendada: novo ciclo Dias 1–7 após a `UX-CHART-002`.
+- Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
+- Fase recomendada: ciclo atual Dias 1–7 restrito à `003A`; `003B/C` percorrem ciclos próprios posteriores.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: DISCOVERY — predecessora concluída; próxima feature recomendada, aguardando comando humano explícito para iniciar o Dia 1 próprio.
+- Status: IN_PROGRESS — `UX-CHART-003A` em `ARCHITECTURE_READY` após o Dia 1; contratos prontos para TDD no Dia 2. `003B/C` permanecem refinadas e fora do ciclo atual.
+
+## DISCOVERY
 
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
