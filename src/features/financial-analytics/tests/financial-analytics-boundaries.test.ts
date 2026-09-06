@@ -61,4 +61,18 @@ describe("financial analytics presentation boundaries", () => {
       expect(route).not.toContain("normalizeFinancialPeriodKind");
     }
   });
+
+  it("keeps the period selector progressive and outside client and data boundaries", () => {
+    const selector = readSource(
+      "features",
+      "financial-analytics",
+      "presentation",
+      "components",
+      "FinancialPeriodSelector.tsx"
+    );
+
+    expect(selector).not.toMatch(/^["']use client["'];?/m);
+    expect(selector).not.toMatch(/fetch\s*\(|supabase|useRouter|useSearchParams/i);
+    expect(selector).toContain('method="get"');
+  });
 });

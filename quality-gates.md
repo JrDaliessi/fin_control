@@ -1936,3 +1936,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, teste, migration, dado, dependência, commit, push, PR, merge remoto, deploy ou promoção foi criado/executado.
 - `docs/ux-chart-003-discovery.md`, ADR 0020, backlog, roadmap e contexto central compõem os artefatos do Dia 1.
 - estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2` da `UX-CHART-003A`.
+
+## Gate do Dia 2 — UX-CHART-003A
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- matriz por camada, cenários felizes, alternativos e limites documentados em `docs/ux-chart-003-test-strategy.md`.
+- presentation recebeu três contratos para ordem e nomes da barra, navegação GET progressiva, valores de URL, alvo de 44 px, rolagem confinada, `aria-pressed` e indicação ativa não limitada à cor.
+- rotas receberam a matriz dos cinco períodos e o fallback de parâmetro repetido para `month`.
+- teste de arquitetura preserva o seletor como Server Component sem fetch, Supabase ou hooks de navegação.
+- RED controlado: 3 suítes, 27 testes, 23 preservados e 4 falhas esperadas, zero snapshots.
+- rede de segurança de domínio, application e composição: 4 suítes e 37 testes verdes, zero snapshots.
+- regressão completa: 93 suítes, 91 verdes e apenas 2 suítes RED; 567 testes verdes e somente as 4 falhas planejadas entre 571 testes, zero snapshots.
+- ESLint global e type-check global verdes; `git diff --check` verde.
+- falha ambiental do `npm` global foi contornada com o runtime Node empacotado, sem instalação ou alteração de dependências.
+- nenhum código funcional, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e stashes permaneceram intocados.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003A`.

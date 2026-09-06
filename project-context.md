@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `ARCHITECTURE_READY`
-- Fase atual: Dia 1 da UX-CHART-003A concluído; aguardando comando do Dia 2 para estratégia TDD
+- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
+- Fase atual: Dia 2 da UX-CHART-003A concluído; aguardando comando do Dia 3 para implementação mínima
+- Data da estratégia de testes da UX-CHART-003A: 2026-09-06
 - Data da validação final e preparação de release da UX-CHART-002D: 2026-09-06
 - Data do discovery e arquitetura da UX-CHART-003A: 2026-09-06
 - Data de bootstrap: 2026-07-08
@@ -7754,3 +7755,39 @@ Fronteiras e saída:
 - risco da `003A`: MÉDIO e restrito a navegação, acessibilidade e responsividade; `003B/C` continuam com risco ALTO e fora do ciclo atual;
 - estado de saída: `ARCHITECTURE_READY`;
 - próximo comando válido: `dia 2` para criar os testes essenciais da `UX-CHART-003A` em RED antes de alterar `FinancialPeriodSelector`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-CHART-003A
+
+Matriz e escopo:
+- domínio preserva os contratos existentes para semana/quinzena civis, sete/quinze dias móveis e intervalos semiabertos;
+- application preserva resolução e listagem financeira sem caso de uso novo;
+- presentation recebeu contratos para a barra imediata, ordem, nomes acessíveis, submit GET, estado ativo, alvo de 44 px e rolagem confinada;
+- App Router recebeu a matriz dos cinco valores aceitos e o cenário seguro de parâmetro repetido;
+- infrastructure e Supabase não exigem testes novos na `003A`, pois RPC diária, RLS e migrations permanecem inalteradas.
+
+Testes criados ou ampliados:
+- `FinancialEvolutionPanel.test.tsx`: três contratos para barra acessível, valores GET e indicação semântica/visual do período ativo;
+- `DashboardRoutes.test.tsx`: composição parametrizada dos cinco períodos e fallback de array repetido para `month`;
+- `financial-analytics-boundaries.test.ts`: seletor continua Server Component, progressivo e sem acesso a dados;
+- `docs/ux-chart-003-test-strategy.md`: matriz, cenários, RED e limites do Dia 3.
+
+RED controlado:
+- 3 suítes direcionadas, 27 testes, 23 preservados e 4 falhas esperadas, zero snapshots;
+- três falhas provam que a barra ainda não substituiu o combobox e o botão intermediário;
+- uma falha prova que parâmetro repetido ainda escolhe incorretamente o primeiro valor em vez do fallback `month`;
+- nenhuma implementação funcional foi criada para satisfazer os testes nesta fase.
+
+Rede de segurança:
+- domínio, application e composição server-side: 4 suítes e 37 testes verdes, zero snapshots;
+- regressão completa: 93 suítes, 91 verdes e somente 2 suítes RED; 567 testes verdes e somente as 4 falhas planejadas entre 571 testes, zero snapshots;
+- ESLint global e type-check global verdes, sem erros ou avisos;
+- o `npm` global local apontou para módulo ausente; os gates foram executados com o runtime Node empacotado do workspace, sem instalar ou alterar dependências;
+- `git diff --check` verde.
+
+Fronteiras e saída:
+- nenhum componente funcional, regra financeira, caso de uso, repository, RPC, migration, RLS, dado, dependência ou configuração remota foi alterado;
+- `003B/C`, históricos longos, drill-down e Client Component permanecem fora do escopo;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- estado de saída: `TEST_STRATEGY_READY`;
+- próximo comando válido: `dia 3` para implementar o mínimo necessário até tornar verdes os quatro contratos da `UX-CHART-003A`.

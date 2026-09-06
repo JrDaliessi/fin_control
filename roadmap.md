@@ -292,11 +292,11 @@ Small releases da `UX-CHART-002`:
 
 Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 7 concluído em `READY_FOR_RELEASE` e GREEN. Volume e resultado líquido ganharam prioridade em largura total no celular, receitas/despesas preservam a leitura comparativa e o disclosure respeita reduced motion. As 93 suítes/562 testes, lint, type-check, audit e build estão verdes; Supabase saudável e alinhado, Preview da PR `#26` `READY` e observabilidade sem erro de runtime em 24 horas.
 
-Estado da `UX-CHART-003`: Dia 1 da `003A` concluído em `ARCHITECTURE_READY`. A primeira release troca o seletor atual por uma barra imediata com `Semana`, `7D`, `Quinzena`, `15D` e `Mês`, preservando URLs, resolver e RPC diária sem migration. A `003B` mantém `3M`/`Ano` com agregação server-side; a `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais. Históricos longos nunca enviarão movimentos brutos ao browser.
+Estado da `UX-CHART-003`: Dia 2 da `003A` concluído em `TEST_STRATEGY_READY`. Os contratos da barra imediata, navegação GET, cinco valores existentes, fallback de parâmetro repetido, acessibilidade, alvo de 44 px e rolagem confinada estão em RED controlado com 4 falhas esperadas e 23 testes preservados. A `003B` mantém `3M`/`Ano` com agregação server-side; a `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais. Históricos longos nunca enviarão movimentos brutos ao browser.
 
 Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md` e `adr/0021-contextual-interval-volume-insights.md`.
 
-Próximo passo: executar o Dia 2 da `UX-CHART-003A` para transformar a barra, URLs existentes, acessibilidade, responsividade e fronteiras server-side em contratos TDD antes de alterar código funcional.
+Próximo passo: executar o Dia 3 da `UX-CHART-003A` para implementar somente a barra GET server-rendered e o fallback seguro de parâmetro repetido até satisfazer os testes existentes.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

@@ -92,10 +92,28 @@ describe("dashboard routes", () => {
     expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
   });
 
-  it("should render the dashboard on /dashboard with a supported period", async () => {
+  it("should preserve a supported period on the root dashboard route", async () => {
+    renderRoute(
+      await HomePage({
+        searchParams: Promise.resolve({ period: "rolling_15_days" })
+      })
+    );
+
+    expect(loadFinancialEvolution).toHaveBeenCalledWith({
+      kind: "rolling_15_days"
+    });
+  });
+
+  it.each([
+    "week",
+    "rolling_7_days",
+    "fortnight",
+    "rolling_15_days",
+    "month"
+  ] as const)("should compose /dashboard with the supported %s period", async (period) => {
     renderRoute(
       await DashboardRoutePage({
-        searchParams: Promise.resolve({ period: "rolling_15_days" })
+        searchParams: Promise.resolve({ period })
       })
     );
 
@@ -106,7 +124,7 @@ describe("dashboard routes", () => {
       screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
     ).toBeInTheDocument();
     expect(loadFinancialEvolution).toHaveBeenCalledWith({
-      kind: "rolling_15_days"
+      kind: period
     });
   });
 
@@ -114,6 +132,16 @@ describe("dashboard routes", () => {
     renderRoute(
       await DashboardRoutePage({
         searchParams: Promise.resolve({ period: "custom" })
+      })
+    );
+
+    expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
+  });
+
+  it("falls back to month when the URL repeats the period parameter", async () => {
+    renderRoute(
+      await DashboardRoutePage({
+        searchParams: Promise.resolve({ period: ["week", "month"] })
       })
     );
 

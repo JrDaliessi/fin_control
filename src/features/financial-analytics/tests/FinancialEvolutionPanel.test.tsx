@@ -101,7 +101,7 @@ describe("FinancialEvolutionPanel", () => {
     );
   });
 
-  it("offers the five supported periods and preserves the selected period", () => {
+  it("offers the five supported periods as an immediate accessible bar", () => {
     render(
       <FinancialEvolutionPanel
         result={successResult}
@@ -109,19 +109,67 @@ describe("FinancialEvolutionPanel", () => {
       />
     );
 
-    const selector = screen.getByRole("combobox", {
+    const periodBar = screen.getByRole("group", {
       name: "Período da evolução financeira"
     });
+    const periodButtons = within(periodBar).getAllByRole("button");
 
-    expect(selector).toHaveValue("rolling_7_days");
-    expect(within(selector).getAllByRole("option")).toHaveLength(5);
-    expect(within(selector).getByRole("option", { name: "Mês" })).toHaveValue(
-      "month"
-    );
+    expect(periodButtons.map((button) => button.textContent)).toEqual([
+      "Semana",
+      "7D",
+      "Quinzena",
+      "15D",
+      "Mês"
+    ]);
+    expect(periodBar).toHaveClass("max-w-full", "overflow-x-auto");
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Atualizar período" })
-    ).toHaveClass("min-h-11", "w-full", "sm:w-auto");
-    expect(selector).toHaveClass("w-full", "text-base", "sm:text-sm");
+      screen.queryByRole("button", { name: "Atualizar período" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("submits each existing URL value through a progressive GET form", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    const expectedPeriods = [
+      ["Semana atual", "week"],
+      ["Últimos 7 dias", "rolling_7_days"],
+      ["Quinzena atual", "fortnight"],
+      ["Últimos 15 dias", "rolling_15_days"],
+      ["Mês atual", "month"]
+    ] as const;
+
+    for (const [accessibleName, value] of expectedPeriods) {
+      const button = screen.getByRole("button", { name: accessibleName });
+
+      expect(button).toHaveAttribute("type", "submit");
+      expect(button).toHaveAttribute("name", "period");
+      expect(button).toHaveAttribute("value", value);
+      expect(button).toHaveClass("min-h-11", "shrink-0");
+      expect(button.closest("form")).toHaveAttribute("method", "get");
+    }
+  });
+
+  it("identifies the selected period semantically and without relying only on color", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    const selected = screen.getByRole("button", { name: "Últimos 7 dias" });
+    const unselected = screen.getByRole("button", { name: "Semana atual" });
+
+    expect(selected).toHaveAttribute("aria-pressed", "true");
+    expect(selected).toHaveClass("ring-2");
+    expect(unselected).toHaveAttribute("aria-pressed", "false");
+    expect(unselected).not.toHaveClass("ring-2");
   });
 
   it("guides users without accounts before rendering financial data", () => {
