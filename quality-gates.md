@@ -1967,3 +1967,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum período novo, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
 - anexos privados, `rewrite-msgs.sh` e stashes permaneceram intocados.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4` da `UX-CHART-003A`.
+
+## Gate do Dia 4 — UX-CHART-003A
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da implementação.
+- skill `vercel:nextjs` aplicada para preservar o seletor como Server Component e o formulário GET progressivo.
+- RED dirigido: 1 suíte, 19 testes, 17 preservados e 2 falhas esperadas pela orientação e redução de movimento ainda ausentes.
+- orientação curta diferencia períodos civis e móveis e está ligada ao grupo por `aria-describedby`.
+- matriz dos cinco períodos garante uma única seleção semântica; ordem por teclado e `prefers-reduced-motion` estão cobertos.
+- seletor permanece disponível em `success`, `empty` e `missing_accounts`.
+- contratos direcionados: 3 suítes e 34 testes verdes, zero snapshots.
+- regressão completa: 93 suítes e 578 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- `next-env.d.ts` restaurado ao conteúdo versionado depois do build.
+- nenhum período novo, Client Component, migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5` da `UX-CHART-003A`.

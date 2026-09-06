@@ -10,8 +10,9 @@ export function FinancialPeriodSelector({
   selectedPeriodKind
 }: FinancialPeriodSelectorProps) {
   return (
-    <form className="min-w-0 w-full sm:w-auto" method="get">
+    <form className="grid min-w-0 w-full gap-1 sm:w-auto" method="get">
       <div
+        aria-describedby="financial-period-guidance"
         aria-label="Período da evolução financeira"
         className="flex max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1"
         role="group"
@@ -23,7 +24,7 @@ export function FinancialPeriodSelector({
             <Button
               aria-label={option.accessibleLabel}
               aria-pressed={isSelected}
-              className={`shrink-0 ${
+              className={`shrink-0 motion-reduce:transition-none ${
                 isSelected
                   ? "ring-2 ring-focus-ring ring-offset-2 ring-offset-background"
                   : ""
@@ -39,6 +40,12 @@ export function FinancialPeriodSelector({
           );
         })}
       </div>
+      <p
+        className="text-xs text-muted-foreground"
+        id="financial-period-guidance"
+      >
+        Semana e Quinzena seguem o calendário; 7D e 15D contam até hoje.
+      </p>
     </form>
   );
 }

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import type { FinancialEvolutionDto } from "../application/use-cases/list-financial-evolution.use-case";
 import type {
@@ -172,6 +173,90 @@ describe("FinancialEvolutionPanel", () => {
     expect(unselected).not.toHaveClass("ring-2");
   });
 
+  it.each([
+    ["week", "Semana atual"],
+    ["rolling_7_days", "Últimos 7 dias"],
+    ["fortnight", "Quinzena atual"],
+    ["rolling_15_days", "Últimos 15 dias"],
+    ["month", "Mês atual"]
+  ] as const)(
+    "keeps only %s selected when rendering the period bar",
+    (selectedPeriodKind, selectedAccessibleName) => {
+      render(
+        <FinancialEvolutionPanel
+          result={successResult}
+          selectedPeriodKind={selectedPeriodKind}
+        />
+      );
+
+      const periodButtons = within(
+        screen.getByRole("group", {
+          name: "Período da evolução financeira"
+        })
+      ).getAllByRole("button");
+
+      expect(
+        periodButtons.filter(
+          (button) => button.getAttribute("aria-pressed") === "true"
+        )
+      ).toEqual([
+        screen.getByRole("button", { name: selectedAccessibleName })
+      ]);
+    }
+  );
+
+  it("briefly explains the difference between calendar and rolling periods", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    const periodBar = screen.getByRole("group", {
+      name: "Período da evolução financeira"
+    });
+    const guidance = screen.getByText(
+      "Semana e Quinzena seguem o calendário; 7D e 15D contam até hoje."
+    );
+
+    expect(guidance).toHaveAttribute("id", "financial-period-guidance");
+    expect(periodBar).toHaveAttribute(
+      "aria-describedby",
+      "financial-period-guidance"
+    );
+  });
+
+  it("keeps a predictable keyboard order and respects reduced motion", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FinancialEvolutionPanel
+        result={successResult}
+        selectedPeriodKind="rolling_7_days"
+      />
+    );
+
+    const expectedOrder = [
+      "Semana atual",
+      "Últimos 7 dias",
+      "Quinzena atual",
+      "Últimos 15 dias",
+      "Mês atual"
+    ] as const;
+
+    for (const accessibleName of expectedOrder) {
+      await user.tab();
+      expect(
+        screen.getByRole("button", { name: accessibleName })
+      ).toHaveFocus();
+    }
+
+    expect(screen.getByRole("button", { name: "Últimos 7 dias" })).toHaveClass(
+      "motion-reduce:transition-none"
+    );
+  });
+
   it("guides users without accounts before rendering financial data", () => {
     render(
       <FinancialEvolutionPanel
@@ -195,6 +280,9 @@ describe("FinancialEvolutionPanel", () => {
     expect(
       screen.queryByRole("group", { name: /Saldo ao fim do período:/ })
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Período da evolução financeira" })
+    ).toBeInTheDocument();
     expect(mockFinancialVisualizationSwitcher).not.toHaveBeenCalled();
   });
 
@@ -232,6 +320,9 @@ describe("FinancialEvolutionPanel", () => {
     );
     expect(
       screen.getByRole("table", { name: "Evolução financeira por dia" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Período da evolução financeira" })
     ).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: /R\$\s*25,00/ })).toBeInTheDocument();
   });

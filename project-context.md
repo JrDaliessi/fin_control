@@ -2,7 +2,8 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UX-CHART-003A concluído; aguardando comando do Dia 4 para expansão controlada
+- Fase atual: Dia 4 da UX-CHART-003A concluído; aguardando comando do Dia 5 para refatoração e hardening interno
+- Data da expansão controlada da UX-CHART-003A: 2026-09-06
 - Data da implementação mínima da UX-CHART-003A: 2026-09-06
 - Data da estratégia de testes da UX-CHART-003A: 2026-09-06
 - Data da validação final e preparação de release da UX-CHART-002D: 2026-09-06
@@ -7826,3 +7827,34 @@ Fronteiras e saída:
 - o `npm` global continua com referência local inválida; os gates usaram o runtime Node empacotado sem modificar dependências;
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 4` para expansão controlada da experiência da `UX-CHART-003A`.
+
+## Dia 4 — Expansão Controlada da UX-CHART-003A
+
+Ciclo TDD e experiência:
+- RED dirigido: 1 suíte, 19 testes, 17 preservados e 2 falhas esperadas pela ausência da orientação contextual e do contrato de movimento reduzido;
+- a barra explica de forma curta e visível que `Semana` e `Quinzena` seguem o calendário, enquanto `7D` e `15D` contam até hoje;
+- a orientação possui identificação estável e está associada ao grupo por `aria-describedby`, sem tooltip oculto ou dependência de hover;
+- todos os cinco períodos foram cobertos individualmente para garantir exatamente um `aria-pressed="true"`;
+- a ordem de foco por teclado segue a ordem visual e os botões passam a respeitar `prefers-reduced-motion`;
+- o seletor permanece disponível nos estados `success`, `empty` e `missing_accounts`, permitindo trocar o intervalo mesmo sem movimentos ou contas.
+
+Arquitetura preservada:
+- `FinancialPeriodSelector` continua Server Component e formulário GET progressivo, sem estado cliente, efeito, hook de navegação ou acesso Supabase;
+- nenhuma regra de período, composição de dashboard, gráfico, extrato, domínio, application ou infrastructure foi alterada;
+- a skill de Next.js orientou a preservação da fronteira RSC e das props serializáveis.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 34 testes aprovados, zero snapshots;
+- regressão completa: 93 suítes e 578 testes aprovados, zero snapshots;
+- ESLint global aprovado sem erros ou avisos;
+- type-check global aprovado sem erros;
+- build de produção Next.js 16.3.3 com Turbopack aprovado para todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build.
+
+Fronteiras e saída:
+- nenhum período novo, Client Component, migration, RPC, RLS, dado, dependência ou configuração remota foi criado ou alterado;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada;
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
+- próximo comando válido: `dia 5` para refatoração, consistência e hardening interno da `UX-CHART-003A`.
