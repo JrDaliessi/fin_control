@@ -2,7 +2,8 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UX-CHART-003A concluído; aguardando comando do Dia 5 para refatoração e hardening interno
+- Fase atual: Dia 5 da UX-CHART-003A concluído; aguardando comando do Dia 6 para experiência, acessibilidade e PWA
+- Data da refatoração e hardening interno da UX-CHART-003A: 2026-09-06
 - Data da expansão controlada da UX-CHART-003A: 2026-09-06
 - Data da implementação mínima da UX-CHART-003A: 2026-09-06
 - Data da estratégia de testes da UX-CHART-003A: 2026-09-06
@@ -7858,3 +7859,37 @@ Fronteiras e saída:
 - nenhuma dívida CRÍTICA ou ALTA foi identificada;
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
 - próximo comando válido: `dia 5` para refatoração, consistência e hardening interno da `UX-CHART-003A`.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UX-CHART-003A
+
+Diagnóstico e decisão:
+- o componente `FinancialPeriodSelector` possui 51 linhas, responsabilidade única e configuração já isolada; nenhuma abstração adicional reduziria complexidade;
+- `FinancialEvolutionPanel.test.tsx` possuía 561 linhas e concentrava nove contratos exclusivos do seletor, caracterizando perda de coesão na suíte;
+- o plano incremental aprovado limitou-se a separar esses contratos, sem alterar produção, regra de negócio ou cobertura.
+
+Refatoração aplicada:
+- criada `FinancialPeriodSelector.test.tsx` com os contratos de opções, GET progressivo, seleção exclusiva, orientação, teclado e movimento reduzido;
+- `FinancialEvolutionPanel.test.tsx` permaneceu com os contratos de composição, estados, resumos, tabela e integração das visualizações;
+- a suíte do painel foi reduzida de 561 para 405 linhas; a nova suíte focada possui 133 linhas;
+- nenhum teste foi enfraquecido, removido ou acoplado à configuração interna de produção.
+
+Consistência e integridade:
+- o componente, os tokens visuais, as classes responsivas e os nomes acessíveis permaneceram inalterados;
+- domain, application, infrastructure, rotas, gráficos, extrato, RPC e Supabase permaneceram fora da refatoração;
+- a fronteira Server Component continuou protegida pelo teste arquitetural existente.
+
+Evidências GREEN:
+- baseline anterior: 2 suítes e 24 testes aprovados, zero snapshots;
+- após a separação: 3 suítes e 24 testes direcionados aprovados, zero snapshots;
+- regressão completa: 94 suítes e 578 testes aprovados, zero snapshots;
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack aprovados;
+- todas as rotas e o Proxy foram preservados;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após o build.
+
+Fronteiras e saída:
+- nenhuma nova regra, período, dependência, migration, RPC, RLS, dado ou configuração remota foi criada ou alterada;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada;
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade, responsividade e PWA da `UX-CHART-003A`.

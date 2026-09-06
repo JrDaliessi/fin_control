@@ -1983,3 +1983,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum período novo, Client Component, migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5` da `UX-CHART-003A`.
+
+## Gate do Dia 5 — UX-CHART-003A
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da refatoração.
+- baseline: 2 suítes e 24 testes verdes, zero snapshots.
+- auditoria identificou `FinancialEvolutionPanel.test.tsx` com 561 linhas e nove contratos exclusivos do seletor; o componente de produção possui 51 linhas e já está coeso.
+- contratos do seletor foram movidos para `FinancialPeriodSelector.test.tsx`, sem alterar expectativas ou acoplar os testes à configuração interna.
+- suíte do painel reduzida para 405 linhas; nova suíte focada com 133 linhas.
+- validação dirigida após refatoração: 3 suítes e 24 testes verdes, zero snapshots.
+- regressão completa: 94 suítes e 578 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- componente, design system, domain, application, infrastructure, Supabase e contratos financeiros permaneceram inalterados.
+- `next-env.d.ts` restaurado ao conteúdo versionado após o build.
+- nenhum período novo, migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados.
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6` da `UX-CHART-003A`.

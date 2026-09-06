@@ -20,7 +20,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
 - Fase recomendada: ciclo atual Dias 1–7 restrito à `003A`; `003B/C` percorrem ciclos próprios posteriores.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — Dia 4 da `UX-CHART-003A` concluído em `IMPLEMENTATION_IN_PROGRESS`; orientação civil/móvel, seleção exclusiva, teclado, movimento reduzido e disponibilidade nos estados principais estão cobertos com 93 suítes e 578 testes verdes. `003B/C` permanecem refinadas e fora do ciclo atual.
+- Status: IN_PROGRESS — Dia 5 da `UX-CHART-003A` concluído em `IMPLEMENTATION_IN_PROGRESS`; nove contratos do seletor foram isolados em suíte própria, reduzindo o teste do painel de 561 para 405 linhas sem alterar produção ou cobertura. As 94 suítes e 578 testes estão verdes; `003B/C` permanecem fora do ciclo atual.
 
 ## DISCOVERY
 

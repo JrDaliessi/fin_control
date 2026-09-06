@@ -292,11 +292,11 @@ Small releases da `UX-CHART-002`:
 
 Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 7 concluído em `READY_FOR_RELEASE` e GREEN. Volume e resultado líquido ganharam prioridade em largura total no celular, receitas/despesas preservam a leitura comparativa e o disclosure respeita reduced motion. As 93 suítes/562 testes, lint, type-check, audit e build estão verdes; Supabase saudável e alinhado, Preview da PR `#26` `READY` e observabilidade sem erro de runtime em 24 horas.
 
-Estado da `UX-CHART-003`: Dia 4 da `003A` concluído em `IMPLEMENTATION_IN_PROGRESS` e GREEN. A barra GET `Semana`, `7D`, `Quinzena`, `15D` e `Mês` agora também orienta a diferença entre calendário e janela móvel, preserva seleção exclusiva, ordem de teclado, movimento reduzido e disponibilidade nos estados vazio e sem contas. Parâmetros repetidos recaem em `month`. A `003B` mantém `3M`/`Ano` com agregação server-side; a `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
+Estado da `UX-CHART-003`: Dia 5 da `003A` concluído em `IMPLEMENTATION_IN_PROGRESS` e GREEN. Os nove contratos exclusivos da barra GET foram isolados em uma suíte coesa, reduzindo o teste do painel de 561 para 405 linhas sem alterar o componente, a cobertura ou os dados. As 94 suítes e 578 testes estão verdes. A `003B` mantém `3M`/`Ano` com agregação server-side; a `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
 
 Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md` e `adr/0021-contextual-interval-volume-insights.md`.
 
-Próximo passo: executar o Dia 5 da `UX-CHART-003A` para revisar duplicação, coesão e consistência visual, preservando comportamento e escopo.
+Próximo passo: executar o Dia 6 da `UX-CHART-003A` para validar responsividade, acessibilidade, microinterações e experiência PWA.
 
 ## Hardening pré-produção — SEC-AUTH-001
 
