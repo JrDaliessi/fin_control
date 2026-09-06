@@ -12,18 +12,40 @@ describe("FinancialPeriodSelector", () => {
     });
     const periodButtons = within(periodBar).getAllByRole("button");
 
-    expect(periodButtons.map((button) => button.textContent)).toEqual([
-      "Semana",
-      "7D",
-      "Quinzena",
-      "15D",
-      "Mês"
+    expect(periodButtons.map((button) => button.getAttribute("aria-label"))).toEqual([
+      "Semana atual",
+      "Últimos 7 dias",
+      "Quinzena atual",
+      "Últimos 15 dias",
+      "Mês atual"
     ]);
     expect(periodBar).toHaveClass("max-w-full", "overflow-x-auto");
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Atualizar período" })
     ).not.toBeInTheDocument();
+  });
+
+  it("keeps every period discoverable on narrow screens with compact labels", () => {
+    render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+
+    const periodBar = screen.getByRole("group", {
+      name: "Período da evolução financeira"
+    });
+    const weekButton = screen.getByRole("button", { name: "Semana atual" });
+    const fortnightButton = screen.getByRole("button", {
+      name: "Quinzena atual"
+    });
+
+    expect(periodBar).toHaveClass("gap-1", "p-1", "sm:gap-2");
+    expect(weekButton).toHaveTextContent("Sem.");
+    expect(fortnightButton).toHaveTextContent("Quinz.");
+    expect(within(weekButton).getByText("Sem.")).toHaveClass("sm:hidden");
+    expect(within(weekButton).getByText("Semana")).toHaveClass(
+      "hidden",
+      "sm:inline"
+    );
+    expect(weekButton).toHaveClass("!px-2", "sm:!px-4");
   });
 
   it("submits each existing URL value through a progressive GET form", () => {

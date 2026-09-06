@@ -3,25 +3,39 @@ import type { FinancialPeriodKind } from "../../domain/types/financial-period.ty
 export const financialPeriodOptions: readonly Readonly<{
   value: FinancialPeriodKind;
   label: string;
+  compactLabel: string;
   accessibleLabel: string;
 }>[] = [
-  { value: "week", label: "Semana", accessibleLabel: "Semana atual" },
+  {
+    value: "week",
+    label: "Semana",
+    compactLabel: "Sem.",
+    accessibleLabel: "Semana atual"
+  },
   {
     value: "rolling_7_days",
     label: "7D",
+    compactLabel: "7D",
     accessibleLabel: "Últimos 7 dias"
   },
   {
     value: "fortnight",
     label: "Quinzena",
+    compactLabel: "Quinz.",
     accessibleLabel: "Quinzena atual"
   },
   {
     value: "rolling_15_days",
     label: "15D",
+    compactLabel: "15D",
     accessibleLabel: "Últimos 15 dias"
   },
-  { value: "month", label: "Mês", accessibleLabel: "Mês atual" }
+  {
+    value: "month",
+    label: "Mês",
+    compactLabel: "Mês",
+    accessibleLabel: "Mês atual"
+  }
 ];
 
 export function normalizeFinancialPeriodKind(

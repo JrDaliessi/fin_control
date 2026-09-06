@@ -1999,3 +1999,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum período novo, migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados.
 - `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6` da `UX-CHART-003A`.
+
+## Gate do Dia 6 — UX-CHART-003A
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional aprovada antes da implementação.
+- skill `vercel:agent-browser` aplicada para validação autenticada do dashboard em navegador real.
+- inspeção inicial em 320 px encontrou `scrollWidth` de 388 px para 273 px disponíveis, deixando o período ativo `Mês` fora da área visível.
+- primeiro RED introduziu rótulos compactos responsivos e espaçamento seguro; a validação real revelou precedência do `px-4` base do `Button`, levando a um segundo RED para padding explícito.
+- estado final em 320 px: cinco opções integralmente visíveis, `clientWidth = scrollWidth = 273`, alvos de 44 px, anel ativo íntegro e nenhum overflow horizontal global.
+- em 768 e 1280 px, rótulos completos, alvos de 44 px e ausência de overflow foram confirmados.
+- navegação por Tab exibiu foco visível; seleção de `7D` atualizou a URL para `?period=rolling_7_days` e manteve `aria-pressed` coerente.
+- `lang="pt-BR"`, viewport, manifesto, cores de tema e experiência standalone permaneceram válidos; console sem erros ou avisos.
+- suíte do seletor: 11 testes verdes; regressão completa final: 94 suítes e 579 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- nenhuma migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados fora do escopo.
+- estado de saída: `QUALITY_VALIDATION` em GREEN; próximo comando válido: `dia 7` da `UX-CHART-003A`.

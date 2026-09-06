@@ -14,7 +14,7 @@ export function FinancialPeriodSelector({
       <div
         aria-describedby="financial-period-guidance"
         aria-label="Período da evolução financeira"
-        className="flex max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1"
+        className="flex max-w-full gap-1 overflow-x-auto overscroll-x-contain p-1 sm:gap-2"
         role="group"
       >
         {financialPeriodOptions.map((option) => {
@@ -24,7 +24,7 @@ export function FinancialPeriodSelector({
             <Button
               aria-label={option.accessibleLabel}
               aria-pressed={isSelected}
-              className={`shrink-0 motion-reduce:transition-none ${
+              className={`shrink-0 !px-2 motion-reduce:transition-none sm:!px-4 ${
                 isSelected
                   ? "ring-2 ring-focus-ring ring-offset-2 ring-offset-background"
                   : ""
@@ -35,7 +35,8 @@ export function FinancialPeriodSelector({
               value={option.value}
               variant={isSelected ? "primary" : "secondary"}
             >
-              {option.label}
+              <span className="sm:hidden">{option.compactLabel}</span>
+              <span className="hidden sm:inline">{option.label}</span>
             </Button>
           );
         })}

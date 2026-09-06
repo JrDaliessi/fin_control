@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UX-CHART-003A concluído; aguardando comando do Dia 6 para experiência, acessibilidade e PWA
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UX-CHART-003A concluído; aguardando comando do Dia 7 para qualidade final e entrega incremental
+- Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003A: 2026-09-06
 - Data da refatoração e hardening interno da UX-CHART-003A: 2026-09-06
 - Data da expansão controlada da UX-CHART-003A: 2026-09-06
 - Data da implementação mínima da UX-CHART-003A: 2026-09-06
@@ -7893,3 +7894,35 @@ Fronteiras e saída:
 - nenhuma dívida CRÍTICA ou ALTA foi identificada;
 - `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 6` para experiência, acessibilidade, responsividade e PWA da `UX-CHART-003A`.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-003A
+
+Diagnóstico e ciclo TDD:
+- a validação real em 320 px revelou que a barra tinha `scrollWidth` de 388 px para 273 px disponíveis e deixava o período ativo `Mês` fora da área inicialmente visível;
+- o primeiro RED adicionou o contrato de rótulos compactos no celular, rótulos completos a partir de `sm`, espaçamento reduzido e folga interna para o anel de foco;
+- após o primeiro GREEN, a inspeção no navegador identificou que o `px-4` base do `Button` prevalecia sobre `px-2`; um segundo RED exigiu `!px-2` e `sm:!px-4` antes da correção mínima;
+- os contratos existentes de ordem, nomes acessíveis, GET progressivo, seleção exclusiva, alvos de 44 px, orientação contextual e movimento reduzido foram preservados.
+
+Implementação e experiência:
+- cada opção passou a declarar `compactLabel`, com `Sem.`, `7D`, `Quinz.`, `15D` e `Mês` no celular e os rótulos completos em telas a partir de `sm`;
+- o grupo usa `gap-1` e `p-1` no celular, `sm:gap-2` no desktop e padding explícito nos botões, mantendo o anel ativo e de foco sem corte;
+- a navegação continua server-rendered por formulário GET, sem JavaScript obrigatório, estado cliente ou acesso direto à infraestrutura;
+- a cópia visível sobre períodos civis e móveis, os nomes acessíveis completos e `aria-pressed` continuam independentes da abreviação visual.
+
+Evidência de navegador e PWA:
+- em 320 px, os cinco botões ficaram simultaneamente visíveis, com `clientWidth = scrollWidth = 273`, alvos de 44 px e sem overflow horizontal da página;
+- em 768 e 1280 px, os rótulos completos ficaram visíveis, o grupo permaneceu sem overflow e os alvos mantiveram 44 px;
+- Tab moveu o foco entre os períodos com anel perceptível; selecionar `7D` navegou para `?period=rolling_7_days` e atualizou `aria-pressed`;
+- documento manteve `lang="pt-BR"`, viewport responsiva, manifesto `/manifest.webmanifest`, cores de tema clara/escura e console sem erros ou avisos;
+- a skill de navegador expôs a precedência real de CSS que não aparecia no DOM isolado e orientou a menor correção responsiva.
+
+Evidências GREEN e fronteiras:
+- dois ciclos RED/GREEN do seletor foram concluídos; suíte final do componente: 11 testes verdes;
+- regressão completa final: 94 suítes e 579 testes aprovados, zero snapshots;
+- ESLint global, type-check e build de produção Next.js 16.3.3 com Turbopack aprovados; todas as rotas e o Proxy preservados;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build;
+- nenhuma migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada; `003B/C` permanecem fora deste ciclo;
+- estado de saída: `QUALITY_VALIDATION` em GREEN;
+- próximo comando válido: `dia 7` para quality gates finais, segurança, observabilidade e preparação da entrega incremental da `UX-CHART-003A`.
