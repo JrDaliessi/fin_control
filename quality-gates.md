@@ -1952,3 +1952,18 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhum código funcional, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
 - anexos privados, `rewrite-msgs.sh` e stashes permaneceram intocados.
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003A`.
+
+## Gate do Dia 3 — UX-CHART-003A
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da execução.
+- quatro contratos RED do Dia 2 tornaram-se verdes sem enfraquecimento das expectativas.
+- barra GET server-rendered apresenta `Semana`, `7D`, `Quinzena`, `15D` e `Mês` com valores canônicos existentes.
+- nomes acessíveis completos, `aria-pressed`, anel ativo, alvos de 44 px e rolagem horizontal confinada implementados.
+- ausência, valor desconhecido e parâmetro repetido usam o fallback seguro `month`.
+- seletor permanece Server Component sem fetch, Supabase, hooks de navegação ou estado cliente.
+- contratos direcionados: 3 suítes e 27 testes verdes; regressão completa: 93 suítes e 571 testes verdes; zero snapshots.
+- ESLint, type-check, build Next.js 16.3.3 e `git diff --check` verdes.
+- `next-env.d.ts` restaurado após a reescrita automática do build.
+- nenhum período novo, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e stashes permaneceram intocados.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4` da `UX-CHART-003A`.

@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `TEST_STRATEGY_READY`
-- Fase atual: Dia 2 da UX-CHART-003A concluído; aguardando comando do Dia 3 para implementação mínima
+- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
+- Fase atual: Dia 3 da UX-CHART-003A concluído; aguardando comando do Dia 4 para expansão controlada
+- Data da implementação mínima da UX-CHART-003A: 2026-09-06
 - Data da estratégia de testes da UX-CHART-003A: 2026-09-06
 - Data da validação final e preparação de release da UX-CHART-002D: 2026-09-06
 - Data do discovery e arquitetura da UX-CHART-003A: 2026-09-06
@@ -7791,3 +7792,37 @@ Fronteiras e saída:
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
 - estado de saída: `TEST_STRATEGY_READY`;
 - próximo comando válido: `dia 3` para implementar o mínimo necessário até tornar verdes os quatro contratos da `UX-CHART-003A`.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-CHART-003A
+
+Implementação mínima:
+- `FinancialPeriodSelector` substituiu o `select` e o botão intermediário por cinco submit buttons dentro de um formulário GET server-rendered;
+- rótulos visíveis permanecem compactos (`Semana`, `7D`, `Quinzena`, `15D`, `Mês`) e nomes acessíveis explicitam a semântica civil ou móvel;
+- período ativo expõe `aria-pressed` e recebe anel visível, portanto o estado não depende somente de cor;
+- cada ação preserva o valor canônico existente em `name="period"` e mantém funcionamento progressivo sem JavaScript;
+- container usa largura máxima, rolagem horizontal e overscroll confinado; botões preservam `min-h-11` e `shrink-0`;
+- `normalizeFinancialPeriodKind` passou a aceitar somente string escalar válida; ausência, valor desconhecido ou array repetido recai em `month`.
+
+Arquitetura preservada:
+- seletor continua Server Component, sem `use client`, estado local, `useRouter`, `useSearchParams`, fetch ou Supabase;
+- `composeDashboardRoute` continua aguardando `searchParams` e usando a mesma fonte para cards, linha, candles, tabela e extrato;
+- domain, application, infrastructure, RPC diária e limite de 31 dias permaneceram inalterados;
+- skill Next.js aplicada para manter leitura server-side, props simples e navegação GET progressiva.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 27 testes aprovados, zero snapshots;
+- regressão completa: 93 suítes e 571 testes aprovados, zero snapshots;
+- ESLint global aprovado sem erros ou avisos;
+- type-check global aprovado sem erros;
+- build de produção Next.js 16.3.3 com Turbopack aprovado para todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build;
+- `git diff --check` verde.
+
+Fronteiras e saída:
+- nenhum período novo, Client Component, estado otimista, gráfico, extrato, caso de uso, repository, migration, RPC, RLS, dado, dependência ou configuração remota foi alterado;
+- `003B/C`, históricos longos e drill-down permanecem fora do escopo;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- o `npm` global continua com referência local inválida; os gates usaram o runtime Node empacotado sem modificar dependências;
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 4` para expansão controlada da experiência da `UX-CHART-003A`.

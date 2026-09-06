@@ -10,27 +10,35 @@ export function FinancialPeriodSelector({
   selectedPeriodKind
 }: FinancialPeriodSelectorProps) {
   return (
-    <form className="flex w-full flex-wrap items-end gap-3 sm:w-auto" method="get">
-      <div className="grid w-full gap-2 sm:w-auto">
-        <label className="text-sm font-medium text-foreground" htmlFor="period">
-          Período da evolução financeira
-        </label>
-        <select
-          className="min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:text-sm"
-          defaultValue={selectedPeriodKind}
-          id="period"
-          name="period"
-        >
-          {financialPeriodOptions.map((option) => (
-            <option key={option.value} value={option.value}>
+    <form className="min-w-0 w-full sm:w-auto" method="get">
+      <div
+        aria-label="Período da evolução financeira"
+        className="flex max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1"
+        role="group"
+      >
+        {financialPeriodOptions.map((option) => {
+          const isSelected = option.value === selectedPeriodKind;
+
+          return (
+            <Button
+              aria-label={option.accessibleLabel}
+              aria-pressed={isSelected}
+              className={`shrink-0 ${
+                isSelected
+                  ? "ring-2 ring-focus-ring ring-offset-2 ring-offset-background"
+                  : ""
+              }`}
+              key={option.value}
+              name="period"
+              type="submit"
+              value={option.value}
+              variant={isSelected ? "primary" : "secondary"}
+            >
               {option.label}
-            </option>
-          ))}
-        </select>
+            </Button>
+          );
+        })}
       </div>
-      <Button className="w-full sm:w-auto" type="submit">
-        Atualizar período
-      </Button>
     </form>
   );
 }
