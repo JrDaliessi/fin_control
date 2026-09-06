@@ -20,7 +20,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
 - Fase recomendada: ciclo atual Dias 1–7 restrito à `003A`; `003B/C` percorrem ciclos próprios posteriores.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — Dia 6 da `UX-CHART-003A` concluído em `QUALITY_VALIDATION`; a barra exibe os cinco períodos sem overflow em 320 px, preserva rótulos completos a partir de `sm`, alvos de 44 px, foco visível, navegação GET e PWA. As 94 suítes e 579 testes estão verdes; `003B/C` permanecem fora do ciclo atual.
+- Status: IN_PROGRESS — `UX-CHART-003A` concluída em `DONE` / `READY_FOR_RELEASE`: 94 suítes e 579 testes, lint, type-check, audit, assinaturas npm, build, Supabase, Vercel, observabilidade e PR estão verdes. `003B/C` permanecem planejadas para ciclos próprios, por isso a feature agregada continua em andamento.
 
 ## DISCOVERY
 

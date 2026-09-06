@@ -2015,3 +2015,21 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado.
 - `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados fora do escopo.
 - estado de saída: `QUALITY_VALIDATION` em GREEN; próximo comando válido: `dia 7` da `UX-CHART-003A`.
+
+## Gate do Dia 7 — UX-CHART-003A
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 94 suítes e 579 testes verdes, zero snapshots.
+- ESLint global sem avisos, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- auditoria npm encontrou zero vulnerabilidades; 701 assinaturas de registro e 102 attestations verificadas.
+- revisão estática confirmou seletor Server Component, valores GET em allowlist, fallback seguro, ausência de Supabase na presentation e nenhum segredo privilegiado rastreado.
+- projeto Supabase `ACTIVE_HEALTHY`; três tabelas públicas com RLS e seis migrations locais/remotas alinhadas.
+- Security Advisor manteve somente `SEC-AUTH-001`; Performance Advisor trouxe um índice de contas sem uso como informação.
+- Preview `dpl_6G1AWR6qK11d6c9RyYSeUyPd4PZV` da PR `#27`, no commit `d40529b`, está `READY`; `/dashboard` respondeu HTTP 200 e redirecionou corretamente a requisição sem sessão para login.
+- CSP, HSTS, proteção contra frames, Permissions Policy, `noindex` e manifesto foram confirmados na resposta real.
+- não houve cluster de runtime error nem log `error/fatal` no deployment nas últimas 24 horas.
+- PR `#27` aberta, não draft, `CLEAN` e mergeável, com Quality Gates e Vercel verdes; nenhum comentário de toolbar pendente.
+- vínculo local antigo permanece em `CI-VERCEL-002`; plano Hobby sem drains mantém `HARD-OBS-001` como bloqueio de produção pública.
+- nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados fora do escopo.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#27`.

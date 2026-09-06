@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UX-CHART-003A concluído; aguardando comando do Dia 7 para qualidade final e entrega incremental
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UX-CHART-003A concluído; documentação aguarda versionamento e atualização da PR #27
+- Data da validação final e preparação de release da UX-CHART-003A: 2026-09-06
 - Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003A: 2026-09-06
 - Data da refatoração e hardening interno da UX-CHART-003A: 2026-09-06
 - Data da expansão controlada da UX-CHART-003A: 2026-09-06
@@ -7926,3 +7927,43 @@ Evidências GREEN e fronteiras:
 - nenhuma dívida CRÍTICA ou ALTA foi identificada; `003B/C` permanecem fora deste ciclo;
 - estado de saída: `QUALITY_VALIDATION` em GREEN;
 - próximo comando válido: `dia 7` para quality gates finais, segurança, observabilidade e preparação da entrega incremental da `UX-CHART-003A`.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-CHART-003A
+
+Quality gates locais:
+- regressão completa: 94 suítes e 579 testes aprovados, zero snapshots;
+- ESLint global aprovado sem erros ou avisos e type-check global aprovado sem erros;
+- build de produção Next.js 16.3.3 com Turbopack aprovado para todas as rotas e o Proxy;
+- auditoria npm encontrou zero vulnerabilidades; 701 pacotes possuem assinatura de registro verificada e 102 possuem attestation verificada;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build e `git diff --check` permaneceu verde.
+
+Segurança e threat model:
+- o diff funcional permanece limitado ao seletor de períodos, configuração de rótulos e testes; nenhuma infraestrutura, autenticação, autorização ou regra financeira foi alterada;
+- `FinancialPeriodSelector` permanece Server Component, sem Supabase, fetch, hooks cliente, HTML arbitrário, identificador de usuário, token ou logging financeiro;
+- navegação GET utiliza somente os cinco valores canônicos existentes, com fallback seguro para ausência, valor desconhecido ou parâmetro repetido;
+- nenhuma chave privilegiada ou segredo foi encontrado em arquivo rastreado; a configuração pública do Supabase continua isolada nas fronteiras existentes;
+- riscos de IDOR/BOLA, exfiltração, injeção e ampliação de consulta não foram introduzidos pela `003A`.
+
+Supabase e integridade:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) confirmado `ACTIVE_HEALTHY`, PostgreSQL 17, região `sa-east-1`;
+- `financial_accounts`, `categories` e `transactions` permanecem com RLS habilitada; as seis migrations remotas continuam alinhadas às seis migrations locais;
+- Security Advisor manteve apenas `auth_leaked_password_protection`, já registrado em `SEC-AUTH-001` e bloqueado pelo plano Free;
+- Performance Advisor reportou somente `financial_accounts_user_created_id_idx` sem uso, informação sem relação com esta UI e sem evidência para remoção;
+- breaking changes recentes de Supabase sobre self-hosting, Realtime, extensões e Management API não atingem este recorte hospedado e sem alteração de schema.
+
+Vercel, observabilidade e PR:
+- projeto ativo confirmado como `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`; o vínculo local antigo continua rastreado em `CI-VERCEL-002` e não foi alterado;
+- Preview `dpl_6G1AWR6qK11d6c9RyYSeUyPd4PZV`, correspondente ao commit `d40529b` e à PR `#27`, está `READY`;
+- `/dashboard` respondeu HTTP 200 e apresentou a tela de login para requisição sem sessão, com CSP, HSTS, `frame-ancestors 'none'`, Permissions Policy, `noindex` e manifesto preservados;
+- não houve cluster de runtime error nem log `error/fatal` no deployment nas últimas 24 horas;
+- PR `#27` está aberta, não draft, `CLEAN` e mergeável; Quality Gates, Vercel e Vercel Preview Comments estão verdes e não existe comentário de toolbar pendente;
+- baseline permanece GitHub Actions, build/runtime Vercel e advisors Supabase; o plano Hobby não oferece drains e `HARD-OBS-001` continua obrigatório antes de produção pública.
+
+Riscos, fronteiras e saída:
+- nenhuma dívida CRÍTICA ou ALTA específica da `UX-CHART-003A` foi encontrada;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta feature;
+- `CI-VERCEL-002` permanece dívida MÉDIA e deve ser resolvida antes de operação direta por CLI ou promoção;
+- nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado no Dia 7;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram preservados fora do escopo;
+- `UX-CHART-003A` atende ao critério de pronto e passa a `DONE` / `READY_FOR_RELEASE`; `003B/C` continuam fora deste ciclo;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#27` e aguardar os checks do novo head; depois, mediante decisão humana, realizar squash merge em `develop`.
