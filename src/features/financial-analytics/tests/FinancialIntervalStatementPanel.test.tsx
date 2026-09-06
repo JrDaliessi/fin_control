@@ -134,6 +134,36 @@ describe("FinancialIntervalStatementPanel", () => {
     expect(loadStatement).toHaveBeenCalledTimes(1);
   });
 
+  it("prioritizes primary metrics on narrow screens and respects reduced motion", () => {
+    const pendingStatement = deferred<StatementResult>();
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={jest.fn(() => pendingStatement.promise)}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    const volumeMetric = within(movementSummary)
+      .getByText("Volume movimentado")
+      .closest("div");
+    const netMetric = within(movementSummary)
+      .getByText("Resultado líquido")
+      .closest("div");
+
+    expect(volumeMetric).toHaveClass("col-span-2", "sm:col-span-1");
+    expect(netMetric).toHaveClass("col-span-2", "sm:col-span-1");
+    expect(
+      within(movementSummary).getByRole("button", {
+        name: "Ver análise do intervalo"
+      })
+    ).toHaveClass("motion-reduce:transition-none");
+  });
+
   it("reveals and hides at most two contextual insights without another load", async () => {
     const user = userEvent.setup();
     const loadStatement = jest.fn(async () => ({

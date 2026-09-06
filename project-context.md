@@ -1,8 +1,8 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UX-CHART-002D concluído em GREEN; aguardando comando do Dia 6 para UX, acessibilidade e PWA
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UX-CHART-002D concluído em GREEN; aguardando comando do Dia 7 para qualidade final e entrega incremental
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -153,6 +153,7 @@
 - Data da implementação mínima orientada por teste da UX-CHART-002D: 2026-09-05
 - Data da expansão controlada da UX-CHART-002D: 2026-09-05
 - Data da refatoração e hardening interno da UX-CHART-002D: 2026-09-05
+- Data da revisão de UX, acessibilidade e PWA da UX-CHART-002D: 2026-09-06
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7634,3 +7635,47 @@ Estado de saída:
 - `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - Dia 5 concluído sem bloqueio duro;
 - próximo comando válido: `dia 6` para experiência, acessibilidade, responsividade e PWA.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-002D
+
+Jornada e melhoria responsiva:
+- a auditoria confirmou que o diálogo já opera como bottom sheet móvel e painel lateral a partir de `md`, com `85dvh`, rolagem interna, overscroll contido e safe areas laterais/inferior;
+- foi identificado um único desvio do contrato aprovado: volume e resultado líquido ainda dividiam a mesma linha em telas estreitas;
+- volume movimentado e resultado líquido agora ocupam a largura completa abaixo de `sm`, enquanto receitas e despesas permanecem lado a lado;
+- a partir de `sm`, as quatro métricas retomam a grade compacta de duas colunas;
+- valores mantêm `break-words`, tipografia tabular e `min-w-0`, reduzindo risco de overflow com números longos.
+
+Ciclo TDD e microinterações:
+- o teste foi escrito antes da implementação para exigir prioridade visual móvel e respeito à preferência de redução de movimento;
+- RED controlado: 1 suíte, 1 teste novo falhando e 14 testes anteriores passando;
+- GREEN direcionado: 1 suíte e 15 testes aprovados, zero snapshots;
+- o disclosure mantém alvo mínimo de 44 px, foco visível, `aria-expanded` e `aria-controls` e agora explicita `motion-reduce:transition-none`;
+- interação permanece inline, não cria diálogo aninhado, não move o foco desnecessariamente e não dispara nova consulta.
+
+Acessibilidade e PWA:
+- validação combinada de painel, shell privado, contraste, design system e manifesto: 5 suítes e 47 testes aprovados;
+- foco inicial, contenção por teclado, `Escape`, restauração do foco, bloqueio de scroll, `aria-modal`, região nomeada e safe areas continuam cobertos;
+- tokens de texto, ação e foco permanecem nos limiares WCAG AA essenciais em temas claro e escuro;
+- manifesto permanece instalável com `standalone`, idioma `pt-BR`, theme colors, ícones 192/512, maskable e atalhos para transações e contas;
+- nenhuma promessa offline ou service worker foi adicionada sem estratégia de consistência financeira;
+- a validação visual direta não foi executada porque o conector do navegador não iniciou por falha local de caminho de assets; o desvio é leve, não alterou o código e deve ser repetido no Preview durante o Dia 7.
+
+Evidências GREEN:
+- regressão financial-analytics: 30 suítes e 239 testes aprovados, zero snapshots;
+- regressão completa: 93 suítes e 562 testes aprovados, zero snapshots;
+- ESLint global e type-check global aprovados sem erros ou avisos;
+- build de produção Next.js 16.3.3 aprovado para todas as rotas;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após o build.
+
+Fronteiras e riscos:
+- domain, application, infrastructure, Server Actions, repositórios e contratos Supabase permaneceram inalterados;
+- nenhuma migration, RPC, policy, grant, dado, dependência ou configuração remota foi criada ou alterada;
+- comparação histórica e `UX-CHART-003` permaneceram fora do escopo;
+- nenhum commit, push, mudança de PR, merge, deploy ou promoção foi executado;
+- anexos privados e `rewrite-msgs.sh` permaneceram não rastreados e intocados;
+- não há dívida CRÍTICA ou ALTA; resta somente a confirmação visual autenticada no Preview como risco BAIXO para o Dia 7.
+
+Estado de saída:
+- `QUALITY_VALIDATION`;
+- Dia 6 concluído sem bloqueio duro;
+- próximo comando válido: `dia 7` para qualidade final, segurança, observabilidade e entrega incremental.

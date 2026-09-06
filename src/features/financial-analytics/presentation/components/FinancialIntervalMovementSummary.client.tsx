@@ -64,6 +64,28 @@ export function FinancialIntervalMovementSummary({
   const [isAnalysisExpanded, setIsAnalysisExpanded] = useState(false);
   const titleId = useId();
   const analysisId = useId();
+  const metrics = [
+    {
+      className: "col-span-2 sm:col-span-1",
+      label: "Volume movimentado",
+      valueInCents: analysis.summary.volumeInCents
+    },
+    {
+      className: "col-span-2 sm:col-span-1",
+      label: "Resultado líquido",
+      valueInCents: analysis.summary.netInCents
+    },
+    {
+      className: "col-span-1",
+      label: "Receitas",
+      valueInCents: analysis.summary.incomeInCents
+    },
+    {
+      className: "col-span-1",
+      label: "Despesas",
+      valueInCents: analysis.summary.expenseInCents
+    }
+  ] as const;
 
   return (
     <section
@@ -87,16 +109,11 @@ export function FinancialIntervalMovementSummary({
       </div>
 
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-        {[
-          ["Volume movimentado", analysis.summary.volumeInCents],
-          ["Resultado líquido", analysis.summary.netInCents],
-          ["Receitas", analysis.summary.incomeInCents],
-          ["Despesas", analysis.summary.expenseInCents]
-        ].map(([label, value]) => (
-          <div className="min-w-0" key={label}>
-            <dt className="text-muted-foreground">{label}</dt>
+        {metrics.map((metric) => (
+          <div className={`min-w-0 ${metric.className}`} key={metric.label}>
+            <dt className="text-muted-foreground">{metric.label}</dt>
             <dd className="mt-1 break-words font-semibold tabular-nums text-foreground">
-              {formatCents(Number(value))}
+              {formatCents(metric.valueInCents)}
             </dd>
           </div>
         ))}
@@ -105,7 +122,7 @@ export function FinancialIntervalMovementSummary({
       <button
         aria-controls={analysisId}
         aria-expanded={isAnalysisExpanded}
-        className="min-h-11 w-full rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="min-h-11 w-full rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
         onClick={() => setIsAnalysisExpanded((current) => !current)}
         type="button"
       >
