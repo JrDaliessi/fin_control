@@ -4,9 +4,11 @@ import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import type { FinancialIntervalStatementDto } from "../../application/use-cases/list-financial-interval-statement.use-case";
+import { analyzeFinancialInterval } from "../../domain/services/analyze-financial-interval";
 import type { FinancialCandle } from "../../domain/types/financial-evolution.types";
 import { useModalDialogLifecycle } from "@/shared/hooks/useModalDialogLifecycle";
 import { formatCents } from "@/shared/utils/formatCents";
+import { FinancialIntervalMovementSummary } from "./FinancialIntervalMovementSummary.client";
 
 export type FinancialIntervalStatementLoader = (
   input: Readonly<{
@@ -101,6 +103,7 @@ export function FinancialIntervalStatementPanel({
   }
 
   const formattedDate = formatCivilDate(selectedCandle.startOnInclusive);
+  const analysis = analyzeFinancialInterval(selectedCandle);
 
   return createPortal(
     <div data-financial-statement-portal="" ref={portalRootRef}>
@@ -162,6 +165,11 @@ export function FinancialIntervalStatementPanel({
               </div>
             ))}
           </dl>
+
+          <FinancialIntervalMovementSummary
+            analysis={analysis}
+            key={`${selectedCandle.startOnInclusive}:${selectedCandle.endOnExclusive}`}
+          />
 
           <div aria-live="polite" className="min-h-24">
             {visibleLoadState.status === "loading" ? (

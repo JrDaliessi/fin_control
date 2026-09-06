@@ -1889,3 +1889,34 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; `.codex-remote-attachments/` e `rewrite-msgs.sh` preservados fora do escopo.
 - `UX-CHART-002` pronta para release incremental; produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#24`.
+
+## Gate do Dia 6 — UX-CHART-002D
+
+- ciclo TDD responsivo: RED com 1 teste novo falhando e 14 anteriores passando; GREEN com 1 suíte e 15 testes aprovados.
+- volume e resultado líquido ocupam largura total abaixo de `sm`; receitas e despesas permanecem em duas colunas e todas as métricas retomam grade compacta a partir de `sm`.
+- disclosure mantém alvo mínimo de 44 px, foco visível, `aria-expanded`, `aria-controls` e passa a respeitar explicitamente `motion-reduce`.
+- painel, shell privado, contraste, design system e PWA: 5 suítes e 47 testes verdes.
+- PWA mantém manifesto instalável, `standalone`, `pt-BR`, theme colors, ícones raster/maskable e atalhos, sem prometer offline nem registrar service worker.
+- regressão financial-analytics: 30 suítes e 239 testes verdes; regressão completa: 93 suítes e 562 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 verdes; todas as rotas e o Proxy foram preservados.
+- conector do navegador não iniciou por falha local de caminho de assets; confirmação visual autenticada no Preview fica como risco BAIXO explícito para o Dia 7.
+- nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, PR, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; anexos privados e `rewrite-msgs.sh` preservados fora do escopo.
+- estado de saída: `QUALITY_VALIDATION`; próximo comando válido: `dia 7`.
+
+## Gate do Dia 7 — UX-CHART-002D
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 93 suítes e 562 testes verdes, zero snapshots.
+- ESLint global sem avisos, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- auditoria npm retornou zero vulnerabilidades.
+- revisão estática confirmou ausência de segredo privilegiado versionado, Supabase isolado da presentation, cálculos em centavos e nenhum histórico bruto adicional no browser.
+- projeto Supabase `ACTIVE_HEALTHY`; três tabelas públicas com RLS, seis migrations locais/remotas alinhadas e Security Advisor somente com `SEC-AUTH-001`.
+- Performance Advisor reportou somente um índice de contas ainda sem uso, aviso informativo sem relação com esta entrega.
+- Preview `dpl_AXTEHPDNfd3sS92FWQVbsUWWciqM` da PR `#26`, commit `5d17de9`, está `READY`; não houve runtime error nem log `error/fatal` nas últimas 24 horas.
+- Vercel mantém o aviso conhecido de Node/npm coberto por `CI-VERCEL-002`; nenhuma configuração remota foi alterada.
+- conector do navegador permaneceu indisponível por falha local de assets; confirmação visual autenticada ficou como risco BAIXO, mitigado por testes responsivos/acessíveis, build e Preview verdes.
+- nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; anexos privados e `rewrite-msgs.sh` preservados fora do escopo.
+- produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`, sem impedir o merge incremental da feature.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#26`.

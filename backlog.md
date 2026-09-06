@@ -467,6 +467,17 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 
 ## DONE
 
+### UX-CHART-002D — Volume e insight contextual do intervalo
+- Tipo: Small Release / UX Improvement.
+- Resultado: o extrato contextual apresenta volume movimentado, receitas, despesas e resultado líquido, além de até dois insights determinísticos expansíveis no painel atual.
+- Arquitetura e segurança: cálculo puro em centavos, presentation sem Supabase, nenhum histórico bruto adicional, rede, storage financeiro ou diálogo aninhado.
+- UX/PWA: hierarquia responsiva, alvo mínimo de 44 px, foco visível, `aria-expanded`, `aria-controls`, reduced motion e conteúdo compreensível sem depender de cor.
+- Evidência final: 93 suítes/562 testes, ESLint, type-check, auditoria npm e build Next.js 16.3.3 verdes.
+- Evidência remota: Supabase `ACTIVE_HEALTHY`, RLS ativa e seis migrations alinhadas; Preview `dpl_AXTEHPDNfd3sS92FWQVbsUWWciqM` da PR `#26` `READY`, sem runtime error ou log `error/fatal` em 24 horas.
+- Risco residual: confirmação visual autenticada não repetida por falha local do conector; risco BAIXO mitigado por testes responsivos/acessíveis, build e Preview verdes. `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública.
+- Data de conclusão: 2026-09-06.
+- Status: DONE / READY_FOR_RELEASE.
+
 ### UX-CHART-002 — Extrato contextual do candle
 - Tipo: Small Release / UX Improvement.
 - Resultado: candle e linha equivalente da tabela abrem o mesmo extrato civil sob demanda, com resumo OHLC e estados loading, empty, error e success.
