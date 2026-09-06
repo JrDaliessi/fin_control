@@ -16,6 +16,7 @@ describe("financial interval statement architecture", () => {
     "application/ports/financial-interval-statement-query.repository.ts",
     "application/use-cases/list-financial-interval-statement.use-case.ts",
     "infrastructure/repositories/supabase-financial-interval-statement-query.repository.ts",
+    "presentation/components/FinancialIntervalMovementSummary.client.tsx",
     "presentation/components/FinancialIntervalStatementPanel.client.tsx"
   ])("requires the approved UX-CHART-002 boundary: %s", (path) => {
     expect(existsSync(join(analyticsRoot, path))).toBe(true);
@@ -26,6 +27,7 @@ describe("financial interval statement architecture", () => {
       "presentation/components/FinancialCandlestickChart.client.tsx",
       "presentation/components/FinancialCandlesTable.tsx",
       "presentation/components/FinancialVisualizationSwitcher.client.tsx",
+      "presentation/components/FinancialIntervalMovementSummary.client.tsx",
       "presentation/components/FinancialIntervalStatementPanel.client.tsx"
     ];
 

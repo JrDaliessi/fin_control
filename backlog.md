@@ -17,9 +17,9 @@ Nenhum item pronto aguardando início no momento.
 - Segurança e dados: apresentação não acessa Supabase; nenhum histórico bruto adicional chega ao browser; uma futura referência histórica será carregada sob demanda por application/infrastructure autenticadas e com agregação mínima.
 - Acessibilidade: controle com alvo mínimo de 44 px, `aria-expanded`, `aria-controls`, foco visível e conteúdo compreensível sem depender de cor.
 - Risco: Médio por semântica financeira e comparação temporal; mitigado por cálculo inteiro em centavos, copy explícita e TDD de domain/application/presentation.
-- Fase recomendada: ciclo próprio Dias 1–7; Dia 4 concluído e Dia 5 aguardando comando humano.
+- Fase recomendada: ciclo próprio Dias 1–7; Dia 5 concluído e Dia 6 aguardando comando humano.
 - Critério de pronto: métricas corretas para zero, somente receitas, somente despesas e combinação; análise limitada, honesta e coerente com o intervalo; estados acessíveis; regressão e quality gates verdes.
-- Status: IN_PROGRESS — `IMPLEMENTATION_IN_PROGRESS` em GREEN; estados de volume vazio, resultado positivo/negativo/neutro, contador antecipado e análise inline validados, aguardando hardening do Dia 5.
+- Status: IN_PROGRESS — `IMPLEMENTATION_IN_PROGRESS` em GREEN; hardening concluído com resumo interativo extraído, fronteiras protegidas e 93 suítes/561 testes, lint, type-check e build verdes; aguardando revisão de UX, acessibilidade e PWA do Dia 6.
 
 ## DISCOVERY
 

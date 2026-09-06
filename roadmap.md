@@ -290,13 +290,13 @@ Small releases da `UX-CHART-002`:
 2. `002B` — seleção no ECharts/tabela e painel responsivo;
 3. `002C` — concorrência, acessibilidade, responsividade e validação real.
 
-Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 4 concluído em `IMPLEMENTATION_IN_PROGRESS` e GREEN. O serviço puro, o card de fluxo, a análise inline e os estados positivo, negativo, neutro e sem movimentação estão validados; 93 suítes e 560 testes, lint e type-check ficaram verdes. O incremento reutiliza dados do candle sem migration ou rede adicional, e a comparação histórica será posterior, agregada e sob demanda.
+Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 5 concluído em `IMPLEMENTATION_IN_PROGRESS` e GREEN. O resumo interativo foi extraído do painel, que caiu de 349 para 236 linhas; a nova fronteira está protegida por teste arquitetural. O comportamento financeiro permaneceu intacto, com 93 suítes e 561 testes, lint, type-check e build verdes, sem migration ou rede adicional.
 
 Estado da `UX-CHART-003`: `DISCOVERY`, pausada antes do Dia 1 enquanto a `UX-CHART-002D` é concluída. A sequência planejada permanece `003A` para `7D`/`15D`/`Mês` sem migration, `003B` para `3M`/`Ano` com agregação server-side e `003C` para `Tudo`/personalizado. Granularidade diária, semanal, mensal ou trimestral manterá um volume preferencial de 12–60 pontos e nunca enviará histórico bruto ao browser.
 
 Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md` e `adr/0021-contextual-interval-volume-insights.md`.
 
-Próximo passo: executar o Dia 5 da `UX-CHART-002D` para refatoração, consistência e hardening interno; após o ciclo e a entrega incremental, restaurar a seleção da `UX-CHART-003` e iniciar seu Dia 1.
+Próximo passo: executar o Dia 6 da `UX-CHART-002D` para validar responsividade, acessibilidade, microinterações e PWA; após o ciclo e a entrega incremental, restaurar a seleção da `UX-CHART-003` e iniciar seu Dia 1.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

@@ -2,7 +2,7 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UX-CHART-002D concluído em GREEN; aguardando comando do Dia 5 para refatoração e hardening interno
+- Fase atual: Dia 5 da UX-CHART-002D concluído em GREEN; aguardando comando do Dia 6 para UX, acessibilidade e PWA
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -152,6 +152,7 @@
 - Data da estratégia de testes da UX-CHART-002D: 2026-09-05
 - Data da implementação mínima orientada por teste da UX-CHART-002D: 2026-09-05
 - Data da expansão controlada da UX-CHART-002D: 2026-09-05
+- Data da refatoração e hardening interno da UX-CHART-002D: 2026-09-05
 - Fonte inicial de produto: pesquisa comparativa de apps financeiros brasileiros e internacionais fornecida pelo usuário
 - Fonte visual e editorial: proposta “Interface gráfica para FinControl” anexada e conversa referenciada pelo usuário
 
@@ -7590,3 +7591,46 @@ Estado de saída:
 - `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
 - Dia 4 concluído sem bloqueio duro;
 - próximo comando válido: `dia 5` para refatoração, consistência e hardening interno.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UX-CHART-002D
+
+Diagnóstico e plano incremental:
+- `FinancialIntervalStatementPanel.client.tsx` tinha 349 linhas e acumulava responsabilidades de diálogo, carregamento, lista, resumo, copy financeira e disclosure dos insights;
+- o serviço puro `analyze-financial-interval.ts` permaneceu coeso em 123 linhas, com validação de inteiros seguros, soma do volume e no máximo dois insights;
+- a menor refatoração segura identificada foi extrair somente o resumo interativo, preservando o contrato público do painel e todos os comportamentos já testados;
+- não foi encontrada duplicação concreta que justificasse primitive genérica, novo hook, port, memoização ou abstração compartilhada.
+
+Ciclo TDD de arquitetura e refatoração:
+- o teste de fronteiras foi ampliado primeiro para exigir o novo componente e impedir acesso direto a dados nessa fronteira;
+- RED controlado: 1 suíte com 2 falhas esperadas enquanto o arquivo extraído ainda não existia;
+- criado `FinancialIntervalMovementSummary.client.tsx`, responsável somente pelas métricas, rótulo textual de resultado, copy dos insights e estado visual de expansão;
+- `FinancialIntervalStatementPanel.client.tsx` passou a concentrar diálogo, lifecycle, carregamento assíncrono, retry e lista do extrato, reduzindo de 349 para 236 linhas;
+- o novo componente ficou com 126 linhas e recebe somente a análise tipada e serializável do domínio;
+- GREEN direcionado: 3 suítes e 36 testes aprovados, sem snapshots.
+
+Hardening e consistência:
+- fronteira cliente preservada com import direto, estado local, atualização funcional e condicionais explícitas;
+- nenhuma fórmula financeira foi movida para JSX e nenhum acesso a Supabase foi introduzido na presentation;
+- integridade revisada: centavos continuam inteiros seguros, volume continua igual à soma dos componentes e a saída permanece limitada a dois insights;
+- desempenho revisado: cálculo O(1), sem rede adicional, waterfall, histórico bruto, `useMemo` desnecessário ou nova dependência;
+- design system preservado com os mesmos tokens, alvo mínimo de 44 px, foco visível, `aria-expanded` e `aria-controls`.
+
+Evidências GREEN:
+- regressão da feature financial-analytics: 30 suítes e 238 testes aprovados, zero snapshots;
+- regressão completa: 93 suítes e 561 testes aprovados, zero snapshots;
+- ESLint global e type-check global aprovados sem erros ou avisos;
+- build de produção Next.js 16.3.3 aprovado para todas as rotas;
+- revisão condensada de React confirmou componente fora do pai, setState funcional, ausência de memoização simples e condicionais seguras.
+
+Fronteiras e riscos:
+- domain, application, infrastructure, Server Actions, repositórios e contratos Supabase permaneceram inalterados;
+- nenhuma migration, RPC, policy, grant, dado, dependência ou configuração remota foi criada ou alterada;
+- comparação histórica e `UX-CHART-003` permaneceram fora do escopo;
+- nenhum commit, push, mudança de PR, merge, deploy ou promoção foi executado;
+- anexos privados e `rewrite-msgs.sh` permaneceram não rastreados e intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada; validação visual responsiva, teclado, leitor de tela e PWA ficam para o Dia 6.
+
+Estado de saída:
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- Dia 5 concluído sem bloqueio duro;
+- próximo comando válido: `dia 6` para experiência, acessibilidade, responsividade e PWA.

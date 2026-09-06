@@ -78,9 +78,10 @@ Essas referências documentam o contrato futuro, mas não autorizam ampliar a RP
 
 - O extrato fica mais explicativo sem migration no primeiro incremento.
 - A lógica financeira passa a ter um serviço puro reutilizável por períodos futuros.
+- O resumo interativo fica isolado em componente cliente próprio, enquanto o painel mantém somente diálogo, carregamento e lista do extrato.
 - A comparação histórica permanece separada até existir baseline seguro e testado.
 - A `UX-CHART-003` continua em `DISCOVERY` e será retomada depois deste ciclo.
 
 ## Próximo passo
 
-Executar o Dia 5 da `UX-CHART-002D` para revisar estrutura, consistência e robustez interna sem alterar o comportamento financeiro validado.
+Executar o Dia 6 da `UX-CHART-002D` para validar responsividade, acessibilidade, microinterações e experiência PWA sem expandir a regra financeira.
