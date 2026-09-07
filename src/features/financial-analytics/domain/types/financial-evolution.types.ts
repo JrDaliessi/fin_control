@@ -36,3 +36,8 @@ export type FinancialEvolutionSnapshot = Readonly<{
   openingBalanceInCents: number;
   movements: readonly FinancialMovementProjection[];
 }>;
+
+export type FinancialEvolutionBucketSnapshot = Readonly<{
+  accountCount: number;
+  buckets: readonly FinancialCandle[];
+}>;

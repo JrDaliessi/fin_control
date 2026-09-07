@@ -2049,3 +2049,35 @@ Uma release incremental só pode ser considerada pronta quando:
 - `docs/ux-chart-003b-discovery.md`, ADR 0020, backlog, roadmap e contexto central compõem os artefatos do Dia 1.
 - nenhuma implementação, teste, migration, RPC, dado remoto, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
 - estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2` da `UX-CHART-003B`.
+
+## Gate do Dia 2 — UX-CHART-003B
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline dirigida anterior ao RED: 7 suítes, 69 testes verdes e zero snapshots.
+- 7 suítes RED selecionadas falharam como planejado; 6 carregaram 70 testes, com 42 verdes e 28 falhas esperadas.
+- a suíte futura do mapper contém 18 contratos e parou no import deliberadamente ausente.
+- os testes cobrem domínio, application, repository, mapper, apresentação, URL e composição autenticada.
+- três arquivos pgTAP adicionam 16 assertions de schema/grants, 22 de comportamento/RLS e 5 de performance, total 43.
+- probe pgTAP remoto confirmou 2/2 falhas pela função inexistente; rollback verificado com `pgtap` e função ainda ausentes.
+- ESLint passou em todos os 7 arquivos Jest afetados.
+- type-check contém somente um `TS2307`, correspondente ao mapper futuro; nenhum ruído acidental permaneceu.
+- nenhuma implementação funcional, migration aplicada, RPC, policy, grant, índice, dado remoto, dependência ou configuração foi alterada.
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado; artefatos privados e stashes foram preservados.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003B`.
+
+## Gate do Dia 3 — UX-CHART-003B
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação e da migration.
+- contratos RED foram convertidos em GREEN sem relaxar expectativas: 7 suítes direcionadas e 88 testes passaram, zero snapshots.
+- regressão completa: 95 suítes e 609 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack passaram; todas as rotas e o Proxy foram preservados.
+- domínio resolve `3M` civil com semanas e `Ano` civil com meses; períodos curtos continuam usando a RPC diária limitada a 31 dias.
+- application, port, mapper, repository, seletor e rotas mantêm as fronteiras Feature-Based/Clean e não expõem Supabase à presentation.
+- migration `20260907041839_create_financial_evolution_buckets` aplicada e alinhada como a sétima migration local/remota.
+- pgTAP passou 16 assertions de schema/grants, 22 de comportamento/RLS/OHLC e 5 de performance, total 43.
+- RPC pós-DDL confirmada como invoker, `search_path = ''`, projeção agregada, ACL somente para `authenticated` e sem `pgtap` persistido.
+- Security Advisor manteve somente `SEC-AUTH-001`; Performance Advisor manteve apenas a informação preexistente de índice de contas sem uso.
+- nenhum índice novo, tabela, policy, dado, dependência ou segredo foi criado.
+- `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados.
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4` da `UX-CHART-003B`.

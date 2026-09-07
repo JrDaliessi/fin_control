@@ -1,6 +1,7 @@
 import { CivilDate } from "../value-objects/civil-date";
 import { daysInGregorianMonth } from "./gregorian-calendar";
 import type {
+  FinancialBucketGranularity,
   FinancialPeriod,
   FinancialPeriodKind
 } from "../types/financial-period.types";
@@ -16,7 +17,9 @@ const supportedKinds: readonly FinancialPeriodKind[] = [
   "rolling_7_days",
   "fortnight",
   "rolling_15_days",
-  "month"
+  "month",
+  "three_months",
+  "year"
 ];
 
 function isFinancialPeriodKind(value: unknown): value is FinancialPeriodKind {
@@ -106,12 +109,22 @@ function firstDayOfMonth(value: string): string {
   return formatCivilDate({ year, month, day: 1 });
 }
 
-function firstDayOfNextMonth(value: string): string {
+function firstDayOfShiftedMonth(value: string, offset: number): string {
   const { year, month } = parseCivilDate(value);
+  const shiftedMonthIndex = (year - 1) * 12 + month - 1 + offset;
 
-  return month === 12
-    ? formatCivilDate({ year: year + 1, month: 1, day: 1 })
-    : formatCivilDate({ year, month: month + 1, day: 1 });
+  if (shiftedMonthIndex < 0 || shiftedMonthIndex >= 9999 * 12) {
+    throw new Error("civil date is out of range");
+  }
+
+  const shiftedYear = Math.floor(shiftedMonthIndex / 12) + 1;
+  const shiftedMonth = (shiftedMonthIndex % 12) + 1;
+
+  return formatCivilDate({ year: shiftedYear, month: shiftedMonth, day: 1 });
+}
+
+function firstDayOfNextMonth(value: string): string {
+  return firstDayOfShiftedMonth(value, 1);
 }
 
 export type ResolveFinancialPeriodInput = {
@@ -136,6 +149,7 @@ export function resolveFinancialPeriod(
 
   let startOnInclusive: string;
   let endOnExclusive: string;
+  let bucketGranularity: FinancialBucketGranularity = "day";
 
   switch (input.kind) {
     case "week":
@@ -170,10 +184,23 @@ export function resolveFinancialPeriod(
       startOnInclusive = firstDayOfMonth(referenceOn);
       endOnExclusive = firstDayOfNextMonth(referenceOn);
       break;
+    case "three_months":
+      startOnInclusive = firstDayOfShiftedMonth(referenceOn, -2);
+      endOnExclusive = firstDayOfNextMonth(referenceOn);
+      bucketGranularity = "week";
+      break;
+    case "year": {
+      const { year } = parseCivilDate(referenceOn);
+      startOnInclusive = formatCivilDate({ year, month: 1, day: 1 });
+      endOnExclusive = formatCivilDate({ year: year + 1, month: 1, day: 1 });
+      bucketGranularity = "month";
+      break;
+    }
   }
 
   return {
     kind: input.kind,
+    bucketGranularity,
     referenceOn,
     startOnInclusive,
     endOnExclusive

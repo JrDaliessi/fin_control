@@ -1,10 +1,10 @@
 # UX-CHART-003B — Discovery de 3M, Ano e agregação server-side
 
-- Fase: Dia 1 — contexto, discovery e arquitetura
-- Data: 2026-09-06
-- Estado: `ARCHITECTURE_READY`
+- Fase: Dia 3 — implementação mínima concluída em GREEN
+- Data: 2026-09-07
+- Estado: `IMPLEMENTATION_IN_PROGRESS`
 - Predecessora: `UX-CHART-003A` mesclada por squash em `develop` no commit `7434159`
-- Próxima fase autorizável: Dia 2 — estratégia de testes e RED controlado
+- Próxima fase autorizável: Dia 4 — expansão controlada da feature
 
 ## Problema
 
@@ -128,9 +128,9 @@ Movimentos dentro do bucket preservam a ordem determinística `occurred_on`, `cr
 - rolagem horizontal continua confinada à barra em telas estreitas;
 - linha, candles e tabela recebem DTO serializável e não conhecem função SQL ou granularidade de banco.
 
-## Contrato planejado da RPC
+## Contrato implementado da RPC
 
-Assinatura planejada:
+Assinatura implementada:
 
 `public.load_financial_evolution_buckets(p_start_on date, p_end_on date, p_bucket text)`
 
@@ -149,7 +149,7 @@ Regras obrigatórias:
 
 O teto de 366 dias cobre um ano civil bissexto. O teto de 60 pontos contém consultas diretas fora da UI sem antecipar a política de `Tudo`, que pertence à `003C`.
 
-## Estratégia SQL planejada
+## Estratégia SQL implementada
 
 1. validar argumentos e identidade;
 2. obter quantidade de contas e saldo inicial do usuário;
@@ -161,7 +161,7 @@ O teto de 366 dias cobre um ano civil bissexto. O teto de 60 pontos contém cons
 8. preencher buckets vazios e carregar o fechamento anterior;
 9. ordenar a saída por `start_on_inclusive` crescente.
 
-A consulta existente `(user_id, occurred_on desc, created_at desc, id desc)` atende igualdade por proprietário, intervalo de data e desempate. O Dia 2 deve criar o contrato de performance; o Dia 3 só poderá propor índice diferente após `EXPLAIN (ANALYZE, BUFFERS)` e comparação objetiva.
+A consulta existente `(user_id, occurred_on desc, created_at desc, id desc)` atende igualdade por proprietário, intervalo de data e desempate. O contrato de performance do Dia 2 foi validado no Dia 3 com `EXPLAIN (ANALYZE, BUFFERS)` e confirmou o índice existente; nenhum índice adicional foi criado.
 
 ## Segurança e privacidade
 
@@ -172,7 +172,7 @@ A consulta existente `(user_id, occurred_on desc, created_at desc, id desc)` ate
 - logs e analytics não recebem valores financeiros, datas individuais, UUIDs, descrições, e-mail, token ou payload SQL;
 - o aviso global de proteção contra senhas vazadas permanece em `SEC-AUTH-001` e não é causado por esta feature.
 
-## Estratégia de testes do próximo dia
+## Estratégia de testes executada nos Dias 2 e 3
 
 ### Domain/Jest
 
@@ -214,7 +214,7 @@ A consulta existente `(user_id, occurred_on desc, created_at desc, id desc)` ate
 - risco MÉDIO: sete opções excederem a largura de 320 px; mitigação por rolagem confinada, alvo de 44 px e validação real no Dia 6;
 - risco BAIXO: usuário interpretar `3M` como 90 dias; mitigação por nome acessível e orientação civil curta.
 
-Não há bloqueio duro para o Dia 2. A migration, a RPC e alterações remotas continuam bloqueadas até os testes essenciais existirem em RED e a implementação ser explicitamente aprovada.
+Não há bloqueio duro para o Dia 4. A migration e a RPC foram aplicadas somente após o RED e a aprovação explícita do Dia 3; `UX-CHART-003C`, deploy e operações Git remotas continuam fora deste ciclo de fase.
 
 ## Critério de pronto do Dia 1
 
@@ -229,4 +229,4 @@ Não há bloqueio duro para o Dia 2. A migration, a RPC e alterações remotas c
 
 ## Próximo passo
 
-Executar o Dia 2 da `UX-CHART-003B` para transformar estes contratos em testes Jest e pgTAP inicialmente vermelhos antes de alterar produção ou criar a migration.
+Os contratos do Dia 2 foram convertidos em GREEN com `3M`, `Ano` e a RPC agregada segura. O próximo passo é executar o Dia 4 para expandir estados e validações de interface sem antecipar o escopo da `003C`.

@@ -43,6 +43,7 @@ const successResult: FinancialEvolutionDto = {
   accountCount: 2,
   period: {
     kind: "rolling_7_days",
+    bucketGranularity: "day",
     referenceOn: "2026-03-07",
     startOnInclusive: "2026-03-01",
     endOnExclusive: "2026-03-08"

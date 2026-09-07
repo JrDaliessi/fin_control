@@ -4,25 +4,72 @@ import type {
   LoadEvolutionSnapshotInput
 } from "../application/ports/financial-analytics-query.repository";
 import { ListFinancialEvolutionUseCase } from "../application/use-cases/list-financial-evolution.use-case";
+import type { FinancialPeriodKind } from "../domain/types/financial-period.types";
 import {
   analyticsUserId,
   expenseMovement,
   incomeMovement
 } from "./fixtures/financial-evolution.fixtures";
 
+type LoadEvolutionBucketsInput = Readonly<{
+  userId: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+  bucketGranularity: "week" | "month";
+}>;
+
+const bucketSnapshot = {
+  accountCount: 1,
+  buckets: [
+    {
+      startOnInclusive: "2026-07-01",
+      endOnExclusive: "2026-07-06",
+      openInCents: 10_000,
+      highInCents: 15_000,
+      lowInCents: 10_000,
+      closeInCents: 15_000,
+      incomeInCents: 5_000,
+      expenseInCents: 0,
+      volumeInCents: 5_000,
+      transactionCount: 1
+    },
+    {
+      startOnInclusive: "2026-07-06",
+      endOnExclusive: "2026-07-13",
+      openInCents: 15_000,
+      highInCents: 15_000,
+      lowInCents: 13_000,
+      closeInCents: 13_000,
+      incomeInCents: 0,
+      expenseInCents: 2_000,
+      volumeInCents: 2_000,
+      transactionCount: 1
+    }
+  ]
+} as const;
+
 function createRepository(
   snapshot: Awaited<
     ReturnType<FinancialAnalyticsQueryRepository["loadEvolutionSnapshot"]>
-  >
+  >,
+  aggregatedSnapshot = bucketSnapshot
 ) {
-  return {
+  const repository = {
     loadEvolutionSnapshot: jest.fn(
       async (input: LoadEvolutionSnapshotInput) => {
         void input;
         return snapshot;
       }
+    ),
+    loadEvolutionBuckets: jest.fn(
+      async (input: LoadEvolutionBucketsInput) => {
+        void input;
+        return aggregatedSnapshot;
+      }
     )
-  } satisfies FinancialAnalyticsQueryRepository;
+  };
+
+  return repository as typeof repository & FinancialAnalyticsQueryRepository;
 }
 
 const request = {
@@ -57,6 +104,7 @@ describe("ListFinancialEvolutionUseCase", () => {
         accountCount: 2,
         period: {
           kind: "rolling_7_days",
+          bucketGranularity: "day",
           referenceOn: "2026-03-07",
           startOnInclusive: "2026-03-01",
           endOnExclusive: "2026-03-08"
@@ -74,6 +122,92 @@ describe("ListFinancialEvolutionUseCase", () => {
     expect(result.points).toHaveLength(7);
     expect(JSON.parse(JSON.stringify(result))).toEqual(result);
   });
+
+  it.each([
+    [
+      "three_months" as FinancialPeriodKind,
+      "week" as const,
+      "2026-09-06T15:00:00.000Z",
+      "2026-07-01",
+      "2026-10-01"
+    ],
+    [
+      "year" as FinancialPeriodKind,
+      "month" as const,
+      "2026-03-07T15:00:00.000Z",
+      "2026-01-01",
+      "2027-01-01"
+    ]
+  ])(
+    "loads pre-aggregated %s buckets without requesting raw movements",
+    async (
+      kind,
+      bucketGranularity,
+      referenceInstant,
+      startOnInclusive,
+      endOnExclusive
+    ) => {
+      const repository = createRepository({
+        accountCount: 1,
+        openingBalanceInCents: 0,
+        movements: []
+      });
+      const useCase = new ListFinancialEvolutionUseCase({
+        financialAnalyticsQueryRepository: repository
+      });
+
+      const result = await useCase.execute({
+        ...request,
+        kind,
+        referenceInstant
+      });
+
+      expect(repository.loadEvolutionSnapshot).not.toHaveBeenCalled();
+      expect(repository.loadEvolutionBuckets).toHaveBeenCalledTimes(1);
+      expect(repository.loadEvolutionBuckets).toHaveBeenCalledWith({
+        userId: analyticsUserId,
+        startOnInclusive,
+        endOnExclusive,
+        bucketGranularity
+      });
+      expect(result).toEqual(
+        expect.objectContaining({
+          status: "success",
+          accountCount: 1,
+          period: expect.objectContaining({ kind, bucketGranularity }),
+          summary: {
+            openingBalanceInCents: 10_000,
+            incomeInCents: 5_000,
+            expenseInCents: 2_000,
+            netInCents: 3_000,
+            closingBalanceInCents: 13_000,
+            transactionCount: 2
+          },
+          candles: bucketSnapshot.buckets
+        })
+      );
+      expect(result.points).toEqual([
+        {
+          startOnInclusive: "2026-07-01",
+          endOnExclusive: "2026-07-06",
+          incomeInCents: 5_000,
+          expenseInCents: 0,
+          netInCents: 5_000,
+          closingBalanceInCents: 15_000,
+          transactionCount: 1
+        },
+        {
+          startOnInclusive: "2026-07-06",
+          endOnExclusive: "2026-07-13",
+          incomeInCents: 0,
+          expenseInCents: 2_000,
+          netInCents: -2_000,
+          closingBalanceInCents: 13_000,
+          transactionCount: 1
+        }
+      ]);
+    }
+  );
 
   it("returns missing_accounts without manufacturing daily points", async () => {
     const repository = createRepository({
@@ -135,14 +269,18 @@ describe("ListFinancialEvolutionUseCase", () => {
 
     await expect(useCase.execute(invalidRequest)).rejects.toThrow(field);
     expect(repository.loadEvolutionSnapshot).not.toHaveBeenCalled();
+    expect(repository.loadEvolutionBuckets).not.toHaveBeenCalled();
   });
 
   it("sanitizes a repository failure", async () => {
-    const repository: FinancialAnalyticsQueryRepository = {
-      loadEvolutionSnapshot: jest.fn(async () => {
-        throw new Error("sensitive relation public.transactions");
-      })
-    };
+    const repository = createRepository({
+      accountCount: 1,
+      openingBalanceInCents: 0,
+      movements: []
+    });
+    repository.loadEvolutionSnapshot.mockRejectedValue(
+      new Error("sensitive relation public.transactions")
+    );
     const useCase = new ListFinancialEvolutionUseCase({
       financialAnalyticsQueryRepository: repository
     });

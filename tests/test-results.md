@@ -1155,3 +1155,57 @@ Interpretação:
 - lint de todos os testes de analytics passou com zero warnings;
 - regressão anterior, excluindo as 9 suítes/assertivas afetadas, passou com 20 suítes e 169 testes, zero snapshots;
 - estado final: `TEST_STRATEGY_READY`; implementação permanece bloqueada até o Dia 3.
+
+## Dia 2 — UX-CHART-003B
+
+### Baseline
+
+- 7 suítes existentes e 69 testes passaram, zero snapshots, antes da criação do RED.
+
+### RED controlado
+
+- 7 suítes selecionadas falharam de forma planejada.
+- Nas 6 suítes carregadas, 70 testes foram executados: 42 passaram e 28 falharam pelos novos comportamentos ainda ausentes.
+- A suíte `financial-evolution-buckets.mapper.test.ts` contém 18 contratos e não carregou porque o mapper futuro ainda não existe.
+- As falhas correspondem a `three_months`/`year`, granularidade agregada, seleção de repository, mapper, opções do seletor e normalização das rotas.
+
+### Banco e validação do harness
+
+- pgTAP: 16 assertions de schema/grants, 22 de comportamento/RLS/OHLC e 5 de performance, total 43.
+- Probe transacional no Supabase falhou 2/2 porque `load_financial_evolution_buckets(date,date,text)` ainda não existe.
+- O rollback foi confirmado: `pgtap` continuou não instalado e a função continuou ausente.
+- ESLint passou nos 7 arquivos Jest afetados.
+- Type-check ficou somente com o `TS2307` esperado para o mapper futuro ausente.
+- estado final: `TEST_STRATEGY_READY`; implementação e migration permanecem bloqueadas até o Dia 3.
+
+## Dia 3 — UX-CHART-003B
+
+### GREEN dirigido
+
+- 7 suítes selecionadas passaram.
+- 88 testes passaram, incluindo os 18 contratos do novo mapper.
+- zero snapshots e nenhuma expectativa do RED foi removida ou relaxada.
+
+### Regressão e build
+
+- regressão completa: 95 suítes e 609 testes passaram, zero snapshots;
+- ESLint global passou sem avisos;
+- type-check global passou;
+- build Next.js 16.3.3 com Turbopack passou, preservando todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a atualização automática do build.
+
+### Supabase e pgTAP
+
+- migration `20260907041839_create_financial_evolution_buckets` aplicada com sucesso;
+- schema/grants: 16 assertions verdes;
+- comportamento, RLS e OHLC: 22 assertions verdes;
+- performance: 5 assertions verdes;
+- total: 43 assertions pgTAP verdes, sem extensão persistida;
+- sete migrations locais/remotas alinhadas;
+- função confirmada como invoker, search path vazio e execução somente por `authenticated`;
+- nenhum índice novo foi criado.
+
+Interpretação:
+- o RED do Dia 2 foi convertido em GREEN dentro do escopo aprovado;
+- estado final: `IMPLEMENTATION_IN_PROGRESS`;
+- próximo comando válido: `dia 4` da `UX-CHART-003B`.

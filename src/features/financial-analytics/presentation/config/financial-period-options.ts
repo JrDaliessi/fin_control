@@ -35,6 +35,18 @@ export const financialPeriodOptions: readonly Readonly<{
     label: "Mês",
     compactLabel: "Mês",
     accessibleLabel: "Mês atual"
+  },
+  {
+    value: "three_months",
+    label: "3M",
+    compactLabel: "3M",
+    accessibleLabel: "Três meses civis"
+  },
+  {
+    value: "year",
+    label: "Ano",
+    compactLabel: "Ano",
+    accessibleLabel: "Ano atual"
   }
 ];
 

@@ -54,6 +54,7 @@ const financialEvolutionResult = {
   accountCount: 1,
   period: {
     kind: "month" as const,
+    bucketGranularity: "day" as const,
     referenceOn: "2026-03-07",
     startOnInclusive: "2026-03-01",
     endOnExclusive: "2026-04-01"
@@ -109,7 +110,9 @@ describe("dashboard routes", () => {
     "rolling_7_days",
     "fortnight",
     "rolling_15_days",
-    "month"
+    "month",
+    "three_months",
+    "year"
   ] as const)("should compose /dashboard with the supported %s period", async (period) => {
     renderRoute(
       await DashboardRoutePage({
@@ -123,9 +126,9 @@ describe("dashboard routes", () => {
     expect(
       screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
     ).toBeInTheDocument();
-    expect(loadFinancialEvolution).toHaveBeenCalledWith({
-      kind: period
-    });
+    expect(jest.mocked(loadFinancialEvolution).mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({ kind: period })
+    );
   });
 
   it("falls back to month for an unsupported URL period", async () => {

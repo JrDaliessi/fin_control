@@ -1,7 +1,7 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: arquitetura aprovada para `UX-CHART-003B`; `003A` mesclada e `003C` refinada para ciclo próprio
-- Data: 2026-09-06
+- Status: implementação mínima da `UX-CHART-003B` concluída em GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
+- Data: 2026-09-07
 - Feature: `UX-CHART-003`
 - Depende de: ADR 0019, ADR 0021 e merge `7434159`
 
@@ -19,7 +19,7 @@ A feature precisa manter cards, linha, candles, tabela e extrato no mesmo interv
 2. `UX-CHART-003B` adiciona `3M` e `Ano` por uma agregação server-side nova, migration forward-only e testes pgTAP.
 3. `UX-CHART-003C` adiciona `Tudo`, intervalo personalizado e drill-down de buckets trimestrais antes do extrato detalhado.
 
-Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 1 e é o único recorte autorizado a avançar ao Dia 2.
+Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 3 em GREEN e é o único recorte autorizado a avançar ao Dia 4.
 
 ### Matriz de granularidade
 
@@ -66,7 +66,7 @@ Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop
 - A função agregada usa `search_path = ''`, revoga `EXECUTE` de `PUBLIC`, `anon` e `service_role` e não aceita `userId` do cliente.
 - A allowlist da RPC contém apenas `week` e `month`; a granularidade é resolvida no domínio/application e nunca por expressão SQL fornecida pela UI.
 - Cada linha agregada contém somente limites do bucket, account count, OHLC, receitas, despesas, volume e contagem; descrições, notas, categorias, contas e identificadores de movimentos não são retornados.
-- A migration será forward-only, reproduzível e validada por pgTAP antes de aplicação remota.
+- A migration forward-only `20260907041839_create_financial_evolution_buckets.sql` foi validada por pgTAP antes da aplicação remota.
 - A resposta contém somente agregados necessários para os view models; descrições e lançamentos são buscados sob demanda pelo contrato da UX-CHART-002.
 - Nenhum valor financeiro, descrição, UUID ou e-mail entra em logs ou analytics.
 - O índice composto existente deve ser validado com `EXPLAIN (ANALYZE, BUFFERS)` antes de qualquer índice novo; índices especulativos são rejeitados.
@@ -113,7 +113,7 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - Períodos longos exigem ciclo crítico próprio, com TDD, pgTAP, revisão RLS e validação de performance.
 - O limite visual de pontos fica previsível em mobile e desktop.
 - O extrato contextual continua sob demanda e independente da granularidade agregada.
-- A `003B` passa a `ARCHITECTURE_READY`; a `003C` permanece refinada, mas não autorizada para teste ou implementação neste ciclo.
+- A `003B` passa a `IMPLEMENTATION_IN_PROGRESS` em GREEN; a `003C` permanece refinada, mas não autorizada para teste ou implementação neste ciclo.
 
 ## Evidências do Dia 1 da 003B
 
@@ -124,6 +124,23 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - o índice composto existente inicia por `user_id` e segue com `occurred_on`, `created_at` e `id`; nenhum índice novo foi aprovado sem `EXPLAIN`;
 - discovery geral permanece em `docs/ux-chart-003-discovery.md` e o contrato próprio da `003B` está em `docs/ux-chart-003b-discovery.md`.
 
+## Evidências do Dia 2 da 003B
+
+- baseline com 7 suítes e 69 testes verdes antes do RED;
+- Jest materializou contratos de domain, application, infrastructure, presentation e composição server-side;
+- pgTAP materializou 43 assertions para schema/grants, comportamento/RLS/OHLC e performance;
+- probe transacional remoto falhou 2/2 pela função ausente e não deixou extensão ou função persistente;
+- estratégia detalhada em `docs/ux-chart-003b-test-strategy.md`.
+
+## Evidências do Dia 3 da 003B
+
+- `three_months` e `year` resolvem intervalos civis com buckets `week` e `month`, mantendo os cinco períodos curtos na RPC diária;
+- port, caso de uso, mapper estrito, repository Supabase, seletor e rotas foram implementados sem acesso direto da presentation ao banco;
+- migration remota `20260907041839` criou a RPC agregada invoker, com `search_path = ''`, identidade permanente, allowlist, limites e ACL somente para `authenticated`;
+- 7 suítes direcionadas e 88 testes passaram; regressão completa com 95 suítes e 609 testes passou, sem snapshots;
+- pgTAP passou 16 assertions de schema, 22 de comportamento e 5 de performance; nenhum índice novo foi necessário;
+- lint, type-check e build Next.js 16.3.3 passaram.
+
 ## Próximo passo
 
-Executar o Dia 2 da `UX-CHART-003B` e criar testes Jest e pgTAP em RED para períodos, buckets, seleção do repository, mapper, RLS, grants, limites e performance antes de alterar código funcional ou criar a migration.
+Executar o Dia 4 da `UX-CHART-003B` para expandir estados e validações da experiência de forma controlada, sem antecipar `Tudo`, personalizado ou drill-down.

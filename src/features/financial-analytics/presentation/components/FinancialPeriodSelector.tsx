@@ -45,7 +45,8 @@ export function FinancialPeriodSelector({
         className="text-xs text-muted-foreground"
         id="financial-period-guidance"
       >
-        Semana e Quinzena seguem o calendário; 7D e 15D contam até hoje.
+        Semana, Quinzena, 3M e Ano seguem o calendário; 7D e 15D contam até
+        hoje.
       </p>
     </form>
   );
