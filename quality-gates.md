@@ -2033,3 +2033,19 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
 - `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados fora do escopo.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#27`.
+
+## Gate do Dia 1 — UX-CHART-003B
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- `UX-CHART-003A` confirmada como squash merge `7434159` em `origin/develop`; branch `codex/ux-chart-003b-periodos-historicos` criada sobre essa base.
+- semântica aprovada: `three_months` cobre o mês da referência e os dois anteriores com buckets semanais civis; `year` cobre o ano civil com doze buckets mensais.
+- intervalos e buckets são semiabertos, consecutivos, recortados ao período e preservam saldo em buckets vazios.
+- arquitetura mantém a RPC diária e seu limite de 31 dias; a futura `load_financial_evolution_buckets(date, date, text)` retorna somente OHLC e totais agregados.
+- contrato da RPC exige invoker, search path vazio, identidade permanente, ausência de `user_id`, allowlist `week`/`month`, máximo de 366 dias/60 buckets e execução somente por `authenticated`.
+- Supabase `fin_control` confirmado `ACTIVE_HEALTHY` em Postgres 17.6.1; RLS habilitada e forçada nas tabelas financeiras, seis migrations alinhadas e ACL da RPC atual restrita a `authenticated`.
+- índice existente `(user_id, occurred_on desc, created_at desc, id desc)` foi confirmado; nenhum índice novo foi aprovado antes de `EXPLAIN (ANALYZE, BUFFERS)`.
+- Security Advisor manteve somente `SEC-AUTH-001`; Performance Advisor manteve informação sobre índice de contas sem uso, sem relação causal com a `003B`.
+- baseline dirigida: 4 suítes, 45 testes verdes e zero snapshots, cobrindo resolução de período, caso de uso, seletor e rota financeira.
+- `docs/ux-chart-003b-discovery.md`, ADR 0020, backlog, roadmap e contexto central compõem os artefatos do Dia 1.
+- nenhuma implementação, teste, migration, RPC, dado remoto, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2` da `UX-CHART-003B`.

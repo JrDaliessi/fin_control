@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-CHART-003A concluído; documentação aguarda versionamento e atualização da PR #27
+- Estado atual da máquina de estados: `ARCHITECTURE_READY`
+- Fase atual: Dia 1 da UX-CHART-003B concluído; arquitetura de `3M`/`Ano` pronta para TDD
+- Data do discovery e arquitetura da UX-CHART-003B: 2026-09-06
 - Data da validação final e preparação de release da UX-CHART-003A: 2026-09-06
 - Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003A: 2026-09-06
 - Data da refatoração e hardening interno da UX-CHART-003A: 2026-09-06
@@ -7967,3 +7968,66 @@ Riscos, fronteiras e saída:
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram preservados fora do escopo;
 - `UX-CHART-003A` atende ao critério de pronto e passa a `DONE` / `READY_FOR_RELEASE`; `003B/C` continuam fora deste ciclo;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#27` e aguardar os checks do novo head; depois, mediante decisão humana, realizar squash merge em `develop`.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-003B
+
+Estado e dependência:
+- `UX-CHART-003A` foi mesclada por squash em `develop` no commit `7434159` e deixou de ser bloqueio;
+- branch atual: `codex/ux-chart-003b-periodos-historicos`, criada diretamente sobre o `develop` mesclado;
+- `UX-CHART-003B` é a única small release ativa; `003C` permanece fora do ciclo;
+- estado de entrada: `READY_FOR_RELEASE`; nenhum bloqueio duro identificado.
+
+Escopo e semântica aprovados:
+- valor `three_months`, rótulo `3M` e nome acessível `Três meses civis`: mês da referência e dois meses civis anteriores, do primeiro dia do primeiro mês até o primeiro dia do mês seguinte à referência;
+- valor `year`, rótulo `Ano` e nome acessível `Ano atual`: 1º de janeiro da referência até 1º de janeiro do ano seguinte;
+- `3M` usa semanas civis iniciadas na segunda-feira; `Ano` usa meses civis;
+- intervalos e buckets são semiabertos, consecutivos e recortados aos limites selecionados;
+- buckets sem movimentos carregam o saldo anterior, com volume e contagem iguais a zero;
+- períodos civis mantêm todo o mês/ano da referência, e datas futuras vazias não são apresentadas como projeção;
+- `Tudo`, personalizado, `12M`, comparação, trimestre e drill-down permanecem na `003C` ou em itens futuros.
+
+Contratos por camada:
+- domain amplia `FinancialPeriodKind`, introduz `FinancialBucketGranularity` fechado e resolve intervalo/granularidade sem framework;
+- application mantém `FinancialEvolutionDto`, usa o snapshot atual para `day` e uma leitura agregada para `week`/`month`;
+- infrastructure terá mapper e operação próprios para buckets, sem enviar `userId` à função SQL e sem reutilizar o mapper de movimentos brutos;
+- presentation acrescentará `3M` e `Ano` à barra GET Server Component, sem escolher SQL ou acessar Supabase;
+- cards, linha, candles e tabela continuarão derivados da mesma resposta; extrato bruto segue limitado a intervalos de até 31 dias.
+
+RPC e dados planejados:
+- nova assinatura: `public.load_financial_evolution_buckets(date, date, text)`;
+- retorno mínimo: limites do bucket, account count, OHLC, receitas, despesas, volume e quantidade de transações;
+- ordenação financeira preservada por `occurred_on`, `created_at`, `id`;
+- `SECURITY INVOKER`, `search_path = ''`, schemas explícitos e grants somente para `authenticated`;
+- identidade permanente e `(select auth.uid())`, sem parâmetro de proprietário;
+- allowlist `week`/`month`, duração máxima de 366 dias e teto de 60 buckets;
+- a RPC diária `load_financial_evolution_snapshot(date, date)` e seu limite de 31 dias permanecem inalterados;
+- migration somente forward-only e depois de RED Jest/pgTAP aprovado.
+
+Evidências Supabase e performance:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) está `ACTIVE_HEALTHY`, PostgreSQL 17.6.1, região `sa-east-1`;
+- `financial_accounts` e `transactions` possuem RLS habilitada e forçada;
+- a RPC atual foi confirmada como invoker, com search path vazio e ACL somente para `postgres`/`authenticated`;
+- seis migrations remotas continuam alinhadas às seis migrations locais;
+- índice existente para a consulta financeira: `(user_id, occurred_on desc, created_at desc, id desc)`;
+- índice novo permanece proibido sem `EXPLAIN (ANALYZE, BUFFERS)` e evidência objetiva;
+- Security Advisor manteve somente a proteção de senhas vazadas registrada em `SEC-AUTH-001`; o aviso de índice de contas sem uso não pertence a esta feature.
+
+Artefatos e testes preparados:
+- criado `docs/ux-chart-003b-discovery.md` com contratos de produto, domínio, application, infrastructure, presentation, RPC, segurança e performance;
+- ADR 0020 atualizado para registrar a arquitetura vigente da `003B`;
+- backlog e roadmap atualizados com `003A` mesclada e `003B` em `ARCHITECTURE_READY`;
+- matriz do próximo Dia 2 cobre resolver e buckets, seleção do repository, mapper, apresentação, rotas, RLS, grants, limites, OHLC, isolamento e plano;
+- baseline atual aprovada com 4 suítes, 45 testes e zero snapshots, cobrindo resolver, caso de uso, seletor e rota financeira;
+- nenhuma suíte nova foi criada: testes funcionais e pgTAP pertencem ao Dia 2.
+
+Riscos e fronteiras:
+- risco ALTO de erro OHLC e isolamento multiusuário, mitigado por fixtures determinísticas e pgTAP cruzado;
+- risco MÉDIO de performance anual, mitigado por resposta agregada, limites e medição antes de índice;
+- risco MÉDIO de largura da barra em 320 px, reservado para validação real do Dia 6;
+- nenhuma migration, RPC, policy, grant, dado, código funcional, dependência ou configuração remota foi alterada;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intactos e fora do escopo.
+
+Estado de saída:
+- máquina de estados: `ARCHITECTURE_READY`;
+- próximo comando válido: `dia 2` da `UX-CHART-003B` para criar testes Jest e pgTAP em RED antes de qualquer implementação ou migration.

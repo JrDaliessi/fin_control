@@ -1,9 +1,9 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: arquitetura aprovada para `UX-CHART-003A`; `003B/C` refinadas para ciclos próprios
+- Status: arquitetura aprovada para `UX-CHART-003B`; `003A` mesclada e `003C` refinada para ciclo próprio
 - Data: 2026-09-06
 - Feature: `UX-CHART-003`
-- Depende de: ADR 0019, ADR 0021 e merge `70fd53c`
+- Depende de: ADR 0019, ADR 0021 e merge `7434159`
 
 ## Contexto
 
@@ -19,7 +19,7 @@ A feature precisa manter cards, linha, candles, tabela e extrato no mesmo interv
 2. `UX-CHART-003B` adiciona `3M` e `Ano` por uma agregação server-side nova, migration forward-only e testes pgTAP.
 3. `UX-CHART-003C` adiciona `Tudo`, intervalo personalizado e drill-down de buckets trimestrais antes do extrato detalhado.
 
-Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `develop`; somente a `003A` está autorizada a avançar ao Dia 2.
+Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 1 e é o único recorte autorizado a avançar ao Dia 2.
 
 ### Matriz de granularidade
 
@@ -50,6 +50,10 @@ Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `d
 
 - `3M` representa o mês civil da referência e os dois meses civis anteriores; não significa noventa dias.
 - `Ano` representa o ano civil da referência; doze meses móveis exigiriam um preset futuro distinto.
+- `3M` usa o valor canônico `three_months` e bucket semanal civil iniciado na segunda-feira.
+- `Ano` usa o valor canônico `year` e bucket mensal civil.
+- Para a mesma referência usada pelo período mensal, `3M` termina no primeiro dia do mês seguinte e `Ano` termina no primeiro dia do ano seguinte; datas futuras sem movimentos apenas carregam saldo e não são tratadas como projeção.
+- A RPC agregada aceita no máximo 366 dias e 60 buckets, limites suficientes para o ano bissexto e independentes da futura política de `Tudo`.
 - `Personalizado` recebe limites inclusivos na UI e os converte para intervalo semiaberto no domínio.
 - `Tudo` deriva sua âncora histórica no servidor por proprietário; o browser não escolhe a data inicial efetiva.
 - A política para mais de 60 buckets trimestrais permanece decisão obrigatória do ciclo `003C`; truncamento silencioso é proibido.
@@ -58,14 +62,16 @@ Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `d
 ### Agregação e segurança
 
 - A RPC diária atual continua limitada a 31 dias e não será relaxada.
-- O recorte 003B cria uma função agregadora `SECURITY INVOKER`, acessível somente a `authenticated`, com identidade validada, RLS, allowlist e limites explícitos.
+- O recorte 003B cria `public.load_financial_evolution_buckets(date, date, text)`, uma função agregadora `SECURITY INVOKER`, acessível somente a `authenticated`, com identidade validada, RLS, allowlist e limites explícitos.
 - A função agregada usa `search_path = ''`, revoga `EXECUTE` de `PUBLIC`, `anon` e `service_role` e não aceita `userId` do cliente.
+- A allowlist da RPC contém apenas `week` e `month`; a granularidade é resolvida no domínio/application e nunca por expressão SQL fornecida pela UI.
+- Cada linha agregada contém somente limites do bucket, account count, OHLC, receitas, despesas, volume e contagem; descrições, notas, categorias, contas e identificadores de movimentos não são retornados.
 - A migration será forward-only, reproduzível e validada por pgTAP antes de aplicação remota.
 - A resposta contém somente agregados necessários para os view models; descrições e lançamentos são buscados sob demanda pelo contrato da UX-CHART-002.
 - Nenhum valor financeiro, descrição, UUID ou e-mail entra em logs ou analytics.
 - O índice composto existente deve ser validado com `EXPLAIN (ANALYZE, BUFFERS)` antes de qualquer índice novo; índices especulativos são rejeitados.
 
-## Contratos testáveis para o ciclo futuro
+## Contratos testáveis para o ciclo atual da 003B
 
 1. cada preset resolve intervalo civil determinístico e URL canônica;
 2. URLs existentes continuam compatíveis e valores inválidos usam fallback seguro;
@@ -79,6 +85,9 @@ Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `d
 10. o seletor da `003A` permanece Server Component, usa navegação GET e não consulta Supabase;
 11. históricos longos não enviam movimentos brutos ao cliente;
 12. buckets trimestrais exigem drill-down antes do extrato detalhado limitado a 31 dias.
+13. `three_months` resolve o mês da referência e os dois anteriores, enquanto `year` resolve janeiro a janeiro inclusive em ano bissexto;
+14. períodos curtos continuam usando a RPC de snapshot e períodos longos usam exclusivamente a RPC agregada;
+15. a RPC agregada rejeita mais de 366 dias ou mais de 60 buckets e preserva buckets vazios com saldo carregado.
 
 ## Alternativas consideradas
 
@@ -100,20 +109,21 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 
 ## Consequências
 
-- Os atalhos curtos podem entregar valor sem migration.
+- Os atalhos curtos foram entregues e mesclados sem migration.
 - Períodos longos exigem ciclo crítico próprio, com TDD, pgTAP, revisão RLS e validação de performance.
 - O limite visual de pontos fica previsível em mobile e desktop.
 - O extrato contextual continua sob demanda e independente da granularidade agregada.
-- A `003A` passa a `ARCHITECTURE_READY`; `003B/C` permanecem refinadas, mas não autorizadas para teste ou implementação neste ciclo.
+- A `003B` passa a `ARCHITECTURE_READY`; a `003C` permanece refinada, mas não autorizada para teste ou implementação neste ciclo.
 
-## Evidências do Dia 1 próprio
+## Evidências do Dia 1 da 003B
 
-- merge da predecessora confirmado em `origin/develop` no commit `70fd53c`;
-- código atual possui cinco valores de período, um resolver civil puro, uma única composição server-side e RPC diária limitada a 31 dias;
-- projeto Supabase `fin_control` está `ACTIVE_HEALTHY` em Postgres 17, com três tabelas sob RLS e seis migrations locais/remotas alinhadas;
-- documentação atual do Supabase mantém `SECURITY INVOKER`, `search_path` seguro e grants explícitos como padrões aplicáveis à futura RPC;
-- discovery detalhado registrado em `docs/ux-chart-003-discovery.md`.
+- merge da `003A` confirmado em `origin/develop` no commit `7434159`;
+- código atual possui cinco valores de período, resolver civil puro, uma única composição server-side e RPC diária limitada a 31 dias;
+- projeto Supabase `fin_control` está `ACTIVE_HEALTHY` em Postgres 17.6.1, com RLS habilitada e forçada nas tabelas financeiras e seis migrations locais/remotas alinhadas;
+- a RPC atual foi confirmada como invoker, com `search_path = ''` e execução somente para `authenticated`;
+- o índice composto existente inicia por `user_id` e segue com `occurred_on`, `created_at` e `id`; nenhum índice novo foi aprovado sem `EXPLAIN`;
+- discovery geral permanece em `docs/ux-chart-003-discovery.md` e o contrato próprio da `003B` está em `docs/ux-chart-003b-discovery.md`.
 
 ## Próximo passo
 
-Executar o Dia 2 da `UX-CHART-003A` e criar testes em RED para a barra de períodos, URLs existentes, semântica acessível, responsividade e fronteiras arquiteturais antes de alterar código funcional.
+Executar o Dia 2 da `UX-CHART-003B` e criar testes Jest e pgTAP em RED para períodos, buckets, seleção do repository, mapper, RLS, grants, limites e performance antes de alterar código funcional ou criar a migration.

@@ -292,11 +292,11 @@ Small releases da `UX-CHART-002`:
 
 Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 7 concluído em `READY_FOR_RELEASE` e GREEN. Volume e resultado líquido ganharam prioridade em largura total no celular, receitas/despesas preservam a leitura comparativa e o disclosure respeita reduced motion. As 93 suítes/562 testes, lint, type-check, audit e build estão verdes; Supabase saudável e alinhado, Preview da PR `#26` `READY` e observabilidade sem erro de runtime em 24 horas.
 
-Estado da `UX-CHART-003`: Dia 7 da `003A` concluído em `DONE` / `READY_FOR_RELEASE`. Pipeline local, supply chain, threat model, Supabase, Preview, observabilidade e PR `#27` estão verdes no head `d40529b`; a barra mantém os cinco períodos visíveis em 320 px e a navegação GET progressiva. A `003B` mantém `3M`/`Ano` com agregação server-side; a `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
+Estado da `UX-CHART-003`: `003A` mesclada por squash em `develop` no commit `7434159`. Dia 1 da `003B` concluído em `ARCHITECTURE_READY`: `3M` usa três meses civis e bucket semanal; `Ano` usa ano civil e bucket mensal; a RPC separada devolverá somente agregados, com teto de 366 dias/60 buckets, RLS e grants mínimos. A `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
 
 Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md` e `adr/0021-contextual-interval-volume-insights.md`.
 
-Próximo passo: versionar a documentação do Dia 7 e atualizar a PR `#27`; após os novos checks verdes, realizar squash merge em `develop` somente mediante decisão humana.
+Próximo passo: executar o Dia 2 da `UX-CHART-003B` para criar testes Jest e pgTAP em RED antes de alterar produção ou criar a migration.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

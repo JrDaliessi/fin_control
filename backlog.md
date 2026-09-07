@@ -18,9 +18,9 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: ciclo atual Dias 1–7 restrito à `003A`; `003B/C` percorrem ciclos próprios posteriores.
+- Fase recomendada: ciclo atual Dias 1–7 restrito à `003B`; `003C` percorre ciclo próprio posterior.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A` concluída em `DONE` / `READY_FOR_RELEASE`: 94 suítes e 579 testes, lint, type-check, audit, assinaturas npm, build, Supabase, Vercel, observabilidade e PR estão verdes. `003B/C` permanecem planejadas para ciclos próprios, por isso a feature agregada continua em andamento.
+- Status: IN_PROGRESS — `UX-CHART-003A` concluída e mesclada em `develop` no commit `7434159`. Dia 1 da `UX-CHART-003B` concluído em `ARCHITECTURE_READY`, com `three_months`/semana, `year`/mês e RPC agregada limitada a 366 dias/60 buckets prontos para TDD. `003C` permanece planejada para ciclo próprio.
 
 ## DISCOVERY
 
