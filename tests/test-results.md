@@ -1209,3 +1209,26 @@ Interpretação:
 - o RED do Dia 2 foi convertido em GREEN dentro do escopo aprovado;
 - estado final: `IMPLEMENTATION_IN_PROGRESS`;
 - próximo comando válido: `dia 4` da `UX-CHART-003B`.
+
+## Dia 4 — UX-CHART-003B
+
+### RED e GREEN dirigidos
+
+- RED: 6 suítes executadas, 59 testes, 52 verdes e 7 falhas esperadas;
+- GREEN: as mesmas 6 suítes passaram com 59 testes verdes e zero snapshots;
+- os contratos cobrem copy semanal, semântica mensal, nomes acessíveis, estado anual vazio e rejeição dos dois limites divergentes.
+
+### Regressão e build
+
+- feature `financial-analytics`: 32 suítes e 286 testes verdes, zero snapshots;
+- regressão completa: 95 suítes e 617 testes verdes, zero snapshots;
+- ESLint global passou sem avisos;
+- type-check global passou;
+- build Next.js 16.3.3 com Turbopack passou, preservando todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado após a atualização automática do build;
+- `git diff --check` passou.
+
+Interpretação:
+- expansão controlada concluída sem ampliar o escopo da `UX-CHART-003C`;
+- estado final: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 5` da `UX-CHART-003B`.

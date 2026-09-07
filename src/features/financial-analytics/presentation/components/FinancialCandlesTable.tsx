@@ -1,8 +1,11 @@
 import type { FinancialCandle } from "../../domain/types/financial-evolution.types";
+import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 import { formatCents } from "@/shared/utils/formatCents";
+import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
 import { handleHorizontalTableKeyDown } from "./horizontal-table-keyboard-scroll";
 
 type FinancialCandlesTableProps = Readonly<{
+  bucketGranularity?: FinancialBucketGranularity;
   candles: readonly FinancialCandle[];
   onSelectInterval?: (candle: FinancialCandle) => void;
 }>;
@@ -25,11 +28,13 @@ function describeVariation(candle: FinancialCandle) {
 }
 
 export function FinancialCandlesTable({
+  bucketGranularity = "day",
   candles,
   onSelectInterval
 }: FinancialCandlesTableProps) {
+  const bucketCopy = getFinancialBucketCopy(bucketGranularity);
   const headings = [
-    "Dia",
+    bucketCopy.columnHeading,
     ...(onSelectInterval ? ["Extrato"] : []),
     "Abertura",
     "Máxima",
@@ -54,14 +59,16 @@ export function FinancialCandlesTable({
       </p>
       <div
         aria-describedby="financial-candles-order-note financial-candles-table-hint"
-        aria-label="Variação financeira por dia"
+        aria-label={`Variação financeira por ${bucketCopy.singular}`}
         className="touch-pan-x overflow-x-auto overscroll-x-contain rounded-xl border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
         onKeyDown={handleHorizontalTableKeyDown}
         role="region"
         tabIndex={0}
       >
         <table className="w-full min-w-[64rem] border-collapse text-sm">
-          <caption className="sr-only">Variação financeira por dia</caption>
+          <caption className="sr-only">
+            Variação financeira por {bucketCopy.singular}
+          </caption>
           <thead className="bg-surface-muted text-left text-muted-foreground">
             <tr>
               {headings.map((heading) => (

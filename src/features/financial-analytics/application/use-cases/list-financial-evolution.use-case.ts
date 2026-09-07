@@ -120,6 +120,16 @@ export class ListFinancialEvolutionUseCase {
           endOnExclusive: period.endOnExclusive,
           bucketGranularity: period.bucketGranularity
         });
+
+        const firstBucket = bucketSnapshot.buckets[0];
+        const lastBucket = bucketSnapshot.buckets.at(-1);
+
+        if (
+          firstBucket?.startOnInclusive !== period.startOnInclusive ||
+          lastBucket?.endOnExclusive !== period.endOnExclusive
+        ) {
+          throw new Error("financial evolution bucket interval mismatch");
+        }
       } catch {
         throw new Error("financial evolution unavailable");
       }

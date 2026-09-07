@@ -172,6 +172,19 @@ describe("FinancialEvolutionChart", () => {
     expect(observe).toHaveBeenCalledWith(graphic);
   });
 
+  it("names a weekly aggregate without describing it as daily", () => {
+    render(
+      <FinancialEvolutionChart
+        bucketGranularity="week"
+        model={model}
+      />
+    );
+
+    expect(
+      screen.getByRole("img", { name: "Evolução do saldo por semana" })
+    ).toBeInTheDocument();
+  });
+
   it("passes reduced-motion preference to the pure option builder", () => {
     setReducedMotion(true);
 

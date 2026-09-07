@@ -84,7 +84,7 @@ describe("financial evolution server composition", () => {
         {
           account_count: "1",
           start_on_inclusive: "2026-07-01",
-          end_on_exclusive: "2026-07-06",
+          end_on_exclusive: "2026-10-01",
           open_in_cents: "10000",
           high_in_cents: "15000",
           low_in_cents: "10000",

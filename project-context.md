@@ -2,7 +2,8 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 3 da UX-CHART-003B concluído em GREEN; `3M`/`Ano` e agregação server-side implementados
+- Fase atual: Dia 4 da UX-CHART-003B concluído em GREEN; granularidade adaptativa e cobertura exata do intervalo validadas
+- Data da expansão controlada da UX-CHART-003B: 2026-09-07
 - Data da implementação mínima da UX-CHART-003B: 2026-09-07
 - Data da estratégia de testes da UX-CHART-003B: 2026-09-06
 - Data do discovery e arquitetura da UX-CHART-003B: 2026-09-06
@@ -8103,3 +8104,26 @@ Validação e saída:
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
 - máquina de estados: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 4` da `UX-CHART-003B`.
+
+## Dia 4 — Expansão Controlada da UX-CHART-003B
+
+Entrada e governança:
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada explicitamente antes da execução;
+- escopo permaneceu restrito aos estados e validações de `3M`/`Ano`; `UX-CHART-003C`, migration, índice, dependência nova e operações Git/remotas ficaram bloqueados;
+- skill oficial de Next.js preservou a composição Server Component e a fronteira de dados; a revisão React confirmou props primitivas, estado derivado durante render e ausência de efeitos ou memoização desnecessários.
+
+Expansão e validações:
+- painel, alternador, gráficos e tabelas agora descrevem a granularidade real como dia, semana ou mês, inclusive em nomes acessíveis e cabeçalhos;
+- o caso de uso rejeita respostas agregadas que não cubram exatamente o início e o fim do período solicitado, expondo somente erro sanitizado;
+- o estado vazio de período anual mantém saldo, ponto, candle e resumo visíveis sem inventar movimentos;
+- loading, missing accounts, empty, success e error existentes foram preservados e cobertos pela regressão ampliada.
+
+Evidência e saída:
+- RED dirigido: 6 suítes, 59 testes executados, 52 verdes e 7 falhas esperadas;
+- GREEN dirigido: 6 suítes e 59 testes; feature completa: 32 suítes e 286 testes; regressão global: 95 suítes e 617 testes, todos verdes e sem snapshots;
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` passaram;
+- `next-env.d.ts` foi restaurado após alteração automática do build;
+- nenhum banco, migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi alterado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram fora do escopo;
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 5` da `UX-CHART-003B`.

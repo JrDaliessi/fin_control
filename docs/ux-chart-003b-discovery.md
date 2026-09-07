@@ -1,10 +1,10 @@
 # UX-CHART-003B — Discovery de 3M, Ano e agregação server-side
 
-- Fase: Dia 3 — implementação mínima concluída em GREEN
+- Fase: Dia 4 — expansão controlada concluída em GREEN
 - Data: 2026-09-07
 - Estado: `IMPLEMENTATION_IN_PROGRESS`
 - Predecessora: `UX-CHART-003A` mesclada por squash em `develop` no commit `7434159`
-- Próxima fase autorizável: Dia 4 — expansão controlada da feature
+- Próxima fase autorizável: Dia 5 — refatoração e hardening interno
 
 ## Problema
 
@@ -214,7 +214,7 @@ A consulta existente `(user_id, occurred_on desc, created_at desc, id desc)` ate
 - risco MÉDIO: sete opções excederem a largura de 320 px; mitigação por rolagem confinada, alvo de 44 px e validação real no Dia 6;
 - risco BAIXO: usuário interpretar `3M` como 90 dias; mitigação por nome acessível e orientação civil curta.
 
-Não há bloqueio duro para o Dia 4. A migration e a RPC foram aplicadas somente após o RED e a aprovação explícita do Dia 3; `UX-CHART-003C`, deploy e operações Git remotas continuam fora deste ciclo de fase.
+Não há bloqueio duro para o Dia 5. A granularidade da interface e a cobertura exata do intervalo agregado foram validadas no Dia 4; `UX-CHART-003C`, deploy e operações Git remotas continuam fora deste ciclo de fase.
 
 ## Critério de pronto do Dia 1
 
@@ -229,4 +229,4 @@ Não há bloqueio duro para o Dia 4. A migration e a RPC foram aplicadas somente
 
 ## Próximo passo
 
-Os contratos do Dia 2 foram convertidos em GREEN com `3M`, `Ano` e a RPC agregada segura. O próximo passo é executar o Dia 4 para expandir estados e validações de interface sem antecipar o escopo da `003C`.
+O Dia 4 tornou a copy e a semântica acessível adaptativas por dia, semana e mês, validou cobertura exata da resposta agregada e preservou o estado vazio anual. O próximo passo é executar o Dia 5 para refatoração e hardening interno sem antecipar o escopo da `003C`.

@@ -147,6 +147,19 @@ describe("FinancialCandlestickChart", () => {
     expect(observe).toHaveBeenCalledWith(graphic);
   });
 
+  it("names a monthly aggregate without describing it as daily", () => {
+    render(
+      <FinancialCandlestickChart
+        bucketGranularity="month"
+        model={model}
+      />
+    );
+
+    expect(
+      screen.getByRole("img", { name: "Variação do saldo por mês" })
+    ).toBeInTheDocument();
+  });
+
   it("resizes and disposes resources when the renderer leaves the tree", () => {
     const view = render(<FinancialCandlestickChart model={model} />);
 

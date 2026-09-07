@@ -5,6 +5,7 @@ import type {
 } from "../application/ports/financial-analytics-query.repository";
 import { ListFinancialEvolutionUseCase } from "../application/use-cases/list-financial-evolution.use-case";
 import type { FinancialPeriodKind } from "../domain/types/financial-period.types";
+import type { FinancialEvolutionBucketSnapshot } from "../domain/types/financial-evolution.types";
 import {
   analyticsUserId,
   expenseMovement,
@@ -48,11 +49,35 @@ const bucketSnapshot = {
   ]
 } as const;
 
+function createCoveredBucketSnapshot(
+  startOnInclusive: string,
+  endOnExclusive: string,
+  transactionCount = 2
+) {
+  return {
+    accountCount: 1,
+    buckets: [
+      {
+        startOnInclusive,
+        endOnExclusive,
+        openInCents: 10_000,
+        highInCents: 15_000,
+        lowInCents: 10_000,
+        closeInCents: transactionCount === 0 ? 10_000 : 13_000,
+        incomeInCents: transactionCount === 0 ? 0 : 5_000,
+        expenseInCents: transactionCount === 0 ? 0 : 2_000,
+        volumeInCents: transactionCount === 0 ? 0 : 7_000,
+        transactionCount
+      }
+    ]
+  } as const;
+}
+
 function createRepository(
   snapshot: Awaited<
     ReturnType<FinancialAnalyticsQueryRepository["loadEvolutionSnapshot"]>
   >,
-  aggregatedSnapshot = bucketSnapshot
+  aggregatedSnapshot: FinancialEvolutionBucketSnapshot = bucketSnapshot
 ) {
   const repository = {
     loadEvolutionSnapshot: jest.fn(
@@ -151,7 +176,7 @@ describe("ListFinancialEvolutionUseCase", () => {
         accountCount: 1,
         openingBalanceInCents: 0,
         movements: []
-      });
+      }, createCoveredBucketSnapshot(startOnInclusive, endOnExclusive));
       const useCase = new ListFinancialEvolutionUseCase({
         financialAnalyticsQueryRepository: repository
       });
@@ -183,29 +208,74 @@ describe("ListFinancialEvolutionUseCase", () => {
             closingBalanceInCents: 13_000,
             transactionCount: 2
           },
-          candles: bucketSnapshot.buckets
+          candles: createCoveredBucketSnapshot(
+            startOnInclusive,
+            endOnExclusive
+          ).buckets
         })
       );
       expect(result.points).toEqual([
         {
-          startOnInclusive: "2026-07-01",
-          endOnExclusive: "2026-07-06",
+          startOnInclusive,
+          endOnExclusive,
           incomeInCents: 5_000,
-          expenseInCents: 0,
-          netInCents: 5_000,
-          closingBalanceInCents: 15_000,
-          transactionCount: 1
-        },
-        {
-          startOnInclusive: "2026-07-06",
-          endOnExclusive: "2026-07-13",
-          incomeInCents: 0,
           expenseInCents: 2_000,
-          netInCents: -2_000,
+          netInCents: 3_000,
           closingBalanceInCents: 13_000,
-          transactionCount: 1
+          transactionCount: 2
         }
       ]);
+    }
+  );
+
+  it("keeps a long period visible when aggregated buckets have no movements", async () => {
+    const repository = createRepository(
+      { accountCount: 1, openingBalanceInCents: 0, movements: [] },
+      createCoveredBucketSnapshot("2026-01-01", "2027-01-01", 0)
+    );
+    const useCase = new ListFinancialEvolutionUseCase({
+      financialAnalyticsQueryRepository: repository
+    });
+
+    const result = await useCase.execute({
+      ...request,
+      kind: "year"
+    });
+
+    expect(result.status).toBe("empty");
+    expect(result.summary).toEqual({
+      openingBalanceInCents: 10_000,
+      incomeInCents: 0,
+      expenseInCents: 0,
+      netInCents: 0,
+      closingBalanceInCents: 10_000,
+      transactionCount: 0
+    });
+    expect(result.points).toHaveLength(1);
+    expect(result.candles).toHaveLength(1);
+  });
+
+  it.each([
+    ["start", "2026-07-02", "2026-10-01"],
+    ["end", "2026-07-01", "2026-09-30"]
+  ])(
+    "rejects an aggregate response that does not cover the requested %s boundary",
+    async (_boundary, startOnInclusive, endOnExclusive) => {
+      const repository = createRepository(
+        { accountCount: 1, openingBalanceInCents: 0, movements: [] },
+        createCoveredBucketSnapshot(startOnInclusive, endOnExclusive)
+      );
+      const useCase = new ListFinancialEvolutionUseCase({
+        financialAnalyticsQueryRepository: repository
+      });
+
+      await expect(
+        useCase.execute({
+          ...request,
+          kind: "three_months",
+          referenceInstant: "2026-09-06T15:00:00.000Z"
+        })
+      ).rejects.toThrow("financial evolution unavailable");
     }
   );
 

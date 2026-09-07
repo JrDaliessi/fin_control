@@ -79,6 +79,22 @@ describe("FinancialCandlesTable", () => {
     }
   });
 
+  it("labels weekly aggregates without presenting them as daily data", () => {
+    render(
+      <FinancialCandlesTable
+        bucketGranularity="week"
+        candles={candles}
+      />
+    );
+
+    const table = screen.getByRole("table", {
+      name: "Variação financeira por semana"
+    });
+    expect(
+      within(table).getByRole("columnheader", { name: "Semana" })
+    ).toBeInTheDocument();
+  });
+
   it("moves the wide table horizontally with the arrow keys", () => {
     render(<FinancialCandlesTable candles={candles} />);
 

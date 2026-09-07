@@ -1,6 +1,6 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: implementação mínima da `UX-CHART-003B` concluída em GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
+- Status: expansão controlada da `UX-CHART-003B` concluída em GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
 - Data: 2026-09-07
 - Feature: `UX-CHART-003`
 - Depende de: ADR 0019, ADR 0021 e merge `7434159`
@@ -19,7 +19,7 @@ A feature precisa manter cards, linha, candles, tabela e extrato no mesmo interv
 2. `UX-CHART-003B` adiciona `3M` e `Ano` por uma agregação server-side nova, migration forward-only e testes pgTAP.
 3. `UX-CHART-003C` adiciona `Tudo`, intervalo personalizado e drill-down de buckets trimestrais antes do extrato detalhado.
 
-Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 3 em GREEN e é o único recorte autorizado a avançar ao Dia 4.
+Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 4 em GREEN e é o único recorte autorizado a avançar ao Dia 5.
 
 ### Matriz de granularidade
 
@@ -143,4 +143,13 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 
 ## Próximo passo
 
-Executar o Dia 4 da `UX-CHART-003B` para expandir estados e validações da experiência de forma controlada, sem antecipar `Tudo`, personalizado ou drill-down.
+Executar o Dia 5 da `UX-CHART-003B` para refatorar e fortalecer a consistência interna com os testes existentes como rede de segurança, sem antecipar `Tudo`, personalizado ou drill-down.
+
+## Evidências do Dia 4 da 003B
+
+- linguagem visível, nomes acessíveis e cabeçalhos agora derivam da granularidade de domínio (`day`, `week`, `month`), sem decisão duplicada nos componentes;
+- application rejeita uma resposta agregada cujo primeiro início ou último fim não coincidam com o intervalo resolvido;
+- estado anual sem movimentos preserva saldo e buckets vazios com resumo coerente;
+- RED dirigido registrou 7 falhas esperadas; GREEN dirigido fechou 59/59 testes;
+- feature completa passou 32 suítes/286 testes e a regressão global passou 95 suítes/617 testes;
+- ESLint, type-check e build Next.js 16.3.3 passaram sem nova dependência ou alteração remota.

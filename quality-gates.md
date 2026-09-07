@@ -2081,3 +2081,17 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados.
 - nenhum commit, push, PR, merge, deploy ou promoção foi executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4` da `UX-CHART-003B`.
+
+## Gate do Dia 4 — UX-CHART-003B
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da execução.
+- RED dirigido: 6 suítes, 59 testes, 52 verdes e 7 falhas esperadas para copy/granularidade, nomes acessíveis e limites agregados.
+- GREEN dirigido: 6 suítes e 59 testes verdes; feature completa: 32 suítes e 286 testes verdes; zero snapshots.
+- regressão completa: 95 suítes e 617 testes verdes, zero snapshots.
+- painel, alternador, gráficos e tabelas apresentam dia/semana/mês conforme `FinancialPeriod.bucketGranularity`.
+- application rejeita cobertura agregada divergente no início ou fim e mantém erro público sanitizado.
+- estado anual vazio mantém os buckets e saldos disponíveis, sem movimentos fabricados.
+- revisão Next.js/React preservou Server Component, serialização mínima, props primitivas e ausência de efeitos/memoização supérfluos.
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; `next-env.d.ts` restaurado.
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5` da `UX-CHART-003B`.

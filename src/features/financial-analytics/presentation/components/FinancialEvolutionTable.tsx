@@ -1,8 +1,11 @@
 import type { FinancialEvolutionPoint } from "../../domain/types/financial-evolution.types";
+import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 import { formatCents } from "@/shared/utils/formatCents";
+import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
 import { handleHorizontalTableKeyDown } from "./horizontal-table-keyboard-scroll";
 
 type FinancialEvolutionTableProps = Readonly<{
+  bucketGranularity?: FinancialBucketGranularity;
   points: readonly FinancialEvolutionPoint[];
 }>;
 
@@ -12,8 +15,11 @@ function formatCivilDate(civilDate: string) {
 }
 
 export function FinancialEvolutionTable({
+  bucketGranularity = "day",
   points
 }: FinancialEvolutionTableProps) {
+  const bucketCopy = getFinancialBucketCopy(bucketGranularity);
+
   return (
     <div className="grid gap-2">
       <p
@@ -25,18 +31,20 @@ export function FinancialEvolutionTable({
       </p>
       <div
         aria-describedby="financial-evolution-table-hint"
-        aria-label="Evolução financeira por dia"
+        aria-label={`Evolução financeira por ${bucketCopy.singular}`}
         className="touch-pan-x overflow-x-auto overscroll-x-contain rounded-xl border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
         onKeyDown={handleHorizontalTableKeyDown}
         role="region"
         tabIndex={0}
       >
         <table className="w-full min-w-[48rem] border-collapse text-sm">
-          <caption className="sr-only">Evolução financeira por dia</caption>
+          <caption className="sr-only">
+            Evolução financeira por {bucketCopy.singular}
+          </caption>
           <thead className="bg-surface-muted text-left text-muted-foreground">
             <tr>
               {[
-                "Dia",
+                bucketCopy.columnHeading,
                 "Receitas",
                 "Despesas",
                 "Líquido",

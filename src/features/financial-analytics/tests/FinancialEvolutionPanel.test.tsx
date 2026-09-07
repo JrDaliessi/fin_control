@@ -6,6 +6,7 @@ import type {
   FinancialCandle,
   FinancialEvolutionPoint
 } from "../domain/types/financial-evolution.types";
+import type { FinancialBucketGranularity } from "../domain/types/financial-period.types";
 import type { FinancialCandlestickChartModel } from "../presentation/charts/financial-candlestick-chart.model";
 import type { FinancialEvolutionChartModel } from "../presentation/charts/financial-evolution-chart.model";
 
@@ -21,6 +22,7 @@ type FinancialVisualizationSwitcherStub = (props: {
   candlestickModel: FinancialCandlestickChartModel;
   evolutionPoints: readonly FinancialEvolutionPoint[];
   candles: readonly FinancialCandle[];
+  bucketGranularity: FinancialBucketGranularity;
 }) => ReactNode;
 
 const { FinancialVisualizationSwitcher: mockFinancialVisualizationSwitcher } =
@@ -93,10 +95,13 @@ describe("FinancialEvolutionPanel", () => {
   beforeEach(() => {
     mockFinancialVisualizationSwitcher.mockReset();
     mockFinancialVisualizationSwitcher.mockImplementation(
-      ({ evolutionPoints }) => (
+      ({ bucketGranularity, evolutionPoints }) => (
         <>
           <h3>Evolução do saldo</h3>
-          <FinancialEvolutionTable points={evolutionPoints} />
+          <FinancialEvolutionTable
+            bucketGranularity={bucketGranularity}
+            points={evolutionPoints}
+          />
         </>
       )
     );
@@ -170,6 +175,33 @@ describe("FinancialEvolutionPanel", () => {
       screen.getByRole("group", { name: "Período da evolução financeira" })
     ).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: /R\$\s*25,00/ })).toBeInTheDocument();
+  });
+
+  it("describes and labels aggregated data with the selected civil bucket", () => {
+    render(
+      <FinancialEvolutionPanel
+        result={makeResult({
+          period: {
+            kind: "three_months",
+            bucketGranularity: "week",
+            referenceOn: "2026-09-06",
+            startOnInclusive: "2026-07-01",
+            endOnExclusive: "2026-10-01"
+          }
+        })}
+        selectedPeriodKind="three_months"
+      />
+    );
+
+    expect(
+      screen.getByText("Acompanhe entradas, saídas e saldo consolidado por semana.")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Evolução financeira por semana" })
+    ).toBeInTheDocument();
+    expect(
+      mockFinancialVisualizationSwitcher.mock.calls[0]?.[0].bucketGranularity
+    ).toBe("week");
   });
 
   it("renders a semantic daily evolution table and the period summary", () => {

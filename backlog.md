@@ -20,7 +20,7 @@ Nenhum item pronto aguardando início no momento.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
 - Fase recomendada: ciclo atual Dias 1–7 restrito à `003B`; `003C` percorre ciclo próprio posterior.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A` concluída e mesclada em `develop` no commit `7434159`. Dia 3 da `UX-CHART-003B` concluído em `IMPLEMENTATION_IN_PROGRESS`: `three_months`/semana, `year`/mês e a RPC agregada estão em GREEN com Jest, pgTAP, RLS, grants, limites e plano validados. `003C` permanece planejada para ciclo próprio.
+- Status: IN_PROGRESS — `UX-CHART-003A` concluída e mesclada em `develop` no commit `7434159`. Dia 4 da `UX-CHART-003B` concluído em GREEN: `3M`/semana e `Ano`/mês possuem copy e semântica acessível adaptativas, cobertura exata do intervalo agregado e estados vazios validados. `003C` permanece planejada para ciclo próprio.
 
 ## DISCOVERY
 
