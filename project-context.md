@@ -2,7 +2,8 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 4 da UX-CHART-003B concluído em GREEN; granularidade adaptativa e cobertura exata do intervalo validadas
+- Fase atual: Dia 5 da UX-CHART-003B concluído em GREEN; estado contextual e formatação civil endurecidos
+- Data da refatoração e hardening interno da UX-CHART-003B: 2026-09-07
 - Data da expansão controlada da UX-CHART-003B: 2026-09-07
 - Data da implementação mínima da UX-CHART-003B: 2026-09-07
 - Data da estratégia de testes da UX-CHART-003B: 2026-09-06
@@ -8127,3 +8128,29 @@ Evidência e saída:
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram fora do escopo;
 - máquina de estados: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 5` da `UX-CHART-003B`.
+
+## Dia 5 — Refatoração e Hardening Interno da UX-CHART-003B
+
+Diagnóstico e plano:
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução;
+- inventário não encontrou arquivo de production monolítico no recorte da `003B`; o painel contextual de 216 linhas permanece coeso e não foi reescrito por estilo;
+- risco concreto identificado: o extrato selecionado permanecia aberto quando a chave civil do período mudava;
+- cinco implementações locais repetiam a mesma formatação de data civil na presentation;
+- plano e decisões registrados em `docs/ux-chart-003b-day5-refactoring.md`.
+
+Refatoração e integridade:
+- RED adicionou cenário de troca de período com diálogo contextual aberto e falhou 1 de 8 testes como esperado;
+- `FinancialVisualizationSwitcher` passou a isolar o estado interativo por chave de granularidade, início e fim, fechando seleção obsoleta sem `useEffect`;
+- formatter puro centraliza data completa e dia/mês para tabelas, painel e opções ECharts;
+- Server Component, DTO serializável e acesso server-side aos dados foram preservados conforme revisão Next.js/React;
+- nenhuma abstração genérica, memoização, efeito, barrel, dependência ou otimização especulativa foi criada.
+
+Validação e saída:
+- GREEN dirigido: 5 suítes e 38 testes; feature completa: 32 suítes e 287 testes; regressão global: 95 suítes e 618 testes, todos verdes e sem snapshots;
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` passaram;
+- `next-env.d.ts` foi restaurado após alteração automática do build;
+- Performance Agent não foi ativado por ausência de evidência concreta de gargalo;
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram fora do escopo;
+- `REFACTORING_IN_PROGRESS` encerrou com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` da `UX-CHART-003B`.

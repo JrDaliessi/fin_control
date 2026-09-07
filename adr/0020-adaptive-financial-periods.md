@@ -1,6 +1,6 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: expansão controlada da `UX-CHART-003B` concluída em GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
+- Status: refatoração e hardening da `UX-CHART-003B` concluídos em GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
 - Data: 2026-09-07
 - Feature: `UX-CHART-003`
 - Depende de: ADR 0019, ADR 0021 e merge `7434159`
@@ -19,7 +19,7 @@ A feature precisa manter cards, linha, candles, tabela e extrato no mesmo interv
 2. `UX-CHART-003B` adiciona `3M` e `Ano` por uma agregação server-side nova, migration forward-only e testes pgTAP.
 3. `UX-CHART-003C` adiciona `Tudo`, intervalo personalizado e drill-down de buckets trimestrais antes do extrato detalhado.
 
-Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 4 em GREEN e é o único recorte autorizado a avançar ao Dia 5.
+Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 5 em GREEN e é o único recorte autorizado a avançar ao Dia 6.
 
 ### Matriz de granularidade
 
@@ -143,7 +143,7 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 
 ## Próximo passo
 
-Executar o Dia 5 da `UX-CHART-003B` para refatorar e fortalecer a consistência interna com os testes existentes como rede de segurança, sem antecipar `Tudo`, personalizado ou drill-down.
+Executar o Dia 6 da `UX-CHART-003B` para validar responsividade, acessibilidade, microinterações e experiência PWA em navegador real, sem antecipar `Tudo`, personalizado ou drill-down.
 
 ## Evidências do Dia 4 da 003B
 
@@ -153,3 +153,11 @@ Executar o Dia 5 da `UX-CHART-003B` para refatorar e fortalecer a consistência 
 - RED dirigido registrou 7 falhas esperadas; GREEN dirigido fechou 59/59 testes;
 - feature completa passou 32 suítes/286 testes e a regressão global passou 95 suítes/617 testes;
 - ESLint, type-check e build Next.js 16.3.3 passaram sem nova dependência ou alteração remota.
+
+## Evidências do Dia 5 da 003B
+
+- RED reproduziu a seleção contextual obsoleta após mudança do intervalo;
+- chave composta por granularidade e limites civis reinicia somente o estado interativo, sem efeito de sincronização;
+- um formatter puro substituiu cinco implementações locais de datas na presentation;
+- arquivos coesos foram preservados e nenhuma abstração prematura foi criada;
+- 32 suítes/287 testes da feature e 95 suítes/618 testes globais passaram, além de lint, type-check e build.

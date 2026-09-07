@@ -2095,3 +2095,17 @@ Uma release incremental só pode ser considerada pronta quando:
 - ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; `next-env.d.ts` restaurado.
 - nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
 - estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5` da `UX-CHART-003B`.
+
+## Gate do Dia 5 — UX-CHART-003B
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução.
+- inventário documentado: nenhum arquivo de production monolítico justificou reescrita; uma seleção contextual obsoleta e cinco formatadores civis duplicados foram priorizados.
+- RED: suíte do switcher executou 8 testes, com 7 verdes e 1 falha esperada pelo diálogo antigo permanecer aberto.
+- GREEN dirigido: 5 suítes e 38 testes verdes; feature completa: 32 suítes e 287 testes verdes.
+- regressão completa: 95 suítes e 618 testes verdes, zero snapshots.
+- estado interativo agora é delimitado por granularidade, início e fim do período, sem `useEffect` de sincronização.
+- formatter de presentation único preserva formatos completos e compactos em tabelas, painel e ECharts.
+- revisão Next.js/React confirmou fronteira Server/Client, props serializáveis, imports diretos e ausência de rerender ou abstração artificial.
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; `next-env.d.ts` restaurado.
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6` da `UX-CHART-003B`.

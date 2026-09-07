@@ -2,6 +2,7 @@ import type { FinancialCandle } from "../../domain/types/financial-evolution.typ
 import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 import { formatCents } from "@/shared/utils/formatCents";
 import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
+import { formatFinancialCivilDate } from "../formatters/format-financial-civil-date";
 import { handleHorizontalTableKeyDown } from "./horizontal-table-keyboard-scroll";
 
 type FinancialCandlesTableProps = Readonly<{
@@ -9,11 +10,6 @@ type FinancialCandlesTableProps = Readonly<{
   candles: readonly FinancialCandle[];
   onSelectInterval?: (candle: FinancialCandle) => void;
 }>;
-
-function formatCivilDate(civilDate: string) {
-  const [year, month, day] = civilDate.split("-");
-  return `${day}/${month}/${year}`;
-}
 
 function describeVariation(candle: FinancialCandle) {
   if (candle.closeInCents > candle.openInCents) {
@@ -82,12 +78,12 @@ export function FinancialCandlesTable({
             {candles.map((candle) => (
               <tr key={candle.startOnInclusive}>
                 <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
-                  {formatCivilDate(candle.startOnInclusive)}
+                  {formatFinancialCivilDate(candle.startOnInclusive)}
                 </td>
                 {onSelectInterval ? (
                   <td className="px-4 py-3">
                     <button
-                      aria-label={`Ver extrato de ${formatCivilDate(candle.startOnInclusive)}`}
+                      aria-label={`Ver extrato de ${formatFinancialCivilDate(candle.startOnInclusive)}`}
                       className="min-h-11 whitespace-nowrap rounded-md border border-border px-3 py-2 font-semibold text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       onClick={() => onSelectInterval(candle)}
                       type="button"

@@ -2,17 +2,13 @@ import type { FinancialEvolutionPoint } from "../../domain/types/financial-evolu
 import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 import { formatCents } from "@/shared/utils/formatCents";
 import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
+import { formatFinancialCivilDate } from "../formatters/format-financial-civil-date";
 import { handleHorizontalTableKeyDown } from "./horizontal-table-keyboard-scroll";
 
 type FinancialEvolutionTableProps = Readonly<{
   bucketGranularity?: FinancialBucketGranularity;
   points: readonly FinancialEvolutionPoint[];
 }>;
-
-function formatCivilDate(civilDate: string) {
-  const [year, month, day] = civilDate.split("-");
-  return `${day}/${month}/${year}`;
-}
 
 export function FinancialEvolutionTable({
   bucketGranularity = "day",
@@ -61,7 +57,7 @@ export function FinancialEvolutionTable({
             {points.map((point) => (
               <tr key={point.startOnInclusive}>
                 <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
-                  {formatCivilDate(point.startOnInclusive)}
+                  {formatFinancialCivilDate(point.startOnInclusive)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 tabular-nums text-income">
                   {formatCents(point.incomeInCents)}

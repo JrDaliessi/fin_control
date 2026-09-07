@@ -1232,3 +1232,25 @@ Interpretação:
 - expansão controlada concluída sem ampliar o escopo da `UX-CHART-003C`;
 - estado final: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 5` da `UX-CHART-003B`.
+
+## Dia 5 — UX-CHART-003B
+
+### RED e refatoração
+
+- a suíte do switcher executou 8 testes: 7 passaram e 1 falhou porque o extrato do período anterior continuava aberto após rerender com novos limites;
+- a correção reinicia o conteúdo interativo pela chave civil do período, sem efeito de sincronização;
+- cinco formatadores locais foram substituídos por um módulo puro de presentation, preservando data completa e dia/mês.
+
+### GREEN e regressão
+
+- GREEN dirigido: 5 suítes e 38 testes verdes, zero snapshots;
+- feature `financial-analytics`: 32 suítes e 287 testes verdes, zero snapshots;
+- regressão completa: 95 suítes e 618 testes verdes, zero snapshots;
+- ESLint e type-check globais passaram;
+- build Next.js 16.3.3 com Turbopack passou, preservando todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado e `git diff --check` passou.
+
+Interpretação:
+- hardening concluído sem reescrita ampla, dependência ou otimização especulativa;
+- estado final: retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` da `UX-CHART-003B`.

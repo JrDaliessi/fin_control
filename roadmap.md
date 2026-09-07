@@ -292,11 +292,11 @@ Small releases da `UX-CHART-002`:
 
 Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 7 concluído em `READY_FOR_RELEASE` e GREEN. Volume e resultado líquido ganharam prioridade em largura total no celular, receitas/despesas preservam a leitura comparativa e o disclosure respeita reduced motion. As 93 suítes/562 testes, lint, type-check, audit e build estão verdes; Supabase saudável e alinhado, Preview da PR `#26` `READY` e observabilidade sem erro de runtime em 24 horas.
 
-Estado da `UX-CHART-003`: `003A` mesclada por squash em `develop` no commit `7434159`. Dia 4 da `003B` concluído em `IMPLEMENTATION_IN_PROGRESS` GREEN: `3M` semanal e `Ano` mensal estão funcionais, com linguagem visual/acessível adaptativa, intervalo agregado validado de ponta a ponta e estados vazios preservados. A `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
+Estado da `UX-CHART-003`: `003A` mesclada por squash em `develop` no commit `7434159`. Dia 5 da `003B` concluído em `IMPLEMENTATION_IN_PROGRESS` GREEN: estado de seleção obsoleto foi eliminado na troca de período e a formatação civil foi centralizada, com 95 suítes/618 testes verdes. A `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
 
 Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md` e `adr/0021-contextual-interval-volume-insights.md`.
 
-Próximo passo: executar o Dia 5 da `UX-CHART-003B` para refatoração e hardening interno, sem antecipar `Tudo`, personalizado ou drill-down.
+Próximo passo: executar o Dia 6 da `UX-CHART-003B` para validar responsividade, acessibilidade e experiência PWA dos sete períodos em navegador real.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

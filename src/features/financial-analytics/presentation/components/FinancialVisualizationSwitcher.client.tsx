@@ -30,7 +30,19 @@ type FinancialVisualizationSwitcherProps = Readonly<{
 
 type VisualizationMode = "evolution" | "candlestick";
 
-export function FinancialVisualizationSwitcher({
+export function FinancialVisualizationSwitcher(
+  props: FinancialVisualizationSwitcherProps
+) {
+  const periodKey = [
+    props.bucketGranularity,
+    props.evolutionModel.startOnInclusive,
+    props.evolutionModel.endOnExclusive
+  ].join(":");
+
+  return <FinancialVisualizationContent key={periodKey} {...props} />;
+}
+
+function FinancialVisualizationContent({
   bucketGranularity,
   evolutionModel,
   candlestickModel,
