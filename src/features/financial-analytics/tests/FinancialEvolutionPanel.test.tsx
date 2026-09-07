@@ -101,29 +101,6 @@ describe("FinancialEvolutionPanel", () => {
     );
   });
 
-  it("offers the five supported periods and preserves the selected period", () => {
-    render(
-      <FinancialEvolutionPanel
-        result={successResult}
-        selectedPeriodKind="rolling_7_days"
-      />
-    );
-
-    const selector = screen.getByRole("combobox", {
-      name: "Período da evolução financeira"
-    });
-
-    expect(selector).toHaveValue("rolling_7_days");
-    expect(within(selector).getAllByRole("option")).toHaveLength(5);
-    expect(within(selector).getByRole("option", { name: "Mês" })).toHaveValue(
-      "month"
-    );
-    expect(
-      screen.getByRole("button", { name: "Atualizar período" })
-    ).toHaveClass("min-h-11", "w-full", "sm:w-auto");
-    expect(selector).toHaveClass("w-full", "text-base", "sm:text-sm");
-  });
-
   it("guides users without accounts before rendering financial data", () => {
     render(
       <FinancialEvolutionPanel
@@ -147,6 +124,9 @@ describe("FinancialEvolutionPanel", () => {
     expect(
       screen.queryByRole("group", { name: /Saldo ao fim do período:/ })
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Período da evolução financeira" })
+    ).toBeInTheDocument();
     expect(mockFinancialVisualizationSwitcher).not.toHaveBeenCalled();
   });
 
@@ -184,6 +164,9 @@ describe("FinancialEvolutionPanel", () => {
     );
     expect(
       screen.getByRole("table", { name: "Evolução financeira por dia" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Período da evolução financeira" })
     ).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: /R\$\s*25,00/ })).toBeInTheDocument();
   });

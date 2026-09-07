@@ -2,8 +2,15 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-CHART-002D concluído em GREEN; aguardando versionamento e atualização da PR `#26`
+- Fase atual: Dia 7 da UX-CHART-003A concluído; documentação aguarda versionamento e atualização da PR #27
+- Data da validação final e preparação de release da UX-CHART-003A: 2026-09-06
+- Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003A: 2026-09-06
+- Data da refatoração e hardening interno da UX-CHART-003A: 2026-09-06
+- Data da expansão controlada da UX-CHART-003A: 2026-09-06
+- Data da implementação mínima da UX-CHART-003A: 2026-09-06
+- Data da estratégia de testes da UX-CHART-003A: 2026-09-06
 - Data da validação final e preparação de release da UX-CHART-002D: 2026-09-06
+- Data do discovery e arquitetura da UX-CHART-003A: 2026-09-06
 - Data de bootstrap: 2026-07-08
 - Data de discovery inicial: 2026-07-08
 - Data de estratégia de testes inicial: 2026-07-08
@@ -1007,6 +1014,7 @@ Regra operacional:
 - Validação final do Dia 7 da SR-005 concluída com pipeline verde.
 
 ## Erros Recorrentes da IA e Como Evitar
+- Erro: ao registrar o Dia 7 da `UX-CHART-002D`, o bloco final do Dia 6 permaneceu depois da nova seção e contradisse o estado `READY_FOR_RELEASE` já correto no topo. Prevenção: ao inserir uma fase no fim do contexto, verificar em conjunto o cabeçalho, as últimas linhas, backlog e roadmap; cada seção deve encerrar com seu próprio estado antes da próxima fase e nenhum estado histórico pode permanecer como instrução operacional corrente.
 - Erro: ao executar os gates paralelos do Dia 4 da UX-CHART-002D, a primeira orquestração resumiu apenas `exit_code` e `output` e descartou os `session_id` retornados pelos processos que excederam 30 segundos, deixando o resultado de duas tarefas indeterminado. Prevenção: quando um executor puder devolver sessão ativa, preservar e inspecionar o objeto completo ou executar o gate longo isoladamente, retomando explicitamente cada `session_id` antes de registrar evidência.
 - Erro: no primeiro GREEN da UX-CHART-002D, uma asserção antiga buscava globalmente o mesmo valor que passou a aparecer no resumo e no lançamento, e o teste de contenção de foco ainda assumia um único controle interativo. Prevenção: ao adicionar informação deliberadamente repetida ou um novo controle acessível, preservar a intenção dos testes anteriores com consultas semânticas escopadas e atualizar a ordem de teclado completa, sem relaxar o contrato de foco.
 - Erro: no RED do Dia 6 da `UX-CHART-002`, o mock inline de `loadStatement` não declarou a assinatura e o TypeScript inferiu o parâmetro como `unknown`, impedindo o spread apesar do GREEN comportamental. Prevenção: mocks de ports opcionais devem reutilizar ou declarar o contrato mínimo de input no momento em que o teste é escrito, antes do primeiro type-check.
@@ -7709,7 +7717,253 @@ Saída e governança:
 - estado de saída: `READY_FOR_RELEASE`;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#26` e aguardar os checks do novo head; depois, mediante decisão humana, realizar squash merge em `develop` e retomar o Dia 1 da `UX-CHART-003`.
 
-Estado de saída:
-- `QUALITY_VALIDATION`;
-- Dia 6 concluído sem bloqueio duro;
-- próximo comando válido: `dia 7` para qualidade final, segurança, observabilidade e entrega incremental.
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-003A
+
+Entrada e base Git:
+- a PR `#26` foi confirmada como mesclada por squash em `origin/develop` no commit `70fd53c`;
+- a branch `feature/UX-CHART-003-periodos-adaptativos` não possuía commits próprios e foi avançada com segurança para a nova base antes de qualquer edição;
+- o stash `checkpoint UX-CHART-003 selecionada antes da UX-CHART-002D` foi apenas inspecionado e permaneceu preservado, sem reaplicar estado obsoleto sobre o merge;
+- `UX-CHART-002D` permanece concluída e o bloqueio de dependência da `UX-CHART-003` foi removido.
+
+Discovery e escopo aprovado:
+- `UX-CHART-003A` é a única small release ativa neste ciclo;
+- o primeiro recorte substitui o `select` e o botão `Atualizar período` por uma barra imediata com `Semana`, `7D`, `Quinzena`, `15D` e `Mês`;
+- os cinco valores de URL atuais e suas diferenças semânticas são preservados: semana/quinzena civis não se confundem com sete/quinze dias móveis;
+- o controle será um formulário GET server-rendered, com ações de 44 px, foco visível, `aria-pressed`, nomes acessíveis completos e rolagem horizontal confinada em 320 px;
+- cards, linha, candles, tabela e extrato continuam recebendo a mesma resposta do caso de uso;
+- `003A` não altera domain, application, infrastructure, RPC, migration, RLS, dados ou dependências.
+
+Arquitetura futura refinada:
+- `UX-CHART-003B` adicionará `3M` como três meses civis com bucket semanal e `Ano` como ano civil com bucket mensal;
+- períodos longos serão agregados no PostgreSQL por RPC `SECURITY INVOKER`, com `search_path = ''`, identidade permanente, RLS, allowlist, grants mínimos e resposta somente agregada;
+- o índice composto existente deverá ser medido com `EXPLAIN (ANALYZE, BUFFERS)` antes de qualquer índice novo;
+- `UX-CHART-003C` adicionará `Tudo`, intervalo personalizado e drill-down de trimestre para mês antes do extrato limitado a 31 dias;
+- a política para históricos que excedam 60 buckets trimestrais permanece decisão formal do ciclo `003C`; truncamento silencioso é proibido.
+
+Supabase, segurança e fontes atuais:
+- projeto `fin_control` confirmado em `ACTIVE_HEALTHY`, Postgres 17, com RLS nas três tabelas e seis migrations locais/remotas alinhadas;
+- Security Advisor manteve apenas `SEC-AUTH-001`; Performance Advisor manteve um índice de contas sem uso como informação, sem relação com a `003A`;
+- documentação atual do Supabase confirmou preferência por `SECURITY INVOKER`, `search_path` explícito, grants restritos e RLS com ownership;
+- apresentação não aceitará `userId`, não acessará Supabase e não receberá histórico bruto.
+
+Artefatos e contratos:
+- criado `docs/ux-chart-003-discovery.md` com jornada, semântica, granularidade, camadas, segurança, riscos e dez cenários essenciais da `003A`;
+- ADR `0020-adaptive-financial-periods.md` atualizado para arquitetura aprovada da `003A`;
+- backlog e roadmap atualizados para separar os ciclos `003A`, `003B` e `003C`;
+- baseline dos contratos atuais aprovada com 3 suítes e 30 testes, cobrindo resolver de período, composição financeira e rotas do dashboard;
+- a inconsistência documental residual entre os estados dos Dias 6 e 7 da predecessora foi registrada em erros recorrentes e corrigida antes desta saída.
+
+Fronteiras e saída:
+- nenhum código funcional, teste, migration, RPC, policy, grant, dado, dependência ou configuração remota foi criado ou alterado;
+- nenhum commit, push, PR, merge remoto, deploy ou promoção foi executado nesta fase;
+- anexos privados e `rewrite-msgs.sh` permaneceram não rastreados e intocados;
+- risco da `003A`: MÉDIO e restrito a navegação, acessibilidade e responsividade; `003B/C` continuam com risco ALTO e fora do ciclo atual;
+- estado de saída: `ARCHITECTURE_READY`;
+- próximo comando válido: `dia 2` para criar os testes essenciais da `UX-CHART-003A` em RED antes de alterar `FinancialPeriodSelector`.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-CHART-003A
+
+Matriz e escopo:
+- domínio preserva os contratos existentes para semana/quinzena civis, sete/quinze dias móveis e intervalos semiabertos;
+- application preserva resolução e listagem financeira sem caso de uso novo;
+- presentation recebeu contratos para a barra imediata, ordem, nomes acessíveis, submit GET, estado ativo, alvo de 44 px e rolagem confinada;
+- App Router recebeu a matriz dos cinco valores aceitos e o cenário seguro de parâmetro repetido;
+- infrastructure e Supabase não exigem testes novos na `003A`, pois RPC diária, RLS e migrations permanecem inalteradas.
+
+Testes criados ou ampliados:
+- `FinancialEvolutionPanel.test.tsx`: três contratos para barra acessível, valores GET e indicação semântica/visual do período ativo;
+- `DashboardRoutes.test.tsx`: composição parametrizada dos cinco períodos e fallback de array repetido para `month`;
+- `financial-analytics-boundaries.test.ts`: seletor continua Server Component, progressivo e sem acesso a dados;
+- `docs/ux-chart-003-test-strategy.md`: matriz, cenários, RED e limites do Dia 3.
+
+RED controlado:
+- 3 suítes direcionadas, 27 testes, 23 preservados e 4 falhas esperadas, zero snapshots;
+- três falhas provam que a barra ainda não substituiu o combobox e o botão intermediário;
+- uma falha prova que parâmetro repetido ainda escolhe incorretamente o primeiro valor em vez do fallback `month`;
+- nenhuma implementação funcional foi criada para satisfazer os testes nesta fase.
+
+Rede de segurança:
+- domínio, application e composição server-side: 4 suítes e 37 testes verdes, zero snapshots;
+- regressão completa: 93 suítes, 91 verdes e somente 2 suítes RED; 567 testes verdes e somente as 4 falhas planejadas entre 571 testes, zero snapshots;
+- ESLint global e type-check global verdes, sem erros ou avisos;
+- o `npm` global local apontou para módulo ausente; os gates foram executados com o runtime Node empacotado do workspace, sem instalar ou alterar dependências;
+- `git diff --check` verde.
+
+Fronteiras e saída:
+- nenhum componente funcional, regra financeira, caso de uso, repository, RPC, migration, RLS, dado, dependência ou configuração remota foi alterado;
+- `003B/C`, históricos longos, drill-down e Client Component permanecem fora do escopo;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- estado de saída: `TEST_STRATEGY_READY`;
+- próximo comando válido: `dia 3` para implementar o mínimo necessário até tornar verdes os quatro contratos da `UX-CHART-003A`.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-CHART-003A
+
+Implementação mínima:
+- `FinancialPeriodSelector` substituiu o `select` e o botão intermediário por cinco submit buttons dentro de um formulário GET server-rendered;
+- rótulos visíveis permanecem compactos (`Semana`, `7D`, `Quinzena`, `15D`, `Mês`) e nomes acessíveis explicitam a semântica civil ou móvel;
+- período ativo expõe `aria-pressed` e recebe anel visível, portanto o estado não depende somente de cor;
+- cada ação preserva o valor canônico existente em `name="period"` e mantém funcionamento progressivo sem JavaScript;
+- container usa largura máxima, rolagem horizontal e overscroll confinado; botões preservam `min-h-11` e `shrink-0`;
+- `normalizeFinancialPeriodKind` passou a aceitar somente string escalar válida; ausência, valor desconhecido ou array repetido recai em `month`.
+
+Arquitetura preservada:
+- seletor continua Server Component, sem `use client`, estado local, `useRouter`, `useSearchParams`, fetch ou Supabase;
+- `composeDashboardRoute` continua aguardando `searchParams` e usando a mesma fonte para cards, linha, candles, tabela e extrato;
+- domain, application, infrastructure, RPC diária e limite de 31 dias permaneceram inalterados;
+- skill Next.js aplicada para manter leitura server-side, props simples e navegação GET progressiva.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 27 testes aprovados, zero snapshots;
+- regressão completa: 93 suítes e 571 testes aprovados, zero snapshots;
+- ESLint global aprovado sem erros ou avisos;
+- type-check global aprovado sem erros;
+- build de produção Next.js 16.3.3 com Turbopack aprovado para todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build;
+- `git diff --check` verde.
+
+Fronteiras e saída:
+- nenhum período novo, Client Component, estado otimista, gráfico, extrato, caso de uso, repository, migration, RPC, RLS, dado, dependência ou configuração remota foi alterado;
+- `003B/C`, históricos longos e drill-down permanecem fora do escopo;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- o `npm` global continua com referência local inválida; os gates usaram o runtime Node empacotado sem modificar dependências;
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 4` para expansão controlada da experiência da `UX-CHART-003A`.
+
+## Dia 4 — Expansão Controlada da UX-CHART-003A
+
+Ciclo TDD e experiência:
+- RED dirigido: 1 suíte, 19 testes, 17 preservados e 2 falhas esperadas pela ausência da orientação contextual e do contrato de movimento reduzido;
+- a barra explica de forma curta e visível que `Semana` e `Quinzena` seguem o calendário, enquanto `7D` e `15D` contam até hoje;
+- a orientação possui identificação estável e está associada ao grupo por `aria-describedby`, sem tooltip oculto ou dependência de hover;
+- todos os cinco períodos foram cobertos individualmente para garantir exatamente um `aria-pressed="true"`;
+- a ordem de foco por teclado segue a ordem visual e os botões passam a respeitar `prefers-reduced-motion`;
+- o seletor permanece disponível nos estados `success`, `empty` e `missing_accounts`, permitindo trocar o intervalo mesmo sem movimentos ou contas.
+
+Arquitetura preservada:
+- `FinancialPeriodSelector` continua Server Component e formulário GET progressivo, sem estado cliente, efeito, hook de navegação ou acesso Supabase;
+- nenhuma regra de período, composição de dashboard, gráfico, extrato, domínio, application ou infrastructure foi alterada;
+- a skill de Next.js orientou a preservação da fronteira RSC e das props serializáveis.
+
+Evidências GREEN:
+- contratos direcionados: 3 suítes e 34 testes aprovados, zero snapshots;
+- regressão completa: 93 suítes e 578 testes aprovados, zero snapshots;
+- ESLint global aprovado sem erros ou avisos;
+- type-check global aprovado sem erros;
+- build de produção Next.js 16.3.3 com Turbopack aprovado para todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build.
+
+Fronteiras e saída:
+- nenhum período novo, Client Component, migration, RPC, RLS, dado, dependência ou configuração remota foi criado ou alterado;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada;
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN, com expansão controlada concluída;
+- próximo comando válido: `dia 5` para refatoração, consistência e hardening interno da `UX-CHART-003A`.
+
+## Dia 5 — Refatoração, Consistência e Hardening Interno da UX-CHART-003A
+
+Diagnóstico e decisão:
+- o componente `FinancialPeriodSelector` possui 51 linhas, responsabilidade única e configuração já isolada; nenhuma abstração adicional reduziria complexidade;
+- `FinancialEvolutionPanel.test.tsx` possuía 561 linhas e concentrava nove contratos exclusivos do seletor, caracterizando perda de coesão na suíte;
+- o plano incremental aprovado limitou-se a separar esses contratos, sem alterar produção, regra de negócio ou cobertura.
+
+Refatoração aplicada:
+- criada `FinancialPeriodSelector.test.tsx` com os contratos de opções, GET progressivo, seleção exclusiva, orientação, teclado e movimento reduzido;
+- `FinancialEvolutionPanel.test.tsx` permaneceu com os contratos de composição, estados, resumos, tabela e integração das visualizações;
+- a suíte do painel foi reduzida de 561 para 405 linhas; a nova suíte focada possui 133 linhas;
+- nenhum teste foi enfraquecido, removido ou acoplado à configuração interna de produção.
+
+Consistência e integridade:
+- o componente, os tokens visuais, as classes responsivas e os nomes acessíveis permaneceram inalterados;
+- domain, application, infrastructure, rotas, gráficos, extrato, RPC e Supabase permaneceram fora da refatoração;
+- a fronteira Server Component continuou protegida pelo teste arquitetural existente.
+
+Evidências GREEN:
+- baseline anterior: 2 suítes e 24 testes aprovados, zero snapshots;
+- após a separação: 3 suítes e 24 testes direcionados aprovados, zero snapshots;
+- regressão completa: 94 suítes e 578 testes aprovados, zero snapshots;
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack aprovados;
+- todas as rotas e o Proxy foram preservados;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após o build.
+
+Fronteiras e saída:
+- nenhuma nova regra, período, dependência, migration, RPC, RLS, dado ou configuração remota foi criada ou alterada;
+- nenhum commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada;
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` para experiência, acessibilidade, responsividade e PWA da `UX-CHART-003A`.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-003A
+
+Diagnóstico e ciclo TDD:
+- a validação real em 320 px revelou que a barra tinha `scrollWidth` de 388 px para 273 px disponíveis e deixava o período ativo `Mês` fora da área inicialmente visível;
+- o primeiro RED adicionou o contrato de rótulos compactos no celular, rótulos completos a partir de `sm`, espaçamento reduzido e folga interna para o anel de foco;
+- após o primeiro GREEN, a inspeção no navegador identificou que o `px-4` base do `Button` prevalecia sobre `px-2`; um segundo RED exigiu `!px-2` e `sm:!px-4` antes da correção mínima;
+- os contratos existentes de ordem, nomes acessíveis, GET progressivo, seleção exclusiva, alvos de 44 px, orientação contextual e movimento reduzido foram preservados.
+
+Implementação e experiência:
+- cada opção passou a declarar `compactLabel`, com `Sem.`, `7D`, `Quinz.`, `15D` e `Mês` no celular e os rótulos completos em telas a partir de `sm`;
+- o grupo usa `gap-1` e `p-1` no celular, `sm:gap-2` no desktop e padding explícito nos botões, mantendo o anel ativo e de foco sem corte;
+- a navegação continua server-rendered por formulário GET, sem JavaScript obrigatório, estado cliente ou acesso direto à infraestrutura;
+- a cópia visível sobre períodos civis e móveis, os nomes acessíveis completos e `aria-pressed` continuam independentes da abreviação visual.
+
+Evidência de navegador e PWA:
+- em 320 px, os cinco botões ficaram simultaneamente visíveis, com `clientWidth = scrollWidth = 273`, alvos de 44 px e sem overflow horizontal da página;
+- em 768 e 1280 px, os rótulos completos ficaram visíveis, o grupo permaneceu sem overflow e os alvos mantiveram 44 px;
+- Tab moveu o foco entre os períodos com anel perceptível; selecionar `7D` navegou para `?period=rolling_7_days` e atualizou `aria-pressed`;
+- documento manteve `lang="pt-BR"`, viewport responsiva, manifesto `/manifest.webmanifest`, cores de tema clara/escura e console sem erros ou avisos;
+- a skill de navegador expôs a precedência real de CSS que não aparecia no DOM isolado e orientou a menor correção responsiva.
+
+Evidências GREEN e fronteiras:
+- dois ciclos RED/GREEN do seletor foram concluídos; suíte final do componente: 11 testes verdes;
+- regressão completa final: 94 suítes e 579 testes aprovados, zero snapshots;
+- ESLint global, type-check e build de produção Next.js 16.3.3 com Turbopack aprovados; todas as rotas e o Proxy preservados;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build;
+- nenhuma migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- nenhuma dívida CRÍTICA ou ALTA foi identificada; `003B/C` permanecem fora deste ciclo;
+- estado de saída: `QUALITY_VALIDATION` em GREEN;
+- próximo comando válido: `dia 7` para quality gates finais, segurança, observabilidade e preparação da entrega incremental da `UX-CHART-003A`.
+
+## Dia 7 — Qualidade Final, Segurança, Observabilidade e Entrega da UX-CHART-003A
+
+Quality gates locais:
+- regressão completa: 94 suítes e 579 testes aprovados, zero snapshots;
+- ESLint global aprovado sem erros ou avisos e type-check global aprovado sem erros;
+- build de produção Next.js 16.3.3 com Turbopack aprovado para todas as rotas e o Proxy;
+- auditoria npm encontrou zero vulnerabilidades; 701 pacotes possuem assinatura de registro verificada e 102 possuem attestation verificada;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a alteração automática do build e `git diff --check` permaneceu verde.
+
+Segurança e threat model:
+- o diff funcional permanece limitado ao seletor de períodos, configuração de rótulos e testes; nenhuma infraestrutura, autenticação, autorização ou regra financeira foi alterada;
+- `FinancialPeriodSelector` permanece Server Component, sem Supabase, fetch, hooks cliente, HTML arbitrário, identificador de usuário, token ou logging financeiro;
+- navegação GET utiliza somente os cinco valores canônicos existentes, com fallback seguro para ausência, valor desconhecido ou parâmetro repetido;
+- nenhuma chave privilegiada ou segredo foi encontrado em arquivo rastreado; a configuração pública do Supabase continua isolada nas fronteiras existentes;
+- riscos de IDOR/BOLA, exfiltração, injeção e ampliação de consulta não foram introduzidos pela `003A`.
+
+Supabase e integridade:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) confirmado `ACTIVE_HEALTHY`, PostgreSQL 17, região `sa-east-1`;
+- `financial_accounts`, `categories` e `transactions` permanecem com RLS habilitada; as seis migrations remotas continuam alinhadas às seis migrations locais;
+- Security Advisor manteve apenas `auth_leaked_password_protection`, já registrado em `SEC-AUTH-001` e bloqueado pelo plano Free;
+- Performance Advisor reportou somente `financial_accounts_user_created_id_idx` sem uso, informação sem relação com esta UI e sem evidência para remoção;
+- breaking changes recentes de Supabase sobre self-hosting, Realtime, extensões e Management API não atingem este recorte hospedado e sem alteração de schema.
+
+Vercel, observabilidade e PR:
+- projeto ativo confirmado como `prj_G2U1I0AKTCyMlMm9ydglk2B17y2g`; o vínculo local antigo continua rastreado em `CI-VERCEL-002` e não foi alterado;
+- Preview `dpl_6G1AWR6qK11d6c9RyYSeUyPd4PZV`, correspondente ao commit `d40529b` e à PR `#27`, está `READY`;
+- `/dashboard` respondeu HTTP 200 e apresentou a tela de login para requisição sem sessão, com CSP, HSTS, `frame-ancestors 'none'`, Permissions Policy, `noindex` e manifesto preservados;
+- não houve cluster de runtime error nem log `error/fatal` no deployment nas últimas 24 horas;
+- PR `#27` está aberta, não draft, `CLEAN` e mergeável; Quality Gates, Vercel e Vercel Preview Comments estão verdes e não existe comentário de toolbar pendente;
+- baseline permanece GitHub Actions, build/runtime Vercel e advisors Supabase; o plano Hobby não oferece drains e `HARD-OBS-001` continua obrigatório antes de produção pública.
+
+Riscos, fronteiras e saída:
+- nenhuma dívida CRÍTICA ou ALTA específica da `UX-CHART-003A` foi encontrada;
+- `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública, mas não o merge incremental desta feature;
+- `CI-VERCEL-002` permanece dívida MÉDIA e deve ser resolvida antes de operação direta por CLI ou promoção;
+- nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado no Dia 7;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram preservados fora do escopo;
+- `UX-CHART-003A` atende ao critério de pronto e passa a `DONE` / `READY_FOR_RELEASE`; `003B/C` continuam fora deste ciclo;
+- próximo passo: versionar a documentação do Dia 7, atualizar a PR `#27` e aguardar os checks do novo head; depois, mediante decisão humana, realizar squash merge em `develop`.

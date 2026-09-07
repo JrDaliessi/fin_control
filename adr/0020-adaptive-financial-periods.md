@@ -1,9 +1,9 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: arquitetura coordenada; implementação aguardando UX-CHART-002
-- Data: 2026-09-01
+- Status: arquitetura aprovada para `UX-CHART-003A`; `003B/C` refinadas para ciclos próprios
+- Data: 2026-09-06
 - Feature: `UX-CHART-003`
-- Depende de: ADR 0019
+- Depende de: ADR 0019, ADR 0021 e merge `70fd53c`
 
 ## Contexto
 
@@ -15,18 +15,18 @@ A feature precisa manter cards, linha, candles, tabela e extrato no mesmo interv
 
 ### Sequência incremental
 
-1. `UX-CHART-003A` adiciona `7D`, `15D` e `Mês` sobre a RPC atual, sem migration, preservando os valores de URL já aceitos.
+1. `UX-CHART-003A` substitui o `select` e o botão de confirmação por uma barra imediata com os cinco períodos já suportados: `Semana`, `7D`, `Quinzena`, `15D` e `Mês`. Reutiliza a RPC atual, não cria migration e preserva todos os valores de URL.
 2. `UX-CHART-003B` adiciona `3M` e `Ano` por uma agregação server-side nova, migration forward-only e testes pgTAP.
-3. `UX-CHART-003C` adiciona `Tudo` e intervalo personalizado e integra todos os buckets ao extrato contextual.
+3. `UX-CHART-003C` adiciona `Tudo`, intervalo personalizado e drill-down de buckets trimestrais antes do extrato detalhado.
 
-Cada recorte percorre Dias 1 a 7. `UX-CHART-003` não entra em TDD ou implementação enquanto `UX-CHART-002` não estiver concluída.
+Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `develop`; somente a `003A` está autorizada a avançar ao Dia 2.
 
 ### Matriz de granularidade
 
 | Intervalo selecionado | Bucket padrão | Limite operacional |
 | --- | --- | --- |
 | até 31 dias | diário | RPC atual, até 31 pontos |
-| acima de 31 dias até 6 meses | semanal civil | preferencialmente 12–27 pontos |
+| acima de 31 dias até 6 meses | semanal civil | aproximadamente 5–27 pontos |
 | acima de 6 meses até 2 anos | mensal civil | preferencialmente 7–24 pontos |
 | acima de 2 anos | trimestral civil | preferencialmente 12–60 pontos |
 
@@ -39,17 +39,31 @@ Cada recorte percorre Dias 1 a 7. `UX-CHART-003` não entra em TDD ou implementa
 
 - O período selecionado permanece representável na URL e sobreviverá a refresh, navegação e compartilhamento.
 - Valores antigos continuam válidos; valor desconhecido recai em default seguro e canônico.
-- A barra é horizontal e rolável quando necessário, com botões de alvo mínimo de 44 px, `aria-pressed` e nomes acessíveis completos.
+- A `003A` preserva `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`; o fallback permanece `month`.
+- A barra é um formulário GET server-rendered com ações imediatas, horizontal e rolável quando necessário, sem exigir estado cliente para navegar.
+- Os botões têm alvo mínimo de 44 px, `aria-pressed`, foco visível e nomes acessíveis completos; a seleção não depende somente de cor.
+- A ordem é `Semana`, `7D`, `Quinzena`, `15D`, `Mês`, mantendo visível a diferença entre período civil e período móvel.
 - O seletor controla uma única fonte de período para resumo, linha, candles, tabela e extrato.
 - A tabela textual continua obrigatória e usa o mesmo bucket do gráfico.
+
+### Semântica de 3M, Ano e períodos extensos
+
+- `3M` representa o mês civil da referência e os dois meses civis anteriores; não significa noventa dias.
+- `Ano` representa o ano civil da referência; doze meses móveis exigiriam um preset futuro distinto.
+- `Personalizado` recebe limites inclusivos na UI e os converte para intervalo semiaberto no domínio.
+- `Tudo` deriva sua âncora histórica no servidor por proprietário; o browser não escolhe a data inicial efetiva.
+- A política para mais de 60 buckets trimestrais permanece decisão obrigatória do ciclo `003C`; truncamento silencioso é proibido.
+- Bucket trimestral não consulta diretamente extrato bruto acima de 31 dias: primeiro ocorre drill-down para meses, depois a consulta detalhada existente.
 
 ### Agregação e segurança
 
 - A RPC diária atual continua limitada a 31 dias e não será relaxada.
 - O recorte 003B cria uma função agregadora `SECURITY INVOKER`, acessível somente a `authenticated`, com identidade validada, RLS, allowlist e limites explícitos.
+- A função agregada usa `search_path = ''`, revoga `EXECUTE` de `PUBLIC`, `anon` e `service_role` e não aceita `userId` do cliente.
 - A migration será forward-only, reproduzível e validada por pgTAP antes de aplicação remota.
 - A resposta contém somente agregados necessários para os view models; descrições e lançamentos são buscados sob demanda pelo contrato da UX-CHART-002.
 - Nenhum valor financeiro, descrição, UUID ou e-mail entra em logs ou analytics.
+- O índice composto existente deve ser validado com `EXPLAIN (ANALYZE, BUFFERS)` antes de qualquer índice novo; índices especulativos são rejeitados.
 
 ## Contratos testáveis para o ciclo futuro
 
@@ -62,7 +76,9 @@ Cada recorte percorre Dias 1 a 7. `UX-CHART-003` não entra em TDD ou implementa
 7. a RPC rejeita usuário ausente/anônimo, bucket fora da allowlist e intervalo excessivo;
 8. RLS impede leitura cross-tenant e a migration preserva grants mínimos;
 9. atalhos são operáveis por teclado, anunciam seleção e não causam overflow em 320 px;
-10. históricos longos não enviam movimentos brutos ao cliente.
+10. o seletor da `003A` permanece Server Component, usa navegação GET e não consulta Supabase;
+11. históricos longos não enviam movimentos brutos ao cliente;
+12. buckets trimestrais exigem drill-down antes do extrato detalhado limitado a 31 dias.
 
 ## Alternativas consideradas
 
@@ -88,8 +104,16 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - Períodos longos exigem ciclo crítico próprio, com TDD, pgTAP, revisão RLS e validação de performance.
 - O limite visual de pontos fica previsível em mobile e desktop.
 - O extrato contextual continua sob demanda e independente da granularidade agregada.
-- A feature permanece em `DISCOVERY` até a conclusão da UX-CHART-002.
+- A `003A` passa a `ARCHITECTURE_READY`; `003B/C` permanecem refinadas, mas não autorizadas para teste ou implementação neste ciclo.
+
+## Evidências do Dia 1 próprio
+
+- merge da predecessora confirmado em `origin/develop` no commit `70fd53c`;
+- código atual possui cinco valores de período, um resolver civil puro, uma única composição server-side e RPC diária limitada a 31 dias;
+- projeto Supabase `fin_control` está `ACTIVE_HEALTHY` em Postgres 17, com três tabelas sob RLS e seis migrations locais/remotas alinhadas;
+- documentação atual do Supabase mantém `SECURITY INVOKER`, `search_path` seguro e grants explícitos como padrões aplicáveis à futura RPC;
+- discovery detalhado registrado em `docs/ux-chart-003-discovery.md`.
 
 ## Próximo passo
 
-Concluir o ciclo da `UX-CHART-002`; depois revalidar este ADR no Dia 1 próprio da `UX-CHART-003A` antes de criar testes ou migration.
+Executar o Dia 2 da `UX-CHART-003A` e criar testes em RED para a barra de períodos, URLs existentes, semântica acessível, responsividade e fronteiras arquiteturais antes de alterar código funcional.

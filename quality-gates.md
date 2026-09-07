@@ -1920,3 +1920,116 @@ Uma release incremental só pode ser considerada pronta quando:
 - `next-env.d.ts` restaurado; anexos privados e `rewrite-msgs.sh` preservados fora do escopo.
 - produção pública continua bloqueada por `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B`, sem impedir o merge incremental da feature.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#26`.
+
+## Gate do Dia 1 — UX-CHART-003A
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- PR `#26` confirmada como squash merge `70fd53c` em `origin/develop`; branch da `UX-CHART-003` avançada da base antiga sem descartar commits próprios.
+- stash documental antigo foi somente inspecionado e permaneceu preservado para evitar reaplicar contexto obsoleto.
+- discovery separou `003A` para barra dos cinco períodos atuais, `003B` para `3M/Ano` agregados e `003C` para `Tudo/Personalizado` com drill-down.
+- `003A` preserva os cinco valores de URL, resolver civil, composition root, caso de uso e RPC diária limitada a 31 dias.
+- arquitetura mantém seletor como Server Component e navegação GET progressiva, sem estado cliente ou acesso Supabase na presentation.
+- baseline atual aprovada com 3 suítes e 30 testes, zero snapshots, cobrindo resolver de período, composição financeira e rotas.
+- projeto Supabase `ACTIVE_HEALTHY`, três tabelas sob RLS e seis migrations locais/remotas alinhadas; nenhuma mutação remota foi executada.
+- futura RPC de `003B` condicionada a `SECURITY INVOKER`, `search_path = ''`, ownership, grants mínimos, pgTAP, advisors e plano medido antes de novo índice.
+- erro documental residual da predecessora foi registrado em erros recorrentes e corrigido antes da saída.
+- nenhum código funcional, teste, migration, dado, dependência, commit, push, PR, merge remoto, deploy ou promoção foi criado/executado.
+- `docs/ux-chart-003-discovery.md`, ADR 0020, backlog, roadmap e contexto central compõem os artefatos do Dia 1.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2` da `UX-CHART-003A`.
+
+## Gate do Dia 2 — UX-CHART-003A
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- matriz por camada, cenários felizes, alternativos e limites documentados em `docs/ux-chart-003-test-strategy.md`.
+- presentation recebeu três contratos para ordem e nomes da barra, navegação GET progressiva, valores de URL, alvo de 44 px, rolagem confinada, `aria-pressed` e indicação ativa não limitada à cor.
+- rotas receberam a matriz dos cinco períodos e o fallback de parâmetro repetido para `month`.
+- teste de arquitetura preserva o seletor como Server Component sem fetch, Supabase ou hooks de navegação.
+- RED controlado: 3 suítes, 27 testes, 23 preservados e 4 falhas esperadas, zero snapshots.
+- rede de segurança de domínio, application e composição: 4 suítes e 37 testes verdes, zero snapshots.
+- regressão completa: 93 suítes, 91 verdes e apenas 2 suítes RED; 567 testes verdes e somente as 4 falhas planejadas entre 571 testes, zero snapshots.
+- ESLint global e type-check global verdes; `git diff --check` verde.
+- falha ambiental do `npm` global foi contornada com o runtime Node empacotado, sem instalação ou alteração de dependências.
+- nenhum código funcional, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e stashes permaneceram intocados.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003A`.
+
+## Gate do Dia 3 — UX-CHART-003A
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da execução.
+- quatro contratos RED do Dia 2 tornaram-se verdes sem enfraquecimento das expectativas.
+- barra GET server-rendered apresenta `Semana`, `7D`, `Quinzena`, `15D` e `Mês` com valores canônicos existentes.
+- nomes acessíveis completos, `aria-pressed`, anel ativo, alvos de 44 px e rolagem horizontal confinada implementados.
+- ausência, valor desconhecido e parâmetro repetido usam o fallback seguro `month`.
+- seletor permanece Server Component sem fetch, Supabase, hooks de navegação ou estado cliente.
+- contratos direcionados: 3 suítes e 27 testes verdes; regressão completa: 93 suítes e 571 testes verdes; zero snapshots.
+- ESLint, type-check, build Next.js 16.3.3 e `git diff --check` verdes.
+- `next-env.d.ts` restaurado após a reescrita automática do build.
+- nenhum período novo, migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e stashes permaneceram intocados.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4` da `UX-CHART-003A`.
+
+## Gate do Dia 4 — UX-CHART-003A
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da implementação.
+- skill `vercel:nextjs` aplicada para preservar o seletor como Server Component e o formulário GET progressivo.
+- RED dirigido: 1 suíte, 19 testes, 17 preservados e 2 falhas esperadas pela orientação e redução de movimento ainda ausentes.
+- orientação curta diferencia períodos civis e móveis e está ligada ao grupo por `aria-describedby`.
+- matriz dos cinco períodos garante uma única seleção semântica; ordem por teclado e `prefers-reduced-motion` estão cobertos.
+- seletor permanece disponível em `success`, `empty` e `missing_accounts`.
+- contratos direcionados: 3 suítes e 34 testes verdes, zero snapshots.
+- regressão completa: 93 suítes e 578 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- `next-env.d.ts` restaurado ao conteúdo versionado depois do build.
+- nenhum período novo, Client Component, migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5` da `UX-CHART-003A`.
+
+## Gate do Dia 5 — UX-CHART-003A
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da refatoração.
+- baseline: 2 suítes e 24 testes verdes, zero snapshots.
+- auditoria identificou `FinancialEvolutionPanel.test.tsx` com 561 linhas e nove contratos exclusivos do seletor; o componente de produção possui 51 linhas e já está coeso.
+- contratos do seletor foram movidos para `FinancialPeriodSelector.test.tsx`, sem alterar expectativas ou acoplar os testes à configuração interna.
+- suíte do painel reduzida para 405 linhas; nova suíte focada com 133 linhas.
+- validação dirigida após refatoração: 3 suítes e 24 testes verdes, zero snapshots.
+- regressão completa: 94 suítes e 578 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- componente, design system, domain, application, infrastructure, Supabase e contratos financeiros permaneceram inalterados.
+- `next-env.d.ts` restaurado ao conteúdo versionado após o build.
+- nenhum período novo, migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados.
+- `REFACTORING_IN_PROGRESS` encerrado com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6` da `UX-CHART-003A`.
+
+## Gate do Dia 6 — UX-CHART-003A
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional aprovada antes da implementação.
+- skill `vercel:agent-browser` aplicada para validação autenticada do dashboard em navegador real.
+- inspeção inicial em 320 px encontrou `scrollWidth` de 388 px para 273 px disponíveis, deixando o período ativo `Mês` fora da área visível.
+- primeiro RED introduziu rótulos compactos responsivos e espaçamento seguro; a validação real revelou precedência do `px-4` base do `Button`, levando a um segundo RED para padding explícito.
+- estado final em 320 px: cinco opções integralmente visíveis, `clientWidth = scrollWidth = 273`, alvos de 44 px, anel ativo íntegro e nenhum overflow horizontal global.
+- em 768 e 1280 px, rótulos completos, alvos de 44 px e ausência de overflow foram confirmados.
+- navegação por Tab exibiu foco visível; seleção de `7D` atualizou a URL para `?period=rolling_7_days` e manteve `aria-pressed` coerente.
+- `lang="pt-BR"`, viewport, manifesto, cores de tema e experiência standalone permaneceram válidos; console sem erros ou avisos.
+- suíte do seletor: 11 testes verdes; regressão completa final: 94 suítes e 579 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- nenhuma migration, RPC, RLS, dado, dependência, configuração remota, commit, push, alteração da PR `#27`, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados fora do escopo.
+- estado de saída: `QUALITY_VALIDATION` em GREEN; próximo comando válido: `dia 7` da `UX-CHART-003A`.
+
+## Gate do Dia 7 — UX-CHART-003A
+
+- contexto central e workflow do Dia 7 consultados; declaração operacional aprovada antes da execução.
+- regressão completa: 94 suítes e 579 testes verdes, zero snapshots.
+- ESLint global sem avisos, type-check e build Next.js 16.3.3 com Turbopack verdes; todas as rotas e o Proxy preservados.
+- auditoria npm encontrou zero vulnerabilidades; 701 assinaturas de registro e 102 attestations verificadas.
+- revisão estática confirmou seletor Server Component, valores GET em allowlist, fallback seguro, ausência de Supabase na presentation e nenhum segredo privilegiado rastreado.
+- projeto Supabase `ACTIVE_HEALTHY`; três tabelas públicas com RLS e seis migrations locais/remotas alinhadas.
+- Security Advisor manteve somente `SEC-AUTH-001`; Performance Advisor trouxe um índice de contas sem uso como informação.
+- Preview `dpl_6G1AWR6qK11d6c9RyYSeUyPd4PZV` da PR `#27`, no commit `d40529b`, está `READY`; `/dashboard` respondeu HTTP 200 e redirecionou corretamente a requisição sem sessão para login.
+- CSP, HSTS, proteção contra frames, Permissions Policy, `noindex` e manifesto foram confirmados na resposta real.
+- não houve cluster de runtime error nem log `error/fatal` no deployment nas últimas 24 horas.
+- PR `#27` aberta, não draft, `CLEAN` e mergeável, com Quality Gates e Vercel verdes; nenhum comentário de toolbar pendente.
+- vínculo local antigo permanece em `CI-VERCEL-002`; plano Hobby sem drains mantém `HARD-OBS-001` como bloqueio de produção pública.
+- nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
+- `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados fora do escopo.
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#27`.
