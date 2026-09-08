@@ -18,9 +18,9 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: ciclo atual Dias 1–7 restrito à `003A`; `003B/C` percorrem ciclos próprios posteriores.
+- Fase recomendada: ciclo atual Dias 1–7 restrito à `003B`; `003C` percorre ciclo próprio posterior.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A` concluída em `DONE` / `READY_FOR_RELEASE`: 94 suítes e 579 testes, lint, type-check, audit, assinaturas npm, build, Supabase, Vercel, observabilidade e PR estão verdes. `003B/C` permanecem planejadas para ciclos próprios, por isso a feature agregada continua em andamento.
+- Status: IN_PROGRESS — `UX-CHART-003A` concluída e mesclada em `develop` no commit `7434159`; `UX-CHART-003B` concluiu o Dia 7 em `READY_FOR_RELEASE`, com 95 suítes/621 testes, quality gates, Supabase, segurança, observabilidade e Preview `dpl_45j3kHfLgUY7CNTGbyhLrVxnxWX4` verdes. A inspeção autenticada isolada em 320/390/768 px permanece risco BAIXO, mitigado por contratos responsivos e evidência real anterior; `003C` segue planejada para ciclo próprio e mantém o item-pai aberto.
 
 ## DISCOVERY
 

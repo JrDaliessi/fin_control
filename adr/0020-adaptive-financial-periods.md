@@ -1,9 +1,9 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: arquitetura aprovada para `UX-CHART-003A`; `003B/C` refinadas para ciclos próprios
-- Data: 2026-09-06
+- Status: `UX-CHART-003B` concluída em `READY_FOR_RELEASE`; `003A` mesclada e `003C` refinada para ciclo próprio
+- Data: 2026-09-08
 - Feature: `UX-CHART-003`
-- Depende de: ADR 0019, ADR 0021 e merge `70fd53c`
+- Depende de: ADR 0019, ADR 0021 e merge `7434159`
 
 ## Contexto
 
@@ -19,7 +19,7 @@ A feature precisa manter cards, linha, candles, tabela e extrato no mesmo interv
 2. `UX-CHART-003B` adiciona `3M` e `Ano` por uma agregação server-side nova, migration forward-only e testes pgTAP.
 3. `UX-CHART-003C` adiciona `Tudo`, intervalo personalizado e drill-down de buckets trimestrais antes do extrato detalhado.
 
-Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `develop`; somente a `003A` está autorizada a avançar ao Dia 2.
+Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 6 em GREEN e é o único recorte autorizado a avançar ao Dia 7.
 
 ### Matriz de granularidade
 
@@ -50,6 +50,10 @@ Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `d
 
 - `3M` representa o mês civil da referência e os dois meses civis anteriores; não significa noventa dias.
 - `Ano` representa o ano civil da referência; doze meses móveis exigiriam um preset futuro distinto.
+- `3M` usa o valor canônico `three_months` e bucket semanal civil iniciado na segunda-feira.
+- `Ano` usa o valor canônico `year` e bucket mensal civil.
+- Para a mesma referência usada pelo período mensal, `3M` termina no primeiro dia do mês seguinte e `Ano` termina no primeiro dia do ano seguinte; datas futuras sem movimentos apenas carregam saldo e não são tratadas como projeção.
+- A RPC agregada aceita no máximo 366 dias e 60 buckets, limites suficientes para o ano bissexto e independentes da futura política de `Tudo`.
 - `Personalizado` recebe limites inclusivos na UI e os converte para intervalo semiaberto no domínio.
 - `Tudo` deriva sua âncora histórica no servidor por proprietário; o browser não escolhe a data inicial efetiva.
 - A política para mais de 60 buckets trimestrais permanece decisão obrigatória do ciclo `003C`; truncamento silencioso é proibido.
@@ -58,14 +62,16 @@ Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `d
 ### Agregação e segurança
 
 - A RPC diária atual continua limitada a 31 dias e não será relaxada.
-- O recorte 003B cria uma função agregadora `SECURITY INVOKER`, acessível somente a `authenticated`, com identidade validada, RLS, allowlist e limites explícitos.
+- O recorte 003B cria `public.load_financial_evolution_buckets(date, date, text)`, uma função agregadora `SECURITY INVOKER`, acessível somente a `authenticated`, com identidade validada, RLS, allowlist e limites explícitos.
 - A função agregada usa `search_path = ''`, revoga `EXECUTE` de `PUBLIC`, `anon` e `service_role` e não aceita `userId` do cliente.
-- A migration será forward-only, reproduzível e validada por pgTAP antes de aplicação remota.
+- A allowlist da RPC contém apenas `week` e `month`; a granularidade é resolvida no domínio/application e nunca por expressão SQL fornecida pela UI.
+- Cada linha agregada contém somente limites do bucket, account count, OHLC, receitas, despesas, volume e contagem; descrições, notas, categorias, contas e identificadores de movimentos não são retornados.
+- A migration forward-only `20260907041839_create_financial_evolution_buckets.sql` foi validada por pgTAP antes da aplicação remota.
 - A resposta contém somente agregados necessários para os view models; descrições e lançamentos são buscados sob demanda pelo contrato da UX-CHART-002.
 - Nenhum valor financeiro, descrição, UUID ou e-mail entra em logs ou analytics.
 - O índice composto existente deve ser validado com `EXPLAIN (ANALYZE, BUFFERS)` antes de qualquer índice novo; índices especulativos são rejeitados.
 
-## Contratos testáveis para o ciclo futuro
+## Contratos testáveis para o ciclo atual da 003B
 
 1. cada preset resolve intervalo civil determinístico e URL canônica;
 2. URLs existentes continuam compatíveis e valores inválidos usam fallback seguro;
@@ -79,6 +85,9 @@ Cada recorte percorre Dias 1 a 7. A predecessora foi concluída e mesclada em `d
 10. o seletor da `003A` permanece Server Component, usa navegação GET e não consulta Supabase;
 11. históricos longos não enviam movimentos brutos ao cliente;
 12. buckets trimestrais exigem drill-down antes do extrato detalhado limitado a 31 dias.
+13. `three_months` resolve o mês da referência e os dois anteriores, enquanto `year` resolve janeiro a janeiro inclusive em ano bissexto;
+14. períodos curtos continuam usando a RPC de snapshot e períodos longos usam exclusivamente a RPC agregada;
+15. a RPC agregada rejeita mais de 366 dias ou mais de 60 buckets e preserva buckets vazios com saldo carregado.
 
 ## Alternativas consideradas
 
@@ -100,20 +109,73 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 
 ## Consequências
 
-- Os atalhos curtos podem entregar valor sem migration.
+- Os atalhos curtos foram entregues e mesclados sem migration.
 - Períodos longos exigem ciclo crítico próprio, com TDD, pgTAP, revisão RLS e validação de performance.
 - O limite visual de pontos fica previsível em mobile e desktop.
 - O extrato contextual continua sob demanda e independente da granularidade agregada.
-- A `003A` passa a `ARCHITECTURE_READY`; `003B/C` permanecem refinadas, mas não autorizadas para teste ou implementação neste ciclo.
+- A `003B` está `READY_FOR_RELEASE`; a `003C` permanece refinada, mas não autorizada para teste ou implementação neste ciclo.
 
-## Evidências do Dia 1 próprio
+## Evidências do Dia 1 da 003B
 
-- merge da predecessora confirmado em `origin/develop` no commit `70fd53c`;
-- código atual possui cinco valores de período, um resolver civil puro, uma única composição server-side e RPC diária limitada a 31 dias;
-- projeto Supabase `fin_control` está `ACTIVE_HEALTHY` em Postgres 17, com três tabelas sob RLS e seis migrations locais/remotas alinhadas;
-- documentação atual do Supabase mantém `SECURITY INVOKER`, `search_path` seguro e grants explícitos como padrões aplicáveis à futura RPC;
-- discovery detalhado registrado em `docs/ux-chart-003-discovery.md`.
+- merge da `003A` confirmado em `origin/develop` no commit `7434159`;
+- código atual possui cinco valores de período, resolver civil puro, uma única composição server-side e RPC diária limitada a 31 dias;
+- projeto Supabase `fin_control` está `ACTIVE_HEALTHY` em Postgres 17.6.1, com RLS habilitada e forçada nas tabelas financeiras e seis migrations locais/remotas alinhadas;
+- a RPC atual foi confirmada como invoker, com `search_path = ''` e execução somente para `authenticated`;
+- o índice composto existente inicia por `user_id` e segue com `occurred_on`, `created_at` e `id`; nenhum índice novo foi aprovado sem `EXPLAIN`;
+- discovery geral permanece em `docs/ux-chart-003-discovery.md` e o contrato próprio da `003B` está em `docs/ux-chart-003b-discovery.md`.
+
+## Evidências do Dia 2 da 003B
+
+- baseline com 7 suítes e 69 testes verdes antes do RED;
+- Jest materializou contratos de domain, application, infrastructure, presentation e composição server-side;
+- pgTAP materializou 43 assertions para schema/grants, comportamento/RLS/OHLC e performance;
+- probe transacional remoto falhou 2/2 pela função ausente e não deixou extensão ou função persistente;
+- estratégia detalhada em `docs/ux-chart-003b-test-strategy.md`.
+
+## Evidências do Dia 3 da 003B
+
+- `three_months` e `year` resolvem intervalos civis com buckets `week` e `month`, mantendo os cinco períodos curtos na RPC diária;
+- port, caso de uso, mapper estrito, repository Supabase, seletor e rotas foram implementados sem acesso direto da presentation ao banco;
+- migration remota `20260907041839` criou a RPC agregada invoker, com `search_path = ''`, identidade permanente, allowlist, limites e ACL somente para `authenticated`;
+- 7 suítes direcionadas e 88 testes passaram; regressão completa com 95 suítes e 609 testes passou, sem snapshots;
+- pgTAP passou 16 assertions de schema, 22 de comportamento e 5 de performance; nenhum índice novo foi necessário;
+- lint, type-check e build Next.js 16.3.3 passaram.
+
+## Evidências do Dia 4 da 003B
+
+- linguagem visível, nomes acessíveis e cabeçalhos agora derivam da granularidade de domínio (`day`, `week`, `month`), sem decisão duplicada nos componentes;
+- application rejeita uma resposta agregada cujo primeiro início ou último fim não coincidam com o intervalo resolvido;
+- estado anual sem movimentos preserva saldo e buckets vazios com resumo coerente;
+- RED dirigido registrou 7 falhas esperadas; GREEN dirigido fechou 59/59 testes;
+- feature completa passou 32 suítes/286 testes e a regressão global passou 95 suítes/617 testes;
+- ESLint, type-check e build Next.js 16.3.3 passaram sem nova dependência ou alteração remota.
+
+## Evidências do Dia 5 da 003B
+
+- RED reproduziu a seleção contextual obsoleta após mudança do intervalo;
+- chave composta por granularidade e limites civis reinicia somente o estado interativo, sem efeito de sincronização;
+- um formatter puro substituiu cinco implementações locais de datas na presentation;
+- arquivos coesos foram preservados e nenhuma abstração prematura foi criada;
+- 32 suítes/287 testes da feature e 95 suítes/618 testes globais passaram, além de lint, type-check e build.
+
+## Evidências do Dia 6 da 003B
+
+- wrappers semânticos estáveis protegem os nomes acessíveis em português contra mutações internas do ECharts;
+- renderer gráfico fica oculto da árvore acessível e as tabelas equivalentes continuam disponíveis;
+- barra dos sete períodos preserva o Server Component e delega somente a rolagem horizontal do item ativo a uma ilha cliente mínima;
+- alvos de 44 px, teclado, `aria-pressed`, touch horizontal, URLs e granularidades semanal/mensal foram validados;
+- manifesto standalone, viewport, theme colors, safe areas e reduced motion permanecem válidos;
+- 32 suítes/290 testes da feature e 95 suítes/621 testes globais passaram, além de lint, type-check e build.
+
+## Evidências do Dia 7 da 003B
+
+- regressão global com 95 suítes/621 testes, lint, type-check, build, auditoria de dependências e supply chain verdes;
+- sete migrations locais/remotas alinhadas, RLS ativa e RPCs invoker com search path vazio e execução exclusiva por `authenticated`;
+- Preview `dpl_45j3kHfLgUY7CNTGbyhLrVxnxWX4` do commit `5211303` em `READY`, HTTP 200 e sem erro/fatal nas últimas 24 horas;
+- `3M` semanal e `Ano` mensal validados no dashboard autenticado, inclusive linha, candles, tabelas, volume, insight contextual, Escape e retorno de foco;
+- headers defensivos e manifesto PWA confirmados; nenhuma configuração remota, migration, dado ou dependência foi alterada;
+- drift Node 22/24 permanece em `CI-VERCEL-002` como dívida MÉDIA não bloqueante, e a limitação de emulação autenticada 320/390/768 px permanece risco BAIXO.
 
 ## Próximo passo
 
-Executar o Dia 2 da `UX-CHART-003A` e criar testes em RED para a barra de períodos, URLs existentes, semântica acessível, responsividade e fronteiras arquiteturais antes de alterar código funcional.
+Versionar o Dia 7 da `UX-CHART-003B` e atualizar a PR `#28`, sem antecipar `Tudo`, personalizado ou drill-down.

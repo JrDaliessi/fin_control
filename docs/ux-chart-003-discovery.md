@@ -2,8 +2,8 @@
 
 - Fase: Dia 1 — contexto, discovery e arquitetura
 - Data: 2026-09-06
-- Estado: arquitetura pronta para `UX-CHART-003A`; `003B` e `003C` permanecem refinadas para ciclos próprios
-- Predecessora: `UX-CHART-002D` mesclada por squash em `develop` no commit `70fd53c`
+- Estado: `UX-CHART-003A` mesclada; `UX-CHART-003B` em `READY_FOR_RELEASE`; `003C` refinada para ciclo próprio
+- Predecessora da `003B`: `UX-CHART-003A` mesclada por squash em `develop` no commit `7434159`
 
 ## Problema
 
@@ -137,6 +137,7 @@ Regras:
 - Criar contratos application/infrastructure e RPC agregada.
 - Validar RLS, grants, pgTAP, plano de execução e advisors.
 - Integrar os novos presets mantendo extrato direto para buckets de até 31 dias.
+- Discovery e arquitetura próprios: `docs/ux-chart-003b-discovery.md`.
 
 ### UX-CHART-003C — Tudo, Personalizado e drill-down
 
@@ -163,9 +164,9 @@ Regras:
 - `003A`: risco MÉDIO de regressão de navegação/acessibilidade, mitigado por preservar os valores e casos de uso existentes.
 - `003B`: risco ALTO por nova agregação financeira, migration, RLS e performance; exige ciclo próprio completo.
 - `003C`: risco ALTO por intervalo arbitrário, URL, drill-down e histórico potencialmente extenso; permanece fora do primeiro recorte.
-- Hardening global `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continua condicionando produção pública, sem bloquear o TDD local da `003A`.
+- Hardening global `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continua condicionando produção pública, sem bloquear o TDD local da `003B`.
 
-## Critério de pronto do Dia 1
+## Critério de pronto do Dia 1 histórico da 003A
 
 - predecessora confirmada em `develop`;
 - semântica e ordem da barra curta aprovadas;
@@ -175,6 +176,8 @@ Regras:
 - baseline atual permanece verde com 3 suítes e 30 testes, zero snapshots;
 - nenhuma implementação, teste, migration ou alteração remota foi antecipada.
 
-## Próximo passo
+## Estado e próximo passo
 
-Executar o Dia 2 da `UX-CHART-003A` e criar os contratos essenciais em RED antes de alterar `FinancialPeriodSelector` ou qualquer código funcional.
+- `UX-CHART-003A`: `DONE`, mesclada em `develop` pelo commit `7434159`.
+- `UX-CHART-003B`: Dia 7 concluído em `READY_FOR_RELEASE`, com quality gates, Supabase, segurança, observabilidade e Preview verdes; próximo passo é versionar e atualizar a PR `#28`.
+- `UX-CHART-003C`: permanece fora do ciclo atual.

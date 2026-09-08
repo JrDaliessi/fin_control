@@ -5,6 +5,7 @@ import type { FinancialPeriodKind } from "../domain/types/financial-period.types
 
 type PeriodCase = {
   kind: FinancialPeriodKind;
+  bucketGranularity: "day" | "week" | "month";
   referenceOn: string;
   startOnInclusive: string;
   endOnExclusive: string;
@@ -13,69 +14,101 @@ type PeriodCase = {
 const periodCases: readonly PeriodCase[] = [
   {
     kind: "week",
+    bucketGranularity: "day",
     referenceOn: "2026-08-19",
     startOnInclusive: "2026-08-17",
     endOnExclusive: "2026-08-24"
   },
   {
     kind: "week",
+    bucketGranularity: "day",
     referenceOn: "2026-01-01",
     startOnInclusive: "2025-12-29",
     endOnExclusive: "2026-01-05"
   },
   {
     kind: "week",
+    bucketGranularity: "day",
     referenceOn: "0001-01-01",
     startOnInclusive: "0001-01-01",
     endOnExclusive: "0001-01-08"
   },
   {
     kind: "rolling_7_days",
+    bucketGranularity: "day",
     referenceOn: "2026-03-02",
     startOnInclusive: "2026-02-24",
     endOnExclusive: "2026-03-03"
   },
   {
     kind: "rolling_7_days",
+    bucketGranularity: "day",
     referenceOn: "2024-03-01",
     startOnInclusive: "2024-02-24",
     endOnExclusive: "2024-03-02"
   },
   {
     kind: "fortnight",
+    bucketGranularity: "day",
     referenceOn: "2026-02-15",
     startOnInclusive: "2026-02-01",
     endOnExclusive: "2026-02-16"
   },
   {
     kind: "fortnight",
+    bucketGranularity: "day",
     referenceOn: "2026-02-16",
     startOnInclusive: "2026-02-16",
     endOnExclusive: "2026-03-01"
   },
   {
     kind: "fortnight",
+    bucketGranularity: "day",
     referenceOn: "2024-02-29",
     startOnInclusive: "2024-02-16",
     endOnExclusive: "2024-03-01"
   },
   {
     kind: "rolling_15_days",
+    bucketGranularity: "day",
     referenceOn: "2026-01-05",
     startOnInclusive: "2025-12-22",
     endOnExclusive: "2026-01-06"
   },
   {
     kind: "month",
+    bucketGranularity: "day",
     referenceOn: "2026-02-10",
     startOnInclusive: "2026-02-01",
     endOnExclusive: "2026-03-01"
   },
   {
     kind: "month",
+    bucketGranularity: "day",
     referenceOn: "2026-12-31",
     startOnInclusive: "2026-12-01",
     endOnExclusive: "2027-01-01"
+  },
+  {
+    kind: "three_months" as FinancialPeriodKind,
+    bucketGranularity: "week",
+    referenceOn: "2026-09-06",
+    startOnInclusive: "2026-07-01",
+    endOnExclusive: "2026-10-01"
+  },
+  {
+    kind: "three_months" as FinancialPeriodKind,
+    bucketGranularity: "week",
+    referenceOn: "2026-01-15",
+    startOnInclusive: "2025-11-01",
+    endOnExclusive: "2026-02-01"
+  },
+  {
+    kind: "year" as FinancialPeriodKind,
+    bucketGranularity: "month",
+    referenceOn: "2024-02-29",
+    startOnInclusive: "2024-01-01",
+    endOnExclusive: "2025-01-01"
   }
 ];
 
@@ -112,7 +145,8 @@ describe("resolveFinancialPeriod", () => {
 
   it.each([
     ["month", "9999-12-31"],
-    ["fortnight", "9999-12-31"]
+    ["fortnight", "9999-12-31"],
+    ["year" as FinancialPeriodKind, "9999-12-31"]
   ] as const)(
     "rejects a %s period whose exclusive end exceeds the civil range",
     (kind, referenceOn) => {
@@ -126,6 +160,7 @@ describe("resolveFinancialPeriod", () => {
 describe("containsCivilDate", () => {
   const period = {
     kind: "week" as const,
+    bucketGranularity: "day" as const,
     referenceOn: "2026-08-19",
     startOnInclusive: "2026-08-17",
     endOnExclusive: "2026-08-24"

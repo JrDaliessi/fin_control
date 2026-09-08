@@ -6,6 +6,10 @@ import type {
 } from "echarts/components";
 import type { ComposeOption } from "echarts/core";
 import { formatCents } from "@/shared/utils/formatCents";
+import {
+  formatFinancialCivilDate,
+  formatFinancialCivilDayMonth
+} from "../../formatters/format-financial-civil-date";
 import type { FinancialCandlestickChartModel } from "../financial-candlestick-chart.model";
 
 export type FinancialCandlestickChartTheme = Readonly<{
@@ -29,16 +33,6 @@ type BuildFinancialCandlestickOptionInput = Readonly<{
   reducedMotion: boolean;
   theme: FinancialCandlestickChartTheme;
 }>;
-
-function formatCivilDate(civilDate: string) {
-  const [, month, day] = civilDate.split("-");
-  return `${day}/${month}`;
-}
-
-function formatFullCivilDate(civilDate: string) {
-  const [year, month, day] = civilDate.split("-");
-  return `${day}/${month}/${year}`;
-}
 
 function describeVariation(
   openInCents: number,
@@ -91,7 +85,7 @@ export function buildFinancialCandlestickOption({
         }
 
         return [
-          `<strong>${formatFullCivilDate(point.civilDate)}</strong>`,
+          `<strong>${formatFinancialCivilDate(point.civilDate)}</strong>`,
           `Abertura: ${formatCents(point.openInCents)}`,
           `Máxima: ${formatCents(point.highInCents)}`,
           `Mínima: ${formatCents(point.lowInCents)}`,
@@ -110,7 +104,7 @@ export function buildFinancialCandlestickOption({
     xAxis: {
       axisLabel: {
         color: theme.mutedForeground,
-        formatter: (value: string) => formatCivilDate(value)
+        formatter: (value: string) => formatFinancialCivilDayMonth(value)
       },
       axisLine: { lineStyle: { color: theme.border } },
       boundaryGap: true,

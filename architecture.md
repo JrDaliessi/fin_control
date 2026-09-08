@@ -480,8 +480,8 @@ O projeto deve ter:
 - A granularidade pertence ao domínio/application: diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso, mantendo preferencialmente 12–60 pontos.
 - Buckets são civis, consecutivos e semiabertos; buckets parciais respeitam exatamente o intervalo selecionado e a ordenação OHLC da SR-015.
 - Cards, linha, candles, tabela e extrato consomem uma única resolução de período representável na URL; valores atuais continuam compatíveis.
-- Períodos longos nunca enviam movimentos brutos ao browser. Uma futura RPC agregadora será `SECURITY INVOKER`, com Auth/RLS, grants mínimos, allowlist de bucket e limites de intervalo/pontos.
-- A RPC diária existente permanece limitada a 31 dias. A migration futura será forward-only e validada por pgTAP.
+- Períodos longos nunca enviam movimentos brutos ao browser. A RPC `load_financial_evolution_buckets(date, date, text)` é `SECURITY INVOKER`, usa Auth/RLS, grants mínimos, allowlist `week`/`month` e limites de 366 dias/60 buckets.
+- A RPC diária existente permanece limitada a 31 dias. A migration forward-only `20260907041839_create_financial_evolution_buckets.sql` foi validada por 43 assertions pgTAP e aplicada sem índice novo.
 - O seletor usa botões com `aria-pressed`, nomes completos, alvos de 44 px e rolagem horizontal confinada no mobile.
 - Decisão completa: `adr/0020-adaptive-financial-periods.md`.
 

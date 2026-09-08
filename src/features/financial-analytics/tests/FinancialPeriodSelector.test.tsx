@@ -1,10 +1,27 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { FinancialPeriodKind } from "../domain/types/financial-period.types";
 import { FinancialPeriodSelector } from "../presentation/components/FinancialPeriodSelector";
 
 describe("FinancialPeriodSelector", () => {
-  it("offers the five supported periods as an immediate accessible bar", () => {
+  it("brings the selected period into view on narrow scrollable bars", () => {
+    const scrollTo = jest.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollTo", {
+      configurable: true,
+      value: scrollTo
+    });
+
+    render(<FinancialPeriodSelector selectedPeriodKind="three_months" />);
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      behavior: "auto",
+      left: 0
+    });
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollTo");
+  });
+
+  it("offers the seven supported periods as an immediate accessible bar", () => {
     render(<FinancialPeriodSelector selectedPeriodKind="rolling_7_days" />);
 
     const periodBar = screen.getByRole("group", {
@@ -17,9 +34,15 @@ describe("FinancialPeriodSelector", () => {
       "Últimos 7 dias",
       "Quinzena atual",
       "Últimos 15 dias",
-      "Mês atual"
+      "Mês atual",
+      "Três meses civis",
+      "Ano atual"
     ]);
-    expect(periodBar).toHaveClass("max-w-full", "overflow-x-auto");
+    expect(periodBar).toHaveClass(
+      "max-w-full",
+      "overflow-x-auto",
+      "touch-pan-x"
+    );
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Atualizar período" })
@@ -56,7 +79,9 @@ describe("FinancialPeriodSelector", () => {
       ["Últimos 7 dias", "rolling_7_days"],
       ["Quinzena atual", "fortnight"],
       ["Últimos 15 dias", "rolling_15_days"],
-      ["Mês atual", "month"]
+      ["Mês atual", "month"],
+      ["Três meses civis", "three_months"],
+      ["Ano atual", "year"]
     ] as const;
 
     for (const [accessibleName, value] of expectedPeriods) {
@@ -87,7 +112,9 @@ describe("FinancialPeriodSelector", () => {
     ["rolling_7_days", "Últimos 7 dias"],
     ["fortnight", "Quinzena atual"],
     ["rolling_15_days", "Últimos 15 dias"],
-    ["month", "Mês atual"]
+    ["month", "Mês atual"],
+    ["three_months" as FinancialPeriodKind, "Três meses civis"],
+    ["year" as FinancialPeriodKind, "Ano atual"]
   ] as const)(
     "keeps only %s selected when rendering the period bar",
     (selectedPeriodKind, selectedAccessibleName) => {
@@ -118,7 +145,7 @@ describe("FinancialPeriodSelector", () => {
       name: "Período da evolução financeira"
     });
     const guidance = screen.getByText(
-      "Semana e Quinzena seguem o calendário; 7D e 15D contam até hoje."
+      "Semana, Quinzena, 3M e Ano seguem o calendário; 7D e 15D contam até hoje."
     );
 
     expect(guidance).toHaveAttribute("id", "financial-period-guidance");
@@ -138,7 +165,9 @@ describe("FinancialPeriodSelector", () => {
       "Últimos 7 dias",
       "Quinzena atual",
       "Últimos 15 dias",
-      "Mês atual"
+      "Mês atual",
+      "Três meses civis",
+      "Ano atual"
     ] as const;
 
     for (const accessibleName of expectedOrder) {

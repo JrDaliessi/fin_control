@@ -108,6 +108,69 @@ export class ListFinancialEvolutionUseCase {
       referenceOn
     });
 
+    if (period.bucketGranularity !== "day") {
+      let bucketSnapshot: Awaited<
+        ReturnType<FinancialAnalyticsQueryRepository["loadEvolutionBuckets"]>
+      >;
+
+      try {
+        bucketSnapshot = await this.repository.loadEvolutionBuckets({
+          userId,
+          startOnInclusive: period.startOnInclusive,
+          endOnExclusive: period.endOnExclusive,
+          bucketGranularity: period.bucketGranularity
+        });
+
+        const firstBucket = bucketSnapshot.buckets[0];
+        const lastBucket = bucketSnapshot.buckets.at(-1);
+
+        if (
+          firstBucket?.startOnInclusive !== period.startOnInclusive ||
+          lastBucket?.endOnExclusive !== period.endOnExclusive
+        ) {
+          throw new Error("financial evolution bucket interval mismatch");
+        }
+      } catch {
+        throw new Error("financial evolution unavailable");
+      }
+
+      const openingBalanceInCents =
+        bucketSnapshot.buckets[0]?.openInCents ?? 0;
+
+      if (bucketSnapshot.accountCount === 0) {
+        return {
+          status: "missing_accounts",
+          accountCount: 0,
+          period,
+          summary: summarize(openingBalanceInCents, []),
+          points: [],
+          candles: []
+        };
+      }
+
+      const points = bucketSnapshot.buckets.map((bucket) => ({
+        startOnInclusive: bucket.startOnInclusive,
+        endOnExclusive: bucket.endOnExclusive,
+        incomeInCents: bucket.incomeInCents,
+        expenseInCents: bucket.expenseInCents,
+        netInCents: bucket.incomeInCents - bucket.expenseInCents,
+        closingBalanceInCents: bucket.closeInCents,
+        transactionCount: bucket.transactionCount
+      }));
+
+      return {
+        status:
+          points.some((point) => point.transactionCount > 0)
+            ? "success"
+            : "empty",
+        accountCount: bucketSnapshot.accountCount,
+        period,
+        summary: summarize(openingBalanceInCents, points),
+        points,
+        candles: bucketSnapshot.buckets
+      };
+    }
+
     let snapshot: Awaited<
       ReturnType<FinancialAnalyticsQueryRepository["loadEvolutionSnapshot"]>
     >;

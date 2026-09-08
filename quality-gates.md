@@ -2033,3 +2033,110 @@ Uma release incremental só pode ser considerada pronta quando:
 - nenhuma migration, RLS, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado.
 - `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados fora do escopo.
 - estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#27`.
+
+## Gate do Dia 1 — UX-CHART-003B
+
+- contexto central e workflow do Dia 1 consultados; declaração operacional aprovada antes da execução.
+- `UX-CHART-003A` confirmada como squash merge `7434159` em `origin/develop`; branch `codex/ux-chart-003b-periodos-historicos` criada sobre essa base.
+- semântica aprovada: `three_months` cobre o mês da referência e os dois anteriores com buckets semanais civis; `year` cobre o ano civil com doze buckets mensais.
+- intervalos e buckets são semiabertos, consecutivos, recortados ao período e preservam saldo em buckets vazios.
+- arquitetura mantém a RPC diária e seu limite de 31 dias; a futura `load_financial_evolution_buckets(date, date, text)` retorna somente OHLC e totais agregados.
+- contrato da RPC exige invoker, search path vazio, identidade permanente, ausência de `user_id`, allowlist `week`/`month`, máximo de 366 dias/60 buckets e execução somente por `authenticated`.
+- Supabase `fin_control` confirmado `ACTIVE_HEALTHY` em Postgres 17.6.1; RLS habilitada e forçada nas tabelas financeiras, seis migrations alinhadas e ACL da RPC atual restrita a `authenticated`.
+- índice existente `(user_id, occurred_on desc, created_at desc, id desc)` foi confirmado; nenhum índice novo foi aprovado antes de `EXPLAIN (ANALYZE, BUFFERS)`.
+- Security Advisor manteve somente `SEC-AUTH-001`; Performance Advisor manteve informação sobre índice de contas sem uso, sem relação causal com a `003B`.
+- baseline dirigida: 4 suítes, 45 testes verdes e zero snapshots, cobrindo resolução de período, caso de uso, seletor e rota financeira.
+- `docs/ux-chart-003b-discovery.md`, ADR 0020, backlog, roadmap e contexto central compõem os artefatos do Dia 1.
+- nenhuma implementação, teste, migration, RPC, dado remoto, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `ARCHITECTURE_READY`; próximo comando válido: `dia 2` da `UX-CHART-003B`.
+
+## Gate do Dia 2 — UX-CHART-003B
+
+- contexto central e workflow do Dia 2 consultados; declaração operacional aprovada antes da execução.
+- baseline dirigida anterior ao RED: 7 suítes, 69 testes verdes e zero snapshots.
+- 7 suítes RED selecionadas falharam como planejado; 6 carregaram 70 testes, com 42 verdes e 28 falhas esperadas.
+- a suíte futura do mapper contém 18 contratos e parou no import deliberadamente ausente.
+- os testes cobrem domínio, application, repository, mapper, apresentação, URL e composição autenticada.
+- três arquivos pgTAP adicionam 16 assertions de schema/grants, 22 de comportamento/RLS e 5 de performance, total 43.
+- probe pgTAP remoto confirmou 2/2 falhas pela função inexistente; rollback verificado com `pgtap` e função ainda ausentes.
+- ESLint passou em todos os 7 arquivos Jest afetados.
+- type-check contém somente um `TS2307`, correspondente ao mapper futuro; nenhum ruído acidental permaneceu.
+- nenhuma implementação funcional, migration aplicada, RPC, policy, grant, índice, dado remoto, dependência ou configuração foi alterada.
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado; artefatos privados e stashes foram preservados.
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003B`.
+
+## Gate do Dia 3 — UX-CHART-003B
+
+- contexto central e workflow do Dia 3 consultados; declaração operacional aprovada antes da implementação e da migration.
+- contratos RED foram convertidos em GREEN sem relaxar expectativas: 7 suítes direcionadas e 88 testes passaram, zero snapshots.
+- regressão completa: 95 suítes e 609 testes verdes, zero snapshots.
+- ESLint global, type-check e build Next.js 16.3.3 com Turbopack passaram; todas as rotas e o Proxy foram preservados.
+- domínio resolve `3M` civil com semanas e `Ano` civil com meses; períodos curtos continuam usando a RPC diária limitada a 31 dias.
+- application, port, mapper, repository, seletor e rotas mantêm as fronteiras Feature-Based/Clean e não expõem Supabase à presentation.
+- migration `20260907041839_create_financial_evolution_buckets` aplicada e alinhada como a sétima migration local/remota.
+- pgTAP passou 16 assertions de schema/grants, 22 de comportamento/RLS/OHLC e 5 de performance, total 43.
+- RPC pós-DDL confirmada como invoker, `search_path = ''`, projeção agregada, ACL somente para `authenticated` e sem `pgtap` persistido.
+- Security Advisor manteve somente `SEC-AUTH-001`; Performance Advisor manteve apenas a informação preexistente de índice de contas sem uso.
+- nenhum índice novo, tabela, policy, dado, dependência ou segredo foi criado.
+- `next-env.d.ts` restaurado; anexos privados, `rewrite-msgs.sh` e os dois stashes preservados.
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 4` da `UX-CHART-003B`.
+
+## Gate do Dia 4 — UX-CHART-003B
+
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada antes da execução.
+- RED dirigido: 6 suítes, 59 testes, 52 verdes e 7 falhas esperadas para copy/granularidade, nomes acessíveis e limites agregados.
+- GREEN dirigido: 6 suítes e 59 testes verdes; feature completa: 32 suítes e 286 testes verdes; zero snapshots.
+- regressão completa: 95 suítes e 617 testes verdes, zero snapshots.
+- painel, alternador, gráficos e tabelas apresentam dia/semana/mês conforme `FinancialPeriod.bucketGranularity`.
+- application rejeita cobertura agregada divergente no início ou fim e mantém erro público sanitizado.
+- estado anual vazio mantém os buckets e saldos disponíveis, sem movimentos fabricados.
+- revisão Next.js/React preservou Server Component, serialização mínima, props primitivas e ausência de efeitos/memoização supérfluos.
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; `next-env.d.ts` restaurado.
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 5` da `UX-CHART-003B`.
+
+## Gate do Dia 5 — UX-CHART-003B
+
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução.
+- inventário documentado: nenhum arquivo de production monolítico justificou reescrita; uma seleção contextual obsoleta e cinco formatadores civis duplicados foram priorizados.
+- RED: suíte do switcher executou 8 testes, com 7 verdes e 1 falha esperada pelo diálogo antigo permanecer aberto.
+- GREEN dirigido: 5 suítes e 38 testes verdes; feature completa: 32 suítes e 287 testes verdes.
+- regressão completa: 95 suítes e 618 testes verdes, zero snapshots.
+- estado interativo agora é delimitado por granularidade, início e fim do período, sem `useEffect` de sincronização.
+- formatter de presentation único preserva formatos completos e compactos em tabelas, painel e ECharts.
+- revisão Next.js/React confirmou fronteira Server/Client, props serializáveis, imports diretos e ausência de rerender ou abstração artificial.
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; `next-env.d.ts` restaurado.
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6` da `UX-CHART-003B`.
+
+## Gate do Dia 6 — UX-CHART-003B
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional aprovada antes da execução.
+- RED dos gráficos: 2 suítes com 2 falhas esperadas após simular a mutação de ARIA do ECharts; GREEN: 2 suítes/24 testes.
+- RED da barra exigiu gesto horizontal e visibilidade do período ativo; o gate arquitetural rejeitou tornar o seletor inteiro cliente.
+- solução final preserva formulário GET server-rendered e usa uma ilha cliente mínima somente para rolar o container horizontal, sem deslocar a página; suíte do seletor: 14 testes.
+- feature completa: 32 suítes/290 testes; regressão completa: 95 suítes/621 testes; zero snapshots.
+- navegador autenticado validou `3M` semanal, `Ano` mensal, extrato por teclado/Escape, retorno de foco, alvos de 44 px, ausência de overflow global e nomes acessíveis estáveis.
+- manifesto standalone, `lang=pt-BR`, viewport, theme colors, safe areas e reduced motion preservados.
+- emulação isolada de 320/390/768 px ficou indisponível por limitação do harness de login; risco BAIXO mantido para inspeção em Preview no Dia 7.
+- ESLint global, type-check e build Next.js 16.3.3 verdes; o build exigiu somente acesso de rede controlado ao Google Fonts.
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `QUALITY_VALIDATION` em GREEN; próximo comando válido: `dia 7` da `UX-CHART-003B`.
+
+## Gate do Dia 7 — UX-CHART-003B
+
+- regressão completa: 95 suítes e 621 testes verdes, zero snapshots;
+- ESLint global sem warnings, type-check, build Next.js 16.3.3/Turbopack e `git diff --check` verdes;
+- `npm audit --audit-level=high`: zero vulnerabilidades;
+- supply chain: 701 pacotes com assinatura de registro e 102 com attestation verificadas;
+- varredura de arquivos rastreados sem service role, private key, token GitHub/Stripe/AWS ou JWT literal;
+- Supabase `ACTIVE_HEALTHY`, sete migrations alinhadas, RLS ativa e RPCs invoker/search path vazio/ACL exclusiva de `authenticated`;
+- Security Advisor somente com `SEC-AUTH-001`; índice de contas sem uso permanece informação global sem relação com a feature;
+- Preview `dpl_45j3kHfLgUY7CNTGbyhLrVxnxWX4` do commit `5211303` está `READY`, HTTP 200 e sem runtime error ou log `error/fatal` em 24 horas;
+- CSP, HSTS, frame denial, nosniff, Referrer Policy, Permissions Policy e `noindex` confirmados;
+- smoke autenticado confirmou `3M` semanal, `Ano` mensal, linha, candles, tabelas, volume, insight, Escape e retorno de foco;
+- checks remotos da PR `#28` estavam verdes no head publicado ao iniciar o gate e não houve comentário aberto da Vercel Toolbar;
+- risco BAIXO de emulação autenticada 320/390/768 px e dívida MÉDIA `CI-VERCEL-002` documentados, sem bloqueio crítico da feature;
+- nenhuma mutação de banco/configuração, dependência, commit, push, PR, merge, deploy ou promoção foi executada;
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#28`.

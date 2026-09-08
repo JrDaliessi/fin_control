@@ -8,6 +8,7 @@ import { analyzeFinancialInterval } from "../../domain/services/analyze-financia
 import type { FinancialCandle } from "../../domain/types/financial-evolution.types";
 import { useModalDialogLifecycle } from "@/shared/hooks/useModalDialogLifecycle";
 import { formatCents } from "@/shared/utils/formatCents";
+import { formatFinancialCivilDate } from "../formatters/format-financial-civil-date";
 import { FinancialIntervalMovementSummary } from "./FinancialIntervalMovementSummary.client";
 
 export type FinancialIntervalStatementLoader = (
@@ -31,11 +32,6 @@ type LoadState =
       status: "success";
       statement: FinancialIntervalStatementDto;
     }>;
-
-function formatCivilDate(civilDate: string) {
-  const [year, month, day] = civilDate.split("-");
-  return `${day}/${month}/${year}`;
-}
 
 function movementLabel(count: number) {
   return `${count} ${count === 1 ? "movimento" : "movimentos"}`;
@@ -102,7 +98,9 @@ export function FinancialIntervalStatementPanel({
     return null;
   }
 
-  const formattedDate = formatCivilDate(selectedCandle.startOnInclusive);
+  const formattedDate = formatFinancialCivilDate(
+    selectedCandle.startOnInclusive
+  );
   const analysis = analyzeFinancialInterval(selectedCandle);
 
   return createPortal(
@@ -214,7 +212,7 @@ export function FinancialIntervalStatementPanel({
                             {item.description}
                           </p>
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {formatCivilDate(item.occurredOn)} ·{" "}
+                            {formatFinancialCivilDate(item.occurredOn)} ·{" "}
                             {item.type === "income" ? "Receita" : "Despesa"}
                           </p>
                         </div>

@@ -2,7 +2,14 @@
 
 ## Estado do Projeto
 - Estado atual da máquina de estados: `READY_FOR_RELEASE`
-- Fase atual: Dia 7 da UX-CHART-003A concluído; documentação aguarda versionamento e atualização da PR #27
+- Fase atual: Dia 7 da UX-CHART-003B concluído em GREEN; entrega incremental pronta para versionamento e atualização da PR
+- Data da validação final e preparação de release da UX-CHART-003B: 2026-09-08
+- Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003B: 2026-09-08
+- Data da refatoração e hardening interno da UX-CHART-003B: 2026-09-07
+- Data da expansão controlada da UX-CHART-003B: 2026-09-07
+- Data da implementação mínima da UX-CHART-003B: 2026-09-07
+- Data da estratégia de testes da UX-CHART-003B: 2026-09-06
+- Data do discovery e arquitetura da UX-CHART-003B: 2026-09-06
 - Data da validação final e preparação de release da UX-CHART-003A: 2026-09-06
 - Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003A: 2026-09-06
 - Data da refatoração e hardening interno da UX-CHART-003A: 2026-09-06
@@ -1040,7 +1047,13 @@ Regra operacional:
 - Erro: após detectar o npm global quebrado no Dia 2 da SR-014, a IA chamou o alias descontinuado `codex_app__load_workspace_dependencies`; a ferramenta orientou usar o endpoint MCP atual e não executou ação. Prevenção: neste host, descobrir runtimes empacotadas exclusivamente por `mcp__codex_app__load_workspace_dependencies`, ignorando o alias legado ainda exposto no catálogo.
 - Erro: ao iniciar a baseline do Dia 2 da SR-014, a IA executou `npm run test:ci` apesar de o contexto já registrar que o wrapper global do npm está quebrado; o comando falhou antes de carregar Jest. Prevenção: antes de qualquer gate Node neste host, consultar a runtime empacotada do workspace e invocar seus executáveis/binários locais, sem tentar primeiro o npm global conhecido como inválido.
 - Erro: na inspeção inicial do Dia 1 da SR-014, a IA passou `src/app/(private)/dashboard/compose-dashboard-route.tsx` ao PowerShell sem `-LiteralPath`, e o shell interpretou `(private)` como expressão, interrompendo somente essa leitura. Prevenção: caminhos Windows com parênteses ou outros metacaracteres devem ser passados com `Get-Content -LiteralPath` e aspas, mesmo quando já foram confirmados por `rg --files`.
+- Erro: na inspeção inicial do Dia 3 da UX-CHART-003B, a IA repetiu o uso de um caminho com `(private)` sem proteção em um comando `rg` e presumiu um nome inexistente de migration, apesar das prevenções já registradas; as duas leituras falharam sem alterar o projeto. Prevenção reforçada: toda inspeção deste ciclo deve descobrir primeiro os caminhos reais com `rg --files` sobre raízes sem metacaracteres e só então abrir o resultado exato com `Get-Content -LiteralPath`; nenhum nome de artefato versionado pode ser inferido.
+- Erro: o contrato TDD de `three_months` criado no Dia 2 da UX-CHART-003B esperava julho–outubro, mas reutilizava a fixture temporal de março; o primeiro GREEN expôs a inconsistência ao resolver corretamente janeiro–abril. Prevenção: matrizes parametrizadas de períodos civis devem declarar a referência temporal junto dos limites esperados e validar a coerência da fixture no RED, sem depender de um request compartilhado cuja data pertence a outro cenário.
+- Erro: ao gerar a migration no Dia 3 da UX-CHART-003B, a IA chamou o `npx` global apesar do histórico de wrappers globais quebrados neste host; o processo falhou antes de carregar o Supabase CLI e não criou arquivo. Prevenção reforçada: qualquer ferramenta Node efêmera deve partir da runtime retornada por `mcp__codex_app__load_workspace_dependencies` ou de um binário local confirmado, sem tentar wrappers em `%APPDATA%\npm`.
+- Erro: a primeira versão transacional da RPC da UX-CHART-003B qualificou `GREATEST` e `LEAST` com `pg_catalog`; a função compilou, mas o pgTAP de comportamento falhou na primeira execução porque essas construções não são funções comuns qualificáveis. Prevenção: qualificar relações e funções PostgreSQL reais quando `search_path=''`, mas manter expressões sintáticas como `GREATEST`, `LEAST`, `CASE` e `COALESCE` sem prefixo; sempre executar ao menos um cenário comportamental antes de aplicar a migration.
 - Erro: na auditoria inicial do Dia 6 do SP-001, a IA tentou ler `src/app/manifest.ts` apesar de a descoberta no mesmo comando apontar `public/manifest.webmanifest` como manifesto real. Prevenção: separar descoberta e leitura de artefatos opcionais; somente abrir caminhos confirmados por `rg --files`, sem presumir convenções alternativas do Next.js.
+- Erro: na inspeção do Dia 6 da `UX-CHART-003B`, duas buscas compostas misturaram regex, glob e sintaxe PowerShell e falharam antes de produzir evidência útil. Prevenção reforçada: descobrir arquivos primeiro com `rg --files`, passar caminhos confirmados a `Get-Content -LiteralPath` e não usar globs de estilo POSIX em argumentos do PowerShell.
+- Erro: o primeiro GREEN da visibilidade móvel converteu o seletor progressivo inteiro em Client Component e violou o boundary test que exige renderização server-side. Prevenção: comportamentos DOM mínimos devem nascer em uma ilha cliente específica, preservando o formulário GET, a configuração e a marcação principal no Server Component.
 - Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
 - Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
 - Erro: o primeiro adapter ECharts importou `use` com o nome original e o ESLint o classificou como React Hook chamado no topo do módulo. Prevenção: APIs externas homônimas a hooks devem receber alias sem prefixo `use`, deixando explícita sua função de registro e evitando falsos positivos sem desabilitar regras.
@@ -7967,3 +7980,242 @@ Riscos, fronteiras e saída:
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram preservados fora do escopo;
 - `UX-CHART-003A` atende ao critério de pronto e passa a `DONE` / `READY_FOR_RELEASE`; `003B/C` continuam fora deste ciclo;
 - próximo passo: versionar a documentação do Dia 7, atualizar a PR `#27` e aguardar os checks do novo head; depois, mediante decisão humana, realizar squash merge em `develop`.
+
+## Dia 1 — Contexto, Discovery e Arquitetura da UX-CHART-003B
+
+Estado e dependência:
+- `UX-CHART-003A` foi mesclada por squash em `develop` no commit `7434159` e deixou de ser bloqueio;
+- branch atual: `codex/ux-chart-003b-periodos-historicos`, criada diretamente sobre o `develop` mesclado;
+- `UX-CHART-003B` é a única small release ativa; `003C` permanece fora do ciclo;
+- estado de entrada: `READY_FOR_RELEASE`; nenhum bloqueio duro identificado.
+
+Escopo e semântica aprovados:
+- valor `three_months`, rótulo `3M` e nome acessível `Três meses civis`: mês da referência e dois meses civis anteriores, do primeiro dia do primeiro mês até o primeiro dia do mês seguinte à referência;
+- valor `year`, rótulo `Ano` e nome acessível `Ano atual`: 1º de janeiro da referência até 1º de janeiro do ano seguinte;
+- `3M` usa semanas civis iniciadas na segunda-feira; `Ano` usa meses civis;
+- intervalos e buckets são semiabertos, consecutivos e recortados aos limites selecionados;
+- buckets sem movimentos carregam o saldo anterior, com volume e contagem iguais a zero;
+- períodos civis mantêm todo o mês/ano da referência, e datas futuras vazias não são apresentadas como projeção;
+- `Tudo`, personalizado, `12M`, comparação, trimestre e drill-down permanecem na `003C` ou em itens futuros.
+
+Contratos por camada:
+- domain amplia `FinancialPeriodKind`, introduz `FinancialBucketGranularity` fechado e resolve intervalo/granularidade sem framework;
+- application mantém `FinancialEvolutionDto`, usa o snapshot atual para `day` e uma leitura agregada para `week`/`month`;
+- infrastructure terá mapper e operação próprios para buckets, sem enviar `userId` à função SQL e sem reutilizar o mapper de movimentos brutos;
+- presentation acrescentará `3M` e `Ano` à barra GET Server Component, sem escolher SQL ou acessar Supabase;
+- cards, linha, candles e tabela continuarão derivados da mesma resposta; extrato bruto segue limitado a intervalos de até 31 dias.
+
+RPC e dados planejados:
+- nova assinatura: `public.load_financial_evolution_buckets(date, date, text)`;
+- retorno mínimo: limites do bucket, account count, OHLC, receitas, despesas, volume e quantidade de transações;
+- ordenação financeira preservada por `occurred_on`, `created_at`, `id`;
+- `SECURITY INVOKER`, `search_path = ''`, schemas explícitos e grants somente para `authenticated`;
+- identidade permanente e `(select auth.uid())`, sem parâmetro de proprietário;
+- allowlist `week`/`month`, duração máxima de 366 dias e teto de 60 buckets;
+- a RPC diária `load_financial_evolution_snapshot(date, date)` e seu limite de 31 dias permanecem inalterados;
+- migration somente forward-only e depois de RED Jest/pgTAP aprovado.
+
+Evidências Supabase e performance:
+- projeto `fin_control` (`nrisvhzlkqwzaphztaxf`) está `ACTIVE_HEALTHY`, PostgreSQL 17.6.1, região `sa-east-1`;
+- `financial_accounts` e `transactions` possuem RLS habilitada e forçada;
+- a RPC atual foi confirmada como invoker, com search path vazio e ACL somente para `postgres`/`authenticated`;
+- seis migrations remotas continuam alinhadas às seis migrations locais;
+- índice existente para a consulta financeira: `(user_id, occurred_on desc, created_at desc, id desc)`;
+- índice novo permanece proibido sem `EXPLAIN (ANALYZE, BUFFERS)` e evidência objetiva;
+- Security Advisor manteve somente a proteção de senhas vazadas registrada em `SEC-AUTH-001`; o aviso de índice de contas sem uso não pertence a esta feature.
+
+Artefatos e testes preparados:
+- criado `docs/ux-chart-003b-discovery.md` com contratos de produto, domínio, application, infrastructure, presentation, RPC, segurança e performance;
+- ADR 0020 atualizado para registrar a arquitetura vigente da `003B`;
+- backlog e roadmap atualizados com `003A` mesclada e `003B` em `ARCHITECTURE_READY`;
+- matriz do próximo Dia 2 cobre resolver e buckets, seleção do repository, mapper, apresentação, rotas, RLS, grants, limites, OHLC, isolamento e plano;
+- baseline atual aprovada com 4 suítes, 45 testes e zero snapshots, cobrindo resolver, caso de uso, seletor e rota financeira;
+- nenhuma suíte nova foi criada: testes funcionais e pgTAP pertencem ao Dia 2.
+
+Riscos e fronteiras:
+- risco ALTO de erro OHLC e isolamento multiusuário, mitigado por fixtures determinísticas e pgTAP cruzado;
+- risco MÉDIO de performance anual, mitigado por resposta agregada, limites e medição antes de índice;
+- risco MÉDIO de largura da barra em 320 px, reservado para validação real do Dia 6;
+- nenhuma migration, RPC, policy, grant, dado, código funcional, dependência ou configuração remota foi alterada;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intactos e fora do escopo.
+
+Estado de saída:
+- máquina de estados: `ARCHITECTURE_READY`;
+- próximo comando válido: `dia 2` da `UX-CHART-003B` para criar testes Jest e pgTAP em RED antes de qualquer implementação ou migration.
+
+## Dia 2 — Estratégia de Testes e Fundação TDD da UX-CHART-003B
+
+Entrada e escopo:
+- contexto central e workflow do Dia 2 consultados antes da execução;
+- declaração operacional aprovada explicitamente pelo usuário;
+- `UX-CHART-003B` permaneceu como única small release ativa; `003C` não foi antecipada;
+- código funcional, migration aplicada, alteração persistente no Supabase e operações Git remotas permaneceram bloqueados.
+
+Contratos materializados:
+- domain cobre `three_months`, `year`, ano bissexto, virada de ano, limite civil e granularidade `day`/`week`/`month`;
+- application distingue snapshot diário de buckets agregados sem duplicar a composição financeira;
+- infrastructure cobre chamada sem `userId`, mapper estrito, continuidade, intervalos e inteiros seguros;
+- presentation e rotas cobrem sete opções, nomes acessíveis, orientação, teclado, URL e composição server-side;
+- três arquivos pgTAP cobrem schema/grants, comportamento/RLS/OHLC e performance sem índice especulativo, com 43 assertions diretas.
+
+Evidência RED e validação:
+- baseline: 7 suítes, 69 testes verdes e zero snapshots;
+- RED dirigido: 7 suítes falharam de forma coerente; nas 6 carregadas, 42 de 70 testes passaram e 28 falharam pelos comportamentos ainda ausentes;
+- a suíte nova do mapper contém 18 contratos e não carregou porque o módulo de produção ainda não existe;
+- ESLint passou nos 7 arquivos Jest afetados;
+- type-check ficou somente com o `TS2307` esperado do mapper futuro;
+- probe pgTAP remoto falhou 2/2 pela ausência da função agregada e o rollback foi confirmado sem extensão, função ou dado persistente.
+
+Riscos e saída:
+- risco ALTO de OHLC/RLS agora possui fixtures determinísticas e testes cross-tenant;
+- risco MÉDIO de performance anual possui contrato de plano e proibição explícita de índice sem medição;
+- nenhum código funcional, migration, RPC, policy, grant, índice, dado, dependência ou configuração remota foi criado ou alterado;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram fora do escopo;
+- estratégia detalhada registrada em `docs/ux-chart-003b-test-strategy.md`;
+- máquina de estados: `TEST_STRATEGY_READY`;
+- próximo comando válido: `dia 3` da `UX-CHART-003B` para implementar o mínimo que satisfaz o RED, mediante nova declaração e aprovação.
+
+## Dia 3 — Implementação Mínima Orientada por Teste da UX-CHART-003B
+
+Entrada e governança:
+- contexto central, workflow do Dia 3 e skills oficiais de Supabase/Postgres e Next.js consultados;
+- declaração operacional aprovada explicitamente antes da implementação e da migration;
+- escopo permaneceu restrito a `3M`, `Ano` e buckets semanais/mensais; `UX-CHART-003C`, deploy e operações Git remotas ficaram bloqueados.
+
+Implementação mínima:
+- domínio ganhou os valores `three_months` e `year`, granularidade fechada `day | week | month` e resolução civil determinística;
+- application mantém períodos curtos no snapshot diário e encaminha somente períodos longos ao novo contrato de buckets;
+- mapper agregado valida inteiros seguros, intervalos, volume, OHLC, continuidade, ordem e consistência de contas;
+- repository chama `load_financial_evolution_buckets` somente com início, fim e bucket, sem aceitar `userId` no SQL;
+- seletor e rotas aceitam `3M`/`Ano`, preservando formulário GET server-rendered, fallback `month` e DTO serializável;
+- migration forward-only `20260907041839_create_financial_evolution_buckets.sql` foi criada e aplicada no Supabase.
+
+Banco, segurança e performance:
+- função remota confirmada como `SECURITY INVOKER`, com `search_path = ''`, ACL `{postgres, authenticated}` e negação a `PUBLIC`, `anon` e `service_role`;
+- identidade permanente, allowlist `week`/`month`, teto de 366 dias/60 buckets, RLS e projeção mínima foram preservados;
+- 43 assertions pgTAP passaram: 16 schema/grants, 22 comportamento/RLS/OHLC e 5 performance;
+- sete migrations locais e remotas estão alinhadas; `pgtap` não permaneceu instalado;
+- nenhum índice novo foi criado após o plano confirmar cobertura suficiente pelo índice composto existente;
+- advisors pós-DDL não apontaram regressão desta feature; permanecem somente `SEC-AUTH-001` e a informação global de índice de contas sem uso.
+
+Validação e saída:
+- GREEN dirigido: 7 suítes e 88 testes passaram, zero snapshots;
+- regressão completa: 95 suítes e 609 testes passaram, zero snapshots;
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` passaram;
+- `next-env.d.ts` foi restaurado após a alteração automática do build;
+- nenhum commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intocados;
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 4` da `UX-CHART-003B`.
+
+## Dia 4 — Expansão Controlada da UX-CHART-003B
+
+Entrada e governança:
+- contexto central e workflow do Dia 4 consultados; declaração operacional aprovada explicitamente antes da execução;
+- escopo permaneceu restrito aos estados e validações de `3M`/`Ano`; `UX-CHART-003C`, migration, índice, dependência nova e operações Git/remotas ficaram bloqueados;
+- skill oficial de Next.js preservou a composição Server Component e a fronteira de dados; a revisão React confirmou props primitivas, estado derivado durante render e ausência de efeitos ou memoização desnecessários.
+
+Expansão e validações:
+- painel, alternador, gráficos e tabelas agora descrevem a granularidade real como dia, semana ou mês, inclusive em nomes acessíveis e cabeçalhos;
+- o caso de uso rejeita respostas agregadas que não cubram exatamente o início e o fim do período solicitado, expondo somente erro sanitizado;
+- o estado vazio de período anual mantém saldo, ponto, candle e resumo visíveis sem inventar movimentos;
+- loading, missing accounts, empty, success e error existentes foram preservados e cobertos pela regressão ampliada.
+
+Evidência e saída:
+- RED dirigido: 6 suítes, 59 testes executados, 52 verdes e 7 falhas esperadas;
+- GREEN dirigido: 6 suítes e 59 testes; feature completa: 32 suítes e 286 testes; regressão global: 95 suítes e 617 testes, todos verdes e sem snapshots;
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` passaram;
+- `next-env.d.ts` foi restaurado após alteração automática do build;
+- nenhum banco, migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi alterado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram fora do escopo;
+- máquina de estados: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 5` da `UX-CHART-003B`.
+
+## Dia 5 — Refatoração e Hardening Interno da UX-CHART-003B
+
+Diagnóstico e plano:
+- contexto central e workflow do Dia 5 consultados; declaração operacional aprovada antes da execução;
+- inventário não encontrou arquivo de production monolítico no recorte da `003B`; o painel contextual de 216 linhas permanece coeso e não foi reescrito por estilo;
+- risco concreto identificado: o extrato selecionado permanecia aberto quando a chave civil do período mudava;
+- cinco implementações locais repetiam a mesma formatação de data civil na presentation;
+- plano e decisões registrados em `docs/ux-chart-003b-day5-refactoring.md`.
+
+Refatoração e integridade:
+- RED adicionou cenário de troca de período com diálogo contextual aberto e falhou 1 de 8 testes como esperado;
+- `FinancialVisualizationSwitcher` passou a isolar o estado interativo por chave de granularidade, início e fim, fechando seleção obsoleta sem `useEffect`;
+- formatter puro centraliza data completa e dia/mês para tabelas, painel e opções ECharts;
+- Server Component, DTO serializável e acesso server-side aos dados foram preservados conforme revisão Next.js/React;
+- nenhuma abstração genérica, memoização, efeito, barrel, dependência ou otimização especulativa foi criada.
+
+Validação e saída:
+- GREEN dirigido: 5 suítes e 38 testes; feature completa: 32 suítes e 287 testes; regressão global: 95 suítes e 618 testes, todos verdes e sem snapshots;
+- ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` passaram;
+- `next-env.d.ts` foi restaurado após alteração automática do build;
+- Performance Agent não foi ativado por ausência de evidência concreta de gargalo;
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram fora do escopo;
+- `REFACTORING_IN_PROGRESS` encerrou com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` da `UX-CHART-003B`.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-003B
+
+Diagnóstico e TDD:
+- contexto central e workflow do Dia 6 foram consultados; declaração operacional aprovada antes da execução;
+- o navegador real revelou que ECharts substituía o nome acessível em português do próprio container por uma descrição automática com valores brutos;
+- RED dirigido adicionou dois contratos para manter o nome estável na linha e nos candles; outro RED exigiu gesto horizontal e visibilidade automática do período ativo;
+- o primeiro GREEN da barra tornou o seletor cliente e foi rejeitado pelo gate arquitetural; a correção final preserva o Server Component e isola somente a rolagem horizontal calculada numa ilha cliente mínima.
+
+UX, acessibilidade e PWA:
+- linha e candles agora mantêm um wrapper semântico `role="img"` em português; o renderer ECharts interno fica `aria-hidden="true"`, enquanto as tabelas continuam como alternativa textual completa;
+- a barra mantém sete botões em ordem, alvos de 44 px, `aria-pressed`, nomes completos, rótulos compactos em mobile, foco por teclado e formulário GET progressivo;
+- rolagem horizontal permanece confinada, aceita gesto touch e traz `Mês`, `3M` ou `Ano` para a área visível sem mover o foco;
+- `3M` foi confirmado com URL `?period=three_months`, semântica semanal e tabela semanal; `Ano` com `?period=year`, semântica mensal e cabeçalho `Mês`;
+- o extrato mensal manteve diálogo modal, bloqueio de scroll, fechamento por Escape e retorno de foco ao acionador;
+- `lang="pt-BR"`, viewport responsiva, manifesto standalone, theme colors, safe areas e política global de reduced motion permanecem válidos.
+
+Evidências e limites:
+- navegador autenticado local em 1280 px: 7 períodos, alvo ativo de 44 px, `clientWidth = scrollWidth = 1265` no documento, sem overlay de erro e nomes estáveis nos gráficos;
+- a emulação autenticada isolada de 320/390/768 px ficou indisponível porque o harness CDP não conseguiu preencher os inputs React; não houve erro do app e os artefatos temporários foram removidos;
+- risco residual BAIXO: repetir a inspeção visual automatizada em 320/390 px no Dia 7 ou Preview; os contratos responsivos, o histórico real de 320 px da `003A` e os testes de classes/semântica cobrem o comportamento crítico;
+- RED inicial dos gráficos: 2 falhas esperadas; GREEN: 2 suítes/24 testes; seletor final: 14 testes; feature completa: 32 suítes/290 testes;
+- regressão global: 95 suítes/621 testes, zero snapshots; ESLint, type-check e build Next.js 16.3.3 verdes;
+- falha inicial do build foi exclusivamente bloqueio de rede ao Google Fonts e passou com acesso externo controlado;
+- nenhuma migration, RPC, RLS, dado, dependência, configuração remota, commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram preservados;
+- estado de saída: `QUALITY_VALIDATION` em GREEN;
+- próximo comando válido: `dia 7` da `UX-CHART-003B`.
+
+## Dia 7 — Qualidade Final e Entrega Incremental da UX-CHART-003B
+
+Quality gates e supply chain:
+- regressão completa: 95 suítes e 621 testes verdes, zero snapshots;
+- ESLint global sem warnings, type-check e build Next.js 16.3.3 com Turbopack verdes;
+- auditoria npm retornou zero vulnerabilidades; 701 pacotes possuem assinatura de registro verificada e 102 possuem attestation verificada;
+- `git diff --check` passou e `next-env.d.ts` foi restaurado após a atualização automática do build;
+- varredura dos arquivos rastreados não encontrou service role, chave privada, token GitHub/Stripe/AWS ou JWT literal; somente `.env.example` é versionado e `.env.local` permanece ignorado.
+
+Segurança, banco e observabilidade:
+- Supabase `fin_control` está `ACTIVE_HEALTHY` em PostgreSQL 17.6.1, com as sete migrations locais e remotas alinhadas;
+- RLS permanece habilitada nas três tabelas financeiras; as RPCs diária e agregada são `SECURITY INVOKER`, usam `search_path = ''` e concedem execução somente a `authenticated`;
+- Security Advisor manteve apenas `SEC-AUTH-001`; Performance Advisor manteve a informação global do índice `financial_accounts_user_created_id_idx` ainda sem uso;
+- Preview `dpl_45j3kHfLgUY7CNTGbyhLrVxnxWX4`, commit `5211303`, está `READY`, respondeu HTTP 200 e não apresentou runtime error nem log `error/fatal` nas últimas 24 horas;
+- CSP, HSTS, `X-Frame-Options: DENY`, `nosniff`, Referrer Policy, Permissions Policy e `noindex` foram confirmados na resposta real; não há comentário aberto da Vercel Toolbar.
+
+Validação funcional no Preview:
+- sessão autenticada abriu o dashboard real no Preview da PR;
+- `3M` atualizou a URL para `?period=three_months`, exibiu agregação semanal e tabela com 14 buckets;
+- `Ano` atualizou a URL para `?period=year`, exibiu agregação mensal e tabela com 12 buckets;
+- linha e candles mantiveram nomes acessíveis estáveis em português e tabelas equivalentes;
+- extrato mensal exibiu 6 movimentos, volume de R$ 3.400,00 e insight dinâmico de 53% do volume em despesas; `Escape` fechou o diálogo, restaurou o foco ao acionador e liberou a rolagem;
+- o documento validado em 1280 px não apresentou overflow global; a emulação automatizada autenticada de 320/390/768 px continua indisponível no conector atual, risco residual BAIXO mitigado pelos contratos responsivos e pela evidência real de 320 px da `003A`.
+
+Riscos, fronteiras e saída:
+- `CI-VERCEL-002` foi reconfirmada: contrato local/CI usa Node 22, enquanto o projeto Vercel declara Node 24; o Preview construiu e operou normalmente, portanto o drift permanece dívida MÉDIA não bloqueante a alinhar antes de operação por CLI/promoção;
+- `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001B` e `CI-VERCEL-002` permanecem fora do escopo e não bloqueiam o merge incremental desta feature, mas continuam governando uma futura produção pública;
+- nenhuma migration, policy, grant, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intactos;
+- artefato detalhado: `docs/ux-chart-003b-day7-release-readiness.md`;
+- máquina de estados: `READY_FOR_RELEASE`;
+- próximo passo recomendado: versionar o Dia 7 e atualizar a PR `#28`, sem antecipar `UX-CHART-003C`.

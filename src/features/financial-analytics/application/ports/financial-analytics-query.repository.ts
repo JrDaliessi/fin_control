@@ -1,4 +1,8 @@
-import type { FinancialEvolutionSnapshot } from "../../domain/types/financial-evolution.types";
+import type {
+  FinancialEvolutionBucketSnapshot,
+  FinancialEvolutionSnapshot
+} from "../../domain/types/financial-evolution.types";
+import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 
 export type LoadEvolutionSnapshotInput = Readonly<{
   userId: string;
@@ -6,8 +10,19 @@ export type LoadEvolutionSnapshotInput = Readonly<{
   endOnExclusive: string;
 }>;
 
+export type LoadEvolutionBucketsInput = Readonly<{
+  userId: string;
+  startOnInclusive: string;
+  endOnExclusive: string;
+  bucketGranularity: Exclude<FinancialBucketGranularity, "day">;
+}>;
+
 export interface FinancialAnalyticsQueryRepository {
   loadEvolutionSnapshot(
     input: LoadEvolutionSnapshotInput
   ): Promise<FinancialEvolutionSnapshot>;
+
+  loadEvolutionBuckets(
+    input: LoadEvolutionBucketsInput
+  ): Promise<FinancialEvolutionBucketSnapshot>;
 }
