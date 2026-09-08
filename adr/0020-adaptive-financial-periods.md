@@ -1,6 +1,6 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: Dia 6 da `UX-CHART-003B` concluído em `QUALITY_VALIDATION` GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
+- Status: `UX-CHART-003B` concluída em `READY_FOR_RELEASE`; `003A` mesclada e `003C` refinada para ciclo próprio
 - Data: 2026-09-08
 - Feature: `UX-CHART-003`
 - Depende de: ADR 0019, ADR 0021 e merge `7434159`
@@ -113,7 +113,7 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - Períodos longos exigem ciclo crítico próprio, com TDD, pgTAP, revisão RLS e validação de performance.
 - O limite visual de pontos fica previsível em mobile e desktop.
 - O extrato contextual continua sob demanda e independente da granularidade agregada.
-- A `003B` passa a `IMPLEMENTATION_IN_PROGRESS` em GREEN; a `003C` permanece refinada, mas não autorizada para teste ou implementação neste ciclo.
+- A `003B` está `READY_FOR_RELEASE`; a `003C` permanece refinada, mas não autorizada para teste ou implementação neste ciclo.
 
 ## Evidências do Dia 1 da 003B
 
@@ -167,6 +167,15 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - manifesto standalone, viewport, theme colors, safe areas e reduced motion permanecem válidos;
 - 32 suítes/290 testes da feature e 95 suítes/621 testes globais passaram, além de lint, type-check e build.
 
+## Evidências do Dia 7 da 003B
+
+- regressão global com 95 suítes/621 testes, lint, type-check, build, auditoria de dependências e supply chain verdes;
+- sete migrations locais/remotas alinhadas, RLS ativa e RPCs invoker com search path vazio e execução exclusiva por `authenticated`;
+- Preview `dpl_45j3kHfLgUY7CNTGbyhLrVxnxWX4` do commit `5211303` em `READY`, HTTP 200 e sem erro/fatal nas últimas 24 horas;
+- `3M` semanal e `Ano` mensal validados no dashboard autenticado, inclusive linha, candles, tabelas, volume, insight contextual, Escape e retorno de foco;
+- headers defensivos e manifesto PWA confirmados; nenhuma configuração remota, migration, dado ou dependência foi alterada;
+- drift Node 22/24 permanece em `CI-VERCEL-002` como dívida MÉDIA não bloqueante, e a limitação de emulação autenticada 320/390/768 px permanece risco BAIXO.
+
 ## Próximo passo
 
-Executar o Dia 7 da `UX-CHART-003B` para concluir segurança, observabilidade, inspeção em Preview e preparação da entrega, sem antecipar `Tudo`, personalizado ou drill-down.
+Versionar o Dia 7 da `UX-CHART-003B` e atualizar a PR `#28`, sem antecipar `Tudo`, personalizado ou drill-down.

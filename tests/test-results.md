@@ -1273,3 +1273,38 @@ Interpretação:
 - build Next.js 16.3.3 com Turbopack passou após acesso controlado ao Google Fonts;
 - estado final: `QUALITY_VALIDATION` em GREEN;
 - próximo comando válido: `dia 7` da `UX-CHART-003B`.
+
+## Dia 7 — UX-CHART-003B
+
+### Pipeline final
+
+- regressão completa: 95 suítes e 621 testes passaram;
+- snapshots: zero;
+- ESLint global: verde, zero warnings;
+- type-check: verde;
+- build Next.js 16.3.3/Turbopack: verde, com todas as rotas e o Proxy preservados;
+- `npm audit --audit-level=high`: zero vulnerabilidades;
+- supply chain: 701 assinaturas e 102 attestations verificadas;
+- `git diff --check`: verde; `next-env.d.ts` restaurado após o build.
+
+### Segurança, banco e serviços
+
+- nenhum segredo privilegiado ou token literal foi encontrado nos arquivos rastreados;
+- Supabase saudável, sete migrations alinhadas, RLS ativa e RPCs invoker com ACL mínima;
+- Preview Vercel do commit `5211303` em `READY`, HTTP 200 e sem erro/fatal em 24 horas;
+- headers defensivos e ausência de comentários abertos da Toolbar confirmados;
+- checks remotos da PR `#28` estavam verdes no início do gate.
+
+### Smoke test
+
+- `3M`: URL canônica e 14 buckets semanais;
+- `Ano`: URL canônica e 12 buckets mensais;
+- linha/candles: seleção e nomes acessíveis coerentes, com tabelas equivalentes;
+- extrato: volume e insights dinâmicos carregados, fechamento por Escape e foco/scroll restaurados;
+- 1280 px sem overflow global; 320/390/768 px mantidos como risco BAIXO por limitação do conector, cobertos por testes e evidência anterior.
+
+### Resultado
+
+- `UX-CHART-003B` atingiu `READY_FOR_RELEASE`;
+- `CI-VERCEL-002` mantém o drift Node 22/24 como dívida MÉDIA não bloqueante;
+- nenhuma operação Git remota, merge, deploy, promoção ou mutação de banco/configuração foi executada.

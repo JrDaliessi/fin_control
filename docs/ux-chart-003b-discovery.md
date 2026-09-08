@@ -1,10 +1,10 @@
 # UX-CHART-003B — Discovery de 3M, Ano e agregação server-side
 
-- Fase: Dia 6 — experiência, acessibilidade e PWA concluídas em GREEN
+- Fase: Dia 7 — qualidade final e entrega incremental concluídas em GREEN
 - Data: 2026-09-08
-- Estado: `QUALITY_VALIDATION`
+- Estado: `READY_FOR_RELEASE`
 - Predecessora: `UX-CHART-003A` mesclada por squash em `develop` no commit `7434159`
-- Próxima fase autorizável: Dia 7 — qualidade final e entrega incremental
+- Próxima ação autorizável: versionar o Dia 7 e atualizar a PR `#28`
 
 ## Problema
 
@@ -214,7 +214,7 @@ A consulta existente `(user_id, occurred_on desc, created_at desc, id desc)` ate
 - risco BAIXO: inspeção móvel automatizada atual não concluída no harness isolado; mitigação por rolagem confinada, alvo de 44 px, reposicionamento do item ativo, contratos Jest e evidência real anterior da barra em 320 px;
 - risco BAIXO: usuário interpretar `3M` como 90 dias; mitigação por nome acessível e orientação civil curta.
 
-Não há bloqueio duro para o Dia 7. A acessibilidade do renderer e a visibilidade do período ativo foram endurecidas no Dia 6; `UX-CHART-003C`, deploy e operações Git remotas continuam fora deste ciclo de fase.
+Não há bloqueio duro para a entrega incremental. `CI-VERCEL-002` mantém o drift Node 22/24 como dívida MÉDIA e a emulação autenticada isolada em 320/390/768 px permanece risco BAIXO; ambos estão documentados e não invalidaram os contratos responsivos nem o Preview real. `UX-CHART-003C`, merge, deploy e promoção continuaram fora deste ciclo de fase.
 
 ## Critério de pronto do Dia 1
 
@@ -227,6 +227,17 @@ Não há bloqueio duro para o Dia 7. A acessibilidade do renderer e a visibilida
 - Supabase remoto inspecionado somente em leitura, sem mutação;
 - nenhum código funcional, teste, migration, dado remoto, commit, push, PR ou deploy antecipado.
 
+## Evidências finais do Dia 7
+
+- 95 suítes e 621 testes, lint, type-check e build Next.js 16.3.3 verdes;
+- auditoria npm com zero vulnerabilidades, 701 assinaturas e 102 attestations verificadas;
+- Supabase saudável, sete migrations alinhadas, RLS ativa e ACL mínima nas RPCs;
+- Preview do commit `5211303` em `READY`, HTTP 200 e sem erro/fatal em 24 horas;
+- dashboard autenticado confirmou `3M` semanal, `Ano` mensal, linha, candles, tabelas e extrato contextual;
+- o extrato mensal exibiu volume e insights dinâmicos coerentes, fechou por Escape e restaurou foco/scroll;
+- headers defensivos, idioma, viewport e manifesto standalone preservados;
+- nenhuma mutação remota ou operação Git foi realizada no Dia 7.
+
 ## Próximo passo
 
-O Dia 6 estabilizou os nomes acessíveis dos gráficos, manteve o seletor server-side e confinou a rolagem touch com reposicionamento do período ativo. O próximo passo é executar o Dia 7 para validação final, Preview e preparação da entrega sem antecipar o escopo da `003C`.
+Versionar o fechamento do Dia 7 e atualizar a PR `#28`. A `UX-CHART-003C` deve iniciar somente após a entrega da `003B` e comando explícito para um novo ciclo.

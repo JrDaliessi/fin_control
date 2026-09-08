@@ -2,7 +2,7 @@
 
 - Fase: Dia 1 — contexto, discovery e arquitetura
 - Data: 2026-09-06
-- Estado: `UX-CHART-003A` mesclada; arquitetura da `003B` pronta; `003C` refinada para ciclo próprio
+- Estado: `UX-CHART-003A` mesclada; `UX-CHART-003B` em `READY_FOR_RELEASE`; `003C` refinada para ciclo próprio
 - Predecessora da `003B`: `UX-CHART-003A` mesclada por squash em `develop` no commit `7434159`
 
 ## Problema
@@ -179,5 +179,5 @@ Regras:
 ## Estado e próximo passo
 
 - `UX-CHART-003A`: `DONE`, mesclada em `develop` pelo commit `7434159`.
-- `UX-CHART-003B`: Dia 1 concluído em `ARCHITECTURE_READY`; executar o Dia 2 para criar contratos Jest e pgTAP em RED antes de alterar produção ou criar migration.
+- `UX-CHART-003B`: Dia 7 concluído em `READY_FOR_RELEASE`, com quality gates, Supabase, segurança, observabilidade e Preview verdes; próximo passo é versionar e atualizar a PR `#28`.
 - `UX-CHART-003C`: permanece fora do ciclo atual.

@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `QUALITY_VALIDATION`
-- Fase atual: Dia 6 da UX-CHART-003B concluído em GREEN; responsividade, acessibilidade e PWA validadas
+- Estado atual da máquina de estados: `READY_FOR_RELEASE`
+- Fase atual: Dia 7 da UX-CHART-003B concluído em GREEN; entrega incremental pronta para versionamento e atualização da PR
+- Data da validação final e preparação de release da UX-CHART-003B: 2026-09-08
 - Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003B: 2026-09-08
 - Data da refatoração e hardening interno da UX-CHART-003B: 2026-09-07
 - Data da expansão controlada da UX-CHART-003B: 2026-09-07
@@ -8185,3 +8186,36 @@ Evidências e limites:
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram preservados;
 - estado de saída: `QUALITY_VALIDATION` em GREEN;
 - próximo comando válido: `dia 7` da `UX-CHART-003B`.
+
+## Dia 7 — Qualidade Final e Entrega Incremental da UX-CHART-003B
+
+Quality gates e supply chain:
+- regressão completa: 95 suítes e 621 testes verdes, zero snapshots;
+- ESLint global sem warnings, type-check e build Next.js 16.3.3 com Turbopack verdes;
+- auditoria npm retornou zero vulnerabilidades; 701 pacotes possuem assinatura de registro verificada e 102 possuem attestation verificada;
+- `git diff --check` passou e `next-env.d.ts` foi restaurado após a atualização automática do build;
+- varredura dos arquivos rastreados não encontrou service role, chave privada, token GitHub/Stripe/AWS ou JWT literal; somente `.env.example` é versionado e `.env.local` permanece ignorado.
+
+Segurança, banco e observabilidade:
+- Supabase `fin_control` está `ACTIVE_HEALTHY` em PostgreSQL 17.6.1, com as sete migrations locais e remotas alinhadas;
+- RLS permanece habilitada nas três tabelas financeiras; as RPCs diária e agregada são `SECURITY INVOKER`, usam `search_path = ''` e concedem execução somente a `authenticated`;
+- Security Advisor manteve apenas `SEC-AUTH-001`; Performance Advisor manteve a informação global do índice `financial_accounts_user_created_id_idx` ainda sem uso;
+- Preview `dpl_45j3kHfLgUY7CNTGbyhLrVxnxWX4`, commit `5211303`, está `READY`, respondeu HTTP 200 e não apresentou runtime error nem log `error/fatal` nas últimas 24 horas;
+- CSP, HSTS, `X-Frame-Options: DENY`, `nosniff`, Referrer Policy, Permissions Policy e `noindex` foram confirmados na resposta real; não há comentário aberto da Vercel Toolbar.
+
+Validação funcional no Preview:
+- sessão autenticada abriu o dashboard real no Preview da PR;
+- `3M` atualizou a URL para `?period=three_months`, exibiu agregação semanal e tabela com 14 buckets;
+- `Ano` atualizou a URL para `?period=year`, exibiu agregação mensal e tabela com 12 buckets;
+- linha e candles mantiveram nomes acessíveis estáveis em português e tabelas equivalentes;
+- extrato mensal exibiu 6 movimentos, volume de R$ 3.400,00 e insight dinâmico de 53% do volume em despesas; `Escape` fechou o diálogo, restaurou o foco ao acionador e liberou a rolagem;
+- o documento validado em 1280 px não apresentou overflow global; a emulação automatizada autenticada de 320/390/768 px continua indisponível no conector atual, risco residual BAIXO mitigado pelos contratos responsivos e pela evidência real de 320 px da `003A`.
+
+Riscos, fronteiras e saída:
+- `CI-VERCEL-002` foi reconfirmada: contrato local/CI usa Node 22, enquanto o projeto Vercel declara Node 24; o Preview construiu e operou normalmente, portanto o drift permanece dívida MÉDIA não bloqueante a alinhar antes de operação por CLI/promoção;
+- `SEC-AUTH-001`, `HARD-OBS-001`, `SEC-HARD-001B` e `CI-VERCEL-002` permanecem fora do escopo e não bloqueiam o merge incremental desta feature, mas continuam governando uma futura produção pública;
+- nenhuma migration, policy, grant, dado, dependência, configuração remota, commit, push, alteração da PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram intactos;
+- artefato detalhado: `docs/ux-chart-003b-day7-release-readiness.md`;
+- máquina de estados: `READY_FOR_RELEASE`;
+- próximo passo recomendado: versionar o Dia 7 e atualizar a PR `#28`, sem antecipar `UX-CHART-003C`.

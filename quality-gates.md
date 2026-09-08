@@ -2123,3 +2123,20 @@ Uma release incremental só pode ser considerada pronta quando:
 - ESLint global, type-check e build Next.js 16.3.3 verdes; o build exigiu somente acesso de rede controlado ao Google Fonts.
 - nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
 - estado de saída: `QUALITY_VALIDATION` em GREEN; próximo comando válido: `dia 7` da `UX-CHART-003B`.
+
+## Gate do Dia 7 — UX-CHART-003B
+
+- regressão completa: 95 suítes e 621 testes verdes, zero snapshots;
+- ESLint global sem warnings, type-check, build Next.js 16.3.3/Turbopack e `git diff --check` verdes;
+- `npm audit --audit-level=high`: zero vulnerabilidades;
+- supply chain: 701 pacotes com assinatura de registro e 102 com attestation verificadas;
+- varredura de arquivos rastreados sem service role, private key, token GitHub/Stripe/AWS ou JWT literal;
+- Supabase `ACTIVE_HEALTHY`, sete migrations alinhadas, RLS ativa e RPCs invoker/search path vazio/ACL exclusiva de `authenticated`;
+- Security Advisor somente com `SEC-AUTH-001`; índice de contas sem uso permanece informação global sem relação com a feature;
+- Preview `dpl_45j3kHfLgUY7CNTGbyhLrVxnxWX4` do commit `5211303` está `READY`, HTTP 200 e sem runtime error ou log `error/fatal` em 24 horas;
+- CSP, HSTS, frame denial, nosniff, Referrer Policy, Permissions Policy e `noindex` confirmados;
+- smoke autenticado confirmou `3M` semanal, `Ano` mensal, linha, candles, tabelas, volume, insight, Escape e retorno de foco;
+- checks remotos da PR `#28` estavam verdes no head publicado ao iniciar o gate e não houve comentário aberto da Vercel Toolbar;
+- risco BAIXO de emulação autenticada 320/390/768 px e dívida MÉDIA `CI-VERCEL-002` documentados, sem bloqueio crítico da feature;
+- nenhuma mutação de banco/configuração, dependência, commit, push, PR, merge, deploy ou promoção foi executada;
+- estado de saída: `READY_FOR_RELEASE`; próximo passo: versionar o Dia 7 e atualizar a PR `#28`.
