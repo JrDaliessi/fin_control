@@ -3,26 +3,26 @@
 project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product]
-active_artifact: GOV-V4-001
-artifact_state: READY_FOR_RELEASE
-phase: Dia 0 incremental
-last_release: UX-CHART-003B
+active_artifact: UX-CHART-003C
+artifact_state: SPEC_READY
+phase: Dia 1
+last_release: GOV-V4-001
 
 ## Current Goal
 
-Concluir a migração incremental da governança para Regras IDE v4, preservando o histórico e preparando um Context Pack enxuto para o próximo ciclo `UX-CHART-003C`.
+Entregar `Tudo`, período personalizado e drill-down progressivo com limites explícitos, agregação server-side e extrato final sob demanda.
 
 ## Current Delivery State
 
 - `UX-CHART-003A` e `UX-CHART-003B` foram mescladas em `develop`;
-- PR `#28` foi mesclada em 2026-09-08 no commit `45d1bab`;
-- quality gates da PR `#28`: 95 suítes, 621 testes, lint, type-check, build, segurança, Supabase e Preview verdes;
-- `UX-CHART-003` permanece `IN_PROGRESS` porque a small release `003C` ainda não começou;
-- branch atual: `codex/gov-v4-001-bootstrap`.
+- `GOV-V4-001` foi mesclada pela PR `#29` no commit `42dd6db`;
+- `UX-CHART-003C` concluiu o Dia 1 com requisitos e especificação aprovados;
+- nenhuma implementação, migration ou alteração remota foi executada neste ciclo;
+- branch atual: `codex/ux-chart-003c-all-custom-drilldown`.
 
 ## Blockers
 
-Nenhum bloqueio duro para concluir `GOV-V4-001`.
+Nenhum bloqueio duro para iniciar o Dia 2 da `UX-CHART-003C`.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -34,7 +34,9 @@ Bloqueios externos antes de produção pública completa:
 
 - `CI-VERCEL-002` — MÉDIO: contrato local/CI em Node.js 22 e projeto Vercel reportado em Node.js 24;
 - emulação autenticada automatizada isolada em 320/390/768 px — BAIXO: conector anterior não preencheu os inputs React; contratos responsivos e inspeções reais anteriores mitigam o risco;
-- `UX-CHART-003C` — ALTO: `Tudo`, período personalizado e granularidade trimestral exigirão limites server-side, RLS, performance e UX próprios.
+- `UX-CHART-003C` — ALTO: histórico extenso exige limites duplos, RLS e validação de plano antes de qualquer índice;
+- drill-down no painel único — MÉDIO: estados assíncronos e retorno precisam de cobertura de foco e concorrência;
+- mês com quantidade extrema de lançamentos — MÉDIO: paginação permanece hardening separado.
 
 ## Current Context
 
@@ -45,8 +47,10 @@ Bloqueios externos antes de produção pública completa:
 - architecture: `architecture.md`
 - stack: `project-stack.md`
 - toolchain: `project-toolchain.md`
-- active artifact: `docs/governance/GOV-V4-001.md`
-- relevant ADRs: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md`, `adr/0021-contextual-interval-volume-insights.md`
+- active artifact: `docs/features/UX-CHART-003C/`
+- feature requirements: `docs/features/UX-CHART-003C/feature-prd.md`
+- feature specification: `docs/features/UX-CHART-003C/feature-spec.md`
+- relevant ADRs: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md`, `adr/0021-contextual-interval-volume-insights.md`, `adr/0022-all-custom-periods-and-progressive-drilldown.md`
 - quality gates: `quality-gates.md`
 - context routes: `context-map.yaml`
 
@@ -57,11 +61,14 @@ Bloqueios externos antes de produção pública completa:
 - Supabase fica isolado em infraestrutura, com RLS e privilégio mínimo;
 - visualizações mantêm alternativa textual e não adotam semântica de trading;
 - períodos financeiros usam datas civis em `America/Sao_Paulo`;
-- `UX-CHART-003C` terá ciclo Dias 1–7 próprio e não será antecipada nesta migração.
+- `Tudo` começa na primeira transação do usuário; conta sem transação recai no mês civil atual;
+- personalizado usa datas inclusivas na UI e intervalo semiaberto no domínio;
+- granularidade progride de dia a ano, com máximo de 60 anos e 60 buckets;
+- drill-down usa o mesmo painel e só carrega lançamentos brutos no mês final.
 
 ## Next Action
 
-Versionar a `GOV-V4-001`, publicar a branch e submetê-la a PR. Após o merge, iniciar explicitamente o Dia 1 da `UX-CHART-003C`.
+Executar explicitamente o Dia 2 da `UX-CHART-003C`: derivar a matriz de validação e materializar testes RED, sem implementar comportamento funcional.
 
 ## History
 

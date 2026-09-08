@@ -6,17 +6,6 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### GOV-V4-001 — Migração incremental para Regras IDE v4
-- Tipo: Small Release / Governance.
-- Descrição objetiva: substituir o contexto central append-only por Hot/Warm/Cold Context, materializar os registries e workflows v4 e preservar o histórico integralmente.
-- Objetivo e valor esperado: reduzir drift e custo de contexto, tornando os próximos ciclos reproduzíveis e rastreáveis.
-- Prioridade: Alta, antes de iniciar uma nova feature.
-- Dependências: regras v4 aprovadas, documentação vigente e merge da `UX-CHART-003B`.
-- Risco: Médio por reorganizar fontes de contexto; mitigado por arquivo histórico, referências explícitas e validação de paths/YAML.
-- Fase recomendada: Dia 0 incremental.
-- Critério de pronto: fundação mínima v4 válida, Hot Context compacto, histórico preservado e nenhum código funcional alterado.
-- Status: READY_FOR_RELEASE — execução aprovada e gates documentais verdes em 2026-09-08 na branch `codex/gov-v4-001-bootstrap`; aguarda versionamento e PR.
-
 ### UX-CHART-003 — Períodos e granularidade adaptativa
 - Tipo: UX Improvement / Feature.
 - Descrição objetiva: oferecer seleção rápida de `7D`, `15D`, `Mês`, `3M`, `Ano`, `Tudo` e intervalo personalizado, escolhendo automaticamente a granularidade dos candles.
@@ -29,9 +18,20 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: `003A` e `003B` concluídas; `003C` percorre ciclo próprio posterior à `GOV-V4-001`.
+- Fase recomendada: `003A` e `003B` concluídas; `003C` está `SPEC_READY` após o Dia 1 aprovado.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A` foi mesclada no commit `7434159`; `UX-CHART-003B` foi mesclada pela PR `#28` no commit `45d1bab`, após 95 suítes/621 testes e gates remotos verdes. A inspeção autenticada isolada em 320/390/768 px permanece risco BAIXO, mitigado por contratos responsivos e evidência real anterior; `003C` segue planejada para ciclo próprio e mantém o item-pai aberto.
+- Status: IN_PROGRESS — `UX-CHART-003A` foi mesclada no commit `7434159`; `UX-CHART-003B` foi mesclada pela PR `#28` no commit `45d1bab`. A `003C` concluiu o Dia 1 em `SPEC_READY`, com contrato em `docs/features/UX-CHART-003C/`; o próximo gate é o Dia 2 de Validation First/TDD.
+
+### UX-CHART-003C — Tudo, período personalizado e drill-down
+- Tipo: Small Release / UX Improvement.
+- Objetivo: permitir histórico completo e intervalos escolhidos, com investigação progressiva sem transferir lançamentos brutos de períodos longos.
+- Prioridade: Alta; small release ativa.
+- Dependências: UX-CHART-002, UX-CHART-003A, UX-CHART-003B e ADRs 0019–0022.
+- Escopo: `Tudo`, URL personalizada, granularidades trimestral/anual, limites de 60 anos/60 buckets e drill-down no painel único até o extrato mensal.
+- Fatiamento: `003C1` domínio/URL; `003C2` agregação segura; `003C3` drill-down progressivo.
+- Risco: Alto por RLS e performance de histórico extenso; mitigação definida na Feature Spec.
+- Critério de pronto: critérios `FPRD-UXCHART003C-AC-001` a `AC-010` verdes e gates de software, segurança, experiência e release concluídos.
+- Status: SPEC_READY — Dia 1 aprovado em 2026-09-08; nenhum código, teste RED ou migration criado.
 
 ## DISCOVERY
 
@@ -475,6 +475,12 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### GOV-V4-001 — Migração incremental para Regras IDE v4
+- Tipo: Small Release / Governance.
+- Resultado: Hot/Warm/Cold Context, registries, workflows v4, governança e histórico preservado foram materializados sem alterar código funcional.
+- Evidência: PR `#29` mesclada em `develop` no commit `42dd6db` em 2026-09-08.
+- Status: DONE / RELEASED.
 
 ### UX-CHART-002D — Volume e insight contextual do intervalo
 - Tipo: Small Release / UX Improvement.

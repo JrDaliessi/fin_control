@@ -43,6 +43,20 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - Backlog fatiado em small releases.
 - Dependências críticas e bloqueios documentados.
 
+### Resultado observado — UX-CHART-003C
+
+- `GOV-V4-001` confirmada em `develop` pela PR `#29`, commit `42dd6db`.
+- Feature PRD e Feature Spec materializados com requisitos `RQ-001`–`RQ-010`, seis NFRs e dez critérios de aceite rastreáveis.
+- `Tudo` definido pela primeira transação visível sob RLS; conta sem movimentos recai no mês civil atual sem história fictícia.
+- Personalizado definido por URL canônica com datas inclusivas e conversão para intervalo semiaberto no domínio.
+- Granularidade dia/semana/mês/trimestre/ano e limites independentes de 60 anos/60 buckets aprovados; truncamento silencioso proibido.
+- Drill-down aprovado no painel único: ano para trimestres, trimestre para meses e mês para extrato de até 31 dias.
+- Segurança, minimização, migration forward-only, performance, rollback e estratégia de testes foram especificados; nenhuma mutação remota ocorreu.
+- Small releases `003C1`, `003C2` e `003C3` definidas; estado de saída `SPEC_READY`.
+- `context-map.yaml` e `context.yaml` foram parseados; rotas do artefato existem; 10 RQs, 6 NFRs e 10 ACs únicos foram verificados; `git diff --check`, ESLint e type-check passaram.
+- Testes e build não foram executados porque o Dia 1 altera somente documentação e não introduz comportamento executável.
+- Próximo comando válido: `dia 2`.
+
 ### Resultado observado — SR-012
 - SR-011 confirmada em `develop` e branch `feature/SR-012-periodos-financeiros` criada a partir da base integrada.
 - Escopo limitado a `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`.
