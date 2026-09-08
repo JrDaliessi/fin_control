@@ -1,5 +1,32 @@
 # Quality Gates
 
+## Core
+
+- [ ] objetivo e público compreendidos;
+- [ ] Hot Context e Context Pack suficientes;
+- [ ] dependências diretas e indiretas relevantes verificadas;
+- [ ] artefatos obrigatórios existentes;
+- [ ] critérios de aceite definidos e rastreáveis;
+- [ ] resultado validado pela capability aplicável;
+- [ ] riscos críticos tratados ou bloqueando formalmente;
+- [ ] documentação, estado e próximo passo atualizados.
+
+## Software
+
+Executar proporcionalmente ao risco e ao escopo:
+
+- [ ] RED observado para comportamento novo ou bug reproduzível;
+- [ ] testes dirigidos e regressão verdes;
+- [ ] lint e type-check verdes;
+- [ ] build de produção verde;
+- [ ] arquitetura e dependências revisadas;
+- [ ] Auth, RLS, isolamento, segredos e inputs revisados quando aplicável;
+- [ ] migration, performance e rollback validados quando aplicável;
+- [ ] observabilidade e release readiness verificadas;
+- [ ] nenhuma falha crítica mascarada como dívida futura.
+
+Resultados históricos abaixo são evidência de ciclos anteriores e não substituem a execução do gate da entrega ativa.
+
 ## Gate de Contexto
 - `project-context.md` existe e está atualizado.
 - Estado da máquina de estados está explícito.

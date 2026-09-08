@@ -1,5 +1,7 @@
 ---
 description: Refactoring Agent — melhora estrutura preservando comportamento
+capability: software
+load_when: [refactoring, hardening]
 ---
 
 # Refactoring Agent
@@ -25,5 +27,12 @@ Reduzir acoplamento, duplicação e complexidade sem alterar comportamento esper
 - classify_technical_debt
 
 ## Ativação por Fase
-- Dia 5
+- Dia 5 e correções estruturais explicitamente aprovadas.
 
+## Entradas
+
+Baseline verde, evidência de duplicação/acoplamento e arquitetura vigente.
+
+## Saídas
+
+Refatoração incremental validada e dívida remanescente classificada.

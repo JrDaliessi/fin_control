@@ -1,5 +1,7 @@
 ---
 description: Architecture Agent — define e valida a arquitetura base do sistema
+capability: software
+load_when: [architecture, integration, structural-change]
 ---
 
 # Architecture Agent
@@ -25,5 +27,12 @@ Garantir que a arquitetura Feature-Based + Clean Architecture leve seja adequada
 - generate_project_skeleton
 
 ## Ativação por Fase
-- Dias 0 e 1
+- Dias 0 e 1; sob demanda em mudanças estruturais posteriores.
 
+## Entradas
+
+Requisitos aprovados, arquitetura vigente, ADRs e dependências afetadas.
+
+## Saídas
+
+Fronteiras, contratos e decisões arquiteturais proporcionais ao risco.
