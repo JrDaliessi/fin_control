@@ -292,11 +292,11 @@ Small releases da `UX-CHART-002`:
 
 Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 7 concluído em `READY_FOR_RELEASE` e GREEN. Volume e resultado líquido ganharam prioridade em largura total no celular, receitas/despesas preservam a leitura comparativa e o disclosure respeita reduced motion. As 93 suítes/562 testes, lint, type-check, audit e build estão verdes; Supabase saudável e alinhado, Preview da PR `#26` `READY` e observabilidade sem erro de runtime em 24 horas.
 
-Estado da `UX-CHART-003`: `003A` mesclada por squash em `develop` no commit `7434159`. `003B` concluiu o Dia 7 em `READY_FOR_RELEASE`: os sete períodos, a agregação semanal/mensal, a acessibilidade, o extrato contextual, a segurança do Supabase e o Preview da PR `#28` foram validados; regressão final com 95 suítes/621 testes. A `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
+Estado da `UX-CHART-003`: `003A` foi mesclada em `develop` no commit `7434159`; `003B` foi mesclada pela PR `#28` no commit `45d1bab`, com sete períodos, agregação semanal/mensal e regressão final de 95 suítes/621 testes. A `003C` mantém `Tudo`/personalizado e drill-down para buckets trimestrais.
 
 Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md` e `adr/0021-contextual-interval-volume-insights.md`.
 
-Próximo passo: versionar o Dia 7 da `UX-CHART-003B`, atualizar a PR `#28` e submetê-la ao merge incremental; iniciar a `003C` somente em ciclo posterior explícito.
+Próximo passo: concluir e integrar `GOV-V4-001`; depois iniciar explicitamente o Dia 1 da `UX-CHART-003C` sob o novo contrato de contexto e validação.
 
 ## Hardening pré-produção — SEC-AUTH-001
 

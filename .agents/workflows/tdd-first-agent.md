@@ -1,5 +1,7 @@
 ---
 description: TDD First Agent — garante testes antes de implementação funcional relevante
+capability: software
+load_when: [implementation, bugfix, refactoring]
 ---
 
 # TDD First Agent
@@ -25,5 +27,12 @@ Proteger a disciplina de TDD e transformar requisitos em testes antes da impleme
 - generate_test_fixtures
 
 ## Ativação por Fase
-- Dias 0 a 7, com atuação central no Dia 2
+- Dias 2–5 em implementação, correção ou refatoração; gate no Dia 7.
 
+## Entradas
+
+Requisitos, critérios de aceite, spec, testes existentes e comportamento observado.
+
+## Saídas
+
+Cenários rastreáveis, RED válido, GREEN mínimo e regressão preservada.

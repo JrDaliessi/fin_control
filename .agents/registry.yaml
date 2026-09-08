@@ -1,0 +1,78 @@
+version: 4
+
+project:
+  name: FinControl
+  type:
+    - software
+    - product
+
+capabilities:
+  core:
+    enabled: true
+  software:
+    enabled: true
+  product:
+    enabled: true
+
+agents:
+  conductor:
+    file: .agents/workflows/engineering-conductor-agent.md
+    always_enforced: true
+    hot_load: true
+  context_router:
+    file: .agents/workflows/context-governance-routing-agent.md
+    always_enforced: true
+    hot_load: true
+  living_documentation:
+    file: .agents/workflows/living-documentation-agent.md
+    always_enforced: true
+    load_when:
+      activity: [plan, implement, validate, release]
+  quality_gate:
+    file: .agents/workflows/quality-gate-agent.md
+    always_enforced: true
+    load_when:
+      activity: [validate, release]
+  product_requirements:
+    file: .agents/capabilities/software/product-requirements-agent.md
+    load_when:
+      capability: [product, software]
+      activity: [discovery, requirements, scope-change]
+  architecture:
+    file: .agents/workflows/architecture-agent.md
+    load_when:
+      capability: software
+      activity: [architecture, integration, structural-change]
+  domain_modeling:
+    file: .agents/workflows/domain-modeling-agent.md
+    load_when:
+      capability: software
+      activity: [domain, requirements, implementation]
+  tdd:
+    file: .agents/workflows/tdd-first-agent.md
+    always_enforced_when:
+      capability: software
+      activity: [implementation, bugfix]
+  xp_pair_programmer:
+    file: .agents/workflows/xp-pair-programmer-agent.md
+    load_when:
+      capability: software
+      activity: [implementation, refactoring]
+  refactoring:
+    file: .agents/workflows/refactoring-agent.md
+    load_when:
+      capability: software
+      activity: [refactoring, hardening]
+  security:
+    file: .agents/capabilities/software/security-agent.md
+    load_when:
+      capability: software
+      activity: [auth, authorization, data, migration, release]
+
+guards:
+  tdd:
+    required_for: [implementation, bugfix]
+  safety:
+    required_for: [external-mutation, migration, deploy, destructive-action]
+  traceability:
+    required_for: [requirements, implementation, release]

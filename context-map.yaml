@@ -1,0 +1,91 @@
+version: 4
+
+project:
+  name: FinControl
+
+hot:
+  - project-context.md
+
+routes:
+  brief:
+    - project-brief.md
+  project-type:
+    - project-type.yaml
+  capabilities:
+    - capability-registry.yaml
+  product:
+    - docs/product/prd.md
+    - roadmap.md
+    - backlog.md
+    - docs/features/
+  architecture:
+    - architecture.md
+    - domain-model.md
+    - database-model.md
+    - module-contracts.md
+    - adr/README.md
+  stack:
+    - project-stack.md
+    - project-toolchain.md
+  active-artifact:
+    - docs/governance/GOV-V4-001.md
+  quality:
+    - quality-gates.md
+    - test-strategy.md
+  agents:
+    - .agents/registry.yaml
+    - .agents/workflows/engineering-conductor-agent.md
+    - .agents/workflows/context-governance-routing-agent.md
+    - .agents/workflows/living-documentation-agent.md
+    - .agents/workflows/quality-gate-agent.md
+    - .agents/workflows/dia-0.md
+    - .agents/workflows/dia-1.md
+    - .agents/workflows/dia-2.md
+    - .agents/workflows/dia-3.md
+    - .agents/workflows/dia-4.md
+    - .agents/workflows/dia-5.md
+    - .agents/workflows/dia-6.md
+    - .agents/workflows/dia-7.md
+  governance:
+    - engineering-rules.md
+    - docs/governance/ai-jail.md
+  releases:
+    - docs/releases/
+
+cold:
+  - docs/history/
+  - docs/releases/
+  - docs/ai-lessons/
+
+relations:
+  GOV-V4-001:
+    derived_from:
+      - project-brief.md
+      - docs/history/project-context-v3-through-2026-09-08.md
+    affects:
+      - project-context.md
+      - context-map.yaml
+      - capability-registry.yaml
+      - .agents/registry.yaml
+    related_context:
+      - docs/governance/ai-jail.md
+  UX-CHART-003C:
+    depends_on:
+      - UX-CHART-003A
+      - UX-CHART-003B
+    adrs:
+      - adr/0019-contextual-candle-statement.md
+      - adr/0020-adaptive-financial-periods.md
+      - adr/0021-contextual-interval-volume-insights.md
+
+budgets:
+  hot_context_target: 2000
+  task_context_target: 8000
+  task_context_soft_limit: 15000
+
+policies:
+  load_history_automatically: false
+  load_all_adrs: false
+  load_all_artifacts: false
+  allow_context_escalation: true
+  preserve_active_rules_outside_history: true
