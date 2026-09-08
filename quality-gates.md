@@ -2109,3 +2109,17 @@ Uma release incremental só pode ser considerada pronta quando:
 - ESLint global, type-check, build Next.js 16.3.3 e `git diff --check` verdes; `next-env.d.ts` restaurado.
 - nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
 - estado de saída: retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN; próximo comando válido: `dia 6` da `UX-CHART-003B`.
+
+## Gate do Dia 6 — UX-CHART-003B
+
+- contexto central e workflow do Dia 6 consultados; declaração operacional aprovada antes da execução.
+- RED dos gráficos: 2 suítes com 2 falhas esperadas após simular a mutação de ARIA do ECharts; GREEN: 2 suítes/24 testes.
+- RED da barra exigiu gesto horizontal e visibilidade do período ativo; o gate arquitetural rejeitou tornar o seletor inteiro cliente.
+- solução final preserva formulário GET server-rendered e usa uma ilha cliente mínima somente para rolar o container horizontal, sem deslocar a página; suíte do seletor: 14 testes.
+- feature completa: 32 suítes/290 testes; regressão completa: 95 suítes/621 testes; zero snapshots.
+- navegador autenticado validou `3M` semanal, `Ano` mensal, extrato por teclado/Escape, retorno de foco, alvos de 44 px, ausência de overflow global e nomes acessíveis estáveis.
+- manifesto standalone, `lang=pt-BR`, viewport, theme colors, safe areas e reduced motion preservados.
+- emulação isolada de 320/390/768 px ficou indisponível por limitação do harness de login; risco BAIXO mantido para inspeção em Preview no Dia 7.
+- ESLint global, type-check e build Next.js 16.3.3 verdes; o build exigiu somente acesso de rede controlado ao Google Fonts.
+- nenhuma migration, RPC, RLS, dado, dependência, commit, push, PR, merge, deploy ou promoção foi executado.
+- estado de saída: `QUALITY_VALIDATION` em GREEN; próximo comando válido: `dia 7` da `UX-CHART-003B`.

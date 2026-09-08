@@ -141,10 +141,12 @@ describe("FinancialCandlestickChart", () => {
     );
     const [initializedContainer, initializationOptions] =
       initializeFinancialEvolutionChart.mock.calls[0];
-    expect(initializedContainer).toBe(graphic);
+    expect(initializedContainer).not.toBe(graphic);
+    expect(graphic).toContainElement(initializedContainer);
+    expect(initializedContainer).toHaveAttribute("aria-hidden", "true");
     expect(initializationOptions).toEqual({ renderer: "svg" });
     expect(setOption).toHaveBeenCalledWith({ animation: true });
-    expect(observe).toHaveBeenCalledWith(graphic);
+    expect(observe).toHaveBeenCalledWith(initializedContainer);
   });
 
   it("names a monthly aggregate without describing it as daily", () => {
@@ -158,6 +160,33 @@ describe("FinancialCandlestickChart", () => {
     expect(
       screen.getByRole("img", { name: "Variação do saldo por mês" })
     ).toBeInTheDocument();
+  });
+
+  it("keeps its Portuguese accessible name when ECharts writes renderer aria", () => {
+    jest.mocked(initializeFinancialEvolutionChart).mockImplementationOnce(
+      (container) => {
+        container.setAttribute("role", "img");
+        container.setAttribute(
+          "aria-label",
+          "This is a chart with raw financial values"
+        );
+
+        return { setOption, resize, dispose, on: chartOn, off: chartOff };
+      }
+    );
+
+    render(
+      <FinancialCandlestickChart bucketGranularity="month" model={model} />
+    );
+
+    const graphic = screen.getByRole("img", {
+      name: "Variação do saldo por mês"
+    });
+    const initializedContainer =
+      initializeFinancialEvolutionChart.mock.calls[0]?.[0];
+
+    expect(initializedContainer).not.toBe(graphic);
+    expect(initializedContainer).toHaveAttribute("aria-hidden", "true");
   });
 
   it("resizes and disposes resources when the renderer leaves the tree", () => {

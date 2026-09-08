@@ -1,6 +1,7 @@
 import type { FinancialPeriodKind } from "../../domain/types/financial-period.types";
 import { Button } from "@/shared/components/ui/Button";
 import { financialPeriodOptions } from "../config/financial-period-options";
+import { SelectedFinancialPeriodVisibility } from "./SelectedFinancialPeriodVisibility.client";
 
 type FinancialPeriodSelectorProps = Readonly<{
   selectedPeriodKind: FinancialPeriodKind;
@@ -11,10 +12,12 @@ export function FinancialPeriodSelector({
 }: FinancialPeriodSelectorProps) {
   return (
     <form className="grid min-w-0 w-full gap-1 sm:w-auto" method="get">
+      <SelectedFinancialPeriodVisibility selectedPeriodKind={selectedPeriodKind} />
       <div
         aria-describedby="financial-period-guidance"
         aria-label="Período da evolução financeira"
-        className="flex max-w-full gap-1 overflow-x-auto overscroll-x-contain p-1 sm:gap-2"
+        className="flex max-w-full touch-pan-x gap-1 overflow-x-auto overscroll-x-contain p-1 sm:gap-2"
+        id="financial-period-selector"
         role="group"
       >
         {financialPeriodOptions.map((option) => {

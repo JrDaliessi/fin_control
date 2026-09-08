@@ -1,7 +1,7 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: refatoração e hardening da `UX-CHART-003B` concluídos em GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
-- Data: 2026-09-07
+- Status: Dia 6 da `UX-CHART-003B` concluído em `QUALITY_VALIDATION` GREEN; `003A` mesclada e `003C` refinada para ciclo próprio
+- Data: 2026-09-08
 - Feature: `UX-CHART-003`
 - Depende de: ADR 0019, ADR 0021 e merge `7434159`
 
@@ -19,7 +19,7 @@ A feature precisa manter cards, linha, candles, tabela e extrato no mesmo interv
 2. `UX-CHART-003B` adiciona `3M` e `Ano` por uma agregação server-side nova, migration forward-only e testes pgTAP.
 3. `UX-CHART-003C` adiciona `Tudo`, intervalo personalizado e drill-down de buckets trimestrais antes do extrato detalhado.
 
-Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 5 em GREEN e é o único recorte autorizado a avançar ao Dia 6.
+Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop`; a `003B` concluiu seu Dia 6 em GREEN e é o único recorte autorizado a avançar ao Dia 7.
 
 ### Matriz de granularidade
 
@@ -141,10 +141,6 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - pgTAP passou 16 assertions de schema, 22 de comportamento e 5 de performance; nenhum índice novo foi necessário;
 - lint, type-check e build Next.js 16.3.3 passaram.
 
-## Próximo passo
-
-Executar o Dia 6 da `UX-CHART-003B` para validar responsividade, acessibilidade, microinterações e experiência PWA em navegador real, sem antecipar `Tudo`, personalizado ou drill-down.
-
 ## Evidências do Dia 4 da 003B
 
 - linguagem visível, nomes acessíveis e cabeçalhos agora derivam da granularidade de domínio (`day`, `week`, `month`), sem decisão duplicada nos componentes;
@@ -161,3 +157,16 @@ Executar o Dia 6 da `UX-CHART-003B` para validar responsividade, acessibilidade,
 - um formatter puro substituiu cinco implementações locais de datas na presentation;
 - arquivos coesos foram preservados e nenhuma abstração prematura foi criada;
 - 32 suítes/287 testes da feature e 95 suítes/618 testes globais passaram, além de lint, type-check e build.
+
+## Evidências do Dia 6 da 003B
+
+- wrappers semânticos estáveis protegem os nomes acessíveis em português contra mutações internas do ECharts;
+- renderer gráfico fica oculto da árvore acessível e as tabelas equivalentes continuam disponíveis;
+- barra dos sete períodos preserva o Server Component e delega somente a rolagem horizontal do item ativo a uma ilha cliente mínima;
+- alvos de 44 px, teclado, `aria-pressed`, touch horizontal, URLs e granularidades semanal/mensal foram validados;
+- manifesto standalone, viewport, theme colors, safe areas e reduced motion permanecem válidos;
+- 32 suítes/290 testes da feature e 95 suítes/621 testes globais passaram, além de lint, type-check e build.
+
+## Próximo passo
+
+Executar o Dia 7 da `UX-CHART-003B` para concluir segurança, observabilidade, inspeção em Preview e preparação da entrega, sem antecipar `Tudo`, personalizado ou drill-down.

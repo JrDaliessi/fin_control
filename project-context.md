@@ -1,8 +1,9 @@
 # Project Context — FinControl
 
 ## Estado do Projeto
-- Estado atual da máquina de estados: `IMPLEMENTATION_IN_PROGRESS`
-- Fase atual: Dia 5 da UX-CHART-003B concluído em GREEN; estado contextual e formatação civil endurecidos
+- Estado atual da máquina de estados: `QUALITY_VALIDATION`
+- Fase atual: Dia 6 da UX-CHART-003B concluído em GREEN; responsividade, acessibilidade e PWA validadas
+- Data da revisão de experiência, acessibilidade e PWA da UX-CHART-003B: 2026-09-08
 - Data da refatoração e hardening interno da UX-CHART-003B: 2026-09-07
 - Data da expansão controlada da UX-CHART-003B: 2026-09-07
 - Data da implementação mínima da UX-CHART-003B: 2026-09-07
@@ -1050,6 +1051,8 @@ Regra operacional:
 - Erro: ao gerar a migration no Dia 3 da UX-CHART-003B, a IA chamou o `npx` global apesar do histórico de wrappers globais quebrados neste host; o processo falhou antes de carregar o Supabase CLI e não criou arquivo. Prevenção reforçada: qualquer ferramenta Node efêmera deve partir da runtime retornada por `mcp__codex_app__load_workspace_dependencies` ou de um binário local confirmado, sem tentar wrappers em `%APPDATA%\npm`.
 - Erro: a primeira versão transacional da RPC da UX-CHART-003B qualificou `GREATEST` e `LEAST` com `pg_catalog`; a função compilou, mas o pgTAP de comportamento falhou na primeira execução porque essas construções não são funções comuns qualificáveis. Prevenção: qualificar relações e funções PostgreSQL reais quando `search_path=''`, mas manter expressões sintáticas como `GREATEST`, `LEAST`, `CASE` e `COALESCE` sem prefixo; sempre executar ao menos um cenário comportamental antes de aplicar a migration.
 - Erro: na auditoria inicial do Dia 6 do SP-001, a IA tentou ler `src/app/manifest.ts` apesar de a descoberta no mesmo comando apontar `public/manifest.webmanifest` como manifesto real. Prevenção: separar descoberta e leitura de artefatos opcionais; somente abrir caminhos confirmados por `rg --files`, sem presumir convenções alternativas do Next.js.
+- Erro: na inspeção do Dia 6 da `UX-CHART-003B`, duas buscas compostas misturaram regex, glob e sintaxe PowerShell e falharam antes de produzir evidência útil. Prevenção reforçada: descobrir arquivos primeiro com `rg --files`, passar caminhos confirmados a `Get-Content -LiteralPath` e não usar globs de estilo POSIX em argumentos do PowerShell.
+- Erro: o primeiro GREEN da visibilidade móvel converteu o seletor progressivo inteiro em Client Component e violou o boundary test que exige renderização server-side. Prevenção: comportamentos DOM mínimos devem nascer em uma ilha cliente específica, preservando o formulário GET, a configuração e a marcação principal no Server Component.
 - Erro: ao retomar o Dia 4 do SP-001, a primeira leitura presumiu incorretamente que o componente estava em `presentation/charts/components`, embora o arquivo real estivesse em `presentation/components`. Prevenção: em retomadas baseadas em contexto resumido, resolver caminhos com `rg --files` antes da primeira leitura ou edição e tratar o código versionado como evidência de localização.
 - Erro: o primeiro GREEN tipado do SP-001 deixou o teste herdar recursivamente o tipo completo de `ComposeOption`, causando `TS2589`; mesmo após estreitar o double, o matcher genérico `toHaveBeenCalledWith` continuou expandindo a assinatura. Prevenção: doubles de adapters externos devem usar o menor contrato estrutural e asserções sobre argumentos complexos devem inspecionar `mock.calls` explicitamente, sem propagar tipos profundos da biblioteca pela suíte de componente.
 - Erro: o primeiro adapter ECharts importou `use` com o nome original e o ESLint o classificou como React Hook chamado no topo do módulo. Prevenção: APIs externas homônimas a hooks devem receber alias sem prefixo `use`, deixando explícita sua função de registro e evitando falsos positivos sem desabilitar regras.
@@ -8154,3 +8157,31 @@ Validação e saída:
 - anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram fora do escopo;
 - `REFACTORING_IN_PROGRESS` encerrou com retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 6` da `UX-CHART-003B`.
+
+## Dia 6 — Experiência, Acessibilidade e PWA da UX-CHART-003B
+
+Diagnóstico e TDD:
+- contexto central e workflow do Dia 6 foram consultados; declaração operacional aprovada antes da execução;
+- o navegador real revelou que ECharts substituía o nome acessível em português do próprio container por uma descrição automática com valores brutos;
+- RED dirigido adicionou dois contratos para manter o nome estável na linha e nos candles; outro RED exigiu gesto horizontal e visibilidade automática do período ativo;
+- o primeiro GREEN da barra tornou o seletor cliente e foi rejeitado pelo gate arquitetural; a correção final preserva o Server Component e isola somente a rolagem horizontal calculada numa ilha cliente mínima.
+
+UX, acessibilidade e PWA:
+- linha e candles agora mantêm um wrapper semântico `role="img"` em português; o renderer ECharts interno fica `aria-hidden="true"`, enquanto as tabelas continuam como alternativa textual completa;
+- a barra mantém sete botões em ordem, alvos de 44 px, `aria-pressed`, nomes completos, rótulos compactos em mobile, foco por teclado e formulário GET progressivo;
+- rolagem horizontal permanece confinada, aceita gesto touch e traz `Mês`, `3M` ou `Ano` para a área visível sem mover o foco;
+- `3M` foi confirmado com URL `?period=three_months`, semântica semanal e tabela semanal; `Ano` com `?period=year`, semântica mensal e cabeçalho `Mês`;
+- o extrato mensal manteve diálogo modal, bloqueio de scroll, fechamento por Escape e retorno de foco ao acionador;
+- `lang="pt-BR"`, viewport responsiva, manifesto standalone, theme colors, safe areas e política global de reduced motion permanecem válidos.
+
+Evidências e limites:
+- navegador autenticado local em 1280 px: 7 períodos, alvo ativo de 44 px, `clientWidth = scrollWidth = 1265` no documento, sem overlay de erro e nomes estáveis nos gráficos;
+- a emulação autenticada isolada de 320/390/768 px ficou indisponível porque o harness CDP não conseguiu preencher os inputs React; não houve erro do app e os artefatos temporários foram removidos;
+- risco residual BAIXO: repetir a inspeção visual automatizada em 320/390 px no Dia 7 ou Preview; os contratos responsivos, o histórico real de 320 px da `003A` e os testes de classes/semântica cobrem o comportamento crítico;
+- RED inicial dos gráficos: 2 falhas esperadas; GREEN: 2 suítes/24 testes; seletor final: 14 testes; feature completa: 32 suítes/290 testes;
+- regressão global: 95 suítes/621 testes, zero snapshots; ESLint, type-check e build Next.js 16.3.3 verdes;
+- falha inicial do build foi exclusivamente bloqueio de rede ao Google Fonts e passou com acesso externo controlado;
+- nenhuma migration, RPC, RLS, dado, dependência, configuração remota, commit, push, PR, merge, deploy ou promoção foi executado;
+- anexos privados, `rewrite-msgs.sh` e os dois stashes permaneceram preservados;
+- estado de saída: `QUALITY_VALIDATION` em GREEN;
+- próximo comando válido: `dia 7` da `UX-CHART-003B`.

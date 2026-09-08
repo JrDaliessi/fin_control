@@ -1254,3 +1254,22 @@ Interpretação:
 - hardening concluído sem reescrita ampla, dependência ou otimização especulativa;
 - estado final: retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
 - próximo comando válido: `dia 6` da `UX-CHART-003B`.
+
+## Dia 6 — UX-CHART-003B
+
+### RED e GREEN de acessibilidade
+
+- 2 suítes de gráfico falharam em 2 contratos esperados ao simular ECharts substituindo `role`/`aria-label` do container.
+- GREEN: wrappers semânticos estáveis e renderer interno `aria-hidden`; 2 suítes e 24 testes passaram.
+- a barra ganhou contrato para touch horizontal e visibilidade do item ativo; o primeiro GREEN violou o boundary server-side e foi corrigido com ilha cliente mínima.
+- suíte final do seletor: 14 testes verdes.
+
+### Regressão e build
+
+- feature `financial-analytics`: 32 suítes e 290 testes verdes, zero snapshots;
+- regressão completa: 95 suítes e 621 testes verdes, zero snapshots;
+- o teste antigo de contas passou 4/4 quando repetido sequencialmente, confirmando que seu primeiro timeout ocorreu por contenção dos gates paralelos;
+- ESLint global e type-check global passaram;
+- build Next.js 16.3.3 com Turbopack passou após acesso controlado ao Google Fonts;
+- estado final: `QUALITY_VALIDATION` em GREEN;
+- próximo comando válido: `dia 7` da `UX-CHART-003B`.

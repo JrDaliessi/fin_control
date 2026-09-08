@@ -166,10 +166,12 @@ describe("FinancialEvolutionChart", () => {
     expect(initializeFinancialEvolutionChart).toHaveBeenCalledTimes(1);
     const [initializedContainer, initializationOptions] =
       initializeFinancialEvolutionChart.mock.calls[0];
-    expect(initializedContainer).toBe(graphic);
+    expect(initializedContainer).not.toBe(graphic);
+    expect(graphic).toContainElement(initializedContainer);
+    expect(initializedContainer).toHaveAttribute("aria-hidden", "true");
     expect(initializationOptions).toEqual({ renderer: "svg" });
     expect(setOption).toHaveBeenCalledWith({ animation: true });
-    expect(observe).toHaveBeenCalledWith(graphic);
+    expect(observe).toHaveBeenCalledWith(initializedContainer);
   });
 
   it("names a weekly aggregate without describing it as daily", () => {
@@ -183,6 +185,33 @@ describe("FinancialEvolutionChart", () => {
     expect(
       screen.getByRole("img", { name: "Evolução do saldo por semana" })
     ).toBeInTheDocument();
+  });
+
+  it("keeps its Portuguese accessible name when ECharts writes renderer aria", () => {
+    jest.mocked(initializeFinancialEvolutionChart).mockImplementationOnce(
+      (container) => {
+        container.setAttribute("role", "img");
+        container.setAttribute(
+          "aria-label",
+          "This is a chart with raw financial values"
+        );
+
+        return { setOption, resize, dispose };
+      }
+    );
+
+    render(
+      <FinancialEvolutionChart bucketGranularity="week" model={model} />
+    );
+
+    const graphic = screen.getByRole("img", {
+      name: "Evolução do saldo por semana"
+    });
+    const initializedContainer =
+      initializeFinancialEvolutionChart.mock.calls[0]?.[0];
+
+    expect(initializedContainer).not.toBe(graphic);
+    expect(initializedContainer).toHaveAttribute("aria-hidden", "true");
   });
 
   it("passes reduced-motion preference to the pure option builder", () => {

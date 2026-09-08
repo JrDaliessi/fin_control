@@ -121,10 +121,16 @@ export function FinancialCandlestickChart({
           aria-describedby={descriptionId}
           aria-label={`Variação do saldo por ${bucketCopy.singular}`}
           className="min-h-72 min-w-0 w-full group-data-[expanded=true]/chart-frame:min-h-0"
-          ref={attachChart}
           role="img"
           style={{ height: "100%" }}
-        />
+        >
+          <div
+            aria-hidden="true"
+            className="h-full min-h-72 w-full group-data-[expanded=true]/chart-frame:min-h-0"
+            ref={attachChart}
+            style={{ height: "100%" }}
+          />
+        </div>
       </div>
     </ExpandableChartFrame>
   );

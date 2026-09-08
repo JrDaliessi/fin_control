@@ -1,10 +1,10 @@
 # UX-CHART-003B — Discovery de 3M, Ano e agregação server-side
 
-- Fase: Dia 5 — refatoração e hardening concluídos em GREEN
-- Data: 2026-09-07
-- Estado: `IMPLEMENTATION_IN_PROGRESS`
+- Fase: Dia 6 — experiência, acessibilidade e PWA concluídas em GREEN
+- Data: 2026-09-08
+- Estado: `QUALITY_VALIDATION`
 - Predecessora: `UX-CHART-003A` mesclada por squash em `develop` no commit `7434159`
-- Próxima fase autorizável: Dia 6 — UX, acessibilidade e PWA
+- Próxima fase autorizável: Dia 7 — qualidade final e entrega incremental
 
 ## Problema
 
@@ -211,10 +211,10 @@ A consulta existente `(user_id, occurred_on desc, created_at desc, id desc)` ate
 - risco ALTO: cálculo OHLC agregado incorreto; mitigação por fixtures determinísticas compartilhadas entre Jest e pgTAP;
 - risco ALTO: isolamento multiusuário; mitigação por invoker, RLS forçada, claims permanentes e teste cruzado;
 - risco MÉDIO: plano degradar em histórico anual; mitigação por retorno limitado, índice existente e `EXPLAIN` antes de índice novo;
-- risco MÉDIO: sete opções excederem a largura de 320 px; mitigação por rolagem confinada, alvo de 44 px e validação real no Dia 6;
+- risco BAIXO: inspeção móvel automatizada atual não concluída no harness isolado; mitigação por rolagem confinada, alvo de 44 px, reposicionamento do item ativo, contratos Jest e evidência real anterior da barra em 320 px;
 - risco BAIXO: usuário interpretar `3M` como 90 dias; mitigação por nome acessível e orientação civil curta.
 
-Não há bloqueio duro para o Dia 6. O estado contextual obsoleto foi eliminado e a formatação civil consolidada no Dia 5; `UX-CHART-003C`, deploy e operações Git remotas continuam fora deste ciclo de fase.
+Não há bloqueio duro para o Dia 7. A acessibilidade do renderer e a visibilidade do período ativo foram endurecidas no Dia 6; `UX-CHART-003C`, deploy e operações Git remotas continuam fora deste ciclo de fase.
 
 ## Critério de pronto do Dia 1
 
@@ -229,4 +229,4 @@ Não há bloqueio duro para o Dia 6. O estado contextual obsoleto foi eliminado 
 
 ## Próximo passo
 
-O Dia 5 eliminou a seleção contextual obsoleta na troca de período, centralizou a formatação civil e manteve as fronteiras Server/Client. O próximo passo é executar o Dia 6 para validar responsividade, acessibilidade e PWA dos sete períodos sem antecipar o escopo da `003C`.
+O Dia 6 estabilizou os nomes acessíveis dos gráficos, manteve o seletor server-side e confinou a rolagem touch com reposicionamento do período ativo. O próximo passo é executar o Dia 7 para validação final, Preview e preparação da entrega sem antecipar o escopo da `003C`.
