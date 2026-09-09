@@ -1,8 +1,8 @@
 import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 
 type FinancialBucketCopy = Readonly<{
-  singular: "dia" | "semana" | "mês";
-  columnHeading: "Dia" | "Semana" | "Mês";
+  singular: "dia" | "semana" | "mês" | "trimestre" | "ano";
+  columnHeading: "Dia" | "Semana" | "Mês" | "Trimestre" | "Ano";
 }>;
 
 const COPY_BY_GRANULARITY: Record<
@@ -20,6 +20,14 @@ const COPY_BY_GRANULARITY: Record<
   month: {
     singular: "mês",
     columnHeading: "Mês"
+  },
+  quarter: {
+    singular: "trimestre",
+    columnHeading: "Trimestre"
+  },
+  year: {
+    singular: "ano",
+    columnHeading: "Ano"
   }
 };
 

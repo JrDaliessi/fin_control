@@ -5,9 +5,16 @@ export type FinancialPeriodKind =
   | "rolling_15_days"
   | "month"
   | "three_months"
-  | "year";
+  | "year"
+  | "all"
+  | "custom";
 
-export type FinancialBucketGranularity = "day" | "week" | "month";
+export type FinancialBucketGranularity =
+  | "day"
+  | "week"
+  | "month"
+  | "quarter"
+  | "year";
 
 export type FinancialPeriod = Readonly<{
   kind: FinancialPeriodKind;

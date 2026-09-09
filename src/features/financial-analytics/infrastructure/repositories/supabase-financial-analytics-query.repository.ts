@@ -80,6 +80,13 @@ export class SupabaseFinancialAnalyticsQueryRepository
     input: LoadEvolutionBucketsInput
   ): Promise<FinancialEvolutionBucketSnapshot> {
     try {
+      if (
+        input.bucketGranularity !== "week" &&
+        input.bucketGranularity !== "month"
+      ) {
+        throw new Error(repositoryErrorMessage);
+      }
+
       const { data, error } = await this.supabaseClient.rpc(
         "load_financial_evolution_buckets",
         {

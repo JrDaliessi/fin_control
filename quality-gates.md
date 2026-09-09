@@ -43,6 +43,20 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - Backlog fatiado em small releases.
 - Dependências críticas e bloqueios documentados.
 
+### Resultado observado — UX-CHART-003C
+
+- `GOV-V4-001` confirmada em `develop` pela PR `#29`, commit `42dd6db`.
+- Feature PRD e Feature Spec materializados com requisitos `RQ-001`–`RQ-010`, seis NFRs e dez critérios de aceite rastreáveis.
+- `Tudo` definido pela primeira transação visível sob RLS; conta sem movimentos recai no mês civil atual sem história fictícia.
+- Personalizado definido por URL canônica com datas inclusivas e conversão para intervalo semiaberto no domínio.
+- Granularidade dia/semana/mês/trimestre/ano e limites independentes de 60 anos/60 buckets aprovados; truncamento silencioso proibido.
+- Drill-down aprovado no painel único: ano para trimestres, trimestre para meses e mês para extrato de até 31 dias.
+- Segurança, minimização, migration forward-only, performance, rollback e estratégia de testes foram especificados; nenhuma mutação remota ocorreu.
+- Small releases `003C1`, `003C2` e `003C3` definidas; estado de saída `SPEC_READY`.
+- `context-map.yaml` e `context.yaml` foram parseados; rotas do artefato existem; 10 RQs, 6 NFRs e 10 ACs únicos foram verificados; `git diff --check`, ESLint e type-check passaram.
+- Testes e build não foram executados porque o Dia 1 altera somente documentação e não introduz comportamento executável.
+- Próximo comando válido: `dia 2`.
+
 ### Resultado observado — SR-012
 - SR-011 confirmada em `develop` e branch `feature/SR-012-periodos-financeiros` criada a partir da base integrada.
 - Escopo limitado a `week`, `rolling_7_days`, `fortnight`, `rolling_15_days` e `month`.
@@ -124,6 +138,87 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - Estado de saída validado como `TEST_STRATEGY_READY`.
 
 ## Gate do Dia 2
+
+### Resultado observado — UX-CHART-003C
+
+- workflow, Hot Context, Feature PRD, Feature Spec, ADRs, código, testes e migration atuais foram inspecionados antes da execução;
+- documentação atual do Supabase e regras de App Router foram verificadas; nenhum breaking change aplicável bloqueia o recorte;
+- matriz em `docs/features/UX-CHART-003C/test-strategy.md` rastreia os dez critérios de aceite por cenário, camada, evidência e fatia;
+- baseline dirigido passou com 7 suítes, 77 testes e 0 snapshots;
+- RED da `003C1` falhou em 4 suítes, com 39 cenários vermelhos e 22 regressões verdes;
+- as falhas correspondem à ausência de `resolveCustomFinancialPeriod`, normalização estruturada da URL, opções `Tudo/Personalizado` e composição custom;
+- ESLint e type-check passaram com a rede RED presente;
+- migration, Supabase remoto, dependências e código funcional não foram alterados;
+- o audit alto de `js-yaml`/`sharp` permanece bloqueio de merge separado e não foi mascarado;
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003C1`.
+
+## Gate do Dia 3 — UX-CHART-003C1
+
+- Hot Context, workflow, Feature PRD, Feature Spec, ADR 0022, testes RED e dependências afetadas foram inspecionados antes da implementação;
+- os 39 contratos RED ficaram verdes: 4 suítes dirigidas e 61 testes passaram, sem relaxar expectativas;
+- regressão completa passou com 97 suítes e 657 testes, zero snapshots;
+- teste defensivo adicional realizou RED→GREEN e impede `quarter/year` de alcançar a RPC antiga antes da migration da `003C2`;
+- domínio valida datas civis, intervalo semiaberto, granularidade, 60 anos e 60 buckets de forma independente de framework;
+- URL canônica diferencia presets, `all`, `custom` válido e `custom` inválido antes de consultar dados;
+- seletor e composição mantêm Server Components, formulário GET progressivo, ordem acessível e sete períodos anteriores;
+- revisão React/Next.js, ESLint global, type-check e build Next.js 16.3.3/Turbopack passaram;
+- a referência imprecisa de migration no Dia 3 foi corrigida para a small release `003C2`, preservando o fatiamento aprovado;
+- nenhuma migration, dependência, mutação Supabase, commit, push, merge ou deploy foi executado;
+- estado de saída: `IN_PROGRESS` com núcleo GREEN; próximo comando válido: `dia 4` da `UX-CHART-003C1`.
+
+## Gate do Dia 4 — UX-CHART-003C1
+
+- diálogo responsivo implementado como ilha cliente mínima dentro do seletor server-compatible;
+- formulário GET preserva `period=custom`, `from` e `to`, incluindo restauração após refresh;
+- validações, aplicar, cancelar, `Escape`, backdrop, foco e scroll lock estão cobertos;
+- suíte dirigida passou com 25 testes; regressão completa passou com 97 suítes e 665 testes;
+- ESLint, type-check, build e `git diff --check` passaram;
+- nenhuma migration, dependência, mutação Supabase, merge ou deploy foi executado;
+- estado de saída: `IN_PROGRESS`; próximo comando válido: `dia 5` da `UX-CHART-003C1`.
+
+## Gate do Dia 5 — UX-CHART-003C1
+
+- problema demonstrável corrigido: a UI deixou de comparar mensagens internas do domínio e passou a consumir quatro códigos estáveis tipados;
+- RED isolado falhou em 5 cenários, com 36 regressões verdes; GREEN dirigido passou com 2 suítes e 41 testes;
+- cancelamento descarta rascunhos e restaura as datas aplicadas na URL;
+- `npm audit fix --package-lock-only` atualizou apenas dependências transitivas compatíveis: `js-yaml` 3.15.2/4.3.2 e `sharp` 0.35.4;
+- `npm ci` reproduziu o lockfile e `npm audit --audit-level=high` retornou zero vulnerabilidades;
+- regressão completa passou com 97 suítes e 666 testes; ESLint, type-check, build e `git diff --check` passaram;
+- revisão React não identificou waterfall, fetch cliente, prop excessiva ou abstração adicional justificável;
+- nenhuma migration, dependência direta, mutação Supabase, commit, push, merge ou deploy foi executado;
+- estado de saída: `HARDENING`, pronto para o Dia 6 da `UX-CHART-003C1`.
+
+## Gate do Dia 6 — UX-CHART-003C1
+
+- Hot Context, workflow, requisitos, especificação, testes e documentação local do Next.js 16.3.3 foram consultados antes da conclusão;
+- skill `vercel:agent-browser` orientou o roteiro; o navegador integrado foi usado como fallback porque o executável dedicado não está instalado no host;
+- RED dirigido isolou 1 falha de foco após validação, com 28 cenários verdes; GREEN dirigido passou com 2 suítes e 34 testes;
+- o formulário agora move o foco ao campo final quando ele é o único limite ausente;
+- contratos automatizados cobrem contenção circular, isolamento por `inert`/`aria-hidden`, safe areas, rolagem interna, reduced motion e targets de 44 px;
+- Preview autenticada do commit `ba12011` permaneceu sem overflow em 320x800, 390x844, 768x900 e 1280x900;
+- mobile renderizou bottom sheet encostado ao rodapé; desktop renderizou modal central com largura de 512 px;
+- foco inicial, `Shift+Tab`, `Escape` e retorno ao acionador foram confirmados em navegador real;
+- contraste mínimo observado nos tokens relevantes foi 5,12:1 no tema claro e 6,92:1 no escuro;
+- regressão completa passou com 97 suítes e 669 testes; ESLint, type-check e build Next.js/Turbopack passaram;
+- tentativa local autenticada foi descartada como evidência por bloqueio de rede ao Supabase; a Preview da PR forneceu a validação real;
+- nenhuma migration, dependência, mutação Supabase, commit, push, merge ou deploy foi executado;
+- estado de saída: `EXPERIENCE_VALIDATION`; próximo comando válido: `dia 7` da `UX-CHART-003C1`.
+
+## Gate do Dia 7 — UX-CHART-003C1
+
+- requisitos, spec, matriz de testes, implementação final, riscos e contratos de release foram cruzados por small release;
+- `AC-001`, `AC-002`, a parcela de domínio de `AC-004`, `AC-009` e a parcela compatível de `AC-010` possuem evidência executável; critérios SQL/drill-down continuam explicitamente pendentes;
+- revisão de segurança confirmou fronteira cliente sem Supabase, segredo, telemetria financeira ou autoridade fornecida pelo browser;
+- adapter continua rejeitando `quarter/year` antes da migration da `003C2`;
+- 97 suítes/669 testes, zero snapshots, ESLint, type-check, build Next.js 16.3.3/Turbopack e `git diff --check` passaram; a primeira tentativa do build falhou apenas pelo download bloqueado da Geist e passou com rede autorizada;
+- audit e instalação limpa do Dia 5, além do workflow remoto `Quality Gates #146`, confirmam o lockfile sem vulnerabilidades conhecidas; o lock funcional não mudou no Dia 6;
+- experiência autenticada permaneceu verde em 320/390/768/1280 px, teclado, foco, safe areas, contraste e overflow;
+- registro de prontidão criado em `docs/features/UX-CHART-003C/day-7-release-readiness.md`;
+- workflow remoto `Quality Gates` run `34347872685` concluiu em GREEN, incluindo lint, type-check, testes, audit e build;
+- Vercel concluiu o Preview do head `4572735` com status de sucesso;
+- aviso não bloqueante de runtime Node.js 20 das actions, forçado pelo runner para Node.js 24, foi registrado como dívida BAIXA `CI-ACTIONS-001`;
+- `UX-CHART-003C1` encerra em `READY_FOR_RELEASE`; a feature pai permanece `IN_PROGRESS` para `003C2/003C3`;
+- nenhuma migration, mutação Supabase, merge ou deploy foi executado.
 
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.

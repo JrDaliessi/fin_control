@@ -476,14 +476,17 @@ O projeto deve ter:
 
 - A feature começa somente após a UX-CHART-002, reutilizando seu contrato genérico de intervalo e extrato sob demanda.
 - `UX-CHART-003A` entrega `7D`, `15D` e `Mês` com a RPC atual e compatibilidade de URL, sem migration.
-- `UX-CHART-003B` entrega `3M` e `Ano` com agregação server-side própria; `UX-CHART-003C` entrega `Tudo`, personalizado e integração completa.
-- A granularidade pertence ao domínio/application: diária até 31 dias, semanal até 6 meses, mensal até 2 anos e trimestral acima disso, mantendo preferencialmente 12–60 pontos.
+- `UX-CHART-003B` entregou `3M` e `Ano` com agregação server-side própria; `UX-CHART-003C` está especificada para `Tudo`, personalizado e integração completa.
+- A granularidade pertence ao domínio/application: diária até 31 dias, semanal até 6 meses, mensal até 2 anos, trimestral até 15 anos e anual acima disso.
 - Buckets são civis, consecutivos e semiabertos; buckets parciais respeitam exatamente o intervalo selecionado e a ordenação OHLC da SR-015.
 - Cards, linha, candles, tabela e extrato consomem uma única resolução de período representável na URL; valores atuais continuam compatíveis.
-- Períodos longos nunca enviam movimentos brutos ao browser. A RPC `load_financial_evolution_buckets(date, date, text)` é `SECURITY INVOKER`, usa Auth/RLS, grants mínimos, allowlist `week`/`month` e limites de 366 dias/60 buckets.
+- `Tudo` deriva a menor data de transação no servidor sob RLS; sem transações, recai no mês civil atual e preserva o saldo inicial. O `created_at` da conta não é data financeira.
+- `Personalizado` usa `?period=custom&from=YYYY-MM-DD&to=YYYY-MM-DD`; a UI é inclusiva e o domínio opera com fim exclusivo.
+- Períodos longos nunca enviam movimentos brutos ao browser. A `003C` estenderá a RPC invoker com allowlist `quarter`/`year`, máximo de 60 anos e teto independente de 60 buckets.
 - A RPC diária existente permanece limitada a 31 dias. A migration forward-only `20260907041839_create_financial_evolution_buckets.sql` foi validada por 43 assertions pgTAP e aplicada sem índice novo.
+- Buckets anuais abrem trimestres, trimestres abrem meses e o mês final usa o extrato existente de até 31 dias, sempre no mesmo painel contextual e com ação equivalente na tabela.
 - O seletor usa botões com `aria-pressed`, nomes completos, alvos de 44 px e rolagem horizontal confinada no mobile.
-- Decisão completa: `adr/0020-adaptive-financial-periods.md`.
+- Decisões completas: `adr/0020-adaptive-financial-periods.md` e `adr/0022-all-custom-periods-and-progressive-drilldown.md`.
 
 ## Proteção contra senhas vazadas — SEC-AUTH-001
 

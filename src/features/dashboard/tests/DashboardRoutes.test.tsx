@@ -112,7 +112,8 @@ describe("dashboard routes", () => {
     "rolling_15_days",
     "month",
     "three_months",
-    "year"
+    "year",
+    "all"
   ] as const)("should compose /dashboard with the supported %s period", async (period) => {
     renderRoute(
       await DashboardRoutePage({
@@ -131,14 +132,35 @@ describe("dashboard routes", () => {
     );
   });
 
-  it("falls back to month for an unsupported URL period", async () => {
+  it("passes canonical custom dates through the server composition", async () => {
+    renderRoute(
+      await DashboardRoutePage({
+        searchParams: Promise.resolve({
+          period: "custom",
+          from: "2024-02-01",
+          to: "2024-02-29"
+        })
+      })
+    );
+
+    expect(jest.mocked(loadFinancialEvolution).mock.calls[0]?.[0]).toEqual({
+      kind: "custom",
+      from: "2024-02-01",
+      to: "2024-02-29"
+    });
+  });
+
+  it("does not query financial data for an incomplete custom URL", async () => {
     renderRoute(
       await DashboardRoutePage({
         searchParams: Promise.resolve({ period: "custom" })
       })
     );
 
-    expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
+    expect(loadFinancialEvolution).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Informe as datas inicial e final"
+    );
   });
 
   it("falls back to month when the URL repeats the period parameter", async () => {

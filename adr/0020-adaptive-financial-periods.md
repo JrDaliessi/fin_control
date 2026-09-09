@@ -1,6 +1,6 @@
 # ADR 0020 — Períodos financeiros e granularidade adaptativa
 
-- Status: `UX-CHART-003B` concluída em `READY_FOR_RELEASE`; `003A` mesclada e `003C` refinada para ciclo próprio
+- Status: `UX-CHART-003A/003B` mescladas; `003C` em `SPEC_READY` conforme ADR 0022
 - Data: 2026-09-08
 - Feature: `UX-CHART-003`
 - Depende de: ADR 0019, ADR 0021 e merge `7434159`
@@ -28,7 +28,8 @@ Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop
 | até 31 dias | diário | RPC atual, até 31 pontos |
 | acima de 31 dias até 6 meses | semanal civil | aproximadamente 5–27 pontos |
 | acima de 6 meses até 2 anos | mensal civil | preferencialmente 7–24 pontos |
-| acima de 2 anos | trimestral civil | preferencialmente 12–60 pontos |
+| acima de 2 anos até 15 anos | trimestral civil | preferencialmente 9–60 pontos |
+| acima de 15 anos | anual civil | no máximo 60 pontos |
 
 - Buckets são civis, consecutivos e semiabertos; primeiro e último podem ser parciais e devem refletir somente o intervalo selecionado.
 - Abertura, máxima, mínima e fechamento preservam a ordenação determinística definida na SR-015.
@@ -56,7 +57,7 @@ Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop
 - A RPC agregada aceita no máximo 366 dias e 60 buckets, limites suficientes para o ano bissexto e independentes da futura política de `Tudo`.
 - `Personalizado` recebe limites inclusivos na UI e os converte para intervalo semiaberto no domínio.
 - `Tudo` deriva sua âncora histórica no servidor por proprietário; o browser não escolhe a data inicial efetiva.
-- A política para mais de 60 buckets trimestrais permanece decisão obrigatória do ciclo `003C`; truncamento silencioso é proibido.
+- A `003C` adota bucket anual acima de 15 anos, duração máxima de 60 anos e teto independente de 60 buckets; excesso é erro explícito e truncamento silencioso é proibido.
 - Bucket trimestral não consulta diretamente extrato bruto acima de 31 dias: primeiro ocorre drill-down para meses, depois a consulta detalhada existente.
 
 ### Agregação e segurança
@@ -71,7 +72,7 @@ Cada recorte percorre Dias 1 a 7. A `003A` foi concluída e mesclada em `develop
 - Nenhum valor financeiro, descrição, UUID ou e-mail entra em logs ou analytics.
 - O índice composto existente deve ser validado com `EXPLAIN (ANALYZE, BUFFERS)` antes de qualquer índice novo; índices especulativos são rejeitados.
 
-## Contratos testáveis para o ciclo atual da 003B
+## Contratos testáveis históricos da 003B
 
 1. cada preset resolve intervalo civil determinístico e URL canônica;
 2. URLs existentes continuam compatíveis e valores inválidos usam fallback seguro;
@@ -113,7 +114,7 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - Períodos longos exigem ciclo crítico próprio, com TDD, pgTAP, revisão RLS e validação de performance.
 - O limite visual de pontos fica previsível em mobile e desktop.
 - O extrato contextual continua sob demanda e independente da granularidade agregada.
-- A `003B` está `READY_FOR_RELEASE`; a `003C` permanece refinada, mas não autorizada para teste ou implementação neste ciclo.
+- A `003B` foi mesclada pela PR `#28`; a `003C` concluiu o Dia 1 em `SPEC_READY` e aguarda o Dia 2 antes de qualquer implementação.
 
 ## Evidências do Dia 1 da 003B
 
@@ -176,6 +177,10 @@ Rejeitada. O limite existente é uma proteção correta para a consulta diária 
 - headers defensivos e manifesto PWA confirmados; nenhuma configuração remota, migration, dado ou dependência foi alterada;
 - drift Node 22/24 permanece em `CI-VERCEL-002` como dívida MÉDIA não bloqueante, e a limitação de emulação autenticada 320/390/768 px permanece risco BAIXO.
 
+## Decisão complementar da 003C
+
+O contrato de `Tudo`, personalizado, granularidade anual, limites duplos e drill-down progressivo está em `adr/0022-all-custom-periods-and-progressive-drilldown.md` e em `docs/features/UX-CHART-003C/`.
+
 ## Próximo passo
 
-Versionar o Dia 7 da `UX-CHART-003B` e atualizar a PR `#28`, sem antecipar `Tudo`, personalizado ou drill-down.
+Executar o Dia 2 da `UX-CHART-003C` e materializar a estratégia de testes RED.

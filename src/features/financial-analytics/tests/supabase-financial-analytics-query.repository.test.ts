@@ -109,6 +109,23 @@ describe("SupabaseFinancialAnalyticsQueryRepository", () => {
     expect(rpc.mock.calls[0]?.[1]).not.toHaveProperty("user_id");
   });
 
+  it("rejects quarter and year before the matching migration is available", async () => {
+    const rpc = jest.fn();
+    const repository = new SupabaseFinancialAnalyticsQueryRepository({
+      supabaseClient: { rpc } as never
+    });
+
+    await expect(
+      repository.loadEvolutionBuckets({
+        userId: analyticsUserId,
+        startOnInclusive: "2024-01-01",
+        endOnExclusive: "2027-01-01",
+        bucketGranularity: "quarter"
+      })
+    ).rejects.toThrow("financial analytics repository unavailable");
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
   it("sanitizes RPC failures and provider details", async () => {
     const providerError = {
       code: "42501",

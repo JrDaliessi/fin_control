@@ -28,10 +28,15 @@ routes:
     - project-stack.md
     - project-toolchain.md
   active-artifact:
-    - docs/governance/GOV-V4-001.md
+    - docs/features/UX-CHART-003C/feature-prd.md
+    - docs/features/UX-CHART-003C/feature-spec.md
+    - docs/features/UX-CHART-003C/test-strategy.md
+    - docs/features/UX-CHART-003C/context.yaml
+    - docs/features/UX-CHART-003C/status.md
   quality:
     - quality-gates.md
     - test-strategy.md
+    - docs/features/UX-CHART-003C/test-strategy.md
   agents:
     - .agents/registry.yaml
     - .agents/workflows/engineering-conductor-agent.md
@@ -70,13 +75,28 @@ relations:
     related_context:
       - docs/governance/ai-jail.md
   UX-CHART-003C:
+    derived_from:
+      - docs/product/prd.md
+      - docs/ux-chart-003-discovery.md
     depends_on:
       - UX-CHART-003A
       - UX-CHART-003B
+      - UX-CHART-002
+    affects:
+      - src/features/financial-periods/
+      - src/features/financial-analytics/
+      - src/app/
+      - supabase/migrations/
+    related_context:
+      - docs/features/UX-CHART-003C/
+      - architecture.md
+      - database-model.md
+      - module-contracts.md
     adrs:
       - adr/0019-contextual-candle-statement.md
       - adr/0020-adaptive-financial-periods.md
       - adr/0021-contextual-interval-volume-insights.md
+      - adr/0022-all-custom-periods-and-progressive-drilldown.md
 
 budgets:
   hot_context_target: 2000

@@ -2,7 +2,10 @@ import type { FinancialAnalyticsQueryRepository } from "../ports/financial-analy
 import { resolveReferenceCivilDate } from "../services/resolve-reference-civil-date";
 import { aggregateFinancialEvolution } from "../../domain/services/aggregate-financial-evolution";
 import { aggregateFinancialCandles } from "../../domain/services/aggregate-financial-candles";
-import { resolveFinancialPeriod } from "../../domain/services/resolve-financial-period";
+import {
+  resolveCustomFinancialPeriod,
+  resolveFinancialPeriod
+} from "../../domain/services/resolve-financial-period";
 import type {
   FinancialCandle,
   FinancialEvolutionPoint
@@ -15,6 +18,8 @@ import type {
 export type ListFinancialEvolutionRequest = Readonly<{
   userId: string;
   kind: FinancialPeriodKind;
+  from?: string;
+  to?: string;
   referenceInstant: string;
   timeZone: string;
 }>;
@@ -99,14 +104,25 @@ export class ListFinancialEvolutionUseCase {
       throw new Error("user is required");
     }
 
-    const referenceOn = resolveReferenceCivilDate({
-      referenceInstant: request.referenceInstant,
-      timeZone: request.timeZone
-    });
-    const period = resolveFinancialPeriod({
-      kind: request.kind,
-      referenceOn
-    });
+    const period =
+      request.kind === "custom"
+        ? (() => {
+            if (typeof request.from !== "string" || typeof request.to !== "string") {
+              throw new Error("period kind custom requires dates");
+            }
+
+            return resolveCustomFinancialPeriod({
+              from: request.from,
+              to: request.to
+            });
+          })()
+        : resolveFinancialPeriod({
+            kind: request.kind,
+            referenceOn: resolveReferenceCivilDate({
+              referenceInstant: request.referenceInstant,
+              timeZone: request.timeZone
+            })
+          });
 
     if (period.bucketGranularity !== "day") {
       let bucketSnapshot: Awaited<

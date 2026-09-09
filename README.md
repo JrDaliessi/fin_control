@@ -7,10 +7,10 @@ PWA de finanças pessoais que busca explicar o dinheiro do usuário, antecipar r
 ## Estado atual
 
 - Projeto: `OPERATING`
-- Última release integrada: `UX-CHART-003B`, PR `#28`, merge `45d1bab`
-- Small release ativa: `GOV-V4-001 — Migração incremental para Regras IDE v4`
-- Fase atual: Dia 0 incremental em validação de qualidade
-- Próximo ciclo de produto: Dia 1 da `UX-CHART-003C`, após integração da governança v4
+- Última release integrada: `GOV-V4-001`, PR `#29`, merge `42dd6db`
+- Small release ativa: `UX-CHART-003C — Tudo, período personalizado e drill-down`
+- Fase atual: Dia 3 concluído em `IN_PROGRESS`, com o núcleo da `003C1` em GREEN
+- Próximo ciclo: Dia 4 da `UX-CHART-003C1`, com expansão controlada do seletor personalizado
 - Produção pública completa continua condicionada aos hardenings descritos em `project-context.md`
 
 O estado operacional fica em [`project-context.md`](project-context.md); as rotas de contexto ficam em [`context-map.yaml`](context-map.yaml), e o histórico anterior permanece em `docs/history/`.

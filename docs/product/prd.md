@@ -77,7 +77,7 @@ Clareza financeira com visualizações acessíveis e regras verificáveis, mante
 
 ## MVP Current Boundary
 
-O produto já cobre autenticação, persistência financeira básica, dashboard e períodos até um ano. `UX-CHART-003C` permanece futura para `Tudo`, período personalizado e drill-down de buckets longos. Metas, gamificação, frequência, IA e Open Finance não pertencem ao recorte atual.
+O produto já cobre autenticação, persistência financeira básica, dashboard e períodos até um ano. `UX-CHART-003C` está ativa em `SPEC_READY` para `Tudo`, período personalizado e drill-down de buckets longos. Metas, gamificação, frequência, IA e Open Finance não pertencem ao recorte atual.
 
 ## Business Rules
 

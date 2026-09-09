@@ -1,4 +1,5 @@
 import type { FinancialPeriodKind } from "../../domain/types/financial-period.types";
+import { resolveCustomFinancialPeriod } from "../../domain/services/resolve-financial-period";
 
 export const financialPeriodOptions: readonly Readonly<{
   value: FinancialPeriodKind;
@@ -47,8 +48,83 @@ export const financialPeriodOptions: readonly Readonly<{
     label: "Ano",
     compactLabel: "Ano",
     accessibleLabel: "Ano atual"
+  },
+  {
+    value: "all",
+    label: "Tudo",
+    compactLabel: "Tudo",
+    accessibleLabel: "Todo o histórico"
+  },
+  {
+    value: "custom",
+    label: "Personalizado",
+    compactLabel: "Datas",
+    accessibleLabel: "Escolher período personalizado"
   }
 ];
+
+type FinancialPeriodSearchParams = Readonly<{
+  period?: string | readonly string[];
+  from?: string | readonly string[];
+  to?: string | readonly string[];
+}>;
+
+export type FinancialPeriodSelection =
+  | Readonly<{
+      status: "valid";
+      kind: Exclude<FinancialPeriodKind, "custom">;
+    }>
+  | Readonly<{
+      status: "valid";
+      kind: "custom";
+      from: string;
+      to: string;
+    }>
+  | Readonly<{
+      status: "invalid_custom";
+      kind: "custom";
+      reason: "CUSTOM_DATES_REQUIRED" | "CUSTOM_DATES_INVALID";
+    }>;
+
+export function resolveFinancialPeriodSearchParams({
+  period,
+  from,
+  to
+}: FinancialPeriodSearchParams): FinancialPeriodSelection {
+  const kind = normalizeFinancialPeriodKind(period);
+
+  if (kind !== "custom") {
+    return { status: "valid", kind };
+  }
+
+  if (from === undefined || to === undefined) {
+    return {
+      status: "invalid_custom",
+      kind: "custom",
+      reason: "CUSTOM_DATES_REQUIRED"
+    };
+  }
+
+  if (typeof from !== "string" || typeof to !== "string") {
+    return {
+      status: "invalid_custom",
+      kind: "custom",
+      reason: "CUSTOM_DATES_INVALID"
+    };
+  }
+
+  try {
+    resolveCustomFinancialPeriod({ from, to });
+  } catch {
+    return {
+      status: "invalid_custom",
+      kind: "custom",
+      reason: "CUSTOM_DATES_INVALID"
+    };
+  }
+
+  return { status: "valid", kind, from, to };
+}
 
 export function normalizeFinancialPeriodKind(
   value: string | readonly string[] | undefined

@@ -54,8 +54,8 @@ Permitir que o usuário alterne períodos com um toque, entenda imediatamente qu
 
 - `Personalizado` recebe início e fim civis inclusivos na UI e converte para intervalo de domínio semiaberto.
 - `Tudo` depende de uma âncora histórica server-side por proprietário e não aceita data inicial fornecida pelo browser.
-- A política para históricos que excedam 60 buckets trimestrais permanece uma decisão explícita do Dia 1 da `003C`; não será escondida por truncamento silencioso.
-- Candles trimestrais não abrirão diretamente um extrato bruto acima de 31 dias. O fluxo recomendado é drill-down para buckets mensais e, então, abertura do extrato do mês selecionado.
+- O Dia 1 da `003C` aprovou bucket anual acima de 15 anos, duração máxima de 60 anos e teto independente de 60 buckets; excesso é explícito e nunca truncado.
+- Candles anuais abrem trimestres, candles trimestrais abrem meses e somente o mês final abre o extrato de até 31 dias, no mesmo painel contextual.
 
 ## Granularidade adaptativa
 
@@ -64,7 +64,8 @@ Permitir que o usuário alterne períodos com um toque, entenda imediatamente qu
 | até 31 dias | diária | até 31 pontos |
 | acima de 31 dias até 6 meses | semanal civil | aproximadamente 5–27 pontos |
 | acima de 6 meses até 2 anos | mensal civil | aproximadamente 7–24 pontos |
-| acima de 2 anos | trimestral civil | máximo preferencial de 60 pontos |
+| acima de 2 anos até 15 anos | trimestral civil | aproximadamente 9–60 pontos |
+| acima de 15 anos | anual civil | no máximo 60 pontos |
 
 Regras:
 - buckets são civis, consecutivos, semiabertos e cobrem cada data uma única vez;
@@ -90,7 +91,7 @@ Regras:
 
 - `003A`: nenhum tipo ou serviço novo; reutiliza `FinancialPeriodKind` e `resolveFinancialPeriod`.
 - `003B`: introduz tipo fechado de granularidade e resolução determinística de buckets, sem React, Next.js ou Supabase.
-- `003C`: adiciona intervalo personalizado e política de período total somente após decisões de limite.
+- `003C`: adiciona `all/custom`, limite de 60 anos/60 buckets e granularidades trimestral/anual conforme a Feature Spec aprovada.
 
 ### Application
 
@@ -102,6 +103,7 @@ Regras:
 
 - `003A`: reutiliza `load_financial_evolution_snapshot` sem alteração.
 - `003B`: nova RPC agregada, `SECURITY INVOKER`, `search_path = ''`, identidade permanente obrigatória, allowlist de granularidades e grants somente para `authenticated`.
+- `003C`: estende a allowlist para `quarter/year` e cria leitura invoker da primeira transação, sem parâmetro de usuário ou exposição de lançamentos brutos.
 - O índice existente iniciado por `(user_id, occurred_on, ...)` deve ser validado com `EXPLAIN (ANALYZE, BUFFERS)` antes de criar outro índice.
 - Nenhuma migration será criada antes dos contratos pgTAP do ciclo próprio da `003B`.
 
@@ -139,12 +141,14 @@ Regras:
 - Integrar os novos presets mantendo extrato direto para buckets de até 31 dias.
 - Discovery e arquitetura próprios: `docs/ux-chart-003b-discovery.md`.
 
-### UX-CHART-003C — Tudo, Personalizado e drill-down
+### UX-CHART-003C — Tudo, Personalizado e drill-down progressivo
 
-- Definir âncora histórica, limite superior e comportamento acima de 60 pontos.
+- Derivar a primeira transação no servidor; sem movimentos, usar o mês atual e o saldo inicial.
 - Adicionar datas personalizadas canônicas na URL.
-- Implementar drill-down de bucket trimestral antes do extrato detalhado.
+- Aplicar dia/semana/mês/trimestre/ano com 60 anos e 60 buckets como limites independentes.
+- Implementar no mesmo painel o drill-down ano → trimestre → mês → extrato detalhado.
 - Validar navegação, histórico longo, performance, acessibilidade e privacidade.
+- Contrato autoritativo: `docs/features/UX-CHART-003C/` e ADR 0022.
 
 ## Cenários essenciais para o Dia 2 da 003A
 
@@ -163,7 +167,7 @@ Regras:
 
 - `003A`: risco MÉDIO de regressão de navegação/acessibilidade, mitigado por preservar os valores e casos de uso existentes.
 - `003B`: risco ALTO por nova agregação financeira, migration, RLS e performance; exige ciclo próprio completo.
-- `003C`: risco ALTO por intervalo arbitrário, URL, drill-down e histórico potencialmente extenso; permanece fora do primeiro recorte.
+- `003C`: risco ALTO por intervalo arbitrário, URL, drill-down e histórico potencialmente extenso; está ativa em `SPEC_READY` e exige Validation First/TDD.
 - Hardening global `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continua condicionando produção pública, sem bloquear o TDD local da `003B`.
 
 ## Critério de pronto do Dia 1 histórico da 003A
@@ -179,5 +183,5 @@ Regras:
 ## Estado e próximo passo
 
 - `UX-CHART-003A`: `DONE`, mesclada em `develop` pelo commit `7434159`.
-- `UX-CHART-003B`: Dia 7 concluído em `READY_FOR_RELEASE`, com quality gates, Supabase, segurança, observabilidade e Preview verdes; próximo passo é versionar e atualizar a PR `#28`.
-- `UX-CHART-003C`: permanece fora do ciclo atual.
+- `UX-CHART-003B`: `DONE`, mesclada pela PR `#28` no commit `45d1bab`.
+- `UX-CHART-003C`: Dia 1 aprovado em `SPEC_READY`; próximo passo é o Dia 2 com matriz de validação e testes RED.

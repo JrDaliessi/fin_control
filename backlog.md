@@ -6,17 +6,6 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-### GOV-V4-001 — Migração incremental para Regras IDE v4
-- Tipo: Small Release / Governance.
-- Descrição objetiva: substituir o contexto central append-only por Hot/Warm/Cold Context, materializar os registries e workflows v4 e preservar o histórico integralmente.
-- Objetivo e valor esperado: reduzir drift e custo de contexto, tornando os próximos ciclos reproduzíveis e rastreáveis.
-- Prioridade: Alta, antes de iniciar uma nova feature.
-- Dependências: regras v4 aprovadas, documentação vigente e merge da `UX-CHART-003B`.
-- Risco: Médio por reorganizar fontes de contexto; mitigado por arquivo histórico, referências explícitas e validação de paths/YAML.
-- Fase recomendada: Dia 0 incremental.
-- Critério de pronto: fundação mínima v4 válida, Hot Context compacto, histórico preservado e nenhum código funcional alterado.
-- Status: READY_FOR_RELEASE — execução aprovada e gates documentais verdes em 2026-09-08 na branch `codex/gov-v4-001-bootstrap`; aguarda versionamento e PR.
-
 ### UX-CHART-003 — Períodos e granularidade adaptativa
 - Tipo: UX Improvement / Feature.
 - Descrição objetiva: oferecer seleção rápida de `7D`, `15D`, `Mês`, `3M`, `Ano`, `Tudo` e intervalo personalizado, escolhendo automaticamente a granularidade dos candles.
@@ -29,9 +18,20 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: `003A` e `003B` concluídas; `003C` percorre ciclo próprio posterior à `GOV-V4-001`.
+- Fase recomendada: `003A` e `003B` concluídas; `003C1` concluiu o Dia 7 e está pronta para revisão/integração; `003C2` só começa após novo comando.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A` foi mesclada no commit `7434159`; `UX-CHART-003B` foi mesclada pela PR `#28` no commit `45d1bab`, após 95 suítes/621 testes e gates remotos verdes. A inspeção autenticada isolada em 320/390/768 px permanece risco BAIXO, mitigado por contratos responsivos e evidência real anterior; `003C` segue planejada para ciclo próprio e mantém o item-pai aberto.
+- Status: IN_PROGRESS — `UX-CHART-003A` e `003B` estão mescladas; `003C1` está `READY_FOR_RELEASE` com pipeline e experiência verdes; `003C2/003C3` permanecem planejadas.
+
+### UX-CHART-003C — Tudo, período personalizado e drill-down
+- Tipo: Small Release / UX Improvement.
+- Objetivo: permitir histórico completo e intervalos escolhidos, com investigação progressiva sem transferir lançamentos brutos de períodos longos.
+- Prioridade: Alta; small release ativa.
+- Dependências: UX-CHART-002, UX-CHART-003A, UX-CHART-003B e ADRs 0019–0022.
+- Escopo: `Tudo`, URL personalizada, granularidades trimestral/anual, limites de 60 anos/60 buckets e drill-down no painel único até o extrato mensal.
+- Fatiamento: `003C1` domínio/URL; `003C2` agregação segura; `003C3` drill-down progressivo.
+- Risco: Alto por RLS e performance de histórico extenso; mitigação definida na Feature Spec.
+- Critério de pronto: critérios `FPRD-UXCHART003C-AC-001` a `AC-010` verdes e gates de software, segurança, experiência e release concluídos.
+- Status: IN_PROGRESS — `003C1` está `READY_FOR_RELEASE`; 320/390/768/1280 px, teclado, foco, contraste e ausência de overflow foram validados. `003C2/003C3` permanecem pendentes e granularidades trimestral/anual seguem bloqueadas no adapter.
 
 ## DISCOVERY
 
@@ -461,6 +461,19 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Critério de pronto: `checkout` e `setup-node` fixados por SHA e Dependabot/Renovate configurado para atualização controlada.
 - Status: DISCOVERY
 
+### CI-ACTIONS-001 — Atualizar runtime das GitHub Actions
+- Tipo: Dívida Técnica / CI
+- Descrição objetiva: `actions/checkout@v4` e `actions/setup-node@v4` ainda declaram runtime Node.js 20, e o runner atual as força a executar em Node.js 24.
+- Objetivo de negócio: remover a dependência de fallback do runner e manter o pipeline compatível com a evolução da plataforma GitHub Actions.
+- Valor esperado: execução de CI sem aviso de runtime obsoleto e menor risco de quebra futura.
+- Prioridade: Baixa
+- Dependências: versões oficiais das actions com runtime suportado; alinhamento com o pinning previsto em `CI-HARD-001`.
+- Risco: Baixo e não bloqueante no pipeline atual, que concluiu todos os gates em GREEN.
+- Severidade: BAIXA
+- Fase recomendada: próximo hardening de CI, preferencialmente junto de `CI-HARD-001`.
+- Critério de pronto: `checkout` e `setup-node` usam versões suportadas e fixadas por SHA, o aviso desaparece e todos os Quality Gates permanecem verdes.
+- Status: READY
+
 ### CI-VERCEL-002 — Alinhar vínculo local e runtime da Vercel
 - Tipo: Dívida Técnica / Hardening
 - Descrição objetiva: o `.vercel/project.json` local referencia um projeto antigo, enquanto o projeto ativo `fin-control` usa outro ID; o projeto declara Node 24, o `package.json` força Node 22 e a imagem de build usa npm 10 apesar do engine npm 11.
@@ -475,6 +488,12 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### GOV-V4-001 — Migração incremental para Regras IDE v4
+- Tipo: Small Release / Governance.
+- Resultado: Hot/Warm/Cold Context, registries, workflows v4, governança e histórico preservado foram materializados sem alterar código funcional.
+- Evidência: PR `#29` mesclada em `develop` no commit `42dd6db` em 2026-09-08.
+- Status: DONE / RELEASED.
 
 ### UX-CHART-002D — Volume e insight contextual do intervalo
 - Tipo: Small Release / UX Improvement.
