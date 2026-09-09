@@ -82,7 +82,7 @@ type FinancialDrilldownLevel =
 
 ## Banco, migration e RLS
 
-O Dia 3 deverá criar uma única migration forward-only, previamente coberta por pgTAP, para:
+A implementação da `UX-CHART-003C2` deverá criar uma única migration forward-only, previamente coberta por pgTAP, para:
 
 1. criar `public.load_financial_history_start()` sem argumentos;
 2. retornar `min(public.transactions.occurred_on)` visível ao chamador autenticado;

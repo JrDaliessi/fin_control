@@ -22,10 +22,12 @@ export function FinancialPeriodSelector({
       >
         {financialPeriodOptions.map((option) => {
           const isSelected = option.value === selectedPeriodKind;
+          const isCustom = option.value === "custom";
 
           return (
             <Button
               aria-label={option.accessibleLabel}
+              aria-haspopup={isCustom ? "dialog" : undefined}
               aria-pressed={isSelected}
               className={`shrink-0 !px-2 motion-reduce:transition-none sm:!px-4 ${
                 isSelected
@@ -33,9 +35,9 @@ export function FinancialPeriodSelector({
                   : ""
               }`}
               key={option.value}
-              name="period"
-              type="submit"
-              value={option.value}
+              name={isCustom ? undefined : "period"}
+              type={isCustom ? "button" : "submit"}
+              value={isCustom ? undefined : option.value}
               variant={isSelected ? "primary" : "secondary"}
             >
               <span className="sm:hidden">{option.compactLabel}</span>

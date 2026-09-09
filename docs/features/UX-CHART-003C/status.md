@@ -1,9 +1,9 @@
 # Status — UX-CHART-003C
 
-- Estado da feature: `TEST_STRATEGY_READY`
-- Fase concluída: `Dia 2`
+- Estado da feature: `IN_PROGRESS`
+- Fase concluída: `Dia 3`
 - Aprovação: confirmada em 2026-09-08
-- Código funcional alterado: não; somente testes RED
+- Código funcional alterado: sim; núcleo da `UX-CHART-003C1` em GREEN
 - Banco remoto alterado: não
 
 ## Entregáveis acumulados
@@ -16,6 +16,11 @@
 - estratégia de testes com matriz completa dos dez critérios de aceite;
 - RED executável da `UX-CHART-003C1` para domínio, URL, seletor e composição server-side;
 - contratos futuros de Jest e pgTAP definidos para `003C2` e `003C3`.
+- tipos `all`/`custom` e granularidades `quarter`/`year` incorporados ao domínio;
+- período personalizado resolve datas inclusivas, intervalo semiaberto, granularidade e limites de 60 anos/60 buckets;
+- URL distingue presets, personalizado canônico e personalizado inválido sem iniciar consulta;
+- seletor expõe nove opções, com `Tudo` progressivo e `Personalizado` como acionador de diálogo;
+- adapter Supabase rejeita trimestre/ano localmente até a migration aprovada da `003C2`.
 
 ## Decisões vigentes
 
@@ -40,7 +45,7 @@ Riscos ativos:
 
 ## Próximo passo
 
-Executar explicitamente o Dia 3 da `UX-CHART-003C1`: implementar o mínimo para tornar verdes os contratos de domínio, URL e seletor, sem criar migration ou antecipar drill-down.
+Executar explicitamente o Dia 4 da `UX-CHART-003C1`: completar o diálogo de datas e seus estados de aplicar, cancelar, validação e foco, sem criar migration ou antecipar drill-down.
 
 ## Validação do Dia 1
 
@@ -57,3 +62,12 @@ Executar explicitamente o Dia 3 da `UX-CHART-003C1`: implementar o mínimo para 
 - falhas causadas pelos contratos ainda ausentes, sem módulo quebrado ou dependência externa;
 - ESLint e type-check verdes com os testes RED presentes;
 - nenhuma migration, alteração Supabase, dependência ou código funcional criado.
+
+## Validação do Dia 3
+
+- 4 suítes anteriormente RED passaram com 61 testes verdes;
+- regressão completa final passou com 97 suítes e 657 testes;
+- o adapter recebeu um teste RED→GREEN para bloquear `quarter/year` antes da RPC antiga;
+- ESLint global, type-check e build Next.js 16.3.3/Turbopack passaram;
+- revisão React/Next.js confirmou Server Components, imports diretos, serialização mínima e ausência de waterfall;
+- nenhuma migration, dependência, alteração remota, merge ou deploy foi executado.

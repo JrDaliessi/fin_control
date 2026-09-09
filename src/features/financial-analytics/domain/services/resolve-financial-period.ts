@@ -12,7 +12,12 @@ type CivilDateParts = {
   day: number;
 };
 
-const supportedKinds: readonly FinancialPeriodKind[] = [
+type PresetFinancialPeriodKind = Exclude<
+  FinancialPeriodKind,
+  "all" | "custom"
+>;
+
+const supportedKinds: readonly PresetFinancialPeriodKind[] = [
   "week",
   "rolling_7_days",
   "fortnight",
@@ -22,8 +27,10 @@ const supportedKinds: readonly FinancialPeriodKind[] = [
   "year"
 ];
 
-function isFinancialPeriodKind(value: unknown): value is FinancialPeriodKind {
-  return supportedKinds.includes(value as FinancialPeriodKind);
+function isPresetFinancialPeriodKind(
+  value: unknown
+): value is PresetFinancialPeriodKind {
+  return supportedKinds.includes(value as PresetFinancialPeriodKind);
 }
 
 function parseCivilDate(value: string): CivilDateParts {
@@ -86,6 +93,204 @@ function addCivilDays(value: string, amount: number): string {
   return formatCivilDate(parts);
 }
 
+function compareCivilDates(left: string, right: string): number {
+  return left.localeCompare(right);
+}
+
+function civilDayOrdinal(value: string): number {
+  const { year, month, day } = parseCivilDate(value);
+  const previousYears = year - 1;
+  let ordinal =
+    previousYears * 365 +
+    Math.floor(previousYears / 4) -
+    Math.floor(previousYears / 100) +
+    Math.floor(previousYears / 400);
+
+  for (let currentMonth = 1; currentMonth < month; currentMonth += 1) {
+    ordinal += daysInGregorianMonth(year, currentMonth);
+  }
+
+  return ordinal + day - 1;
+}
+
+function addCivilYearsClamped(value: string, amount: number): string {
+  const { year, month, day } = parseCivilDate(value);
+  const shiftedYear = year + amount;
+
+  return formatCivilDate({
+    year: shiftedYear,
+    month,
+    day: Math.min(day, daysInGregorianMonth(shiftedYear, month))
+  });
+}
+
+function addCivilMonthsClamped(value: string, amount: number): string {
+  const { year, month, day } = parseCivilDate(value);
+  const shiftedMonthIndex = (year - 1) * 12 + month - 1 + amount;
+
+  if (shiftedMonthIndex < 0 || shiftedMonthIndex >= 9999 * 12) {
+    throw new Error("civil date is out of range");
+  }
+
+  const shiftedYear = Math.floor(shiftedMonthIndex / 12) + 1;
+  const shiftedMonth = (shiftedMonthIndex % 12) + 1;
+
+  return formatCivilDate({
+    year: shiftedYear,
+    month: shiftedMonth,
+    day: Math.min(day, daysInGregorianMonth(shiftedYear, shiftedMonth))
+  });
+}
+
+function endsWithinCivilMonths(
+  startOnInclusive: string,
+  endOnExclusive: string,
+  amount: number
+): boolean {
+  const { year, month } = parseCivilDate(startOnInclusive);
+  const shiftedMonthIndex = (year - 1) * 12 + month - 1 + amount;
+
+  return (
+    shiftedMonthIndex >= 9999 * 12 ||
+    compareCivilDates(
+      endOnExclusive,
+      addCivilMonthsClamped(startOnInclusive, amount)
+    ) <= 0
+  );
+}
+
+function endsWithinCivilYears(
+  startOnInclusive: string,
+  endOnExclusive: string,
+  amount: number
+): boolean {
+  const { year } = parseCivilDate(startOnInclusive);
+
+  return (
+    year + amount > 9999 ||
+    compareCivilDates(
+      endOnExclusive,
+      addCivilYearsClamped(startOnInclusive, amount)
+    ) <= 0
+  );
+}
+
+function resolveFinancialBucketGranularity(
+  startOnInclusive: string,
+  endOnExclusive: string
+): FinancialBucketGranularity {
+  const dayCount =
+    civilDayOrdinal(endOnExclusive) - civilDayOrdinal(startOnInclusive);
+
+  if (dayCount <= 31) {
+    return "day";
+  }
+
+  if (endsWithinCivilMonths(startOnInclusive, endOnExclusive, 6)) {
+    return "week";
+  }
+
+  if (endsWithinCivilYears(startOnInclusive, endOnExclusive, 2)) {
+    return "month";
+  }
+
+  if (endsWithinCivilYears(startOnInclusive, endOnExclusive, 15)) {
+    return "quarter";
+  }
+
+  return "year";
+}
+
+export type ResolveCustomFinancialPeriodInput = Readonly<{
+  from: string;
+  to: string;
+}>;
+
+export function resolveCustomFinancialPeriod({
+  from,
+  to
+}: ResolveCustomFinancialPeriodInput): FinancialPeriod {
+  let startOnInclusive: string;
+  let toInclusive: string;
+
+  try {
+    startOnInclusive = CivilDate.fromString(from).value;
+    toInclusive = CivilDate.fromString(to).value;
+  } catch {
+    throw new Error("dates are invalid");
+  }
+
+  if (compareCivilDates(startOnInclusive, toInclusive) > 0) {
+    throw new Error("boundaries are invalid");
+  }
+
+  let endOnExclusive: string;
+
+  try {
+    endOnExclusive = addCivilDays(toInclusive, 1);
+  } catch {
+    throw new Error("dates are invalid");
+  }
+
+  if (!endsWithinCivilYears(startOnInclusive, endOnExclusive, 60)) {
+    throw new Error("interval exceeds 60 years");
+  }
+
+  const bucketGranularity = resolveFinancialBucketGranularity(
+    startOnInclusive,
+    endOnExclusive
+  );
+  const bucketCount = countIntersectingCivilBuckets(
+    startOnInclusive,
+    endOnExclusive,
+    bucketGranularity
+  );
+
+  if (bucketCount > 60) {
+    throw new Error("bucket count exceeds 60");
+  }
+
+  return {
+    kind: "custom",
+    bucketGranularity,
+    referenceOn: toInclusive,
+    startOnInclusive,
+    endOnExclusive
+  };
+}
+
+function countIntersectingCivilBuckets(
+  startOnInclusive: string,
+  endOnExclusive: string,
+  bucketGranularity: FinancialBucketGranularity
+): number {
+  const first = parseCivilDate(startOnInclusive);
+  const lastOnInclusive = addCivilDays(endOnExclusive, -1);
+  const last = parseCivilDate(lastOnInclusive);
+
+  switch (bucketGranularity) {
+    case "day":
+      return civilDayOrdinal(endOnExclusive) - civilDayOrdinal(startOnInclusive);
+    case "week":
+      return (
+        Math.floor(civilDayOrdinal(lastOnInclusive) / 7) -
+        Math.floor(civilDayOrdinal(startOnInclusive) / 7) +
+        1
+      );
+    case "month":
+      return (last.year - first.year) * 12 + last.month - first.month + 1;
+    case "quarter":
+      return (
+        (last.year - first.year) * 4 +
+        Math.floor((last.month - 1) / 3) -
+        Math.floor((first.month - 1) / 3) +
+        1
+      );
+    case "year":
+      return last.year - first.year + 1;
+  }
+}
+
 function mondayBasedWeekday(value: string): number {
   const { year, month, day } = parseCivilDate(value);
   const previousYears = year - 1;
@@ -135,7 +340,7 @@ export type ResolveFinancialPeriodInput = {
 export function resolveFinancialPeriod(
   input: ResolveFinancialPeriodInput
 ): FinancialPeriod {
-  if (!isFinancialPeriodKind(input.kind)) {
+  if (!isPresetFinancialPeriodKind(input.kind)) {
     throw new Error("period kind is invalid");
   }
 

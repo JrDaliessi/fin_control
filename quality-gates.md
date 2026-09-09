@@ -152,6 +152,20 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - o audit alto de `js-yaml`/`sharp` permanece bloqueio de merge separado e não foi mascarado;
 - estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003C1`.
 
+## Gate do Dia 3 — UX-CHART-003C1
+
+- Hot Context, workflow, Feature PRD, Feature Spec, ADR 0022, testes RED e dependências afetadas foram inspecionados antes da implementação;
+- os 39 contratos RED ficaram verdes: 4 suítes dirigidas e 61 testes passaram, sem relaxar expectativas;
+- regressão completa passou com 97 suítes e 657 testes, zero snapshots;
+- teste defensivo adicional realizou RED→GREEN e impede `quarter/year` de alcançar a RPC antiga antes da migration da `003C2`;
+- domínio valida datas civis, intervalo semiaberto, granularidade, 60 anos e 60 buckets de forma independente de framework;
+- URL canônica diferencia presets, `all`, `custom` válido e `custom` inválido antes de consultar dados;
+- seletor e composição mantêm Server Components, formulário GET progressivo, ordem acessível e sete períodos anteriores;
+- revisão React/Next.js, ESLint global, type-check e build Next.js 16.3.3/Turbopack passaram;
+- a referência imprecisa de migration no Dia 3 foi corrigida para a small release `003C2`, preservando o fatiamento aprovado;
+- nenhuma migration, dependência, mutação Supabase, commit, push, merge ou deploy foi executado;
+- estado de saída: `IN_PROGRESS` com núcleo GREEN; próximo comando válido: `dia 4` da `UX-CHART-003C1`.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.

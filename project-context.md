@@ -4,8 +4,8 @@ project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product]
 active_artifact: UX-CHART-003C
-artifact_state: TEST_STRATEGY_READY
-phase: Dia 2
+artifact_state: IN_PROGRESS
+phase: Dia 3
 last_release: GOV-V4-001
 
 ## Current Goal
@@ -16,13 +16,14 @@ Entregar `Tudo`, período personalizado e drill-down progressivo com limites exp
 
 - `UX-CHART-003A` e `UX-CHART-003B` foram mescladas em `develop`;
 - `GOV-V4-001` foi mesclada pela PR `#29` no commit `42dd6db`;
-- `UX-CHART-003C` concluiu o Dia 2 com matriz completa e RED executável da `003C1`;
-- nenhuma implementação, migration ou alteração remota foi executada neste ciclo;
+- `UX-CHART-003C1` concluiu o Dia 3 com domínio, URL, seletor e composição server-side em GREEN;
+- granularidades trimestral/anual são conhecidas pelo domínio, mas o adapter bloqueia seu envio até a migration da `003C2`;
+- nenhuma migration, dependência ou alteração remota foi executada neste ciclo;
 - branch atual: `codex/ux-chart-003c-all-custom-drilldown`.
 
 ## Blockers
 
-Nenhum bloqueio duro para iniciar o Dia 3 da `UX-CHART-003C1`.
+Nenhum bloqueio duro para iniciar o Dia 4 da `UX-CHART-003C1`.
 
 Bloqueio de merge da PR `#30`:
 
@@ -73,7 +74,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar explicitamente o Dia 3 da `UX-CHART-003C1`: implementar o mínimo para tornar verdes os contratos de domínio, URL e seletor, sem antecipar Supabase ou drill-down.
+Executar explicitamente o Dia 4 da `UX-CHART-003C1`: completar os estados do seletor personalizado sem antecipar Supabase ou drill-down.
 
 ## History
 
