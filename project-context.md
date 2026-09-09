@@ -3,9 +3,9 @@
 project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product]
-active_artifact: UX-CHART-003C
-artifact_state: HARDENING
-phase: Dia 5
+active_artifact: UX-CHART-003C1
+artifact_state: READY_FOR_RELEASE
+phase: Dia 7
 last_release: GOV-V4-001
 
 ## Current Goal
@@ -16,15 +16,15 @@ Entregar `Tudo`, período personalizado e drill-down progressivo com limites exp
 
 - `UX-CHART-003A` e `UX-CHART-003B` foram mescladas em `develop`;
 - `GOV-V4-001` foi mesclada pela PR `#29` no commit `42dd6db`;
-- `UX-CHART-003C1` concluiu o Dia 5 com erros de domínio tipados, apresentação desacoplada de mensagens internas e estado de rascunho robusto;
-- `SUPPLY-CHAIN-003` foi resolvido localmente por atualizações transitivas compatíveis no lockfile; o audit retorna zero vulnerabilidades;
+- `UX-CHART-003C1` concluiu o Dia 7 em `READY_FOR_RELEASE`; a feature pai `UX-CHART-003C` permanece em andamento para `003C2/003C3`;
+- `SUPPLY-CHAIN-003` foi resolvido e confirmado pelo workflow remoto `Quality Gates #146`;
 - granularidades trimestral/anual são conhecidas pelo domínio, mas o adapter bloqueia seu envio até a migration da `003C2`;
 - nenhuma migration, dependência direta ou alteração remota foi executada neste ciclo;
 - branch atual: `codex/ux-chart-003c-all-custom-drilldown`.
 
 ## Blockers
 
-Nenhum bloqueio duro para iniciar o Dia 6 da `UX-CHART-003C1`. A correção local do `SUPPLY-CHAIN-003` ainda precisa ser confirmada pelo CI remoto após o próximo push.
+Nenhum bloqueio duro específico da `UX-CHART-003C1` para revisão e integração da PR `#30`.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -35,7 +35,6 @@ Bloqueios externos antes de produção pública completa:
 ## Active Risks
 
 - `CI-VERCEL-002` — MÉDIO: contrato local/CI em Node.js 22 e projeto Vercel reportado em Node.js 24;
-- emulação autenticada automatizada isolada em 320/390/768 px — BAIXO: conector anterior não preencheu os inputs React; contratos responsivos e inspeções reais anteriores mitigam o risco;
 - `UX-CHART-003C` — ALTO: histórico extenso exige limites duplos, RLS e validação de plano antes de qualquer índice;
 - drill-down no painel único — MÉDIO: estados assíncronos e retorno precisam de cobertura de foco e concorrência;
 - mês com quantidade extrema de lançamentos — MÉDIO: paginação permanece hardening separado.
@@ -71,7 +70,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar explicitamente o Dia 6 da `UX-CHART-003C1`: validar experiência, acessibilidade e responsividade do seletor personalizado, sem antecipar Supabase ou drill-down.
+Versionar a conclusão do Dia 7, validar os checks do novo head da PR `#30` e aguardar autorização de merge. A `UX-CHART-003C2` só começa em novo ciclo explícito.
 
 ## History
 

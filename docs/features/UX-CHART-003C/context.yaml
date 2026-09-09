@@ -4,7 +4,9 @@ capabilities:
   - software
   - product
 state: IN_PROGRESS
-phase: Dia 3
+phase: Dia 7
+active_small_release: UX-CHART-003C1
+active_small_release_state: READY_FOR_RELEASE
 approved_at: 2026-09-08
 derived_from:
   - docs/product/prd.md
@@ -35,8 +37,9 @@ quality_gates:
   - quality-gates.md#gate-do-dia-1
   - quality-gates.md#gate-do-dia-2
   - quality-gates.md#software
+  - quality-gates.md#gate-do-dia-7--ux-chart-003c1
 small_releases:
   - UX-CHART-003C1
   - UX-CHART-003C2
   - UX-CHART-003C3
-next_action: Dia 4 — expandir de forma controlada o seletor personalizado da UX-CHART-003C1
+next_action: Revisar e integrar a PR 30 da UX-CHART-003C1 antes de iniciar a UX-CHART-003C2

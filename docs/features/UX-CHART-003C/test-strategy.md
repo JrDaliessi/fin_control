@@ -142,3 +142,13 @@ O audit atualmente vermelho por `js-yaml` e `sharp` é bloqueio de merge indepen
 - cancelamento descarta datas em edição e restaura os valores aplicados presentes na URL;
 - suíte dirigida: 2 suítes/41 testes; regressão completa: 97 suítes/666 testes;
 - instalação limpa e audit confirmaram `js-yaml` 3.15.2/4.3.2 e `sharp` 0.35.4 sem vulnerabilidades conhecidas.
+
+## Evidência executada no Dia 6 — experiência e acessibilidade
+
+- RED dirigido reproduziu o foco retido no botão Aplicar quando apenas a data final estava vazia;
+- GREEN move o foco para o campo ausente sem alterar o contrato GET nem a validação de domínio;
+- testes de apresentação cobrem contenção circular de foco, `inert`/`aria-hidden`, safe areas, máximo de 85dvh, rolagem interna, targets de 44 px e variantes mobile/desktop;
+- Preview autenticada do commit `ba12011` confirmou 320x800, 390x844, 768x900 e 1280x900 sem overflow global;
+- foco inicial, `Shift+Tab`, `Escape` e retorno ao acionador foram exercitados em navegador real;
+- tokens do diálogo superam 4,5:1 nos temas claro e escuro para texto principal, secundário, destaque, ação primária e erro;
+- suíte dirigida: 2 suítes/34 testes; regressão completa: 97 suítes/669 testes; ESLint, type-check e build verdes.

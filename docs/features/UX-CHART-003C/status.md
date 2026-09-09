@@ -1,7 +1,8 @@
 # Status — UX-CHART-003C
 
-- Estado da feature: `HARDENING`
-- Fase concluída: `Dia 5`
+- Estado da feature pai: `IN_PROGRESS`
+- Estado da small release `UX-CHART-003C1`: `READY_FOR_RELEASE`
+- Fase concluída: `Dia 7`
 - Aprovação: confirmada em 2026-09-08
 - Código funcional alterado: sim; núcleo da `UX-CHART-003C1` em GREEN
 - Banco remoto alterado: não
@@ -27,6 +28,9 @@
 - a apresentação traduz códigos tipados sem comparar textos internos do domínio e descarta rascunhos cancelados;
 - lockfile atualiza `js-yaml` para 3.15.2/4.3.2 e `sharp` para 0.35.4 sem alterar dependências diretas;
 - adapter Supabase rejeita trimestre/ano localmente até a migration aprovada da `003C2`.
+- validação conduz o foco ao campo ausente que exige correção;
+- contratos automatizados preservam contenção de foco, isolamento do fundo, safe areas, rolagem interna e targets de 44 px;
+- Preview autenticada confirmou bottom sheet em 320/390 px e modal compacto em 768/1280 px sem overflow global.
 
 ## Decisões vigentes
 
@@ -39,9 +43,9 @@
 
 ## Bloqueios e riscos
 
-Nenhum bloqueio duro para o Dia 6 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
+Nenhum bloqueio duro para o Dia 7 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
 
-O `SUPPLY-CHAIN-003` foi resolvido localmente com audit zerado; a confirmação do CI remoto ocorrerá após o próximo push da PR `#30`.
+O `SUPPLY-CHAIN-003` foi resolvido e confirmado pelo workflow remoto `Quality Gates #146` da PR `#30`.
 
 Riscos ativos:
 
@@ -51,7 +55,7 @@ Riscos ativos:
 
 ## Próximo passo
 
-Executar explicitamente o Dia 6 da `UX-CHART-003C1`: validar acessibilidade, responsividade e formato final do diálogo sem antecipar a `003C2`.
+Versionar o Dia 7, atualizar a PR `#30` e validar os checks do novo head. Merge e início da `003C2` exigem comandos próprios.
 
 ## Validação do Dia 1
 
@@ -96,3 +100,24 @@ Executar explicitamente o Dia 6 da `UX-CHART-003C1`: validar acessibilidade, res
 - ESLint, type-check, build Next.js e `git diff --check` passaram;
 - revisão React confirmou ilha cliente mínima e não encontrou justificativa para novas abstrações;
 - nenhuma migration, dependência direta, mutação Supabase, commit, push, merge ou deploy foi executado.
+
+## Validação do Dia 6
+
+- RED dirigido isolou a ausência de foco no campo final vazio, mantendo 28 cenários verdes; GREEN dirigido passou com 2 suítes e 34 testes;
+- regressão completa passou com 97 suítes e 669 testes, sem snapshots;
+- Preview autenticada do commit `ba12011` foi validada em 320x800, 390x844, 768x900 e 1280x900;
+- nenhum viewport apresentou overflow global; inputs, acionador e ações mediram 44 px de altura;
+- mobile apresentou bottom sheet com rolagem interna e safe areas; desktop apresentou modal central de 512 px;
+- foco inicial, contenção, isolamento do fundo, `Escape` e retorno ao acionador foram confirmados;
+- contrastes mínimos dos tokens relevantes ficaram entre 5,12:1 e 17,74:1 no tema claro e entre 6,92:1 e 16,96:1 no escuro;
+- ESLint, type-check e build Next.js 16.3.3/Turbopack passaram;
+- nenhuma migration, dependência, mutação Supabase, commit, push, merge ou deploy foi executado.
+
+## Validação do Dia 7
+
+- rastreabilidade separa os critérios entregues pela `003C1` das parcelas SQL e de drill-down ainda pendentes;
+- revisão local confirmou presentation sem Supabase, telemetria financeira ou segredo e adapter fechado para `quarter/year`;
+- registro `day-7-release-readiness.md` documenta gates, segurança, experiência, riscos e decisão;
+- pipeline final manteve 97 suítes/669 testes, zero snapshots, ESLint, type-check, build e diff verdes; a primeira tentativa do build falhou somente pelo bloqueio da Geist e passou com rede autorizada;
+- `UX-CHART-003C1` está `READY_FOR_RELEASE`; a feature pai permanece `IN_PROGRESS`;
+- nenhuma migration, mutação Supabase, merge ou deploy foi executado.

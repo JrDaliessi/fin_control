@@ -49,6 +49,7 @@ export function CustomFinancialPeriodDialog({
   const descriptionId = useId();
   const errorId = useId();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const toInputRef = useRef<HTMLInputElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
@@ -76,6 +77,7 @@ export function CustomFinancialPeriodDialog({
     if (!from || !to) {
       event.preventDefault();
       setErrorMessage("Informe as datas inicial e final.");
+      (from ? toInputRef : initialFocusRef).current?.focus();
       return;
     }
 
@@ -199,6 +201,7 @@ export function CustomFinancialPeriodDialog({
                             setTo(event.target.value);
                             setErrorMessage(null);
                           }}
+                          ref={toInputRef}
                           required
                           type="date"
                           value={to}

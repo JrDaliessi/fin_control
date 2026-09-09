@@ -18,9 +18,9 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: `003A` e `003B` concluídas; `003C1` concluiu o hardening do Dia 5 e está pronta para validação de experiência no Dia 6.
+- Fase recomendada: `003A` e `003B` concluídas; `003C1` concluiu o Dia 7 e está pronta para revisão/integração; `003C2` só começa após novo comando.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: HARDENING — `UX-CHART-003A` foi mesclada no commit `7434159`; `UX-CHART-003B` foi mesclada pela PR `#28` no commit `45d1bab`. A `003C1` concluiu o Dia 5 com erros tipados, estado robusto e audit zerado; o próximo gate é o Dia 6.
+- Status: IN_PROGRESS — `UX-CHART-003A` e `003B` estão mescladas; `003C1` está `READY_FOR_RELEASE` com pipeline e experiência verdes; `003C2/003C3` permanecem planejadas.
 
 ### UX-CHART-003C — Tudo, período personalizado e drill-down
 - Tipo: Small Release / UX Improvement.
@@ -31,7 +31,7 @@ Nenhum item pronto aguardando início no momento.
 - Fatiamento: `003C1` domínio/URL; `003C2` agregação segura; `003C3` drill-down progressivo.
 - Risco: Alto por RLS e performance de histórico extenso; mitigação definida na Feature Spec.
 - Critério de pronto: critérios `FPRD-UXCHART003C-AC-001` a `AC-010` verdes e gates de software, segurança, experiência e release concluídos.
-- Status: HARDENING — os contratos de domínio/URL e os estados do diálogo da `003C1` ficaram verdes; regressão global, lint, type-check, audit e build passaram. Granularidades trimestral/anual permanecem bloqueadas no adapter até a migration da `003C2`.
+- Status: IN_PROGRESS — `003C1` está `READY_FOR_RELEASE`; 320/390/768/1280 px, teclado, foco, contraste e ausência de overflow foram validados. `003C2/003C3` permanecem pendentes e granularidades trimestral/anual seguem bloqueadas no adapter.
 
 ## DISCOVERY
 

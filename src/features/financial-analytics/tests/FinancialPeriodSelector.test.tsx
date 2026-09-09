@@ -134,6 +134,121 @@ describe("FinancialPeriodSelector", () => {
     expect(document.body).toHaveStyle({ overflow: "hidden" });
   });
 
+  it("keeps the custom dialog usable across narrow and wide viewports", async () => {
+    const user = userEvent.setup();
+
+    render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+    await user.click(
+      screen.getByRole("button", {
+        name: "Escolher período personalizado"
+      })
+    );
+
+    const dialog = screen.getByRole("dialog", {
+      name: "Escolher período personalizado"
+    });
+    const positioningLayer = dialog.parentElement;
+
+    expect(positioningLayer).toHaveClass(
+      "items-end",
+      "sm:items-center",
+      "sm:p-4"
+    );
+    expect(dialog).toHaveClass(
+      "max-h-[85dvh]",
+      "w-full",
+      "min-w-0",
+      "overflow-y-auto",
+      "overscroll-contain",
+      "rounded-t-2xl",
+      "pl-[max(1rem,env(safe-area-inset-left))]",
+      "pr-[max(1rem,env(safe-area-inset-right))]",
+      "pb-[max(1rem,env(safe-area-inset-bottom))]",
+      "sm:static",
+      "sm:max-w-lg",
+      "sm:rounded-2xl",
+      "sm:p-6",
+      "motion-reduce:transition-none"
+    );
+    expect(screen.getByLabelText("Data inicial")).toHaveClass(
+      "min-h-11",
+      "min-w-0",
+      "w-full"
+    );
+    expect(screen.getByLabelText("Data final")).toHaveClass(
+      "min-h-11",
+      "min-w-0",
+      "w-full"
+    );
+    expect(screen.getByRole("button", { name: "Cancelar" })).toHaveClass(
+      "min-h-11",
+      "w-full",
+      "sm:w-auto"
+    );
+    expect(screen.getByRole("button", { name: "Aplicar período" })).toHaveClass(
+      "min-h-11",
+      "w-full",
+      "sm:w-auto"
+    );
+  });
+
+  it("contains keyboard focus and isolates the page while the dialog is open", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <FinancialPeriodSelector selectedPeriodKind="month" />
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Escolher período personalizado"
+      })
+    );
+
+    const fromInput = screen.getByLabelText("Data inicial");
+    const closeButton = screen.getByRole("button", {
+      name: "Fechar período personalizado"
+    });
+    const applyButton = screen.getByRole("button", {
+      name: "Aplicar período"
+    });
+
+    expect(container).toHaveAttribute("aria-hidden", "true");
+    expect(container).toHaveAttribute("inert");
+
+    closeButton.focus();
+    await user.keyboard("{Shift>}{Tab}{/Shift}");
+    expect(applyButton).toHaveFocus();
+
+    applyButton.focus();
+    await user.tab();
+    expect(closeButton).toHaveFocus();
+
+    await user.tab();
+    expect(fromInput).toHaveFocus();
+  });
+
+  it("moves focus to a missing final date after validation", async () => {
+    const user = userEvent.setup();
+
+    render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+    await user.click(
+      screen.getByRole("button", {
+        name: "Escolher período personalizado"
+      })
+    );
+
+    const fromInput = screen.getByLabelText("Data inicial");
+    const toInput = screen.getByLabelText("Data final");
+    fireEvent.change(fromInput, { target: { value: "2026-09-01" } });
+
+    await user.click(screen.getByRole("button", { name: "Aplicar período" }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Informe as datas inicial e final."
+    );
+    expect(toInput).toHaveFocus();
+  });
+
   it("builds a shareable GET query and restores selected custom dates", async () => {
     const user = userEvent.setup();
 

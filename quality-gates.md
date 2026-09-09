@@ -188,6 +188,35 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - nenhuma migration, dependência direta, mutação Supabase, commit, push, merge ou deploy foi executado;
 - estado de saída: `HARDENING`, pronto para o Dia 6 da `UX-CHART-003C1`.
 
+## Gate do Dia 6 — UX-CHART-003C1
+
+- Hot Context, workflow, requisitos, especificação, testes e documentação local do Next.js 16.3.3 foram consultados antes da conclusão;
+- skill `vercel:agent-browser` orientou o roteiro; o navegador integrado foi usado como fallback porque o executável dedicado não está instalado no host;
+- RED dirigido isolou 1 falha de foco após validação, com 28 cenários verdes; GREEN dirigido passou com 2 suítes e 34 testes;
+- o formulário agora move o foco ao campo final quando ele é o único limite ausente;
+- contratos automatizados cobrem contenção circular, isolamento por `inert`/`aria-hidden`, safe areas, rolagem interna, reduced motion e targets de 44 px;
+- Preview autenticada do commit `ba12011` permaneceu sem overflow em 320x800, 390x844, 768x900 e 1280x900;
+- mobile renderizou bottom sheet encostado ao rodapé; desktop renderizou modal central com largura de 512 px;
+- foco inicial, `Shift+Tab`, `Escape` e retorno ao acionador foram confirmados em navegador real;
+- contraste mínimo observado nos tokens relevantes foi 5,12:1 no tema claro e 6,92:1 no escuro;
+- regressão completa passou com 97 suítes e 669 testes; ESLint, type-check e build Next.js/Turbopack passaram;
+- tentativa local autenticada foi descartada como evidência por bloqueio de rede ao Supabase; a Preview da PR forneceu a validação real;
+- nenhuma migration, dependência, mutação Supabase, commit, push, merge ou deploy foi executado;
+- estado de saída: `EXPERIENCE_VALIDATION`; próximo comando válido: `dia 7` da `UX-CHART-003C1`.
+
+## Gate do Dia 7 — UX-CHART-003C1
+
+- requisitos, spec, matriz de testes, implementação final, riscos e contratos de release foram cruzados por small release;
+- `AC-001`, `AC-002`, a parcela de domínio de `AC-004`, `AC-009` e a parcela compatível de `AC-010` possuem evidência executável; critérios SQL/drill-down continuam explicitamente pendentes;
+- revisão de segurança confirmou fronteira cliente sem Supabase, segredo, telemetria financeira ou autoridade fornecida pelo browser;
+- adapter continua rejeitando `quarter/year` antes da migration da `003C2`;
+- 97 suítes/669 testes, zero snapshots, ESLint, type-check, build Next.js 16.3.3/Turbopack e `git diff --check` passaram; a primeira tentativa do build falhou apenas pelo download bloqueado da Geist e passou com rede autorizada;
+- audit e instalação limpa do Dia 5, além do workflow remoto `Quality Gates #146`, confirmam o lockfile sem vulnerabilidades conhecidas; o lock funcional não mudou no Dia 6;
+- experiência autenticada permaneceu verde em 320/390/768/1280 px, teclado, foco, safe areas, contraste e overflow;
+- registro de prontidão criado em `docs/features/UX-CHART-003C/day-7-release-readiness.md`;
+- `UX-CHART-003C1` encerra em `READY_FOR_RELEASE`; a feature pai permanece `IN_PROGRESS` para `003C2/003C3`;
+- nenhuma migration, mutação Supabase, merge ou deploy foi executado.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.
