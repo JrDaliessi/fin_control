@@ -166,6 +166,28 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - nenhuma migration, dependência, mutação Supabase, commit, push, merge ou deploy foi executado;
 - estado de saída: `IN_PROGRESS` com núcleo GREEN; próximo comando válido: `dia 4` da `UX-CHART-003C1`.
 
+## Gate do Dia 4 — UX-CHART-003C1
+
+- diálogo responsivo implementado como ilha cliente mínima dentro do seletor server-compatible;
+- formulário GET preserva `period=custom`, `from` e `to`, incluindo restauração após refresh;
+- validações, aplicar, cancelar, `Escape`, backdrop, foco e scroll lock estão cobertos;
+- suíte dirigida passou com 25 testes; regressão completa passou com 97 suítes e 665 testes;
+- ESLint, type-check, build e `git diff --check` passaram;
+- nenhuma migration, dependência, mutação Supabase, merge ou deploy foi executado;
+- estado de saída: `IN_PROGRESS`; próximo comando válido: `dia 5` da `UX-CHART-003C1`.
+
+## Gate do Dia 5 — UX-CHART-003C1
+
+- problema demonstrável corrigido: a UI deixou de comparar mensagens internas do domínio e passou a consumir quatro códigos estáveis tipados;
+- RED isolado falhou em 5 cenários, com 36 regressões verdes; GREEN dirigido passou com 2 suítes e 41 testes;
+- cancelamento descarta rascunhos e restaura as datas aplicadas na URL;
+- `npm audit fix --package-lock-only` atualizou apenas dependências transitivas compatíveis: `js-yaml` 3.15.2/4.3.2 e `sharp` 0.35.4;
+- `npm ci` reproduziu o lockfile e `npm audit --audit-level=high` retornou zero vulnerabilidades;
+- regressão completa passou com 97 suítes e 666 testes; ESLint, type-check, build e `git diff --check` passaram;
+- revisão React não identificou waterfall, fetch cliente, prop excessiva ou abstração adicional justificável;
+- nenhuma migration, dependência direta, mutação Supabase, commit, push, merge ou deploy foi executado;
+- estado de saída: `HARDENING`, pronto para o Dia 6 da `UX-CHART-003C1`.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.

@@ -4,8 +4,8 @@ project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product]
 active_artifact: UX-CHART-003C
-artifact_state: IN_PROGRESS
-phase: Dia 4
+artifact_state: HARDENING
+phase: Dia 5
 last_release: GOV-V4-001
 
 ## Current Goal
@@ -16,18 +16,15 @@ Entregar `Tudo`, período personalizado e drill-down progressivo com limites exp
 
 - `UX-CHART-003A` e `UX-CHART-003B` foram mescladas em `develop`;
 - `GOV-V4-001` foi mesclada pela PR `#29` no commit `42dd6db`;
-- `UX-CHART-003C1` concluiu o Dia 4 com diálogo responsivo, validação local, foco controlado e formulário GET compartilhável em GREEN;
+- `UX-CHART-003C1` concluiu o Dia 5 com erros de domínio tipados, apresentação desacoplada de mensagens internas e estado de rascunho robusto;
+- `SUPPLY-CHAIN-003` foi resolvido localmente por atualizações transitivas compatíveis no lockfile; o audit retorna zero vulnerabilidades;
 - granularidades trimestral/anual são conhecidas pelo domínio, mas o adapter bloqueia seu envio até a migration da `003C2`;
-- nenhuma migration, dependência ou alteração remota foi executada neste ciclo;
+- nenhuma migration, dependência direta ou alteração remota foi executada neste ciclo;
 - branch atual: `codex/ux-chart-003c-all-custom-drilldown`.
 
 ## Blockers
 
-Nenhum bloqueio duro para iniciar o Dia 5 da `UX-CHART-003C1`.
-
-Bloqueio de merge da PR `#30`:
-
-- `SUPPLY-CHAIN-003`: `npm audit` remoto encontrou severidade alta em `js-yaml` e `sharp`; corrigir em hardening separado antes do merge, sem misturar atualização de dependências ao RED da feature.
+Nenhum bloqueio duro para iniciar o Dia 6 da `UX-CHART-003C1`. A correção local do `SUPPLY-CHAIN-003` ainda precisa ser confirmada pelo CI remoto após o próximo push.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -74,7 +71,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar explicitamente o Dia 5 da `UX-CHART-003C1`: revisar estrutura, duplicação e robustez preservando o comportamento validado, sem antecipar Supabase ou drill-down.
+Executar explicitamente o Dia 6 da `UX-CHART-003C1`: validar experiência, acessibilidade e responsividade do seletor personalizado, sem antecipar Supabase ou drill-down.
 
 ## History
 

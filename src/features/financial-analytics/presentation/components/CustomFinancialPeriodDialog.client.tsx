@@ -4,6 +4,10 @@ import { useCallback, useId, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import {
+  CustomFinancialPeriodValidationError,
+  type CustomFinancialPeriodValidationCode
+} from "../../domain/errors/custom-financial-period-validation.error";
 import { resolveCustomFinancialPeriod } from "../../domain/services/resolve-financial-period";
 import { Button } from "@/shared/components/ui/Button";
 import { useModalDialogLifecycle } from "@/shared/hooks/useModalDialogLifecycle";
@@ -17,21 +21,20 @@ type CustomFinancialPeriodDialogProps = Readonly<{
   label: string;
 }>;
 
-function customPeriodErrorMessage(error: unknown): string {
-  if (!(error instanceof Error)) {
-    return "Revise as datas e tente novamente.";
-  }
+const customPeriodErrorMessages: Record<
+  CustomFinancialPeriodValidationCode,
+  string
+> = {
+  INVALID_DATE: "Informe datas válidas.",
+  INVALID_ORDER: "A data inicial deve ser anterior ou igual à data final.",
+  RANGE_TOO_LONG: "O período personalizado pode ter no máximo 60 anos.",
+  TOO_MANY_BUCKETS: "Reduza o intervalo para exibir no máximo 60 candles."
+};
 
-  switch (error.message) {
-    case "boundaries are invalid":
-      return "A data inicial deve ser anterior ou igual à data final.";
-    case "interval exceeds 60 years":
-      return "O período personalizado pode ter no máximo 60 anos.";
-    case "bucket count exceeds 60":
-      return "Reduza o intervalo para exibir no máximo 60 candles.";
-    default:
-      return "Revise as datas e tente novamente.";
-  }
+function customPeriodErrorMessage(error: unknown): string {
+  return error instanceof CustomFinancialPeriodValidationError
+    ? customPeriodErrorMessages[error.code]
+    : "Revise as datas e tente novamente.";
 }
 
 export function CustomFinancialPeriodDialog({

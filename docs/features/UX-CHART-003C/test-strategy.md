@@ -134,3 +134,11 @@ O audit atualmente vermelho por `js-yaml` e `sharp` é bloqueio de merge indepen
 - validações distintas para campos ausentes, ordem invertida, intervalo acima de 60 anos e mais de 60 candles;
 - cancelamento, botão de fechar, backdrop e `Escape` restauram foco e scroll;
 - suíte dirigida: 25 testes verdes; regressão completa: 97 suítes e 665 testes verdes.
+
+## Evidência executada no Dia 5 — hardening
+
+- erros do período personalizado expõem códigos estáveis sem alterar as mensagens internas já cobertas;
+- a UI traduz códigos tipados e não depende de comparação de strings do domínio;
+- cancelamento descarta datas em edição e restaura os valores aplicados presentes na URL;
+- suíte dirigida: 2 suítes/41 testes; regressão completa: 97 suítes/666 testes;
+- instalação limpa e audit confirmaram `js-yaml` 3.15.2/4.3.2 e `sharp` 0.35.4 sem vulnerabilidades conhecidas.

@@ -67,24 +67,57 @@ describe("resolveCustomFinancialPeriod contract", () => {
   );
 
   it.each([
-    ["invalid from", "2026-02-30", "2026-03-01", "dates are invalid"],
-    ["invalid to", "2026-02-01", "2026-02-30", "dates are invalid"],
-    ["reversed interval", "2026-03-01", "2026-02-01", "boundaries are invalid"],
+    [
+      "invalid from",
+      "2026-02-30",
+      "2026-03-01",
+      "INVALID_DATE",
+      "dates are invalid"
+    ],
+    [
+      "invalid to",
+      "2026-02-01",
+      "2026-02-30",
+      "INVALID_DATE",
+      "dates are invalid"
+    ],
+    [
+      "reversed interval",
+      "2026-03-01",
+      "2026-02-01",
+      "INVALID_ORDER",
+      "boundaries are invalid"
+    ],
     [
       "more than sixty years",
       "1966-12-31",
       "2026-12-31",
+      "RANGE_TOO_LONG",
       "interval exceeds 60 years"
     ],
     [
       "sixty-one civil buckets",
       "1966-07-01",
       "2026-06-30",
+      "TOO_MANY_BUCKETS",
       "bucket count exceeds 60"
     ]
-  ] as const)("rejects %s", (_label, from, to, expectedMessage) => {
-    expect(() => getCustomPeriodResolver()({ from, to })).toThrow(
-      expectedMessage
-    );
-  });
+  ] as const)(
+    "rejects %s with a stable validation code",
+    (_label, from, to, expectedCode, expectedMessage) => {
+      let thrownError: unknown;
+
+      try {
+        getCustomPeriodResolver()({ from, to });
+      } catch (error) {
+        thrownError = error;
+      }
+
+      expect(thrownError).toMatchObject({
+        name: "CustomFinancialPeriodValidationError",
+        code: expectedCode,
+        message: expectedMessage
+      });
+    }
+  );
 });

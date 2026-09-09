@@ -1,7 +1,7 @@
 # Status — UX-CHART-003C
 
-- Estado da feature: `IN_PROGRESS`
-- Fase concluída: `Dia 4`
+- Estado da feature: `HARDENING`
+- Fase concluída: `Dia 5`
 - Aprovação: confirmada em 2026-09-08
 - Código funcional alterado: sim; núcleo da `UX-CHART-003C1` em GREEN
 - Banco remoto alterado: não
@@ -23,6 +23,9 @@
 - diálogo personalizado usa bottom sheet no mobile e modal compacto no desktop, com datas inclusivas, formulário GET e valores restaurados da URL;
 - validações locais distinguem datas ausentes, ordem invertida, limite de 60 anos e limite de 60 candles;
 - foco inicial, contenção, retorno ao acionador, `Escape`, cancelar, botão de fechar, backdrop, scroll lock e áreas seguras estão cobertos;
+- erros do período personalizado possuem códigos estáveis `INVALID_DATE`, `INVALID_ORDER`, `RANGE_TOO_LONG` e `TOO_MANY_BUCKETS`;
+- a apresentação traduz códigos tipados sem comparar textos internos do domínio e descarta rascunhos cancelados;
+- lockfile atualiza `js-yaml` para 3.15.2/4.3.2 e `sharp` para 0.35.4 sem alterar dependências diretas;
 - adapter Supabase rejeita trimestre/ano localmente até a migration aprovada da `003C2`.
 
 ## Decisões vigentes
@@ -36,9 +39,9 @@
 
 ## Bloqueios e riscos
 
-Nenhum bloqueio duro para o Dia 5 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
+Nenhum bloqueio duro para o Dia 6 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
 
-O merge da PR `#30` permanece bloqueado por vulnerabilidades altas reportadas no `npm audit` para `js-yaml` e `sharp`. A correção exige hardening de dependências separado.
+O `SUPPLY-CHAIN-003` foi resolvido localmente com audit zerado; a confirmação do CI remoto ocorrerá após o próximo push da PR `#30`.
 
 Riscos ativos:
 
@@ -48,7 +51,7 @@ Riscos ativos:
 
 ## Próximo passo
 
-Executar explicitamente o Dia 5 da `UX-CHART-003C1`: refinar o diálogo e revisar robustez, duplicação e fronteiras sem alterar o contrato nem antecipar a `003C2`.
+Executar explicitamente o Dia 6 da `UX-CHART-003C1`: validar acessibilidade, responsividade e formato final do diálogo sem antecipar a `003C2`.
 
 ## Validação do Dia 1
 
@@ -83,3 +86,13 @@ Executar explicitamente o Dia 5 da `UX-CHART-003C1`: refinar o diálogo e revisa
 - estados inválidos permanecem no diálogo com mensagem acionável e atributos acessíveis;
 - ESLint, type-check e build Next.js passaram; revisão React confirmou ilha cliente mínima e props serializáveis;
 - nenhuma migration, dependência, alteração remota, commit, push, merge ou deploy foi executado.
+
+## Validação do Dia 5
+
+- RED dirigido: 5 cenários falharam exclusivamente pela ausência dos códigos estáveis; 36 regressões permaneceram verdes;
+- GREEN dirigido: 2 suítes e 41 testes passaram, incluindo descarte do rascunho cancelado;
+- regressão completa: 97 suítes e 666 testes verdes, sem snapshots;
+- instalação limpa por `npm ci` reproduziu o lockfile; `npm audit --audit-level=high` retornou zero vulnerabilidades;
+- ESLint, type-check, build Next.js e `git diff --check` passaram;
+- revisão React confirmou ilha cliente mínima e não encontrou justificativa para novas abstrações;
+- nenhuma migration, dependência direta, mutação Supabase, commit, push, merge ou deploy foi executado.

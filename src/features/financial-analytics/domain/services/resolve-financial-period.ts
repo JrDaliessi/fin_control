@@ -5,6 +5,7 @@ import type {
   FinancialPeriod,
   FinancialPeriodKind
 } from "../types/financial-period.types";
+import { CustomFinancialPeriodValidationError } from "../errors/custom-financial-period-validation.error";
 
 type CivilDateParts = {
   year: number;
@@ -217,11 +218,11 @@ export function resolveCustomFinancialPeriod({
     startOnInclusive = CivilDate.fromString(from).value;
     toInclusive = CivilDate.fromString(to).value;
   } catch {
-    throw new Error("dates are invalid");
+    throw new CustomFinancialPeriodValidationError("INVALID_DATE");
   }
 
   if (compareCivilDates(startOnInclusive, toInclusive) > 0) {
-    throw new Error("boundaries are invalid");
+    throw new CustomFinancialPeriodValidationError("INVALID_ORDER");
   }
 
   let endOnExclusive: string;
@@ -229,11 +230,11 @@ export function resolveCustomFinancialPeriod({
   try {
     endOnExclusive = addCivilDays(toInclusive, 1);
   } catch {
-    throw new Error("dates are invalid");
+    throw new CustomFinancialPeriodValidationError("INVALID_DATE");
   }
 
   if (!endsWithinCivilYears(startOnInclusive, endOnExclusive, 60)) {
-    throw new Error("interval exceeds 60 years");
+    throw new CustomFinancialPeriodValidationError("RANGE_TOO_LONG");
   }
 
   const bucketGranularity = resolveFinancialBucketGranularity(
@@ -247,7 +248,7 @@ export function resolveCustomFinancialPeriod({
   );
 
   if (bucketCount > 60) {
-    throw new Error("bucket count exceeds 60");
+    throw new CustomFinancialPeriodValidationError("TOO_MANY_BUCKETS");
   }
 
   return {

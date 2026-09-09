@@ -259,6 +259,29 @@ describe("FinancialPeriodSelector", () => {
     expect(document.body).not.toHaveStyle({ overflow: "hidden" });
   });
 
+  it("discards draft dates on cancel and restores the applied URL values", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FinancialPeriodSelector
+        selectedCustomPeriod={{ from: "2026-08-01", to: "2026-09-08" }}
+        selectedPeriodKind="custom"
+      />
+    );
+
+    const trigger = screen.getByRole("button", {
+      name: "Escolher período personalizado"
+    });
+    await user.click(trigger);
+    await user.clear(screen.getByLabelText("Data inicial"));
+    await user.type(screen.getByLabelText("Data inicial"), "2026-09-01");
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+    await user.click(trigger);
+
+    expect(screen.getByLabelText("Data inicial")).toHaveValue("2026-08-01");
+    expect(screen.getByLabelText("Data final")).toHaveValue("2026-09-08");
+  });
+
   it("closes through the backdrop without exposing it to keyboard navigation", async () => {
     const user = userEvent.setup();
 
