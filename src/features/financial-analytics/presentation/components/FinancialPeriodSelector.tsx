@@ -1,13 +1,16 @@
 import type { FinancialPeriodKind } from "../../domain/types/financial-period.types";
 import { Button } from "@/shared/components/ui/Button";
 import { financialPeriodOptions } from "../config/financial-period-options";
+import { CustomFinancialPeriodDialog } from "./CustomFinancialPeriodDialog.client";
 import { SelectedFinancialPeriodVisibility } from "./SelectedFinancialPeriodVisibility.client";
 
 type FinancialPeriodSelectorProps = Readonly<{
+  selectedCustomPeriod?: Readonly<{ from: string; to: string }>;
   selectedPeriodKind: FinancialPeriodKind;
 }>;
 
 export function FinancialPeriodSelector({
+  selectedCustomPeriod,
   selectedPeriodKind
 }: FinancialPeriodSelectorProps) {
   return (
@@ -24,10 +27,23 @@ export function FinancialPeriodSelector({
           const isSelected = option.value === selectedPeriodKind;
           const isCustom = option.value === "custom";
 
+          if (isCustom) {
+            return (
+              <CustomFinancialPeriodDialog
+                accessibleLabel={option.accessibleLabel}
+                compactLabel={option.compactLabel}
+                initialFrom={selectedCustomPeriod?.from}
+                initialTo={selectedCustomPeriod?.to}
+                isSelected={isSelected}
+                key={option.value}
+                label={option.label}
+              />
+            );
+          }
+
           return (
             <Button
               aria-label={option.accessibleLabel}
-              aria-haspopup={isCustom ? "dialog" : undefined}
               aria-pressed={isSelected}
               className={`shrink-0 !px-2 motion-reduce:transition-none sm:!px-4 ${
                 isSelected
@@ -35,9 +51,9 @@ export function FinancialPeriodSelector({
                   : ""
               }`}
               key={option.value}
-              name={isCustom ? undefined : "period"}
-              type={isCustom ? "button" : "submit"}
-              value={isCustom ? undefined : option.value}
+              name="period"
+              type="submit"
+              value={option.value}
               variant={isSelected ? "primary" : "secondary"}
             >
               <span className="sm:hidden">{option.compactLabel}</span>

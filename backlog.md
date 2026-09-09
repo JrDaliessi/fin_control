@@ -18,9 +18,9 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: `003A` e `003B` concluídas; `003C1` possui domínio e URL em GREEN após o Dia 3.
+- Fase recomendada: `003A` e `003B` concluídas; `003C1` possui domínio, URL e diálogo personalizado em GREEN após o Dia 4.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A` foi mesclada no commit `7434159`; `UX-CHART-003B` foi mesclada pela PR `#28` no commit `45d1bab`. A `003C1` concluiu o Dia 3 com domínio, URL, seletor e composição server-side em GREEN; o próximo gate é o Dia 4.
+- Status: IN_PROGRESS — `UX-CHART-003A` foi mesclada no commit `7434159`; `UX-CHART-003B` foi mesclada pela PR `#28` no commit `45d1bab`. A `003C1` concluiu o Dia 4 com domínio, URL, diálogo responsivo, validação e foco em GREEN; o próximo gate é o Dia 5.
 
 ### UX-CHART-003C — Tudo, período personalizado e drill-down
 - Tipo: Small Release / UX Improvement.
@@ -31,7 +31,7 @@ Nenhum item pronto aguardando início no momento.
 - Fatiamento: `003C1` domínio/URL; `003C2` agregação segura; `003C3` drill-down progressivo.
 - Risco: Alto por RLS e performance de histórico extenso; mitigação definida na Feature Spec.
 - Critério de pronto: critérios `FPRD-UXCHART003C-AC-001` a `AC-010` verdes e gates de software, segurança, experiência e release concluídos.
-- Status: IN_PROGRESS — os 39 contratos RED da `003C1` ficaram verdes; regressão global, lint, type-check e build passaram. Granularidades trimestral/anual permanecem bloqueadas no adapter até a migration da `003C2`.
+- Status: IN_PROGRESS — os contratos de domínio/URL e os estados do diálogo da `003C1` ficaram verdes; regressão global, lint, type-check e build passaram. Granularidades trimestral/anual permanecem bloqueadas no adapter até a migration da `003C2`.
 
 ## DISCOVERY
 

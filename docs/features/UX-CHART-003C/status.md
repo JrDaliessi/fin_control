@@ -1,7 +1,7 @@
 # Status — UX-CHART-003C
 
 - Estado da feature: `IN_PROGRESS`
-- Fase concluída: `Dia 3`
+- Fase concluída: `Dia 4`
 - Aprovação: confirmada em 2026-09-08
 - Código funcional alterado: sim; núcleo da `UX-CHART-003C1` em GREEN
 - Banco remoto alterado: não
@@ -20,6 +20,9 @@
 - período personalizado resolve datas inclusivas, intervalo semiaberto, granularidade e limites de 60 anos/60 buckets;
 - URL distingue presets, personalizado canônico e personalizado inválido sem iniciar consulta;
 - seletor expõe nove opções, com `Tudo` progressivo e `Personalizado` como acionador de diálogo;
+- diálogo personalizado usa bottom sheet no mobile e modal compacto no desktop, com datas inclusivas, formulário GET e valores restaurados da URL;
+- validações locais distinguem datas ausentes, ordem invertida, limite de 60 anos e limite de 60 candles;
+- foco inicial, contenção, retorno ao acionador, `Escape`, cancelar, botão de fechar, backdrop, scroll lock e áreas seguras estão cobertos;
 - adapter Supabase rejeita trimestre/ano localmente até a migration aprovada da `003C2`.
 
 ## Decisões vigentes
@@ -33,7 +36,7 @@
 
 ## Bloqueios e riscos
 
-Nenhum bloqueio duro para o Dia 3 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
+Nenhum bloqueio duro para o Dia 5 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
 
 O merge da PR `#30` permanece bloqueado por vulnerabilidades altas reportadas no `npm audit` para `js-yaml` e `sharp`. A correção exige hardening de dependências separado.
 
@@ -45,7 +48,7 @@ Riscos ativos:
 
 ## Próximo passo
 
-Executar explicitamente o Dia 4 da `UX-CHART-003C1`: completar o diálogo de datas e seus estados de aplicar, cancelar, validação e foco, sem criar migration ou antecipar drill-down.
+Executar explicitamente o Dia 5 da `UX-CHART-003C1`: refinar o diálogo e revisar robustez, duplicação e fronteiras sem alterar o contrato nem antecipar a `003C2`.
 
 ## Validação do Dia 1
 
@@ -71,3 +74,12 @@ Executar explicitamente o Dia 4 da `UX-CHART-003C1`: completar o diálogo de dat
 - ESLint global, type-check e build Next.js 16.3.3/Turbopack passaram;
 - revisão React/Next.js confirmou Server Components, imports diretos, serialização mínima e ausência de waterfall;
 - nenhuma migration, dependência, alteração remota, merge ou deploy foi executado.
+
+## Validação do Dia 4
+
+- RED dirigido registrou 9 falhas novas ligadas ao diálogo ainda ausente, mantendo 16 regressões verdes na suíte;
+- suíte dirigida passou com 25 testes e regressão completa com 97 suítes/665 testes;
+- aplicação válida preserva `period=custom`, `from` e `to` em formulário GET e não bloqueia a navegação nativa;
+- estados inválidos permanecem no diálogo com mensagem acionável e atributos acessíveis;
+- ESLint, type-check e build Next.js passaram; revisão React confirmou ilha cliente mínima e props serializáveis;
+- nenhuma migration, dependência, alteração remota, commit, push, merge ou deploy foi executado.

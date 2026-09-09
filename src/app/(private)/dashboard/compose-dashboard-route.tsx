@@ -43,6 +43,11 @@ export async function composeDashboardRoute({
       <FinancialEvolutionPanel
         loadStatement={loadFinancialIntervalStatementAction}
         result={financialEvolution}
+        selectedCustomPeriod={
+          selection.kind === "custom"
+            ? { from: selection.from, to: selection.to }
+            : undefined
+        }
         selectedPeriodKind={selection.kind}
       />
     </DashboardPage>

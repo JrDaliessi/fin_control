@@ -125,3 +125,12 @@ O audit atualmente vermelho por `js-yaml` e `sharp` é bloqueio de merge indepen
 - contratos SQL e de drill-down estão definidos sem antecipar código;
 - nenhuma implementation, migration, dependência ou mutação remota foi criada;
 - documentação viva aponta para o Dia 3.
+
+## Evidência executada no Dia 4 — seletor personalizado
+
+- abertura acessível com foco inicial na data de início;
+- apresentação responsiva como bottom sheet no mobile e modal compacto no desktop;
+- formulário GET canônico com `period=custom`, `from` e `to` e restauração dos valores selecionados;
+- validações distintas para campos ausentes, ordem invertida, intervalo acima de 60 anos e mais de 60 candles;
+- cancelamento, botão de fechar, backdrop e `Escape` restauram foco e scroll;
+- suíte dirigida: 25 testes verdes; regressão completa: 97 suítes e 665 testes verdes.

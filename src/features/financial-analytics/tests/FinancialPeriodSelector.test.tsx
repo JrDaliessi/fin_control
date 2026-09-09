@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { FinancialPeriodKind } from "../domain/types/financial-period.types";
 import { FinancialPeriodSelector } from "../presentation/components/FinancialPeriodSelector";
@@ -108,6 +108,172 @@ describe("FinancialPeriodSelector", () => {
     expect(customTrigger).toHaveAttribute("type", "button");
     expect(customTrigger).not.toHaveAttribute("name", "period");
     expect(customTrigger).toHaveAttribute("aria-haspopup", "dialog");
+    expect(customTrigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("opens an accessible responsive dialog and focuses the initial date", async () => {
+    const user = userEvent.setup();
+
+    render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+
+    const trigger = screen.getByRole("button", {
+      name: "Escolher período personalizado"
+    });
+    await user.click(trigger);
+
+    const dialog = screen.getByRole("dialog", {
+      name: "Escolher período personalizado"
+    });
+    const fromInput = screen.getByLabelText("Data inicial");
+
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(dialog).toHaveClass("bottom-0", "sm:rounded-2xl");
+    expect(fromInput).toHaveAttribute("type", "date");
+    expect(fromInput).toHaveFocus();
+    expect(document.body).toHaveStyle({ overflow: "hidden" });
+  });
+
+  it("builds a shareable GET query and restores selected custom dates", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FinancialPeriodSelector
+        selectedCustomPeriod={{ from: "2026-08-01", to: "2026-09-08" }}
+        selectedPeriodKind="custom"
+      />
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Escolher período personalizado"
+      })
+    );
+
+    const fromInput = screen.getByLabelText("Data inicial");
+    const toInput = screen.getByLabelText("Data final");
+    const form = screen.getByRole("button", { name: "Aplicar período" }).closest(
+      "form"
+    );
+
+    expect(fromInput).toHaveValue("2026-08-01");
+    expect(toInput).toHaveValue("2026-09-08");
+    expect(form).toHaveAttribute("method", "get");
+
+    const data = new FormData(form as HTMLFormElement);
+    expect(Object.fromEntries(data.entries())).toEqual({
+      period: "custom",
+      from: "2026-08-01",
+      to: "2026-09-08"
+    });
+
+    const submitEvent = new Event("submit", {
+      bubbles: true,
+      cancelable: true
+    });
+    fireEvent(form as HTMLFormElement, submitEvent);
+
+    expect(submitEvent.defaultPrevented).toBe(false);
+  });
+
+  it.each([
+    {
+      from: "",
+      to: "",
+      message: "Informe as datas inicial e final."
+    },
+    {
+      from: "2026-09-09",
+      to: "2026-09-08",
+      message: "A data inicial deve ser anterior ou igual à data final."
+    },
+    {
+      from: "1960-01-01",
+      to: "2026-01-01",
+      message: "O período personalizado pode ter no máximo 60 anos."
+    },
+    {
+      from: "2010-02-01",
+      to: "2025-01-31",
+      message: "Reduza o intervalo para exibir no máximo 60 candles."
+    }
+  ])(
+    "keeps invalid custom dates in the dialog: $message",
+    async ({ from, to, message }) => {
+      const user = userEvent.setup();
+
+      render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+      await user.click(
+        screen.getByRole("button", {
+          name: "Escolher período personalizado"
+        })
+      );
+
+      const fromInput = screen.getByLabelText("Data inicial");
+      const toInput = screen.getByLabelText("Data final");
+
+      if (from) {
+        await user.type(fromInput, from);
+      }
+      if (to) {
+        await user.type(toInput, to);
+      }
+
+      const form = screen
+        .getByRole("button", { name: "Aplicar período" })
+        .closest("form");
+      const submitEvent = new Event("submit", {
+        bubbles: true,
+        cancelable: true
+      });
+
+      fireEvent(form as HTMLFormElement, submitEvent);
+
+      expect(submitEvent.defaultPrevented).toBe(true);
+      expect(screen.getByRole("alert")).toHaveTextContent(message);
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(fromInput).toHaveAttribute("aria-invalid", "true");
+      expect(toInput).toHaveAttribute("aria-invalid", "true");
+    }
+  );
+
+  it("closes through cancel and Escape and restores focus to the trigger", async () => {
+    const user = userEvent.setup();
+
+    render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+
+    const trigger = screen.getByRole("button", {
+      name: "Escolher período personalizado"
+    });
+    await user.click(trigger);
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+
+    await user.click(trigger);
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+    expect(document.body).not.toHaveStyle({ overflow: "hidden" });
+  });
+
+  it("closes through the backdrop without exposing it to keyboard navigation", async () => {
+    const user = userEvent.setup();
+
+    render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+    await user.click(
+      screen.getByRole("button", {
+        name: "Escolher período personalizado"
+      })
+    );
+
+    const backdrop = screen.getByTestId("custom-period-backdrop");
+    expect(backdrop).toHaveAttribute("tabindex", "-1");
+
+    await user.click(backdrop);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("identifies the selected period semantically and without relying only on color", () => {

@@ -13,6 +13,7 @@ import type { FinancialIntervalStatementLoader } from "./FinancialIntervalStatem
 
 type FinancialEvolutionPanelProps = Readonly<{
   result: FinancialEvolutionDto;
+  selectedCustomPeriod?: Readonly<{ from: string; to: string }>;
   selectedPeriodKind: FinancialPeriodKind;
   loadStatement?: FinancialIntervalStatementLoader;
 }>;
@@ -23,6 +24,7 @@ function movementLabel(count: number) {
 
 export function FinancialEvolutionPanel({
   result,
+  selectedCustomPeriod,
   selectedPeriodKind,
   loadStatement
 }: FinancialEvolutionPanelProps) {
@@ -74,7 +76,10 @@ export function FinancialEvolutionPanel({
             Acompanhe entradas, saídas e saldo consolidado por {bucketCopy.singular}.
           </p>
         </div>
-        <FinancialPeriodSelector selectedPeriodKind={selectedPeriodKind} />
+        <FinancialPeriodSelector
+          selectedCustomPeriod={selectedCustomPeriod}
+          selectedPeriodKind={selectedPeriodKind}
+        />
       </div>
 
       {result.status === "missing_accounts" ? (

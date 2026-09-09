@@ -5,7 +5,7 @@ project_state: OPERATING
 active_capabilities: [software, product]
 active_artifact: UX-CHART-003C
 artifact_state: IN_PROGRESS
-phase: Dia 3
+phase: Dia 4
 last_release: GOV-V4-001
 
 ## Current Goal
@@ -16,14 +16,14 @@ Entregar `Tudo`, período personalizado e drill-down progressivo com limites exp
 
 - `UX-CHART-003A` e `UX-CHART-003B` foram mescladas em `develop`;
 - `GOV-V4-001` foi mesclada pela PR `#29` no commit `42dd6db`;
-- `UX-CHART-003C1` concluiu o Dia 3 com domínio, URL, seletor e composição server-side em GREEN;
+- `UX-CHART-003C1` concluiu o Dia 4 com diálogo responsivo, validação local, foco controlado e formulário GET compartilhável em GREEN;
 - granularidades trimestral/anual são conhecidas pelo domínio, mas o adapter bloqueia seu envio até a migration da `003C2`;
 - nenhuma migration, dependência ou alteração remota foi executada neste ciclo;
 - branch atual: `codex/ux-chart-003c-all-custom-drilldown`.
 
 ## Blockers
 
-Nenhum bloqueio duro para iniciar o Dia 4 da `UX-CHART-003C1`.
+Nenhum bloqueio duro para iniciar o Dia 5 da `UX-CHART-003C1`.
 
 Bloqueio de merge da PR `#30`:
 
@@ -74,7 +74,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar explicitamente o Dia 4 da `UX-CHART-003C1`: completar os estados do seletor personalizado sem antecipar Supabase ou drill-down.
+Executar explicitamente o Dia 5 da `UX-CHART-003C1`: revisar estrutura, duplicação e robustez preservando o comportamento validado, sem antecipar Supabase ou drill-down.
 
 ## History
 
