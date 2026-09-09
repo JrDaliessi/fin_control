@@ -214,6 +214,9 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - audit e instalação limpa do Dia 5, além do workflow remoto `Quality Gates #146`, confirmam o lockfile sem vulnerabilidades conhecidas; o lock funcional não mudou no Dia 6;
 - experiência autenticada permaneceu verde em 320/390/768/1280 px, teclado, foco, safe areas, contraste e overflow;
 - registro de prontidão criado em `docs/features/UX-CHART-003C/day-7-release-readiness.md`;
+- workflow remoto `Quality Gates` run `34347872685` concluiu em GREEN, incluindo lint, type-check, testes, audit e build;
+- Vercel concluiu o Preview do head `4572735` com status de sucesso;
+- aviso não bloqueante de runtime Node.js 20 das actions, forçado pelo runner para Node.js 24, foi registrado como dívida BAIXA `CI-ACTIONS-001`;
 - `UX-CHART-003C1` encerra em `READY_FOR_RELEASE`; a feature pai permanece `IN_PROGRESS` para `003C2/003C3`;
 - nenhuma migration, mutação Supabase, merge ou deploy foi executado.
 

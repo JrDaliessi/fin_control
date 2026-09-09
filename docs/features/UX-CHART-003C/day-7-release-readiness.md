@@ -62,9 +62,10 @@ O Next.js 16.3.3 materializou `AGENTS.md`/`CLAUDE.md` e acrescentou a referênci
 ## Riscos residuais
 
 1. **MÉDIO — CI-VERCEL-002:** CI e desenvolvimento usam Node.js 22, enquanto o projeto Vercel reporta Node.js 24. A Preview atual construiu e operou, mas os ambientes devem ser alinhados em hardening próprio.
-2. **ALTO — histórico extenso:** âncora, RLS, plano e agregação trimestral/anual ainda exigem a `003C2`; o adapter bloqueia o caminho prematuro.
-3. **MÉDIO — drill-down:** concorrência, foco entre níveis e meses volumosos continuam fora deste recorte e serão tratados na `003C3`/hardening separado.
-4. **Globais pré-produção:** `SEC-AUTH-001`, `SEC-HARD-001B` e `HARD-OBS-001` permanecem registrados.
+2. **BAIXO — CI-ACTIONS-001:** o runner forçou `actions/checkout@v4` e `actions/setup-node@v4` de Node.js 20 para Node.js 24. O workflow concluiu em GREEN, mas as actions devem ser atualizadas no próximo hardening de CI.
+3. **ALTO — histórico extenso:** âncora, RLS, plano e agregação trimestral/anual ainda exigem a `003C2`; o adapter bloqueia o caminho prematuro.
+4. **MÉDIO — drill-down:** concorrência, foco entre níveis e meses volumosos continuam fora deste recorte e serão tratados na `003C3`/hardening separado.
+5. **Globais pré-produção:** `SEC-AUTH-001`, `SEC-HARD-001B` e `HARD-OBS-001` permanecem registrados.
 
 ## Decisão de release
 

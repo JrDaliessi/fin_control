@@ -461,6 +461,19 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Critério de pronto: `checkout` e `setup-node` fixados por SHA e Dependabot/Renovate configurado para atualização controlada.
 - Status: DISCOVERY
 
+### CI-ACTIONS-001 — Atualizar runtime das GitHub Actions
+- Tipo: Dívida Técnica / CI
+- Descrição objetiva: `actions/checkout@v4` e `actions/setup-node@v4` ainda declaram runtime Node.js 20, e o runner atual as força a executar em Node.js 24.
+- Objetivo de negócio: remover a dependência de fallback do runner e manter o pipeline compatível com a evolução da plataforma GitHub Actions.
+- Valor esperado: execução de CI sem aviso de runtime obsoleto e menor risco de quebra futura.
+- Prioridade: Baixa
+- Dependências: versões oficiais das actions com runtime suportado; alinhamento com o pinning previsto em `CI-HARD-001`.
+- Risco: Baixo e não bloqueante no pipeline atual, que concluiu todos os gates em GREEN.
+- Severidade: BAIXA
+- Fase recomendada: próximo hardening de CI, preferencialmente junto de `CI-HARD-001`.
+- Critério de pronto: `checkout` e `setup-node` usam versões suportadas e fixadas por SHA, o aviso desaparece e todos os Quality Gates permanecem verdes.
+- Status: READY
+
 ### CI-VERCEL-002 — Alinhar vínculo local e runtime da Vercel
 - Tipo: Dívida Técnica / Hardening
 - Descrição objetiva: o `.vercel/project.json` local referencia um projeto antigo, enquanto o projeto ativo `fin-control` usa outro ID; o projeto declara Node 24, o `package.json` força Node 22 e a imagem de build usa npm 10 apesar do engine npm 11.

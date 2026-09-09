@@ -119,5 +119,7 @@ Versionar o Dia 7, atualizar a PR `#30` e validar os checks do novo head. Merge 
 - revisão local confirmou presentation sem Supabase, telemetria financeira ou segredo e adapter fechado para `quarter/year`;
 - registro `day-7-release-readiness.md` documenta gates, segurança, experiência, riscos e decisão;
 - pipeline final manteve 97 suítes/669 testes, zero snapshots, ESLint, type-check, build e diff verdes; a primeira tentativa do build falhou somente pelo bloqueio da Geist e passou com rede autorizada;
+- workflow remoto `Quality Gates` concluiu em GREEN no run `34347872685`; o aviso não bloqueante de runtime das actions foi rastreado em `CI-ACTIONS-001`;
+- Vercel concluiu o Preview do head `4572735` com status de sucesso;
 - `UX-CHART-003C1` está `READY_FOR_RELEASE`; a feature pai permanece `IN_PROGRESS`;
 - nenhuma migration, mutação Supabase, merge ou deploy foi executado.
