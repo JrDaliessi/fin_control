@@ -4,8 +4,8 @@ project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product]
 active_artifact: UX-CHART-003C
-artifact_state: SPEC_READY
-phase: Dia 1
+artifact_state: TEST_STRATEGY_READY
+phase: Dia 2
 last_release: GOV-V4-001
 
 ## Current Goal
@@ -16,13 +16,17 @@ Entregar `Tudo`, período personalizado e drill-down progressivo com limites exp
 
 - `UX-CHART-003A` e `UX-CHART-003B` foram mescladas em `develop`;
 - `GOV-V4-001` foi mesclada pela PR `#29` no commit `42dd6db`;
-- `UX-CHART-003C` concluiu o Dia 1 com requisitos e especificação aprovados;
+- `UX-CHART-003C` concluiu o Dia 2 com matriz completa e RED executável da `003C1`;
 - nenhuma implementação, migration ou alteração remota foi executada neste ciclo;
 - branch atual: `codex/ux-chart-003c-all-custom-drilldown`.
 
 ## Blockers
 
-Nenhum bloqueio duro para iniciar o Dia 2 da `UX-CHART-003C`.
+Nenhum bloqueio duro para iniciar o Dia 3 da `UX-CHART-003C1`.
+
+Bloqueio de merge da PR `#30`:
+
+- `SUPPLY-CHAIN-003`: `npm audit` remoto encontrou severidade alta em `js-yaml` e `sharp`; corrigir em hardening separado antes do merge, sem misturar atualização de dependências ao RED da feature.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -50,6 +54,7 @@ Bloqueios externos antes de produção pública completa:
 - active artifact: `docs/features/UX-CHART-003C/`
 - feature requirements: `docs/features/UX-CHART-003C/feature-prd.md`
 - feature specification: `docs/features/UX-CHART-003C/feature-spec.md`
+- validation strategy: `docs/features/UX-CHART-003C/test-strategy.md`
 - relevant ADRs: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md`, `adr/0021-contextual-interval-volume-insights.md`, `adr/0022-all-custom-periods-and-progressive-drilldown.md`
 - quality gates: `quality-gates.md`
 - context routes: `context-map.yaml`
@@ -68,7 +73,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar explicitamente o Dia 2 da `UX-CHART-003C`: derivar a matriz de validação e materializar testes RED, sem implementar comportamento funcional.
+Executar explicitamente o Dia 3 da `UX-CHART-003C1`: implementar o mínimo para tornar verdes os contratos de domínio, URL e seletor, sem antecipar Supabase ou drill-down.
 
 ## History
 

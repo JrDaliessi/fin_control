@@ -3,8 +3,8 @@ title: Tudo, período personalizado e drill-down
 capabilities:
   - software
   - product
-state: SPEC_READY
-phase: Dia 1
+state: TEST_STRATEGY_READY
+phase: Dia 2
 approved_at: 2026-09-08
 derived_from:
   - docs/product/prd.md
@@ -33,9 +33,10 @@ sources:
   - live Supabase schema, migrations, advisors and function metadata inspected read-only on 2026-09-08
 quality_gates:
   - quality-gates.md#gate-do-dia-1
+  - quality-gates.md#gate-do-dia-2
   - quality-gates.md#software
 small_releases:
   - UX-CHART-003C1
   - UX-CHART-003C2
   - UX-CHART-003C3
-next_action: Dia 2 — materializar estratégia de validação e testes RED
+next_action: Dia 3 — implementar o mínimo GREEN da UX-CHART-003C1

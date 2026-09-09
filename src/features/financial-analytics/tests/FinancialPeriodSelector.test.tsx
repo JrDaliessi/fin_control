@@ -21,7 +21,7 @@ describe("FinancialPeriodSelector", () => {
     Reflect.deleteProperty(HTMLElement.prototype, "scrollTo");
   });
 
-  it("offers the seven supported periods as an immediate accessible bar", () => {
+  it("offers the nine supported period choices as an accessible bar", () => {
     render(<FinancialPeriodSelector selectedPeriodKind="rolling_7_days" />);
 
     const periodBar = screen.getByRole("group", {
@@ -36,7 +36,9 @@ describe("FinancialPeriodSelector", () => {
       "Últimos 15 dias",
       "Mês atual",
       "Três meses civis",
-      "Ano atual"
+      "Ano atual",
+      "Todo o histórico",
+      "Escolher período personalizado"
     ]);
     expect(periodBar).toHaveClass(
       "max-w-full",
@@ -71,7 +73,7 @@ describe("FinancialPeriodSelector", () => {
     expect(weekButton).toHaveClass("!px-2", "sm:!px-4");
   });
 
-  it("submits each existing URL value through a progressive GET form", () => {
+  it("submits each preset URL value through a progressive GET form", () => {
     render(<FinancialPeriodSelector selectedPeriodKind="rolling_7_days" />);
 
     const expectedPeriods = [
@@ -81,7 +83,8 @@ describe("FinancialPeriodSelector", () => {
       ["Últimos 15 dias", "rolling_15_days"],
       ["Mês atual", "month"],
       ["Três meses civis", "three_months"],
-      ["Ano atual", "year"]
+      ["Ano atual", "year"],
+      ["Todo o histórico", "all"]
     ] as const;
 
     for (const [accessibleName, value] of expectedPeriods) {
@@ -93,6 +96,18 @@ describe("FinancialPeriodSelector", () => {
       expect(button).toHaveClass("min-h-11", "shrink-0");
       expect(button.closest("form")).toHaveAttribute("method", "get");
     }
+  });
+
+  it("keeps the custom choice as a date-dialog trigger instead of an incomplete GET", () => {
+    render(<FinancialPeriodSelector selectedPeriodKind="month" />);
+
+    const customTrigger = screen.getByRole("button", {
+      name: "Escolher período personalizado"
+    });
+
+    expect(customTrigger).toHaveAttribute("type", "button");
+    expect(customTrigger).not.toHaveAttribute("name", "period");
+    expect(customTrigger).toHaveAttribute("aria-haspopup", "dialog");
   });
 
   it("identifies the selected period semantically and without relying only on color", () => {
@@ -114,7 +129,9 @@ describe("FinancialPeriodSelector", () => {
     ["rolling_15_days", "Últimos 15 dias"],
     ["month", "Mês atual"],
     ["three_months" as FinancialPeriodKind, "Três meses civis"],
-    ["year" as FinancialPeriodKind, "Ano atual"]
+    ["year" as FinancialPeriodKind, "Ano atual"],
+    ["all" as FinancialPeriodKind, "Todo o histórico"],
+    ["custom" as FinancialPeriodKind, "Escolher período personalizado"]
   ] as const)(
     "keeps only %s selected when rendering the period bar",
     (selectedPeriodKind, selectedAccessibleName) => {
@@ -167,7 +184,9 @@ describe("FinancialPeriodSelector", () => {
       "Últimos 15 dias",
       "Mês atual",
       "Três meses civis",
-      "Ano atual"
+      "Ano atual",
+      "Todo o histórico",
+      "Escolher período personalizado"
     ] as const;
 
     for (const accessibleName of expectedOrder) {

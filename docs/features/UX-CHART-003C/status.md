@@ -1,18 +1,21 @@
 # Status — UX-CHART-003C
 
-- Estado da feature: `SPEC_READY`
-- Fase concluída: `Dia 1`
+- Estado da feature: `TEST_STRATEGY_READY`
+- Fase concluída: `Dia 2`
 - Aprovação: confirmada em 2026-09-08
-- Código funcional alterado: não
+- Código funcional alterado: não; somente testes RED
 - Banco remoto alterado: não
 
-## Entregáveis do Dia 1
+## Entregáveis acumulados
 
 - Feature PRD com regras, requisitos e critérios de aceite estáveis;
 - Feature Spec com contratos por camada, UI, banco, segurança e rollout;
 - ADR 0022 com a decisão arquitetural aprovada;
 - três small releases recortadas para execução incremental;
 - Context Pack e documentação viva atualizados.
+- estratégia de testes com matriz completa dos dez critérios de aceite;
+- RED executável da `UX-CHART-003C1` para domínio, URL, seletor e composição server-side;
+- contratos futuros de Jest e pgTAP definidos para `003C2` e `003C3`.
 
 ## Decisões vigentes
 
@@ -25,7 +28,9 @@
 
 ## Bloqueios e riscos
 
-Nenhum bloqueio duro para o Dia 2. Migration, Supabase remoto, implementação e dependências permanecem bloqueados até as respectivas fases.
+Nenhum bloqueio duro para o Dia 3 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
+
+O merge da PR `#30` permanece bloqueado por vulnerabilidades altas reportadas no `npm audit` para `js-yaml` e `sharp`. A correção exige hardening de dependências separado.
 
 Riscos ativos:
 
@@ -35,7 +40,7 @@ Riscos ativos:
 
 ## Próximo passo
 
-Executar explicitamente o Dia 2: derivar a matriz de validação dos IDs do PRD, materializar testes RED e validar a migration proposta sem implementar comportamento funcional.
+Executar explicitamente o Dia 3 da `UX-CHART-003C1`: implementar o mínimo para tornar verdes os contratos de domínio, URL e seletor, sem criar migration ou antecipar drill-down.
 
 ## Validação do Dia 1
 
@@ -44,3 +49,11 @@ Executar explicitamente o Dia 2: derivar a matriz de validação dos IDs do PRD,
 - 10 requisitos funcionais, 6 não funcionais e 10 critérios de aceite únicos confirmados;
 - `git diff --check`, ESLint e type-check verdes;
 - testes e build não aplicáveis ao incremento exclusivamente documental.
+
+## Validação do Dia 2
+
+- baseline dirigido anterior: 7 suítes, 77 testes e 0 snapshots, todos verdes;
+- RED dirigido: 4 suítes falharam, com 39 cenários vermelhos e 22 regressões verdes;
+- falhas causadas pelos contratos ainda ausentes, sem módulo quebrado ou dependência externa;
+- ESLint e type-check verdes com os testes RED presentes;
+- nenhuma migration, alteração Supabase, dependência ou código funcional criado.

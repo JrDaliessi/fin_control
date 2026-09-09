@@ -139,6 +139,19 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 
 ## Gate do Dia 2
 
+### Resultado observado — UX-CHART-003C
+
+- workflow, Hot Context, Feature PRD, Feature Spec, ADRs, código, testes e migration atuais foram inspecionados antes da execução;
+- documentação atual do Supabase e regras de App Router foram verificadas; nenhum breaking change aplicável bloqueia o recorte;
+- matriz em `docs/features/UX-CHART-003C/test-strategy.md` rastreia os dez critérios de aceite por cenário, camada, evidência e fatia;
+- baseline dirigido passou com 7 suítes, 77 testes e 0 snapshots;
+- RED da `003C1` falhou em 4 suítes, com 39 cenários vermelhos e 22 regressões verdes;
+- as falhas correspondem à ausência de `resolveCustomFinancialPeriod`, normalização estruturada da URL, opções `Tudo/Personalizado` e composição custom;
+- ESLint e type-check passaram com a rede RED presente;
+- migration, Supabase remoto, dependências e código funcional não foram alterados;
+- o audit alto de `js-yaml`/`sharp` permanece bloqueio de merge separado e não foi mascarado;
+- estado de saída: `TEST_STRATEGY_READY`; próximo comando válido: `dia 3` da `UX-CHART-003C1`.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.

@@ -39,16 +39,16 @@ type CustomFinancialPeriodInput = {
   to: CivilDate; // inclusivo na URL/UI
 };
 
-type ResolvedFinancialPeriod = {
-  kind: FinancialPeriodKind;
+type ResolvedCustomFinancialPeriod = {
+  kind: "custom";
+  bucketGranularity: FinancialBucketGranularity;
+  referenceOn: CivilDate; // igual ao fim inclusivo escolhido
   startOnInclusive: CivilDate;
   endOnExclusive: CivilDate;
-  granularity: FinancialBucketGranularity;
-  bucketCount: number;
 };
 ```
 
-- `FSPEC-UXCHART003C-DOM-001`: `resolveCustomFinancialPeriod` valida formato, ordem e duração antes de converter o fim inclusivo para exclusivo.
+- `FSPEC-UXCHART003C-DOM-001`: `resolveCustomFinancialPeriod` valida formato, ordem e duração antes de converter o fim inclusivo para exclusivo; `referenceOn` é a data final inclusiva escolhida.
 - `FSPEC-UXCHART003C-DOM-002`: `resolveFinancialBucketGranularity` aplica a matriz aprovada e calcula a quantidade real de buckets civis, incluindo extremidades parciais.
 - `FSPEC-UXCHART003C-DOM-003`: duração maior que 60 anos e `bucketCount > 60` são erros de domínio distintos e serializáveis.
 - `FSPEC-UXCHART003C-DOM-004`: períodos futuros sem movimentos carregam saldo; nenhuma função gera projeções.

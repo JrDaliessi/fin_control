@@ -30,11 +30,13 @@ routes:
   active-artifact:
     - docs/features/UX-CHART-003C/feature-prd.md
     - docs/features/UX-CHART-003C/feature-spec.md
+    - docs/features/UX-CHART-003C/test-strategy.md
     - docs/features/UX-CHART-003C/context.yaml
     - docs/features/UX-CHART-003C/status.md
   quality:
     - quality-gates.md
     - test-strategy.md
+    - docs/features/UX-CHART-003C/test-strategy.md
   agents:
     - .agents/registry.yaml
     - .agents/workflows/engineering-conductor-agent.md
