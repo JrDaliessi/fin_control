@@ -2,29 +2,29 @@
 
 project: FinControl
 project_state: OPERATING
-active_capabilities: [software, product]
-active_artifact: UX-CHART-003C1
-artifact_state: READY_FOR_RELEASE
-phase: Dia 7
-last_release: GOV-V4-001
+active_capabilities: [software, product, linkedin, content]
+active_artifact: LINKEDIN-001
+artifact_state: REQUIREMENTS_READY
+phase: Dia 1
+last_release: UX-CHART-003C1
 
 ## Current Goal
 
-Entregar `Tudo`, período personalizado e drill-down progressivo com limites explícitos, agregação server-side e extrato final sob demanda.
+Construir uma narrativa profissional verificável do FinControl para recrutadores, sem inventar métricas, resultados ou capacidades.
 
 ## Current Delivery State
 
-- `UX-CHART-003A` e `UX-CHART-003B` foram mescladas em `develop`;
-- `GOV-V4-001` foi mesclada pela PR `#29` no commit `42dd6db`;
-- `UX-CHART-003C1` concluiu o Dia 7 em `READY_FOR_RELEASE`; a feature pai `UX-CHART-003C` permanece em andamento para `003C2/003C3`;
-- `SUPPLY-CHAIN-003` foi resolvido e confirmado pelo workflow remoto `Quality Gates #146`;
-- granularidades trimestral/anual são conhecidas pelo domínio, mas o adapter bloqueia seu envio até a migration da `003C2`;
-- nenhuma migration, dependência direta ou alteração remota foi executada neste ciclo;
-- branch atual: `codex/ux-chart-003c-all-custom-drilldown`.
+- `UX-CHART-003C1` foi mesclada pela PR `#30` no commit `a96b564`;
+- capabilities `linkedin` e `content` foram aprovadas para a `LINKEDIN-001`;
+- requisitos, content spec, headline e voz editorial foram aprovados no Dia 1;
+- três briefs possuem fontes, limites, dependências e critérios próprios;
+- `LI-POST-001` permanece bloqueado até `UX-CHART-003C2/003C3`; `LI-POST-002/003` seguem em discovery;
+- nenhum post foi redigido como final, publicado ou enviado a serviço externo;
+- branch atual: `codex/linkedin-001-foundation`.
 
 ## Blockers
 
-Nenhum bloqueio duro específico da `UX-CHART-003C1` para revisão e integração da PR `#30`.
+Nenhum bloqueio duro para o discovery da `LINKEDIN-001`.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -36,9 +36,8 @@ Bloqueios externos antes de produção pública completa:
 
 - `CI-ACTIONS-001` — BAIXO: `actions/checkout@v4` e `actions/setup-node@v4` dependem de runtime Node.js 20 e o runner atual as força para Node.js 24;
 - `CI-VERCEL-002` — MÉDIO: contrato local/CI em Node.js 22 e projeto Vercel reportado em Node.js 24;
-- `UX-CHART-003C` — ALTO: histórico extenso exige limites duplos, RLS e validação de plano antes de qualquer índice;
-- drill-down no painel único — MÉDIO: estados assíncronos e retorno precisam de cobertura de foco e concorrência;
-- mês com quantidade extrema de lançamentos — MÉDIO: paginação permanece hardening separado.
+- `LINKEDIN-001` — MÉDIO: claims podem ficar imprecisos ou desatualizados sem vínculo obrigatório ao banco de evidências;
+- publicação externa — ALTO: exige aprovação humana explícita e revisão de privacidade em cada post.
 
 ## Current Context
 
@@ -49,29 +48,27 @@ Bloqueios externos antes de produção pública completa:
 - architecture: `architecture.md`
 - stack: `project-stack.md`
 - toolchain: `project-toolchain.md`
-- active artifact: `docs/features/UX-CHART-003C/`
-- feature requirements: `docs/features/UX-CHART-003C/feature-prd.md`
-- feature specification: `docs/features/UX-CHART-003C/feature-spec.md`
-- validation strategy: `docs/features/UX-CHART-003C/test-strategy.md`
-- relevant ADRs: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md`, `adr/0021-contextual-interval-volume-insights.md`, `adr/0022-all-custom-periods-and-progressive-drilldown.md`
+- active artifact: `docs/linkedin/LINKEDIN-001/`
+- requirements: `docs/linkedin/LINKEDIN-001/feature-prd.md`
+- specification: `docs/linkedin/LINKEDIN-001/content-spec.md`
+- positioning: `docs/linkedin/positioning.md`
+- audience: `docs/linkedin/audience.md`
+- evidence: `docs/linkedin/evidence-base.md`
+- editorial plan: `docs/linkedin/content-pillars.md`, `docs/linkedin/content-calendar.md`
 - quality gates: `quality-gates.md`
 - context routes: `context-map.yaml`
 
 ## Current Decisions
 
-- Feature-Based + Clean Architecture leve permanece a arquitetura vigente;
-- TDD é obrigatório para comportamento de software relevante;
-- Supabase fica isolado em infraestrutura, com RLS e privilégio mínimo;
-- visualizações mantêm alternativa textual e não adotam semântica de trading;
-- períodos financeiros usam datas civis em `America/Sao_Paulo`;
-- `Tudo` começa na primeira transação do usuário; conta sem transação recai no mês civil atual;
-- personalizado usa datas inclusivas na UI e intervalo semiaberto no domínio;
-- granularidade progride de dia a ano, com máximo de 60 anos e 60 buckets;
-- drill-down usa o mesmo painel e só carrega lançamentos brutos no mês final.
+- conteúdo profissional deriva de evidências versionadas e distingue fato, inferência e decisão;
+- nenhum dado financeiro, segredo, credencial, métrica ou resultado não comprovado pode ser publicado;
+- publicação, alteração do perfil e comunicação externa exigem aprovação humana específica;
+- o primeiro case de candles só entra em draft após concluir `UX-CHART-003C2/003C3`;
+- a trilha editorial não altera a prioridade ou os gates das features de software.
 
 ## Next Action
 
-Versionar a conclusão do Dia 7, validar os checks do novo head da PR `#30` e aguardar autorização de merge. A `UX-CHART-003C2` só começa em novo ciclo explícito.
+Executar o Dia 2 da `LINKEDIN-001` para materializar a estratégia de validação e as rubricas antes de qualquer draft.
 
 ## History
 

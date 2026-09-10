@@ -1,0 +1,26 @@
+id: LINKEDIN-001
+type: linkedin-content-small-release
+state: REQUIREMENTS_READY
+phase: dia-1
+derived_from:
+  - project-brief.md
+  - docs/releases/
+  - quality-gates.md
+depends_on:
+  - verified-project-evidence
+  - human-editorial-approval
+affects:
+  - docs/linkedin/
+requirements:
+  - docs/linkedin/LINKEDIN-001/feature-prd.md
+specification:
+  - docs/linkedin/LINKEDIN-001/content-spec.md
+quality_gates:
+  - quality-gates.md#linkedin
+  - quality-gates.md#content
+  - quality-gates.md#resultado-observado--linkedin-001--dia-1
+related_context:
+  - docs/features/UX-CHART-003C/
+  - architecture.md
+  - docs/governance/ai-jail.md
+next_action: dia-2

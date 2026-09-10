@@ -27,6 +27,37 @@ Executar proporcionalmente ao risco e ao escopo:
 
 Resultados históricos abaixo são evidência de ciclos anteriores e não substituem a execução do gate da entrega ativa.
 
+## LinkedIn
+
+- [ ] objetivo, público e posicionamento estão aprovados;
+- [ ] cada claim possui ID e fonte verificável no banco de evidências;
+- [ ] cargos, métricas, alcance, resultados e tecnologias não foram inventados;
+- [ ] dados pessoais, financeiros, credenciais, IDs e detalhes sensíveis foram removidos;
+- [ ] estado do produto e limitações estão atuais na data da revisão;
+- [ ] texto está claro, escaneável e coerente com a voz aprovada;
+- [ ] publicação externa possui aprovação humana explícita.
+
+## Content
+
+- [ ] brief define objetivo, audiência, mensagem, evidências, tom e CTA;
+- [ ] estrutura e canal foram revisados sem sensacionalismo ou promessa excessiva;
+- [ ] fontes sustentam as afirmações e incertezas estão identificadas;
+- [ ] artefato final foi inspecionado no formato de destino;
+- [ ] versão final e histórico de aprovação estão registrados.
+
+### Resultado observado — LINKEDIN-001 · Dia 1
+
+- posicionamento, headline, voz, públicos e proibições foram aprovados para uso editorial interno;
+- Feature PRD possui 10 requisitos funcionais, 6 não funcionais e 10 critérios de aceite únicos;
+- content spec define claim rastreável, estados, formato, privacidade, aprovação e rollback editorial;
+- três briefs e três mapas de fontes foram materializados; nenhum `draft.md` ou `final.md` existe;
+- `LI-POST-001` permanece `BLOCKED` até `UX-CHART-003C2/003C3`; `LI-POST-002/003` permanecem em `DISCOVERY`;
+- seis arquivos YAML, rotas ativas, capabilities e agents foram validados e estão sincronizados;
+- varredura dos 18 arquivos editoriais não encontrou e-mail da conta demo, senha, chave privada ou atribuição de `service_role`;
+- `git diff --check` passou;
+- nenhum código, banco, dependência, perfil externo ou publicação foi alterado;
+- estado de saída: `REQUIREMENTS_READY`; próximo comando válido: `dia 2` da `LINKEDIN-001`.
+
 ## Gate de Contexto
 - `project-context.md` existe e está atualizado.
 - Estado da máquina de estados está explícito.
