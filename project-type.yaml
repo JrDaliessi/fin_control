@@ -6,6 +6,8 @@ project:
   types:
     - software
     - product
+    - content
+    - linkedin
   delivery_model: incremental-small-releases
   lifecycle_state: OPERATING
 
@@ -16,12 +18,18 @@ classification:
   product:
     enabled: true
     rationale: Requisitos, jornadas, UX e priorização de valor são parte dos entregáveis.
-  hybrid: false
+  content:
+    enabled: true
+    rationale: Narrativas profissionais serão derivadas de releases e evidências técnicas do produto.
+  linkedin:
+    enabled: true
+    rationale: O portfólio deve comunicar o FinControl a recrutadores e avaliadores sem inventar resultados.
+  hybrid: true
 
 technology_required: true
 toolchain_required: true
 
 approved:
   status: true
-  date: 2026-09-08
-  basis: Decisões históricas preservadas e migração GOV-V4-001 confirmada pelo usuário.
+  date: 2026-09-09
+  basis: Decisões históricas preservadas, migração GOV-V4-001 e ativação humana das capabilities linkedin/content.

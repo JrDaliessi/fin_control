@@ -32,9 +32,20 @@ capabilities:
   research:
     enabled: false
   content:
-    enabled: false
+    enabled: true
+    artifacts:
+      - docs/linkedin/content-pillars.md
+      - docs/linkedin/content-calendar.md
+      - docs/linkedin/posts/
+    quality_gate: quality-gates.md#content
   linkedin:
-    enabled: false
+    enabled: true
+    artifacts:
+      - docs/linkedin/positioning.md
+      - docs/linkedin/audience.md
+      - docs/linkedin/evidence-base.md
+      - docs/linkedin/LINKEDIN-001/
+    quality_gate: quality-gates.md#linkedin
   automation:
     enabled: false
 

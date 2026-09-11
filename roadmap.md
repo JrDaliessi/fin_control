@@ -292,11 +292,11 @@ Small releases da `UX-CHART-002`:
 
 Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 7 concluído em `READY_FOR_RELEASE` e GREEN. Volume e resultado líquido ganharam prioridade em largura total no celular, receitas/despesas preservam a leitura comparativa e o disclosure respeita reduced motion. As 93 suítes/562 testes, lint, type-check, audit e build estão verdes; Supabase saudável e alinhado, Preview da PR `#26` `READY` e observabilidade sem erro de runtime em 24 horas.
 
-Estado da `UX-CHART-003`: `003A` foi mesclada em `develop` no commit `7434159`; `003B` foi mesclada pela PR `#28` no commit `45d1bab`. A `003C1` concluiu o Dia 7 em `READY_FOR_RELEASE`, com foco acionável, modal responsivo autenticado e 669 testes verdes. A feature pai permanece em andamento para `003C2/003C3`.
+Estado da `UX-CHART-003`: `003A` foi mesclada em `develop` no commit `7434159`; `003B` foi mesclada pela PR `#28` no commit `45d1bab`; `003C1` foi mesclada pela PR `#30` no commit `a96b564`, após foco acionável, modal responsivo autenticado e 669 testes verdes. A feature pai permanece em andamento para `003C2/003C3`.
 
 Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md`, `adr/0021-contextual-interval-volume-insights.md` e `adr/0022-all-custom-periods-and-progressive-drilldown.md`.
 
-Próximo passo: versionar e revisar a `UX-CHART-003C1` na PR `#30`; iniciar a `003C2` somente após integração e novo comando explícito.
+Próximo passo de software: iniciar a `003C2` somente após novo comando explícito.
 
 ## Hardening pré-produção — SEC-AUTH-001
 
@@ -330,6 +330,20 @@ Ordem: SR-018 metas/contribuicoes, SR-019 progresso/projecao, SR-020 eventos/pon
 ## Marco 13 - Insights de IA
 
 SR-023 entra somente com calculos deterministas, consentimento, minimizacao e politica de privacidade.
+
+## Marco 14 — Portfólio técnico e LinkedIn
+
+Small release inicial: `LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl`.
+
+Estado atual: `IN_PROGRESS`. O Dia 3 produziu o draft mínimo do `LI-POST-002` usando os oito claims aprovados; gates factual/privacidade ficaram verdes e a rubrica editorial atingiu 13/14. Nenhum conteúdo foi publicado.
+
+Sequência planejada:
+1. aprovar posicionamento, público, claims permitidos e critérios editoriais;
+2. consolidar banco de evidências e três briefs de posts;
+3. produzir e revisar um post por small release, sem publicação automática;
+4. publicar somente após aceite humano explícito do texto final.
+
+Primeira narrativa planejada: como os candles foram adaptados de uma metáfora de trading para uma leitura acessível de finanças pessoais. O draft depende da conclusão da `UX-CHART-003C2/003C3` para refletir o fluxo completo.
 
 ## Cadencia
 

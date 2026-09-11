@@ -1,11 +1,12 @@
 # Status — UX-CHART-003C
 
 - Estado da feature pai: `IN_PROGRESS`
-- Estado da small release `UX-CHART-003C1`: `READY_FOR_RELEASE`
+- Estado da small release `UX-CHART-003C1`: `RELEASED`
 - Fase concluída: `Dia 7`
 - Aprovação: confirmada em 2026-09-08
 - Código funcional alterado: sim; núcleo da `UX-CHART-003C1` em GREEN
 - Banco remoto alterado: não
+- Integração: PR `#30` mesclada em `develop` no commit `a96b564` em 2026-09-09
 
 ## Entregáveis acumulados
 

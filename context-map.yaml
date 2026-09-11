@@ -28,15 +28,35 @@ routes:
     - project-stack.md
     - project-toolchain.md
   active-artifact:
-    - docs/features/UX-CHART-003C/feature-prd.md
-    - docs/features/UX-CHART-003C/feature-spec.md
-    - docs/features/UX-CHART-003C/test-strategy.md
-    - docs/features/UX-CHART-003C/context.yaml
-    - docs/features/UX-CHART-003C/status.md
+    - docs/linkedin/LINKEDIN-001/brief.md
+    - docs/linkedin/LINKEDIN-001/feature-prd.md
+    - docs/linkedin/LINKEDIN-001/content-spec.md
+    - docs/linkedin/LINKEDIN-001/validation-strategy.md
+    - docs/linkedin/LINKEDIN-001/rubrics.md
+    - docs/linkedin/LINKEDIN-001/validation-fixtures.md
+    - docs/linkedin/LINKEDIN-001/context.yaml
+    - docs/linkedin/LINKEDIN-001/status.md
+    - docs/linkedin/positioning.md
+    - docs/linkedin/audience.md
+    - docs/linkedin/evidence-base.md
+    - docs/linkedin/content-pillars.md
+    - docs/linkedin/content-calendar.md
+    - docs/linkedin/posts/LI-POST-001/brief.md
+    - docs/linkedin/posts/LI-POST-001/sources.md
+    - docs/linkedin/posts/LI-POST-002/brief.md
+    - docs/linkedin/posts/LI-POST-002/sources.md
+    - docs/linkedin/posts/LI-POST-002/claim-matrix.md
+    - docs/linkedin/posts/LI-POST-002/validation.md
+    - docs/linkedin/posts/LI-POST-002/draft.md
+    - docs/linkedin/posts/LI-POST-002/day-3-validation.md
+    - docs/linkedin/posts/LI-POST-002/supabase-evidence-2026-09-10.md
+    - docs/linkedin/posts/LI-POST-003/brief.md
+    - docs/linkedin/posts/LI-POST-003/sources.md
   quality:
     - quality-gates.md
-    - test-strategy.md
-    - docs/features/UX-CHART-003C/test-strategy.md
+    - docs/linkedin/evidence-base.md
+    - docs/linkedin/LINKEDIN-001/validation-strategy.md
+    - docs/linkedin/LINKEDIN-001/rubrics.md
   agents:
     - .agents/registry.yaml
     - .agents/workflows/engineering-conductor-agent.md
@@ -54,6 +74,13 @@ routes:
   governance:
     - engineering-rules.md
     - docs/governance/ai-jail.md
+  linkedin:
+    - docs/linkedin/positioning.md
+    - docs/linkedin/audience.md
+    - docs/linkedin/evidence-base.md
+    - docs/linkedin/content-pillars.md
+    - docs/linkedin/content-calendar.md
+    - docs/linkedin/LINKEDIN-001/
   releases:
     - docs/releases/
 
@@ -97,6 +124,21 @@ relations:
       - adr/0020-adaptive-financial-periods.md
       - adr/0021-contextual-interval-volume-insights.md
       - adr/0022-all-custom-periods-and-progressive-drilldown.md
+  LINKEDIN-001:
+    derived_from:
+      - project-brief.md
+      - docs/releases/
+      - quality-gates.md
+      - backlog.md
+    depends_on:
+      - verified-project-evidence
+      - human-editorial-approval
+    affects:
+      - docs/linkedin/
+    related_context:
+      - docs/features/UX-CHART-003C/
+      - architecture.md
+      - docs/governance/ai-jail.md
 
 budgets:
   hot_context_target: 2000

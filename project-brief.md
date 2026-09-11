@@ -30,6 +30,7 @@ Uma aplicação responsiva que permita acompanhar contas, receitas, despesas, sa
 - dashboard com períodos financeiros, linha, candles, tabelas e extrato contextual;
 - documentação viva, ADRs, migrations e testes automatizados;
 - pipeline de qualidade e previews/deploys pela Vercel.
+- posicionamento profissional e conteúdo de portfólio derivados exclusivamente de evidências verificáveis do FinControl.
 
 ## Success Criteria
 
@@ -75,6 +76,8 @@ Uma aplicação responsiva que permita acompanhar contas, receitas, despesas, sa
 
 - `software`;
 - `product`;
+- `linkedin`;
+- `content`;
 - núcleo de governança e rastreabilidade.
 
 ## Technology Required?
@@ -88,5 +91,6 @@ Sim. O contrato operacional vigente está em `project-toolchain.md`.
 ## Approval
 
 - intenção, stack e arquitetura: aprovadas nos ciclos anteriores registrados nos ADRs e no histórico;
+- capabilities `linkedin` e `content`: aprovadas em 2026-09-09 para a small release `LINKEDIN-001`, sem autorização implícita de publicação externa;
 - migração documental para Regras IDE v4: aprovada pelo usuário em 2026-09-08;
 - qualquer mudança de requisito central, arquitetura, stack ou serviço pago exige nova aprovação humana.
