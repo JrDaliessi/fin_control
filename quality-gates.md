@@ -58,6 +58,35 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - nenhum código, banco, dependência, perfil externo ou publicação foi alterado;
 - estado de saída: `REQUIREMENTS_READY`; próximo comando válido: `dia 2` da `LINKEDIN-001`.
 
+### Resultado observado — LINKEDIN-001 · Dia 2
+
+- estratégia de validação cobre os 10 requisitos funcionais, 6 não funcionais e 10 critérios de aceite;
+- rubricas factual e de privacidade são gates críticos; rubrica editorial exige 11/14 sem nota zero;
+- 10 cenários e 10 fixtures definem resultados `PASS`, `BLOCKED` e `STALE` antes do draft;
+- `LI-POST-002` possui oito claims delimitados e gate pré-draft verde sobre fontes versionadas;
+- migrations confirmam RLS habilitada/forçada, grants mínimos, policies por proprietário e FKs compostas tenant-safe no recorte citado;
+- `LI-POST-001` permaneceu bloqueado até `UX-CHART-003C2/003C3` e `LI-POST-003` permaneceu fora do incremento;
+- seis YAMLs e todas as rotas ativas foram validados; cobertura de IDs retornou 10 RQ, 6 NFR, 10 AC, 10 VAL, 10 FIX e 8 CLM;
+- varredura dos 23 arquivos editoriais não encontrou padrão sensível nem draft/final prematuro;
+- `git diff --check` passou;
+- nenhum acesso Supabase/Vercel, código, banco, dependência, perfil ou publicação foi executado;
+- estado de saída: `VALIDATION_READY`; próximo comando válido: `dia 3` da `LINKEDIN-001` para `LI-POST-002`.
+
+### Resultado observado — LINKEDIN-001 · Dia 3
+
+- somente `LI-POST-002/draft.md` foi produzido; `LI-POST-001` permaneceu bloqueado, `LI-POST-003` não avançou e nenhum `final.md` existe;
+- corpo editorial possui 225 palavras e 1.515 caracteres, com RLS explicada na primeira ocorrência e leitura móvel favorecida por parágrafos curtos;
+- os oito claims do draft foram mapeados individualmente à base de evidências e aos limites aprovados;
+- gates factual e de privacidade passaram: nenhuma extrapolação comercial, segurança absoluta, trabalho futuro entregue, identidade pessoal inferida ou dado sensível;
+- rubrica editorial atingiu 13/14, sem nota zero; o CTA permanece o único refinamento explícito para a expansão controlada;
+- plugin MCP do Supabase confirmou o projeto saudável, sete migrations alinhadas, RLS habilitada/forçada, grants mínimos, policies de ownership e FKs compostas no recorte do post;
+- Security Advisor manteve somente `SEC-AUTH-001`; a inspeção não consultou linhas de negócio nem executou mutação remota;
+- seis YAMLs, rotas do Context Pack e conjunto de draft/final foram validados;
+- varredura dos 25 arquivos editoriais não encontrou e-mail da conta demo, senha, chave privada, token ou dado financeiro;
+- `git diff --check` passou;
+- nenhum dado de negócio foi consultado e nenhuma mutação Supabase/Vercel, código, dependência, imagem, perfil externo ou publicação foi executada;
+- estado de saída: `IN_PROGRESS` com draft mínimo GREEN; próximo comando válido: `dia 4` da `LINKEDIN-001`.
+
 ## Gate de Contexto
 - `project-context.md` existe e está atualizado.
 - Estado da máquina de estados está explícito.

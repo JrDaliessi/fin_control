@@ -1,5 +1,8 @@
 # Brief — LI-POST-002
 
+- Estado: `IN_PROGRESS`
+- Fase: Dia 3 concluído com draft mínimo validado
+
 ## Tema
 
 Como RLS e grants mínimos protegem dados financeiros por usuário.
@@ -42,7 +45,7 @@ Convidar a audiência a compartilhar quais controles usa para validar isolamento
 
 ## Dependência
 
-Revisar o estado atual dos hardenings e remover detalhes sensíveis antes do draft.
+Revisar novamente o estado dos hardenings antes do draft e antes da publicação; o contrato pré-draft está verde.
 
 ## Critérios de aceite
 

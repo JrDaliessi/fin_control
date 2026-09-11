@@ -335,7 +335,7 @@ SR-023 entra somente com calculos deterministas, consentimento, minimizacao e po
 
 Small release inicial: `LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl`.
 
-Estado atual: `REQUIREMENTS_READY`. O Dia 1 aprovou posicionamento, headline, voz, dez requisitos, seis requisitos não funcionais, dez critérios de aceite e três briefs rastreáveis; nenhum draft ou conteúdo foi publicado.
+Estado atual: `IN_PROGRESS`. O Dia 3 produziu o draft mínimo do `LI-POST-002` usando os oito claims aprovados; gates factual/privacidade ficaram verdes e a rubrica editorial atingiu 13/14. Nenhum conteúdo foi publicado.
 
 Sequência planejada:
 1. aprovar posicionamento, público, claims permitidos e critérios editoriais;

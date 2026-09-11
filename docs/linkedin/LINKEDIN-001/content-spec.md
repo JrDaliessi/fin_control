@@ -104,7 +104,7 @@ IDEA → DISCOVERY → READY → IN_PROGRESS → DONE
 
 ## Validação
 
-O Dia 2 criará `validation-strategy.md` com checklist por requisito, matriz claim→fonte, rubrica editorial e cenários de privacidade. Dias 3–7 só poderão avançar depois desse contrato.
+O Dia 2 materializou `validation-strategy.md`, `rubrics.md` e `validation-fixtures.md`, além da matriz de claims e do gate pré-draft do `LI-POST-002`. Dias 3–7 só podem avançar preservando esse contrato.
 
 ## Release e rollback
 

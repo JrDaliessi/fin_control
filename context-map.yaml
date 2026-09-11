@@ -31,6 +31,9 @@ routes:
     - docs/linkedin/LINKEDIN-001/brief.md
     - docs/linkedin/LINKEDIN-001/feature-prd.md
     - docs/linkedin/LINKEDIN-001/content-spec.md
+    - docs/linkedin/LINKEDIN-001/validation-strategy.md
+    - docs/linkedin/LINKEDIN-001/rubrics.md
+    - docs/linkedin/LINKEDIN-001/validation-fixtures.md
     - docs/linkedin/LINKEDIN-001/context.yaml
     - docs/linkedin/LINKEDIN-001/status.md
     - docs/linkedin/positioning.md
@@ -42,11 +45,18 @@ routes:
     - docs/linkedin/posts/LI-POST-001/sources.md
     - docs/linkedin/posts/LI-POST-002/brief.md
     - docs/linkedin/posts/LI-POST-002/sources.md
+    - docs/linkedin/posts/LI-POST-002/claim-matrix.md
+    - docs/linkedin/posts/LI-POST-002/validation.md
+    - docs/linkedin/posts/LI-POST-002/draft.md
+    - docs/linkedin/posts/LI-POST-002/day-3-validation.md
+    - docs/linkedin/posts/LI-POST-002/supabase-evidence-2026-09-10.md
     - docs/linkedin/posts/LI-POST-003/brief.md
     - docs/linkedin/posts/LI-POST-003/sources.md
   quality:
     - quality-gates.md
     - docs/linkedin/evidence-base.md
+    - docs/linkedin/LINKEDIN-001/validation-strategy.md
+    - docs/linkedin/LINKEDIN-001/rubrics.md
   agents:
     - .agents/registry.yaml
     - .agents/workflows/engineering-conductor-agent.md

@@ -1,7 +1,7 @@
 id: LINKEDIN-001
 type: linkedin-content-small-release
-state: REQUIREMENTS_READY
-phase: dia-1
+state: IN_PROGRESS
+phase: dia-3
 derived_from:
   - project-brief.md
   - docs/releases/
@@ -15,6 +15,15 @@ requirements:
   - docs/linkedin/LINKEDIN-001/feature-prd.md
 specification:
   - docs/linkedin/LINKEDIN-001/content-spec.md
+validation:
+  - docs/linkedin/LINKEDIN-001/validation-strategy.md
+  - docs/linkedin/LINKEDIN-001/rubrics.md
+  - docs/linkedin/LINKEDIN-001/validation-fixtures.md
+  - docs/linkedin/posts/LI-POST-002/claim-matrix.md
+  - docs/linkedin/posts/LI-POST-002/validation.md
+implementation:
+  - docs/linkedin/posts/LI-POST-002/draft.md
+  - docs/linkedin/posts/LI-POST-002/day-3-validation.md
 quality_gates:
   - quality-gates.md#linkedin
   - quality-gates.md#content
@@ -23,4 +32,4 @@ related_context:
   - docs/features/UX-CHART-003C/
   - architecture.md
   - docs/governance/ai-jail.md
-next_action: dia-2
+next_action: dia-4-li-post-002

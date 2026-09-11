@@ -2,6 +2,10 @@
 
 ## READY
 
+Nenhum item pronto aguardando início no momento.
+
+## IN_PROGRESS
+
 ### LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl
 - Tipo: Content / LinkedIn Deliverable.
 - Descrição objetiva: transformar releases verificadas do FinControl em posicionamento profissional, banco de evidências, pilares, calendário e briefs de posts.
@@ -12,11 +16,9 @@
 - Risco: Médio por exagero de claims, exposição de dados/credenciais, métricas sem fonte e desatualização do estado do produto.
 - Escopo: posicionamento, público, evidências, quatro pilares, calendário inicial e três briefs planejados.
 - Fora do escopo: publicação automática, alteração do perfil real, métricas inventadas, divulgação de credenciais, dados financeiros ou afirmações de produção pública.
-- Fase recomendada: Dia 2 para Validation First; o post sobre candles depende da conclusão da `UX-CHART-003C2/003C3`.
+- Fase recomendada: Dia 4 para expansão controlada do `LI-POST-002`; o post sobre candles depende da conclusão da `UX-CHART-003C2/003C3`.
 - Critério de pronto: toda afirmação aponta para evidência, revisão factual/editorial verde, nenhum segredo ou dado pessoal exposto e publicação explicitamente aprovada.
-- Status: READY — Dia 1 concluído em `REQUIREMENTS_READY`; `LI-POST-001` bloqueado por dependência e `LI-POST-002/003` em discovery.
-
-## IN_PROGRESS
+- Status: IN_PROGRESS — Dia 3 concluiu o draft mínimo do `LI-POST-002` com gates factual/privacidade verdes e rubrica 13/14; `LI-POST-001` segue bloqueado e `LI-POST-003` em discovery.
 
 ### UX-CHART-003 — Períodos e granularidade adaptativa
 - Tipo: UX Improvement / Feature.
