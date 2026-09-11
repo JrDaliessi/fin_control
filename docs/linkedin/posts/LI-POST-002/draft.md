@@ -1,10 +1,12 @@
 # Draft — LI-POST-002
 
-Estado: draft interno do Dia 3. Não aprovado como versão final e não autorizado para publicação.
+Estado: draft expandido do Dia 4. Não aprovado como versão final e não autorizado para publicação.
 
 ---
 
 Filtrar dados por usuário apenas na interface não é uma fronteira de segurança suficiente — principalmente em um produto financeiro.
+
+Uma tela pode esconder os registros corretamente e, ainda assim, a persistência aceitar um relacionamento incompatível com o proprietário. Por isso, o isolamento precisa continuar depois que a requisição deixa a interface.
 
 Ao desenvolver a persistência do FinControl, tratei a autorização também no banco de dados.
 
@@ -18,13 +20,17 @@ No recorte inicial:
 
 Esses controles não trabalham sozinhos. A aplicação continua responsável por validar a identidade e as entradas, enquanto constraints, grants mínimos e RLS adicionam outras camadas de proteção.
 
+Um exemplo ajuda a visualizar: ao registrar uma transação, conta e categoria não são apenas identificadores soltos. As chaves compostas também carregam o proprietário, ajudando a impedir que a transação relacione recursos pertencentes a usuários diferentes. A RLS, por sua vez, limita quais linhas a identidade autenticada pode consultar ou inserir.
+
+O trade-off é tornar o schema, as migrations e os testes mais explícitos. Em troca, uma regra crítica deixa de depender exclusivamente do comportamento da interface.
+
 A validação também não ficou restrita à interface: as migrations foram versionadas e os testes pgTAP verificaram schema, permissões e isolamento entre usuários.
 
 Isso não significa que o aplicativo seja “100% seguro”. Hardening de autenticação e observabilidade ainda fazem parte do trabalho necessário antes de afirmar prontidão pública completa.
 
 O principal aprendizado foi simples: em sistemas com dados sensíveis, segurança não deve depender de uma única camada — e muito menos de um filtro controlado pela interface.
 
-Como você valida o isolamento entre usuários nos projetos em que trabalha?
+Nos seus projetos multiusuário, qual regra de isolamento você leva até o banco — e como valida esse comportamento?
 
 ---
 
