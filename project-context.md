@@ -5,7 +5,7 @@ project_state: OPERATING
 active_capabilities: [software, product, linkedin, content]
 active_artifact: LINKEDIN-001
 artifact_state: IN_PROGRESS
-phase: Dia 3
+phase: Dia 4
 last_release: UX-CHART-003C1
 
 ## Current Goal
@@ -19,16 +19,17 @@ Construir uma narrativa profissional verificável do FinControl para recrutadore
 - requisitos, content spec, headline e voz editorial foram aprovados no Dia 1;
 - três briefs possuem fontes, limites, dependências e critérios próprios;
 - estratégia, rubricas e fixtures de validação foram materializadas no Dia 2;
-- `LI-POST-002` possui oito claims delimitados e draft mínimo com gates factual e de privacidade verdes;
+- `LI-POST-002` possui oito claims delimitados e draft expandido com gates factual e de privacidade verdes;
 - inspeção read-only pelo plugin MCP confirmou no Supabase as migrations e fronteiras de RLS/grants/policies/FKs citadas no draft;
-- rubrica editorial do draft atingiu 13/14, sem nota zero;
+- Dia 4 acrescentou somente contexto, exemplo tenant-safe, trade-off e CTA ao `LI-POST-002`;
+- gates factual/privacidade permaneceram verdes e a rubrica editorial atingiu 14/14;
 - `LI-POST-001` permanece bloqueado até `UX-CHART-003C2/003C3`; `LI-POST-003` segue em discovery;
 - nenhum post foi redigido como final, publicado ou enviado a serviço externo;
 - branch atual: `codex/linkedin-001-foundation`.
 
 ## Blockers
 
-Nenhum bloqueio duro para produzir o draft mínimo do `LI-POST-002` no Dia 3.
+Nenhum bloqueio duro para refinar o `LI-POST-002` no Dia 5.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -75,7 +76,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar o Dia 4 da `LINKEDIN-001` para expandir controladamente contexto, exemplo e CTA do `LI-POST-002` sem adicionar claims fora do contrato.
+Executar o Dia 5 da `LINKEDIN-001` para revisar concisão, ritmo, redundância e consistência de voz do `LI-POST-002` sem adicionar claims fora do contrato.
 
 ## History
 

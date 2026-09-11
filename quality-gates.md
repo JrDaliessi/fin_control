@@ -87,6 +87,17 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - nenhum dado de negócio foi consultado e nenhuma mutação Supabase/Vercel, código, dependência, imagem, perfil externo ou publicação foi executada;
 - estado de saída: `IN_PROGRESS` com draft mínimo GREEN; próximo comando válido: `dia 4` da `LINKEDIN-001`.
 
+### Resultado observado — LINKEDIN-001 · Dia 4
+
+- expansão confinada ao `LI-POST-002`: contexto, exemplo tenant-safe, trade-off e CTA previstos no brief;
+- exatamente os oito claims aprovados continuam sustentando o texto, com `EVD-FIN-002`, `006` e `008` preservadas;
+- exemplo mantém FKs como ajuda ao isolamento e RLS como camada complementar, sem promessa absoluta;
+- gates factual e de privacidade passaram sem ressalva crítica;
+- rubrica editorial atingiu 14/14, sem nota zero;
+- formato continua escaneável, explica RLS e não depende de imagem, link ou jargão;
+- nenhum `final.md`, novo post, código, dado, Supabase/Vercel, perfil externo ou publicação foi criado ou alterado;
+- estado de saída: `IN_PROGRESS` com expansão GREEN; próximo comando válido: `dia 5` da `LINKEDIN-001`.
+
 ## Gate de Contexto
 - `project-context.md` existe e está atualizado.
 - Estado da máquina de estados está explícito.

@@ -1,7 +1,7 @@
 # Brief — LI-POST-002
 
 - Estado: `IN_PROGRESS`
-- Fase: Dia 3 concluído com draft mínimo validado
+- Fase: Dia 4 concluído com expansão controlada validada
 
 ## Tema
 
@@ -22,7 +22,8 @@ Em dados financeiros, autorização precisa existir também no banco: ownership,
 ## Evidências permitidas
 
 - `EVD-FIN-002`;
-- `EVD-FIN-006`.
+- `EVD-FIN-006`;
+- `EVD-FIN-008`.
 
 ## Claims proibidos
 
@@ -53,3 +54,10 @@ Revisar novamente o estado dos hardenings antes do draft e antes da publicação
 - não revelar credenciais, IDs ou dados financeiros;
 - distinguir controle implementado de garantia absoluta;
 - vincular testes e migrations às fontes corretas.
+
+## Expansão do Dia 4
+
+- exemplo concreto restrito ao relacionamento tenant-safe já aprovado;
+- trade-off entre schema/testes explícitos e defesa em profundidade;
+- CTA específico sobre regra de isolamento e forma de validação;
+- nenhum claim, tema, métrica ou compromisso de publicação acrescentado.
