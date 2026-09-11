@@ -1,7 +1,7 @@
 # Status — LINKEDIN-001
 
 - Estado: `IN_PROGRESS`
-- Fase concluída: `Dia 3`
+- Fase concluída: `Dia 4`
 - Aprovação de ativação: confirmada em 2026-09-09
 - Publicação externa: não autorizada
 - Alteração do perfil real: não autorizada
@@ -61,6 +61,16 @@
 - `git diff --check` passou;
 - nenhum dado de negócio foi consultado e nenhuma mutação Supabase/Vercel, código, dependência, imagem, perfil externo ou publicação foi executada.
 
+## Validação do Dia 4
+
+- o draft foi expandido apenas com contexto, exemplo tenant-safe, trade-off e CTA já previstos no brief;
+- os oito claims existentes continuam cobrindo integralmente o texto, sem nova métrica ou capacidade;
+- o exemplo mantém linguagem limitada e não transforma defesa em profundidade em garantia absoluta;
+- gates factual e de privacidade passaram sem ressalva;
+- rubrica editorial atingiu 14/14, com CTA específico sobre isolamento e validação;
+- o texto continua sem e-mail, UUID, credencial, valor financeiro, dado da conta demo, imagem ou link operacional;
+- nenhum `final.md` foi criado e nenhuma publicação ou alteração externa foi executada.
+
 ## Próximo passo
 
-Executar o Dia 4 para expandir controladamente contexto, exemplo e CTA do `LI-POST-002`, preservando os oito claims aprovados.
+Executar o Dia 5 para revisar concisão, ritmo, redundância e consistência de voz do `LI-POST-002`, preservando os oito claims aprovados.
