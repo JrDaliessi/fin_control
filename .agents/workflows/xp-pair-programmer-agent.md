@@ -1,5 +1,7 @@
 ---
 description: XP Pair Programmer Agent — implementa small releases guiadas por testes
+capability: software
+load_when: [implementation, refactoring]
 ---
 
 # XP Pair Programmer Agent
@@ -25,5 +27,12 @@ Implementar o mínimo necessário para satisfazer testes e evoluir o produto em 
 - design_component_structure
 
 ## Ativação por Fase
-- Dias 3 e 4
+- Dias 3 e 4; sob demanda no Dia 5.
 
+## Entradas
+
+Spec aprovada, testes RED, arquitetura e escopo da small release.
+
+## Saídas
+
+Implementação mínima, commits lógicos preparados e feedback de design técnico.

@@ -2,7 +2,9 @@
 
 import { useCallback, useId } from "react";
 import { ExpandableChartFrame } from "@/shared/components/charts/ExpandableChartFrame.client";
+import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 import type { FinancialCandlestickChartModel } from "../charts/financial-candlestick-chart.model";
+import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
 import {
   buildFinancialCandlestickOption,
   type FinancialCandlestickChartTheme
@@ -13,6 +15,7 @@ import {
 } from "../hooks/useFinancialChart";
 
 type FinancialCandlestickChartProps = Readonly<{
+  bucketGranularity?: FinancialBucketGranularity;
   model: FinancialCandlestickChartModel;
   onSelectInterval?: (interval: Readonly<{
     startOnInclusive: string;
@@ -55,9 +58,11 @@ function resolveChartTheme(
 }
 
 export function FinancialCandlestickChart({
+  bucketGranularity = "day",
   model,
   onSelectInterval
 }: FinancialCandlestickChartProps) {
+  const bucketCopy = getFinancialBucketCopy(bucketGranularity);
   const descriptionId = useId();
   const hasPoints = model.points.length > 0;
   const buildOption = useCallback(
@@ -114,12 +119,18 @@ export function FinancialCandlestickChart({
         </p>
         <div
           aria-describedby={descriptionId}
-          aria-label="Variação do saldo por dia"
+          aria-label={`Variação do saldo por ${bucketCopy.singular}`}
           className="min-h-72 min-w-0 w-full group-data-[expanded=true]/chart-frame:min-h-0"
-          ref={attachChart}
           role="img"
           style={{ height: "100%" }}
-        />
+        >
+          <div
+            aria-hidden="true"
+            className="h-full min-h-72 w-full group-data-[expanded=true]/chart-frame:min-h-0"
+            ref={attachChart}
+            style={{ height: "100%" }}
+          />
+        </div>
       </div>
     </ExpandableChartFrame>
   );

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { FinancialPeriodKind } from "../domain/types/financial-period.types";
 
 jest.mock("@/lib/supabase/server", () => ({
   createSupabaseServerClient: jest.fn()
@@ -70,6 +71,62 @@ describe("financial evolution server composition", () => {
       status: "empty",
       period: expect.objectContaining({ kind: "rolling_7_days" })
     }));
+  });
+
+  it("uses the aggregated RPC for a long civil period", async () => {
+    const rpc = jest.fn(
+      async (functionName: string, parameters: Record<string, string>) => {
+        void functionName;
+        void parameters;
+
+        return {
+          data: [
+        {
+          account_count: "1",
+          start_on_inclusive: "2026-07-01",
+          end_on_exclusive: "2026-10-01",
+          open_in_cents: "10000",
+          high_in_cents: "15000",
+          low_in_cents: "10000",
+          close_in_cents: "13000",
+          income_in_cents: "5000",
+          expense_in_cents: "2000",
+          volume_in_cents: "7000",
+          transaction_count: "2"
+        }
+          ],
+          error: null
+        };
+      }
+    );
+    const getClaims = jest.fn(async () => ({
+      data: { claims: { sub: " user-1 ", is_anonymous: false } },
+      error: null
+    }));
+    jest.mocked(createSupabaseServerClient).mockResolvedValue({
+      auth: { getClaims },
+      rpc
+    } as never);
+
+    const result = await loadFinancialEvolution({
+      kind: "three_months" as FinancialPeriodKind,
+      referenceInstant: "2026-09-06T15:00:00.000Z"
+    });
+
+    expect(rpc).toHaveBeenCalledWith("load_financial_evolution_buckets", {
+      p_start_on: "2026-07-01",
+      p_end_on: "2026-10-01",
+      p_bucket: "week"
+    });
+    expect(result).toEqual(
+      expect.objectContaining({
+        status: "success",
+        period: expect.objectContaining({
+          kind: "three_months",
+          bucketGranularity: "week"
+        })
+      })
+    );
   });
 
   it("rejects an unauthenticated request before the financial query", async () => {

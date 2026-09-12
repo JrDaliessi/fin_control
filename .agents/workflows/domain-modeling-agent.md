@@ -1,5 +1,7 @@
 ---
 description: Domain Modeling Agent — modela domínio, entidades, regras e contratos
+capability: software
+load_when: [domain, requirements, implementation]
 ---
 
 # Domain Modeling Agent
@@ -25,5 +27,12 @@ Transformar requisitos em domínio explícito, testável e independente de frame
 - define_module_contracts
 
 ## Ativação por Fase
-- Dias 1 e 2
+- Dias 1 e 2; sob demanda quando a implementação revelar regra ausente.
 
+## Entradas
+
+Requisitos aprovados, linguagem do domínio, contratos atuais e casos de uso relacionados.
+
+## Saídas
+
+Modelo, invariantes, tipos e contratos testáveis sem dependência de framework.

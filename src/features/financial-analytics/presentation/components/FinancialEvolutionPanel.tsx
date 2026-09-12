@@ -6,12 +6,14 @@ import { FeedbackMessage } from "@/shared/components/ui/FeedbackMessage";
 import { formatCents } from "@/shared/utils/formatCents";
 import { toFinancialEvolutionChartModel } from "../charts/to-financial-evolution-chart-model";
 import { toFinancialCandlestickChartModel } from "../charts/to-financial-candlestick-chart-model";
+import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
 import { FinancialPeriodSelector } from "./FinancialPeriodSelector";
 import { FinancialVisualizationSwitcher } from "./FinancialVisualizationSwitcher.client";
 import type { FinancialIntervalStatementLoader } from "./FinancialIntervalStatementPanel.client";
 
 type FinancialEvolutionPanelProps = Readonly<{
   result: FinancialEvolutionDto;
+  selectedCustomPeriod?: Readonly<{ from: string; to: string }>;
   selectedPeriodKind: FinancialPeriodKind;
   loadStatement?: FinancialIntervalStatementLoader;
 }>;
@@ -22,9 +24,11 @@ function movementLabel(count: number) {
 
 export function FinancialEvolutionPanel({
   result,
+  selectedCustomPeriod,
   selectedPeriodKind,
   loadStatement
 }: FinancialEvolutionPanelProps) {
+  const bucketCopy = getFinancialBucketCopy(result.period.bucketGranularity);
   const summaryItems = [
     {
       label: "Saldo ao fim do período",
@@ -69,10 +73,13 @@ export function FinancialEvolutionPanel({
             Como seu dinheiro evoluiu
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Acompanhe entradas, saídas e saldo consolidado por dia.
+            Acompanhe entradas, saídas e saldo consolidado por {bucketCopy.singular}.
           </p>
         </div>
-        <FinancialPeriodSelector selectedPeriodKind={selectedPeriodKind} />
+        <FinancialPeriodSelector
+          selectedCustomPeriod={selectedCustomPeriod}
+          selectedPeriodKind={selectedPeriodKind}
+        />
       </div>
 
       {result.status === "missing_accounts" ? (
@@ -120,6 +127,7 @@ export function FinancialEvolutionPanel({
           </p>
 
           <FinancialVisualizationSwitcher
+            bucketGranularity={result.period.bucketGranularity}
             candles={result.candles}
             candlestickModel={toFinancialCandlestickChartModel(result)}
             evolutionModel={toFinancialEvolutionChartModel(result)}

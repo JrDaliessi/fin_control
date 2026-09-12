@@ -4,9 +4,12 @@ import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import type { FinancialIntervalStatementDto } from "../../application/use-cases/list-financial-interval-statement.use-case";
+import { analyzeFinancialInterval } from "../../domain/services/analyze-financial-interval";
 import type { FinancialCandle } from "../../domain/types/financial-evolution.types";
 import { useModalDialogLifecycle } from "@/shared/hooks/useModalDialogLifecycle";
 import { formatCents } from "@/shared/utils/formatCents";
+import { formatFinancialCivilDate } from "../formatters/format-financial-civil-date";
+import { FinancialIntervalMovementSummary } from "./FinancialIntervalMovementSummary.client";
 
 export type FinancialIntervalStatementLoader = (
   input: Readonly<{
@@ -29,11 +32,6 @@ type LoadState =
       status: "success";
       statement: FinancialIntervalStatementDto;
     }>;
-
-function formatCivilDate(civilDate: string) {
-  const [year, month, day] = civilDate.split("-");
-  return `${day}/${month}/${year}`;
-}
 
 function movementLabel(count: number) {
   return `${count} ${count === 1 ? "movimento" : "movimentos"}`;
@@ -100,7 +98,10 @@ export function FinancialIntervalStatementPanel({
     return null;
   }
 
-  const formattedDate = formatCivilDate(selectedCandle.startOnInclusive);
+  const formattedDate = formatFinancialCivilDate(
+    selectedCandle.startOnInclusive
+  );
+  const analysis = analyzeFinancialInterval(selectedCandle);
 
   return createPortal(
     <div data-financial-statement-portal="" ref={portalRootRef}>
@@ -163,6 +164,11 @@ export function FinancialIntervalStatementPanel({
             ))}
           </dl>
 
+          <FinancialIntervalMovementSummary
+            analysis={analysis}
+            key={`${selectedCandle.startOnInclusive}:${selectedCandle.endOnExclusive}`}
+          />
+
           <div aria-live="polite" className="min-h-24">
             {visibleLoadState.status === "loading" ? (
               <p className="text-sm text-muted-foreground" role="status">
@@ -206,7 +212,7 @@ export function FinancialIntervalStatementPanel({
                             {item.description}
                           </p>
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {formatCivilDate(item.occurredOn)} ·{" "}
+                            {formatFinancialCivilDate(item.occurredOn)} ·{" "}
                             {item.type === "income" ? "Receita" : "Despesa"}
                           </p>
                         </div>

@@ -1,0 +1,56 @@
+version: 4
+
+project:
+  name: FinControl
+  primary_type: software
+
+capabilities:
+  core:
+    enabled: true
+    purpose: Governança, contexto, validação, segurança operacional e rastreabilidade.
+  software:
+    enabled: true
+    artifacts:
+      - src/
+      - tests/
+      - supabase/
+      - architecture.md
+      - adr/
+    quality_gate: quality-gates.md#software
+  product:
+    enabled: true
+    artifacts:
+      - docs/product/prd.md
+      - roadmap.md
+      - backlog.md
+      - docs/features/
+    quality_gate: quality-gates.md#core
+  documents:
+    enabled: false
+  education:
+    enabled: false
+  research:
+    enabled: false
+  content:
+    enabled: true
+    artifacts:
+      - docs/linkedin/content-pillars.md
+      - docs/linkedin/content-calendar.md
+      - docs/linkedin/posts/
+    quality_gate: quality-gates.md#content
+  linkedin:
+    enabled: true
+    artifacts:
+      - docs/linkedin/positioning.md
+      - docs/linkedin/audience.md
+      - docs/linkedin/evidence-base.md
+      - docs/linkedin/LINKEDIN-001/
+    quality_gate: quality-gates.md#linkedin
+  automation:
+    enabled: false
+
+policies:
+  activate_minimum_set: true
+  require_human_approval_for_new_capability: true
+  tdd_required_for_software_behavior: true
+  validation_first: true

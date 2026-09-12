@@ -67,6 +67,7 @@ jest.mock(
 );
 
 type SwitcherProps = Readonly<{
+  bucketGranularity: "day" | "week" | "month";
   evolutionModel: Readonly<{
     startOnInclusive: string;
     endOnExclusive: string;
@@ -173,6 +174,7 @@ const candles = [
   }
 ];
 const props: SwitcherProps = {
+  bucketGranularity: "day",
   evolutionModel: {
     startOnInclusive: "2026-03-01",
     endOnExclusive: "2026-03-02",
@@ -206,6 +208,30 @@ describe("FinancialVisualizationSwitcher", () => {
     expect(
       screen.queryByTestId("financial-candlestick-chart")
     ).not.toBeInTheDocument();
+  });
+
+  it("uses the civil bucket in the visible descriptions", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FinancialVisualizationSwitcher
+        {...props}
+        bucketGranularity="week"
+      />
+    );
+
+    expect(
+      screen.getByText("Saldo ao fim de cada semana do período selecionado.")
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Variação do saldo" })
+    );
+    expect(
+      screen.getByText(
+        "Abertura, extremos e fechamento do saldo em cada semana."
+      )
+    ).toBeInTheDocument();
   });
 
   it("switches to one candlestick renderer and its OHLC table without network", async () => {
@@ -347,5 +373,61 @@ describe("FinancialVisualizationSwitcher", () => {
 
     expect(await screen.findByText("Salário")).toBeInTheDocument();
     expect(loadStatement).toHaveBeenCalledTimes(2);
+  });
+
+  it("closes a selected statement when the financial period changes", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async (input: {
+      startOnInclusive: string;
+      endOnExclusive: string;
+    }) => ({
+      ...input,
+      items: [
+        {
+          id: "statement-item",
+          description: "Salário",
+          amountInCents: 5_000,
+          type: "income" as const,
+          occurredOn: "2026-03-01",
+          createdAt: "2026-03-01T10:00:00.000Z"
+        }
+      ]
+    }));
+    const view = render(
+      <FinancialVisualizationSwitcher
+        {...props}
+        loadStatement={loadStatement}
+      />
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "Variação do saldo" })
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Selecionar candle no gráfico" })
+    );
+    expect(await screen.findByText("Salário")).toBeInTheDocument();
+
+    view.rerender(
+      <FinancialVisualizationSwitcher
+        {...props}
+        candles={[]}
+        candlestickModel={{
+          startOnInclusive: "2026-04-01",
+          endOnExclusive: "2026-05-01",
+          points: []
+        }}
+        evolutionModel={{
+          startOnInclusive: "2026-04-01",
+          endOnExclusive: "2026-05-01",
+          points: []
+        }}
+        evolutionPoints={[]}
+        loadStatement={loadStatement}
+      />
+    );
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByText("Salário")).not.toBeInTheDocument();
   });
 });

@@ -1,0 +1,45 @@
+id: UX-CHART-003C
+title: Tudo, período personalizado e drill-down
+capabilities:
+  - software
+  - product
+state: IN_PROGRESS
+phase: Entre small releases
+active_small_release: null
+active_small_release_state: null
+approved_at: 2026-09-08
+derived_from:
+  - docs/product/prd.md
+  - docs/ux-chart-003-discovery.md
+  - adr/0020-adaptive-financial-periods.md
+depends_on:
+  - UX-CHART-003A
+  - UX-CHART-003B
+  - UX-CHART-002
+affects:
+  - src/features/financial-periods/
+  - src/features/financial-analytics/
+  - src/app/
+  - supabase/migrations/
+related_context:
+  - architecture.md
+  - database-model.md
+  - module-contracts.md
+  - test-strategy.md
+adrs:
+  - adr/0019-contextual-candle-statement.md
+  - adr/0020-adaptive-financial-periods.md
+  - adr/0021-contextual-interval-volume-insights.md
+  - adr/0022-all-custom-periods-and-progressive-drilldown.md
+sources:
+  - live Supabase schema, migrations, advisors and function metadata inspected read-only on 2026-09-08
+quality_gates:
+  - quality-gates.md#gate-do-dia-1
+  - quality-gates.md#gate-do-dia-2
+  - quality-gates.md#software
+  - quality-gates.md#gate-do-dia-7--ux-chart-003c1
+small_releases:
+  - UX-CHART-003C1
+  - UX-CHART-003C2
+  - UX-CHART-003C3
+next_action: Iniciar o Dia 1 da UX-CHART-003C2 mediante novo comando explícito

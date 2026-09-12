@@ -290,11 +290,13 @@ Small releases da `UX-CHART-002`:
 2. `002B` — seleção no ECharts/tabela e painel responsivo;
 3. `002C` — concorrência, acessibilidade, responsividade e validação real.
 
-Estado da `UX-CHART-003`: `DISCOVERY`, não mais bloqueada pela predecessora e aguardando comando humano para seu próprio Dia 1. A sequência planejada é `003A` para `7D`/`15D`/`Mês` sem migration, `003B` para `3M`/`Ano` com agregação server-side e `003C` para `Tudo`/personalizado. Granularidade diária, semanal, mensal ou trimestral manterá um volume preferencial de 12–60 pontos e nunca enviará histórico bruto ao browser.
+Extensão priorizada: `UX-CHART-002D — Volume e insight contextual do intervalo`, com Dia 7 concluído em `READY_FOR_RELEASE` e GREEN. Volume e resultado líquido ganharam prioridade em largura total no celular, receitas/despesas preservam a leitura comparativa e o disclosure respeita reduced motion. As 93 suítes/562 testes, lint, type-check, audit e build estão verdes; Supabase saudável e alinhado, Preview da PR `#26` `READY` e observabilidade sem erro de runtime em 24 horas.
 
-Decisões: `adr/0019-contextual-candle-statement.md` e `adr/0020-adaptive-financial-periods.md`.
+Estado da `UX-CHART-003`: `003A` foi mesclada em `develop` no commit `7434159`; `003B` foi mesclada pela PR `#28` no commit `45d1bab`; `003C1` foi mesclada pela PR `#30` no commit `a96b564`, após foco acionável, modal responsivo autenticado e 669 testes verdes. A feature pai permanece em andamento para `003C2/003C3`.
 
-Próximo passo: versionar a documentação do Dia 7, atualizar a PR `#24` e aguardar os novos checks; depois, mediante decisão humana, realizar squash merge em `develop`. A `UX-CHART-003` pode iniciar ciclo próprio após esse fechamento.
+Decisões: `adr/0019-contextual-candle-statement.md`, `adr/0020-adaptive-financial-periods.md`, `adr/0021-contextual-interval-volume-insights.md` e `adr/0022-all-custom-periods-and-progressive-drilldown.md`.
+
+Próximo passo de software: iniciar a `003C2` somente após novo comando explícito.
 
 ## Hardening pré-produção — SEC-AUTH-001
 
@@ -328,6 +330,20 @@ Ordem: SR-018 metas/contribuicoes, SR-019 progresso/projecao, SR-020 eventos/pon
 ## Marco 13 - Insights de IA
 
 SR-023 entra somente com calculos deterministas, consentimento, minimizacao e politica de privacidade.
+
+## Marco 14 — Portfólio técnico e LinkedIn
+
+Small release inicial: `LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl`.
+
+Estado atual: `READY_FOR_RELEASE`. O Dia 7 revalidou a evidência Supabase e a PR `#33` passou em `validate` e Vercel no commit de conteúdo `201fe3f`. O `final.md` do `LI-POST-002` foi aprovado internamente em 2026-09-12 e aguarda integração; nenhum conteúdo foi publicado.
+
+Sequência planejada:
+1. aprovar posicionamento, público, claims permitidos e critérios editoriais;
+2. consolidar banco de evidências e três briefs de posts;
+3. produzir e revisar um post por small release, sem publicação automática;
+4. publicar somente após aceite humano explícito do texto final.
+
+Primeira narrativa planejada: como os candles foram adaptados de uma metáfora de trading para uma leitura acessível de finanças pessoais. O draft depende da conclusão da `UX-CHART-003C2/003C3` para refletir o fluxo completo.
 
 ## Cadencia
 

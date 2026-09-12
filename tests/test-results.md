@@ -1155,3 +1155,156 @@ Interpretação:
 - lint de todos os testes de analytics passou com zero warnings;
 - regressão anterior, excluindo as 9 suítes/assertivas afetadas, passou com 20 suítes e 169 testes, zero snapshots;
 - estado final: `TEST_STRATEGY_READY`; implementação permanece bloqueada até o Dia 3.
+
+## Dia 2 — UX-CHART-003B
+
+### Baseline
+
+- 7 suítes existentes e 69 testes passaram, zero snapshots, antes da criação do RED.
+
+### RED controlado
+
+- 7 suítes selecionadas falharam de forma planejada.
+- Nas 6 suítes carregadas, 70 testes foram executados: 42 passaram e 28 falharam pelos novos comportamentos ainda ausentes.
+- A suíte `financial-evolution-buckets.mapper.test.ts` contém 18 contratos e não carregou porque o mapper futuro ainda não existe.
+- As falhas correspondem a `three_months`/`year`, granularidade agregada, seleção de repository, mapper, opções do seletor e normalização das rotas.
+
+### Banco e validação do harness
+
+- pgTAP: 16 assertions de schema/grants, 22 de comportamento/RLS/OHLC e 5 de performance, total 43.
+- Probe transacional no Supabase falhou 2/2 porque `load_financial_evolution_buckets(date,date,text)` ainda não existe.
+- O rollback foi confirmado: `pgtap` continuou não instalado e a função continuou ausente.
+- ESLint passou nos 7 arquivos Jest afetados.
+- Type-check ficou somente com o `TS2307` esperado para o mapper futuro ausente.
+- estado final: `TEST_STRATEGY_READY`; implementação e migration permanecem bloqueadas até o Dia 3.
+
+## Dia 3 — UX-CHART-003B
+
+### GREEN dirigido
+
+- 7 suítes selecionadas passaram.
+- 88 testes passaram, incluindo os 18 contratos do novo mapper.
+- zero snapshots e nenhuma expectativa do RED foi removida ou relaxada.
+
+### Regressão e build
+
+- regressão completa: 95 suítes e 609 testes passaram, zero snapshots;
+- ESLint global passou sem avisos;
+- type-check global passou;
+- build Next.js 16.3.3 com Turbopack passou, preservando todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado ao conteúdo versionado após a atualização automática do build.
+
+### Supabase e pgTAP
+
+- migration `20260907041839_create_financial_evolution_buckets` aplicada com sucesso;
+- schema/grants: 16 assertions verdes;
+- comportamento, RLS e OHLC: 22 assertions verdes;
+- performance: 5 assertions verdes;
+- total: 43 assertions pgTAP verdes, sem extensão persistida;
+- sete migrations locais/remotas alinhadas;
+- função confirmada como invoker, search path vazio e execução somente por `authenticated`;
+- nenhum índice novo foi criado.
+
+Interpretação:
+- o RED do Dia 2 foi convertido em GREEN dentro do escopo aprovado;
+- estado final: `IMPLEMENTATION_IN_PROGRESS`;
+- próximo comando válido: `dia 4` da `UX-CHART-003B`.
+
+## Dia 4 — UX-CHART-003B
+
+### RED e GREEN dirigidos
+
+- RED: 6 suítes executadas, 59 testes, 52 verdes e 7 falhas esperadas;
+- GREEN: as mesmas 6 suítes passaram com 59 testes verdes e zero snapshots;
+- os contratos cobrem copy semanal, semântica mensal, nomes acessíveis, estado anual vazio e rejeição dos dois limites divergentes.
+
+### Regressão e build
+
+- feature `financial-analytics`: 32 suítes e 286 testes verdes, zero snapshots;
+- regressão completa: 95 suítes e 617 testes verdes, zero snapshots;
+- ESLint global passou sem avisos;
+- type-check global passou;
+- build Next.js 16.3.3 com Turbopack passou, preservando todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado após a atualização automática do build;
+- `git diff --check` passou.
+
+Interpretação:
+- expansão controlada concluída sem ampliar o escopo da `UX-CHART-003C`;
+- estado final: `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 5` da `UX-CHART-003B`.
+
+## Dia 5 — UX-CHART-003B
+
+### RED e refatoração
+
+- a suíte do switcher executou 8 testes: 7 passaram e 1 falhou porque o extrato do período anterior continuava aberto após rerender com novos limites;
+- a correção reinicia o conteúdo interativo pela chave civil do período, sem efeito de sincronização;
+- cinco formatadores locais foram substituídos por um módulo puro de presentation, preservando data completa e dia/mês.
+
+### GREEN e regressão
+
+- GREEN dirigido: 5 suítes e 38 testes verdes, zero snapshots;
+- feature `financial-analytics`: 32 suítes e 287 testes verdes, zero snapshots;
+- regressão completa: 95 suítes e 618 testes verdes, zero snapshots;
+- ESLint e type-check globais passaram;
+- build Next.js 16.3.3 com Turbopack passou, preservando todas as rotas e o Proxy;
+- `next-env.d.ts` foi restaurado e `git diff --check` passou.
+
+Interpretação:
+- hardening concluído sem reescrita ampla, dependência ou otimização especulativa;
+- estado final: retorno estável a `IMPLEMENTATION_IN_PROGRESS` em GREEN;
+- próximo comando válido: `dia 6` da `UX-CHART-003B`.
+
+## Dia 6 — UX-CHART-003B
+
+### RED e GREEN de acessibilidade
+
+- 2 suítes de gráfico falharam em 2 contratos esperados ao simular ECharts substituindo `role`/`aria-label` do container.
+- GREEN: wrappers semânticos estáveis e renderer interno `aria-hidden`; 2 suítes e 24 testes passaram.
+- a barra ganhou contrato para touch horizontal e visibilidade do item ativo; o primeiro GREEN violou o boundary server-side e foi corrigido com ilha cliente mínima.
+- suíte final do seletor: 14 testes verdes.
+
+### Regressão e build
+
+- feature `financial-analytics`: 32 suítes e 290 testes verdes, zero snapshots;
+- regressão completa: 95 suítes e 621 testes verdes, zero snapshots;
+- o teste antigo de contas passou 4/4 quando repetido sequencialmente, confirmando que seu primeiro timeout ocorreu por contenção dos gates paralelos;
+- ESLint global e type-check global passaram;
+- build Next.js 16.3.3 com Turbopack passou após acesso controlado ao Google Fonts;
+- estado final: `QUALITY_VALIDATION` em GREEN;
+- próximo comando válido: `dia 7` da `UX-CHART-003B`.
+
+## Dia 7 — UX-CHART-003B
+
+### Pipeline final
+
+- regressão completa: 95 suítes e 621 testes passaram;
+- snapshots: zero;
+- ESLint global: verde, zero warnings;
+- type-check: verde;
+- build Next.js 16.3.3/Turbopack: verde, com todas as rotas e o Proxy preservados;
+- `npm audit --audit-level=high`: zero vulnerabilidades;
+- supply chain: 701 assinaturas e 102 attestations verificadas;
+- `git diff --check`: verde; `next-env.d.ts` restaurado após o build.
+
+### Segurança, banco e serviços
+
+- nenhum segredo privilegiado ou token literal foi encontrado nos arquivos rastreados;
+- Supabase saudável, sete migrations alinhadas, RLS ativa e RPCs invoker com ACL mínima;
+- Preview Vercel do commit `5211303` em `READY`, HTTP 200 e sem erro/fatal em 24 horas;
+- headers defensivos e ausência de comentários abertos da Toolbar confirmados;
+- checks remotos da PR `#28` estavam verdes no início do gate.
+
+### Smoke test
+
+- `3M`: URL canônica e 14 buckets semanais;
+- `Ano`: URL canônica e 12 buckets mensais;
+- linha/candles: seleção e nomes acessíveis coerentes, com tabelas equivalentes;
+- extrato: volume e insights dinâmicos carregados, fechamento por Escape e foco/scroll restaurados;
+- 1280 px sem overflow global; 320/390/768 px mantidos como risco BAIXO por limitação do conector, cobertos por testes e evidência anterior.
+
+### Resultado
+
+- `UX-CHART-003B` atingiu `READY_FOR_RELEASE`;
+- `CI-VERCEL-002` mantém o drift Node 22/24 como dívida MÉDIA não bloqueante;
+- nenhuma operação Git remota, merge, deploy, promoção ou mutação de banco/configuração foi executada.

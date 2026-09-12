@@ -2,7 +2,10 @@ import type { FinancialAnalyticsQueryRepository } from "../ports/financial-analy
 import { resolveReferenceCivilDate } from "../services/resolve-reference-civil-date";
 import { aggregateFinancialEvolution } from "../../domain/services/aggregate-financial-evolution";
 import { aggregateFinancialCandles } from "../../domain/services/aggregate-financial-candles";
-import { resolveFinancialPeriod } from "../../domain/services/resolve-financial-period";
+import {
+  resolveCustomFinancialPeriod,
+  resolveFinancialPeriod
+} from "../../domain/services/resolve-financial-period";
 import type {
   FinancialCandle,
   FinancialEvolutionPoint
@@ -15,6 +18,8 @@ import type {
 export type ListFinancialEvolutionRequest = Readonly<{
   userId: string;
   kind: FinancialPeriodKind;
+  from?: string;
+  to?: string;
   referenceInstant: string;
   timeZone: string;
 }>;
@@ -99,14 +104,88 @@ export class ListFinancialEvolutionUseCase {
       throw new Error("user is required");
     }
 
-    const referenceOn = resolveReferenceCivilDate({
-      referenceInstant: request.referenceInstant,
-      timeZone: request.timeZone
-    });
-    const period = resolveFinancialPeriod({
-      kind: request.kind,
-      referenceOn
-    });
+    const period =
+      request.kind === "custom"
+        ? (() => {
+            if (typeof request.from !== "string" || typeof request.to !== "string") {
+              throw new Error("period kind custom requires dates");
+            }
+
+            return resolveCustomFinancialPeriod({
+              from: request.from,
+              to: request.to
+            });
+          })()
+        : resolveFinancialPeriod({
+            kind: request.kind,
+            referenceOn: resolveReferenceCivilDate({
+              referenceInstant: request.referenceInstant,
+              timeZone: request.timeZone
+            })
+          });
+
+    if (period.bucketGranularity !== "day") {
+      let bucketSnapshot: Awaited<
+        ReturnType<FinancialAnalyticsQueryRepository["loadEvolutionBuckets"]>
+      >;
+
+      try {
+        bucketSnapshot = await this.repository.loadEvolutionBuckets({
+          userId,
+          startOnInclusive: period.startOnInclusive,
+          endOnExclusive: period.endOnExclusive,
+          bucketGranularity: period.bucketGranularity
+        });
+
+        const firstBucket = bucketSnapshot.buckets[0];
+        const lastBucket = bucketSnapshot.buckets.at(-1);
+
+        if (
+          firstBucket?.startOnInclusive !== period.startOnInclusive ||
+          lastBucket?.endOnExclusive !== period.endOnExclusive
+        ) {
+          throw new Error("financial evolution bucket interval mismatch");
+        }
+      } catch {
+        throw new Error("financial evolution unavailable");
+      }
+
+      const openingBalanceInCents =
+        bucketSnapshot.buckets[0]?.openInCents ?? 0;
+
+      if (bucketSnapshot.accountCount === 0) {
+        return {
+          status: "missing_accounts",
+          accountCount: 0,
+          period,
+          summary: summarize(openingBalanceInCents, []),
+          points: [],
+          candles: []
+        };
+      }
+
+      const points = bucketSnapshot.buckets.map((bucket) => ({
+        startOnInclusive: bucket.startOnInclusive,
+        endOnExclusive: bucket.endOnExclusive,
+        incomeInCents: bucket.incomeInCents,
+        expenseInCents: bucket.expenseInCents,
+        netInCents: bucket.incomeInCents - bucket.expenseInCents,
+        closingBalanceInCents: bucket.closeInCents,
+        transactionCount: bucket.transactionCount
+      }));
+
+      return {
+        status:
+          points.some((point) => point.transactionCount > 0)
+            ? "success"
+            : "empty",
+        accountCount: bucketSnapshot.accountCount,
+        period,
+        summary: summarize(openingBalanceInCents, points),
+        points,
+        candles: bucketSnapshot.buckets
+      };
+    }
 
     let snapshot: Awaited<
       ReturnType<FinancialAnalyticsQueryRepository["loadEvolutionSnapshot"]>

@@ -6,6 +6,7 @@ import type {
 } from "echarts/components";
 import type { ComposeOption } from "echarts/core";
 import { formatCents } from "@/shared/utils/formatCents";
+import { formatFinancialCivilDayMonth } from "../../formatters/format-financial-civil-date";
 import type { FinancialEvolutionChartModel } from "../financial-evolution-chart.model";
 
 export type FinancialEvolutionChartTheme = Readonly<{
@@ -28,11 +29,6 @@ type BuildFinancialEvolutionOptionInput = Readonly<{
   reducedMotion: boolean;
   theme: FinancialEvolutionChartTheme;
 }>;
-
-function formatCivilDate(civilDate: string) {
-  const [, month, day] = civilDate.split("-");
-  return `${day}/${month}`;
-}
 
 export function buildFinancialEvolutionOption({
   model,
@@ -62,7 +58,7 @@ export function buildFinancialEvolutionOption({
     xAxis: {
       axisLabel: {
         color: theme.mutedForeground,
-        formatter: (value: string) => formatCivilDate(value)
+        formatter: (value: string) => formatFinancialCivilDayMonth(value)
       },
       axisLine: { lineStyle: { color: theme.border } },
       boundaryGap: false,

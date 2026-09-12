@@ -2,7 +2,9 @@
 
 import { useCallback, useId } from "react";
 import { ExpandableChartFrame } from "@/shared/components/charts/ExpandableChartFrame.client";
+import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 import type { FinancialEvolutionChartModel } from "../charts/financial-evolution-chart.model";
+import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
 import {
   buildFinancialEvolutionOption,
   type FinancialEvolutionChartTheme
@@ -13,6 +15,7 @@ import {
 } from "../hooks/useFinancialChart";
 
 type FinancialEvolutionChartProps = Readonly<{
+  bucketGranularity?: FinancialBucketGranularity;
   model: FinancialEvolutionChartModel;
 }>;
 
@@ -49,8 +52,10 @@ function resolveChartTheme(
 }
 
 export function FinancialEvolutionChart({
+  bucketGranularity = "day",
   model
 }: FinancialEvolutionChartProps) {
+  const bucketCopy = getFinancialBucketCopy(bucketGranularity);
   const descriptionId = useId();
   const hasPoints = model.points.length > 0;
   const buildOption = useCallback(
@@ -94,12 +99,18 @@ export function FinancialEvolutionChart({
         </p>
         <div
           aria-describedby={descriptionId}
-          aria-label="Evolução do saldo por dia"
+          aria-label={`Evolução do saldo por ${bucketCopy.singular}`}
           className="min-h-72 min-w-0 w-full group-data-[expanded=true]/chart-frame:min-h-0"
-          ref={attachChart}
           role="img"
           style={{ height: "100%" }}
-        />
+        >
+          <div
+            aria-hidden="true"
+            className="h-full min-h-72 w-full group-data-[expanded=true]/chart-frame:min-h-0"
+            ref={attachChart}
+            style={{ height: "100%" }}
+          />
+        </div>
       </div>
     </ExpandableChartFrame>
   );

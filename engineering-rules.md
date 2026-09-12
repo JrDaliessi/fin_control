@@ -1,81 +1,83 @@
-# Engineering Rules
+# Engineering Rules — FinControl
 
-## Regra Mestre
-Este projeto segue o sistema de engenharia assistida por IA definido pelo usuário: Feature-Based + Clean Architecture leve, Método Akita, TDD, small releases, governança por fases e documentação viva.
+## Governança
 
-## Stack Obrigatória
-- PWA
-- Node.js
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Supabase
-- Jest
-- TDD
+O FinControl segue Regras IDE v4: Método Akita, XP, Validation First, small releases, Context Engineering, documentação viva, controle humano e capabilities sob demanda.
+
+Fontes de processo:
+
+- estado e rotas atuais: `project-context.md` e `context-map.yaml`;
+- intenção: `project-brief.md` e `docs/product/prd.md`;
+- arquitetura: `architecture.md` e ADR ativo mais recente;
+- prioridade: `backlog.md` e `roadmap.md`;
+- validação: `quality-gates.md`, specs e testes;
+- histórico: `docs/history/` e `docs/releases/`, sem autoload.
+
+## Stack Aprovada do Projeto
+
+A v4 não presume stack universal. A stack deste projeto foi aprovada nos ciclos anteriores e está consolidada em `project-stack.md`; versões e comandos vigentes permanecem em `package.json` e `project-toolchain.md`.
+
+Qualquer mudança estrutural de tecnologia exige opções, trade-offs e decisão humana registrada.
+
+## Capabilities Ativas
+
+- `software`;
+- `product`;
+- núcleo de governança, contexto, qualidade e rastreabilidade.
+
+Outras capabilities permanecem desativadas até necessidade e aprovação registradas em `capability-registry.yaml`.
 
 ## Arquitetura Obrigatória
-Toda feature deve respeitar as camadas:
-- `presentation`
-- `application`
-- `domain`
-- `infrastructure`
 
-Regras:
-- UI não acessa banco diretamente.
-- Domain não depende de framework.
-- Infrastructure concentra integrações técnicas.
-- Application orquestra casos de uso.
-- App Router compõe rotas e layouts, sem regra de negócio pesada.
+Feature-Based + Clean Architecture leve:
+
+- `presentation`: UI e estados visuais, sem regra de negócio pesada ou banco;
+- `application`: casos de uso e orquestração;
+- `domain`: entidades, contratos e regras puras;
+- `infrastructure`: persistência, APIs e adapters concretos.
+
+`src/app` compõe rotas e dependências. Supabase permanece isolado em infraestrutura e sujeito a RLS, identidade da sessão e privilégio mínimo.
 
 ## Processo Obrigatório
-- Contexto antes de código.
-- Testes antes de implementação funcional relevante.
-- Backlog antes de execução de feature.
-- Pequenas entregas estáveis.
-- Quality gates antes de considerar entrega pronta.
-- Registro explícito de riscos, bloqueios e dívidas técnicas.
+
+1. classificar o pedido;
+2. ler Hot Context e mapa;
+3. carregar o workflow e Warm Context relevantes;
+4. descobrir dependências e expandir contexto se necessário;
+5. definir validação antes de produzir;
+6. declarar escopo, agents, skills, bloqueios e estados;
+7. obter aprovação humana da fase;
+8. executar somente a small release aprovada;
+9. validar, atualizar documentação e registrar próximo passo;
+10. não avançar automaticamente.
+
+## TDD e Quality Gates
+
+Comportamento implementável ou correção de bug segue RED → GREEN → REFACTOR. Testes existentes são memória executável e não podem ser enfraquecidos apenas para passar.
+
+Gates de software aplicáveis: lint, type-check, testes, build, arquitetura, segurança/RLS, migration/rollback, dependências, observabilidade e release readiness.
 
 ## Comandos Operacionais
-- `dia 0`: bootstrap operacional
-- `dia 1`: contexto, discovery e arquitetura
-- `dia 2`: estratégia de testes e TDD
-- `dia 3`: implementação mínima orientada por teste
-- `dia 4`: expansão controlada
-- `dia 5`: refatoração e hardening
-- `dia 6`: UX, acessibilidade e PWA
-- `dia 7`: qualidade final e entrega
-- `status`, `bloqueios`, `próximo passo`, `reanalisar`
-- `validar contexto`, `validar arquitetura`, `validar qualidade`
-- `mostrar backlog`, `refinar backlog`, `priorizar backlog`
 
-## Bloqueios Duros
-A execução deve bloquear quando houver:
-- contexto crítico ausente
-- arquitetura conflitante
-- regra de negócio central ambígua
-- testes essenciais inexistentes para fase de implementação
-- risco relevante de segurança em área crítica
-- tentativa de pular fase
+- fases: `dia 0` a `dia 7`, `corrigir dia X`, `reexecutar dia X`, `resumo do dia X`;
+- inspeção: `status`, `bloqueios`, `próximo passo`, `reanalisar`, `mostrar backlog`;
+- feature: `iniciar`, `quebrar`, `gerar validação`, `gerar testes`, `implementar`, `refatorar`;
+- validação: `validar contexto`, `validar arquitetura`, `validar qualidade`, `validar rastreabilidade`;
+- modo condensado: `modo rápido`, somente sob os critérios da v4.
 
-## Áreas Críticas
-Exigem validação adicional:
-- autenticação
-- autorização
-- RLS
-- dados financeiros
-- migrações de banco
-- integrações externas sensíveis
-- segredos
-- Open Finance
+## Bloqueios e Segurança
+
+Contexto crítico ausente, requisito central ambíguo, conflito arquitetural, validação essencial inexistente ou risco crítico de segurança bloqueiam o escopo afetado.
+
+Auth, autorização, RLS, dados financeiros, migrations, agendamentos, integrações sensíveis, segredos e produção exigem validação adicional. A política operacional detalhada está em `docs/governance/ai-jail.md`.
 
 ## Antipadrões Proibidos
-- Vibe coding
-- One-shot implementation
-- regra de negócio na UI
-- banco acessado por componente React
-- `any` sem justificativa técnica
-- helpers genéricos sem necessidade real
-- feature fora do backlog
-- dívida técnica invisível
 
+- vibe coding ou one-shot;
+- expansão silenciosa de escopo;
+- regra de negócio em UI ou banco acessado por componente;
+- duplicação, abstração prematura ou `any` injustificado;
+- teste alterado apenas para ficar verde;
+- dívida, risco ou fonte inventada;
+- contexto append-only ou regra vigente somente no histórico;
+- liberar sem evidência ou autoridade necessária.

@@ -6,9 +6,19 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
-Nenhum item em andamento no momento.
-
-## DISCOVERY
+### LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl
+- Tipo: Content / LinkedIn Deliverable.
+- Descrição objetiva: transformar releases verificadas do FinControl em posicionamento profissional, banco de evidências, pilares, calendário e briefs de posts.
+- Objetivo de negócio: permitir que recrutadores e avaliadores compreendam decisões técnicas, qualidade de engenharia e impacto de produto sem depender apenas do código.
+- Valor esperado: narrativa profissional consistente, rastreável e reutilizável no LinkedIn e no portfólio.
+- Prioridade: Média; pode avançar em documentação sem interromper a trilha de software.
+- Dependências: releases e gates verificáveis; aprovação humana de posicionamento e de cada publicação.
+- Risco: Médio por exagero de claims, exposição de dados/credenciais, métricas sem fonte e desatualização do estado do produto.
+- Escopo: posicionamento, público, evidências, quatro pilares, calendário inicial e três briefs planejados.
+- Fora do escopo: publicação automática, alteração do perfil real, métricas inventadas, divulgação de credenciais, dados financeiros ou afirmações de produção pública.
+- Fase recomendada: validar e integrar `final.md` do `LI-POST-002`; o post sobre candles depende da conclusão da `UX-CHART-003C2/003C3`.
+- Critério de pronto: toda afirmação aponta para evidência, revisão factual/editorial verde, nenhum segredo ou dado pessoal exposto e publicação explicitamente aprovada.
+- Status: IN_PROGRESS — `LI-POST-002` está `DONE` editorialmente e aguarda validação do novo head e merge da PR `#33`; publicação não autorizada, `LI-POST-001` segue bloqueado e `LI-POST-003` em discovery.
 
 ### UX-CHART-003 — Períodos e granularidade adaptativa
 - Tipo: UX Improvement / Feature.
@@ -21,10 +31,23 @@ Nenhum item em andamento no momento.
 - Segurança e dados: a RPC diária atual permanece limitada a 31 dias; períodos longos usam consulta agregada `SECURITY INVOKER`, claims/RLS, allowlist de buckets e limites de intervalo/pontos; nenhum lançamento bruto em massa chega ao browser.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
-- Small releases: `UX-CHART-003A` seletor `7D`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e integração completa com o extrato contextual.
-- Fase recomendada: novo ciclo Dias 1–7 após a `UX-CHART-002`.
+- Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
+- Fase recomendada: `003A`, `003B` e `003C1` concluídas e mescladas; `003C2` só começa após novo comando.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: DISCOVERY — predecessora concluída; próxima feature recomendada, aguardando comando humano explícito para iniciar o Dia 1 próprio.
+- Status: IN_PROGRESS — `UX-CHART-003A`, `003B` e `003C1` estão mescladas; `003C2/003C3` permanecem planejadas.
+
+### UX-CHART-003C — Tudo, período personalizado e drill-down
+- Tipo: Small Release / UX Improvement.
+- Objetivo: permitir histórico completo e intervalos escolhidos, com investigação progressiva sem transferir lançamentos brutos de períodos longos.
+- Prioridade: Alta; small release ativa.
+- Dependências: UX-CHART-002, UX-CHART-003A, UX-CHART-003B e ADRs 0019–0022.
+- Escopo: `Tudo`, URL personalizada, granularidades trimestral/anual, limites de 60 anos/60 buckets e drill-down no painel único até o extrato mensal.
+- Fatiamento: `003C1` domínio/URL; `003C2` agregação segura; `003C3` drill-down progressivo.
+- Risco: Alto por RLS e performance de histórico extenso; mitigação definida na Feature Spec.
+- Critério de pronto: critérios `FPRD-UXCHART003C-AC-001` a `AC-010` verdes e gates de software, segurança, experiência e release concluídos.
+- Status: IN_PROGRESS — `003C1` foi `RELEASED` pela PR `#30` no commit `a96b564`; `003C2/003C3` permanecem pendentes e granularidades trimestral/anual seguem bloqueadas no adapter.
+
+## DISCOVERY
 
 ### EPIC-UI-001 — FinControl Pulse
 - Tipo: Épico
@@ -452,6 +475,19 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Critério de pronto: `checkout` e `setup-node` fixados por SHA e Dependabot/Renovate configurado para atualização controlada.
 - Status: DISCOVERY
 
+### CI-ACTIONS-001 — Atualizar runtime das GitHub Actions
+- Tipo: Dívida Técnica / CI
+- Descrição objetiva: `actions/checkout@v4` e `actions/setup-node@v4` ainda declaram runtime Node.js 20, e o runner atual as força a executar em Node.js 24.
+- Objetivo de negócio: remover a dependência de fallback do runner e manter o pipeline compatível com a evolução da plataforma GitHub Actions.
+- Valor esperado: execução de CI sem aviso de runtime obsoleto e menor risco de quebra futura.
+- Prioridade: Baixa
+- Dependências: versões oficiais das actions com runtime suportado; alinhamento com o pinning previsto em `CI-HARD-001`.
+- Risco: Baixo e não bloqueante no pipeline atual, que concluiu todos os gates em GREEN.
+- Severidade: BAIXA
+- Fase recomendada: próximo hardening de CI, preferencialmente junto de `CI-HARD-001`.
+- Critério de pronto: `checkout` e `setup-node` usam versões suportadas e fixadas por SHA, o aviso desaparece e todos os Quality Gates permanecem verdes.
+- Status: READY
+
 ### CI-VERCEL-002 — Alinhar vínculo local e runtime da Vercel
 - Tipo: Dívida Técnica / Hardening
 - Descrição objetiva: o `.vercel/project.json` local referencia um projeto antigo, enquanto o projeto ativo `fin-control` usa outro ID; o projeto declara Node 24, o `package.json` força Node 22 e a imagem de build usa npm 10 apesar do engine npm 11.
@@ -466,6 +502,23 @@ Motivo do bloqueio: integração externa sensível fora do escopo do MVP inicial
 - Status: DISCOVERY
 
 ## DONE
+
+### GOV-V4-001 — Migração incremental para Regras IDE v4
+- Tipo: Small Release / Governance.
+- Resultado: Hot/Warm/Cold Context, registries, workflows v4, governança e histórico preservado foram materializados sem alterar código funcional.
+- Evidência: PR `#29` mesclada em `develop` no commit `42dd6db` em 2026-09-08.
+- Status: DONE / RELEASED.
+
+### UX-CHART-002D — Volume e insight contextual do intervalo
+- Tipo: Small Release / UX Improvement.
+- Resultado: o extrato contextual apresenta volume movimentado, receitas, despesas e resultado líquido, além de até dois insights determinísticos expansíveis no painel atual.
+- Arquitetura e segurança: cálculo puro em centavos, presentation sem Supabase, nenhum histórico bruto adicional, rede, storage financeiro ou diálogo aninhado.
+- UX/PWA: hierarquia responsiva, alvo mínimo de 44 px, foco visível, `aria-expanded`, `aria-controls`, reduced motion e conteúdo compreensível sem depender de cor.
+- Evidência final: 93 suítes/562 testes, ESLint, type-check, auditoria npm e build Next.js 16.3.3 verdes.
+- Evidência remota: Supabase `ACTIVE_HEALTHY`, RLS ativa e seis migrations alinhadas; Preview `dpl_AXTEHPDNfd3sS92FWQVbsUWWciqM` da PR `#26` `READY`, sem runtime error ou log `error/fatal` em 24 horas.
+- Risco residual: confirmação visual autenticada não repetida por falha local do conector; risco BAIXO mitigado por testes responsivos/acessíveis, build e Preview verdes. `SEC-AUTH-001`, `HARD-OBS-001` e `SEC-HARD-001B` continuam bloqueando produção pública.
+- Data de conclusão: 2026-09-06.
+- Status: DONE / READY_FOR_RELEASE.
 
 ### UX-CHART-002 — Extrato contextual do candle
 - Tipo: Small Release / UX Improvement.

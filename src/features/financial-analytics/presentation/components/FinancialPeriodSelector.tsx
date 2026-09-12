@@ -1,36 +1,74 @@
 import type { FinancialPeriodKind } from "../../domain/types/financial-period.types";
 import { Button } from "@/shared/components/ui/Button";
 import { financialPeriodOptions } from "../config/financial-period-options";
+import { CustomFinancialPeriodDialog } from "./CustomFinancialPeriodDialog.client";
+import { SelectedFinancialPeriodVisibility } from "./SelectedFinancialPeriodVisibility.client";
 
 type FinancialPeriodSelectorProps = Readonly<{
+  selectedCustomPeriod?: Readonly<{ from: string; to: string }>;
   selectedPeriodKind: FinancialPeriodKind;
 }>;
 
 export function FinancialPeriodSelector({
+  selectedCustomPeriod,
   selectedPeriodKind
 }: FinancialPeriodSelectorProps) {
   return (
-    <form className="flex w-full flex-wrap items-end gap-3 sm:w-auto" method="get">
-      <div className="grid w-full gap-2 sm:w-auto">
-        <label className="text-sm font-medium text-foreground" htmlFor="period">
-          Período da evolução financeira
-        </label>
-        <select
-          className="min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:text-sm"
-          defaultValue={selectedPeriodKind}
-          id="period"
-          name="period"
-        >
-          {financialPeriodOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+    <form className="grid min-w-0 w-full gap-1 sm:w-auto" method="get">
+      <SelectedFinancialPeriodVisibility selectedPeriodKind={selectedPeriodKind} />
+      <div
+        aria-describedby="financial-period-guidance"
+        aria-label="Período da evolução financeira"
+        className="flex max-w-full touch-pan-x gap-1 overflow-x-auto overscroll-x-contain p-1 sm:gap-2"
+        id="financial-period-selector"
+        role="group"
+      >
+        {financialPeriodOptions.map((option) => {
+          const isSelected = option.value === selectedPeriodKind;
+          const isCustom = option.value === "custom";
+
+          if (isCustom) {
+            return (
+              <CustomFinancialPeriodDialog
+                accessibleLabel={option.accessibleLabel}
+                compactLabel={option.compactLabel}
+                initialFrom={selectedCustomPeriod?.from}
+                initialTo={selectedCustomPeriod?.to}
+                isSelected={isSelected}
+                key={option.value}
+                label={option.label}
+              />
+            );
+          }
+
+          return (
+            <Button
+              aria-label={option.accessibleLabel}
+              aria-pressed={isSelected}
+              className={`shrink-0 !px-2 motion-reduce:transition-none sm:!px-4 ${
+                isSelected
+                  ? "ring-2 ring-focus-ring ring-offset-2 ring-offset-background"
+                  : ""
+              }`}
+              key={option.value}
+              name="period"
+              type="submit"
+              value={option.value}
+              variant={isSelected ? "primary" : "secondary"}
+            >
+              <span className="sm:hidden">{option.compactLabel}</span>
+              <span className="hidden sm:inline">{option.label}</span>
+            </Button>
+          );
+        })}
       </div>
-      <Button className="w-full sm:w-auto" type="submit">
-        Atualizar período
-      </Button>
+      <p
+        className="text-xs text-muted-foreground"
+        id="financial-period-guidance"
+      >
+        Semana, Quinzena, 3M e Ano seguem o calendário; 7D e 15D contam até
+        hoje.
+      </p>
     </form>
   );
 }

@@ -54,6 +54,7 @@ const financialEvolutionResult = {
   accountCount: 1,
   period: {
     kind: "month" as const,
+    bucketGranularity: "day" as const,
     referenceOn: "2026-03-07",
     startOnInclusive: "2026-03-01",
     endOnExclusive: "2026-04-01"
@@ -92,10 +93,31 @@ describe("dashboard routes", () => {
     expect(loadFinancialEvolution).toHaveBeenCalledWith({ kind: "month" });
   });
 
-  it("should render the dashboard on /dashboard with a supported period", async () => {
+  it("should preserve a supported period on the root dashboard route", async () => {
+    renderRoute(
+      await HomePage({
+        searchParams: Promise.resolve({ period: "rolling_15_days" })
+      })
+    );
+
+    expect(loadFinancialEvolution).toHaveBeenCalledWith({
+      kind: "rolling_15_days"
+    });
+  });
+
+  it.each([
+    "week",
+    "rolling_7_days",
+    "fortnight",
+    "rolling_15_days",
+    "month",
+    "three_months",
+    "year",
+    "all"
+  ] as const)("should compose /dashboard with the supported %s period", async (period) => {
     renderRoute(
       await DashboardRoutePage({
-        searchParams: Promise.resolve({ period: "rolling_15_days" })
+        searchParams: Promise.resolve({ period })
       })
     );
 
@@ -105,15 +127,46 @@ describe("dashboard routes", () => {
     expect(
       screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
     ).toBeInTheDocument();
-    expect(loadFinancialEvolution).toHaveBeenCalledWith({
-      kind: "rolling_15_days"
+    expect(jest.mocked(loadFinancialEvolution).mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({ kind: period })
+    );
+  });
+
+  it("passes canonical custom dates through the server composition", async () => {
+    renderRoute(
+      await DashboardRoutePage({
+        searchParams: Promise.resolve({
+          period: "custom",
+          from: "2024-02-01",
+          to: "2024-02-29"
+        })
+      })
+    );
+
+    expect(jest.mocked(loadFinancialEvolution).mock.calls[0]?.[0]).toEqual({
+      kind: "custom",
+      from: "2024-02-01",
+      to: "2024-02-29"
     });
   });
 
-  it("falls back to month for an unsupported URL period", async () => {
+  it("does not query financial data for an incomplete custom URL", async () => {
     renderRoute(
       await DashboardRoutePage({
         searchParams: Promise.resolve({ period: "custom" })
+      })
+    );
+
+    expect(loadFinancialEvolution).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Informe as datas inicial e final"
+    );
+  });
+
+  it("falls back to month when the URL repeats the period parameter", async () => {
+    renderRoute(
+      await DashboardRoutePage({
+        searchParams: Promise.resolve({ period: ["week", "month"] })
       })
     );
 

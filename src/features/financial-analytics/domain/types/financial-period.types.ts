@@ -3,10 +3,22 @@ export type FinancialPeriodKind =
   | "rolling_7_days"
   | "fortnight"
   | "rolling_15_days"
-  | "month";
+  | "month"
+  | "three_months"
+  | "year"
+  | "all"
+  | "custom";
+
+export type FinancialBucketGranularity =
+  | "day"
+  | "week"
+  | "month"
+  | "quarter"
+  | "year";
 
 export type FinancialPeriod = Readonly<{
   kind: FinancialPeriodKind;
+  bucketGranularity: FinancialBucketGranularity;
   referenceOn: string;
   startOnInclusive: string;
   endOnExclusive: string;

@@ -6,11 +6,15 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type LoadFinancialEvolutionInput = Readonly<{
   kind: FinancialPeriodKind;
+  from?: string;
+  to?: string;
   referenceInstant?: string;
 }>;
 
 export async function loadFinancialEvolution({
   kind,
+  from,
+  to,
   referenceInstant = new Date().toISOString()
 }: LoadFinancialEvolutionInput) {
   const supabaseClient = await createSupabaseServerClient();
@@ -36,6 +40,8 @@ export async function loadFinancialEvolution({
   return listFinancialEvolution.execute({
     userId: claims.sub.trim(),
     kind,
+    from,
+    to,
     referenceInstant,
     timeZone: DEFAULT_FINANCIAL_TIME_ZONE
   });

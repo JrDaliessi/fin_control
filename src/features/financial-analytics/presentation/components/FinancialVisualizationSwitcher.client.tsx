@@ -5,9 +5,11 @@ import type {
   FinancialCandle,
   FinancialEvolutionPoint
 } from "../../domain/types/financial-evolution.types";
+import type { FinancialBucketGranularity } from "../../domain/types/financial-period.types";
 import { Card } from "@/shared/components/ui/Card";
 import type { FinancialCandlestickChartModel } from "../charts/financial-candlestick-chart.model";
 import type { FinancialEvolutionChartModel } from "../charts/financial-evolution-chart.model";
+import { getFinancialBucketCopy } from "../config/financial-bucket-copy";
 import { FinancialCandlesTable } from "./FinancialCandlesTable";
 import { FinancialCandlestickChart } from "./FinancialCandlestickChart.client";
 import { FinancialEvolutionChart } from "./FinancialEvolutionChart.client";
@@ -18,6 +20,7 @@ import {
 } from "./FinancialIntervalStatementPanel.client";
 
 type FinancialVisualizationSwitcherProps = Readonly<{
+  bucketGranularity: FinancialBucketGranularity;
   evolutionModel: FinancialEvolutionChartModel;
   candlestickModel: FinancialCandlestickChartModel;
   evolutionPoints: readonly FinancialEvolutionPoint[];
@@ -27,13 +30,27 @@ type FinancialVisualizationSwitcherProps = Readonly<{
 
 type VisualizationMode = "evolution" | "candlestick";
 
-export function FinancialVisualizationSwitcher({
+export function FinancialVisualizationSwitcher(
+  props: FinancialVisualizationSwitcherProps
+) {
+  const periodKey = [
+    props.bucketGranularity,
+    props.evolutionModel.startOnInclusive,
+    props.evolutionModel.endOnExclusive
+  ].join(":");
+
+  return <FinancialVisualizationContent key={periodKey} {...props} />;
+}
+
+function FinancialVisualizationContent({
+  bucketGranularity,
   evolutionModel,
   candlestickModel,
   evolutionPoints,
   candles,
   loadStatement
 }: FinancialVisualizationSwitcherProps) {
+  const bucketCopy = getFinancialBucketCopy(bucketGranularity);
   const [mode, setMode] = useState<VisualizationMode>("evolution");
   const [selectedCandle, setSelectedCandle] = useState<FinancialCandle | null>(
     null
@@ -86,58 +103,66 @@ export function FinancialVisualizationSwitcher({
       >
         {showsEvolution ? (
           <>
-          <Card className="grid gap-3">
-            <div className="grid gap-1">
-              <h3 className="text-lg font-semibold text-foreground">
-                Evolução do saldo
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Saldo ao fim de cada dia do período selecionado.
-              </p>
-            </div>
-            <FinancialEvolutionChart model={evolutionModel} />
-          </Card>
-          <FinancialEvolutionTable points={evolutionPoints} />
+            <Card className="grid gap-3">
+              <div className="grid gap-1">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Evolução do saldo
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Saldo ao fim de cada {bucketCopy.singular} do período selecionado.
+                </p>
+              </div>
+              <FinancialEvolutionChart
+                bucketGranularity={bucketGranularity}
+                model={evolutionModel}
+              />
+            </Card>
+            <FinancialEvolutionTable
+              bucketGranularity={bucketGranularity}
+              points={evolutionPoints}
+            />
           </>
         ) : (
           <>
-          <Card className="grid gap-3">
-            <div className="grid gap-1">
-              <h3 className="text-lg font-semibold text-foreground">
-                Variação do saldo
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Abertura, extremos e fechamento do saldo em cada dia.
-              </p>
-              {loadStatement ? (
-                <p className="text-xs text-muted-foreground">
-                  Selecione um candle no gráfico ou use Ver extrato na tabela.
+            <Card className="grid gap-3">
+              <div className="grid gap-1">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Variação do saldo
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Abertura, extremos e fechamento do saldo em cada {bucketCopy.singular}.
                 </p>
-              ) : null}
-            </div>
-            <FinancialCandlestickChart
-              model={candlestickModel}
-              onSelectInterval={
-                loadStatement
-                  ? (interval) => {
-                      const candle = candles.find(
-                        (item) =>
-                          item.startOnInclusive === interval.startOnInclusive &&
-                          item.endOnExclusive === interval.endOnExclusive
-                      );
+                {loadStatement ? (
+                  <p className="text-xs text-muted-foreground">
+                    Selecione um candle no gráfico ou use Ver extrato na tabela.
+                  </p>
+                ) : null}
+              </div>
+              <FinancialCandlestickChart
+                bucketGranularity={bucketGranularity}
+                model={candlestickModel}
+                onSelectInterval={
+                  loadStatement
+                    ? (interval) => {
+                        const candle = candles.find(
+                          (item) =>
+                            item.startOnInclusive === interval.startOnInclusive &&
+                            item.endOnExclusive === interval.endOnExclusive
+                        );
 
-                      if (candle) {
-                        setSelectedCandle(candle);
+                        if (candle) {
+                          setSelectedCandle(candle);
+                        }
                       }
-                    }
-                  : undefined
-              }
+                    : undefined
+                }
+              />
+            </Card>
+            <FinancialCandlesTable
+              bucketGranularity={bucketGranularity}
+              candles={candles}
+              onSelectInterval={loadStatement ? setSelectedCandle : undefined}
             />
-          </Card>
-          <FinancialCandlesTable
-            candles={candles}
-            onSelectInterval={loadStatement ? setSelectedCandle : undefined}
-          />
           </>
         )}
       </div>

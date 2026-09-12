@@ -97,9 +97,279 @@ describe("FinancialIntervalStatementPanel", () => {
       "Carregando extrato"
     );
     expect(loadStatement).toHaveBeenCalledWith(statementInterval);
-    expect(await screen.findByText("Salário")).toBeInTheDocument();
-    expect(screen.getByText(/R\$\s*50,00/)).toBeInTheDocument();
+    const statementRow = (await screen.findByText("Salário")).closest("li");
+    expect(statementRow).not.toBeNull();
+    expect(
+      within(statementRow as HTMLElement).getByText(/R\$\s*50,00/)
+    ).toBeInTheDocument();
     expect(screen.getByText(/Abertura.*R\$\s*100,00/i)).toBeInTheDocument();
+  });
+
+  it("shows the movement summary while the statement is still loading", () => {
+    const pendingStatement = deferred<StatementResult>();
+    const loadStatement = jest.fn(() => pendingStatement.promise);
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    expect(within(movementSummary).getByText("Volume movimentado")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*70,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Receitas")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*50,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Despesas")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*20,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Resultado líquido")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/R\$\s*30,00/)).toBeInTheDocument();
+    expect(within(movementSummary).getByText("2 movimentos")).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Positivo")).toBeInTheDocument();
+    expect(within(movementSummary).getByText(/não representa o resultado líquido/i)).toBeInTheDocument();
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+  });
+
+  it("prioritizes primary metrics on narrow screens and respects reduced motion", () => {
+    const pendingStatement = deferred<StatementResult>();
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={jest.fn(() => pendingStatement.promise)}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    const volumeMetric = within(movementSummary)
+      .getByText("Volume movimentado")
+      .closest("div");
+    const netMetric = within(movementSummary)
+      .getByText("Resultado líquido")
+      .closest("div");
+
+    expect(volumeMetric).toHaveClass("col-span-2", "sm:col-span-1");
+    expect(netMetric).toHaveClass("col-span-2", "sm:col-span-1");
+    expect(
+      within(movementSummary).getByRole("button", {
+        name: "Ver análise do intervalo"
+      })
+    ).toHaveClass("motion-reduce:transition-none");
+  });
+
+  it("reveals and hides at most two contextual insights without another load", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async () => ({
+      ...statementInterval,
+      items: [statementItem]
+    }));
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    await screen.findByText("Salário");
+    const showAnalysis = screen.getByRole("button", {
+      name: "Ver análise do intervalo"
+    });
+    expect(showAnalysis).toHaveAttribute("aria-expanded", "false");
+    expect(showAnalysis).toHaveClass("min-h-11");
+    const analysisId = showAnalysis.getAttribute("aria-controls");
+    expect(analysisId).toBeTruthy();
+
+    await user.click(showAnalysis);
+
+    const analysis = document.getElementById(analysisId ?? "");
+    expect(analysis).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Ocultar análise" })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+    expect(within(analysis as HTMLElement).getAllByRole("listitem")).toHaveLength(2);
+    expect(within(analysis as HTMLElement).getByText(/71% do volume correspondeu a receitas/i)).toBeInTheDocument();
+    expect(within(analysis as HTMLElement).getByText(/resultado positivo de R\$\s*30,00/i)).toBeInTheDocument();
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole("button", { name: "Ocultar análise" }));
+
+    expect(screen.getByRole("button", { name: "Ver análise do intervalo" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    );
+    expect(document.getElementById(analysisId ?? "")).toBeNull();
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    [
+      "despesa dominante",
+      nextStatementCandle,
+      "Negativo",
+      /100% do volume correspondeu a despesas/i,
+      /resultado negativo de R\$\s*50,00/i
+    ],
+    [
+      "volume equilibrado",
+      {
+        ...statementCandle,
+        incomeInCents: 2_000,
+        expenseInCents: 2_000,
+        volumeInCents: 4_000,
+        transactionCount: 2
+      },
+      "Neutro",
+      /volume ficou equilibrado: 50% em receitas e 50% em despesas/i,
+      /resultado líquido neutro/i
+    ]
+  ])(
+    "explains %s with text that does not depend on color",
+    async (_scenario, candle, resultLabel, composition, result) => {
+      const user = userEvent.setup();
+      const loadStatement = jest.fn(async () => ({
+        startOnInclusive: candle.startOnInclusive,
+        endOnExclusive: candle.endOnExclusive,
+        items: []
+      }));
+
+      render(
+        <FinancialIntervalStatementPanel
+          loadStatement={loadStatement}
+          onClose={jest.fn()}
+          selectedCandle={candle}
+        />
+      );
+
+      const movementSummary = screen.getByRole("region", {
+        name: "Movimentação no intervalo"
+      });
+      expect(within(movementSummary).getByText(resultLabel)).toBeInTheDocument();
+
+      await user.click(
+        within(movementSummary).getByRole("button", {
+          name: "Ver análise do intervalo"
+        })
+      );
+
+      const insights = within(movementSummary).getAllByRole("listitem");
+      expect(insights).toHaveLength(2);
+      expect(within(movementSummary).getByText(composition)).toBeInTheDocument();
+      expect(within(movementSummary).getByText(result)).toBeInTheDocument();
+      expect(loadStatement).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it("keeps an honest zero-volume state free of invalid numbers", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async () => ({
+      ...statementInterval,
+      items: []
+    }));
+
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={{
+          ...statementCandle,
+          incomeInCents: 0,
+          expenseInCents: 0,
+          volumeInCents: 0,
+          transactionCount: 0
+        }}
+      />
+    );
+
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    expect(within(movementSummary).getByText("0 movimentos")).toBeInTheDocument();
+    expect(within(movementSummary).getByText("Sem movimentação")).toBeInTheDocument();
+
+    await user.click(
+      within(movementSummary).getByRole("button", {
+        name: "Ver análise do intervalo"
+      })
+    );
+
+    expect(within(movementSummary).getAllByRole("listitem")).toHaveLength(1);
+    expect(
+      within(movementSummary).getByText(
+        "Nenhuma movimentação foi registrada neste intervalo."
+      )
+    ).toBeInTheDocument();
+    expect(movementSummary).not.toHaveTextContent(/NaN|Infinity/);
+    expect(loadStatement).toHaveBeenCalledTimes(1);
+  });
+
+  it("collapses the analysis when the selected candle changes", async () => {
+    const user = userEvent.setup();
+    const loadStatement = jest.fn(async (input: StatementIntervalInput) => ({
+      ...input,
+      items: []
+    }));
+    const view = render(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    await screen.findByText("Nenhum lançamento neste intervalo.");
+    await user.click(
+      screen.getByRole("button", { name: "Ver análise do intervalo" })
+    );
+    expect(screen.getByText(/71% do volume correspondeu a receitas/i)).toBeInTheDocument();
+
+    view.rerender(
+      <FinancialIntervalStatementPanel
+        loadStatement={loadStatement}
+        onClose={jest.fn()}
+        selectedCandle={nextStatementCandle}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Ver análise do intervalo" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    );
+    expect(screen.queryByText(/71% do volume correspondeu a receitas/i)).not.toBeInTheDocument();
+    await waitFor(() => expect(loadStatement).toHaveBeenCalledTimes(2));
+  });
+
+  it("keeps the movement summary available when the statement load fails", async () => {
+    render(
+      <FinancialIntervalStatementPanel
+        loadStatement={jest.fn(async () => {
+          throw new Error("provider unavailable");
+        })}
+        onClose={jest.fn()}
+        selectedCandle={statementCandle}
+      />
+    );
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    const movementSummary = screen.getByRole("region", {
+      name: "Movimentação no intervalo"
+    });
+    expect(within(movementSummary).getByText(/R\$\s*70,00/)).toBeInTheDocument();
+    expect(
+      within(movementSummary).getByRole("button", {
+        name: "Ver análise do intervalo"
+      })
+    ).toBeInTheDocument();
   });
 
   it("shows an honest empty state and closes through a named control", async () => {
@@ -197,11 +467,16 @@ describe("FinancialIntervalStatementPanel", () => {
       "pr-[max(1rem,env(safe-area-inset-right))]",
       "pb-[max(1rem,env(safe-area-inset-bottom))]"
     );
+    const showAnalysis = within(dialog).getByRole("button", {
+      name: "Ver análise do intervalo"
+    });
 
+    await user.tab();
+    expect(showAnalysis).toHaveFocus();
     await user.tab();
     expect(closeButton).toHaveFocus();
     await user.tab({ shift: true });
-    expect(closeButton).toHaveFocus();
+    expect(showAnalysis).toHaveFocus();
 
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
