@@ -4,8 +4,8 @@ project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product, linkedin, content]
 active_artifact: LINKEDIN-001
-artifact_state: IN_PROGRESS
-phase: Dia 4
+artifact_state: QUALITY_VALIDATION
+phase: Dia 7
 last_release: UX-CHART-003C1
 
 ## Current Goal
@@ -14,22 +14,18 @@ Construir uma narrativa profissional verificável do FinControl para recrutadore
 
 ## Current Delivery State
 
-- `UX-CHART-003C1` foi mesclada pela PR `#30` no commit `a96b564`;
-- capabilities `linkedin` e `content` foram aprovadas para a `LINKEDIN-001`;
-- requisitos, content spec, headline e voz editorial foram aprovados no Dia 1;
-- três briefs possuem fontes, limites, dependências e critérios próprios;
-- estratégia, rubricas e fixtures de validação foram materializadas no Dia 2;
-- `LI-POST-002` possui oito claims delimitados e draft expandido com gates factual e de privacidade verdes;
-- inspeção read-only pelo plugin MCP confirmou no Supabase as migrations e fronteiras de RLS/grants/policies/FKs citadas no draft;
-- Dia 4 acrescentou somente contexto, exemplo tenant-safe, trade-off e CTA ao `LI-POST-002`;
-- gates factual/privacidade permaneceram verdes e a rubrica editorial atingiu 14/14;
-- `LI-POST-001` permanece bloqueado até `UX-CHART-003C2/003C3`; `LI-POST-003` segue em discovery;
-- nenhum post foi redigido como final, publicado ou enviado a serviço externo;
-- branch atual: `codex/linkedin-001-foundation`.
+- PR `#31` entregou a fundação e os Dias 1–3 no commit `c42effb`;
+- PR `#32` entregou o Dia 4 no commit `fce2159` com checks verdes;
+- `LI-POST-002` possui oito claims e candidato editorial de 303 palavras com gates locais verdes;
+- Supabase foi revalidado em 2026-09-11 sem alteração de migrations, RLS, grants, policies, FKs ou advisors;
+- Dias 5–7 estão preparados na branch de entrega e ainda exigem novo head remoto validado;
+- `LI-POST-001` permanece bloqueado por `UX-CHART-003C2/003C3`; `LI-POST-003` segue em discovery;
+- nenhum `final.md`, perfil ou publicação foi criado;
+- branch atual: `codex/linkedin-001-days-5-7`.
 
 ## Blockers
 
-Nenhum bloqueio duro para refinar o `LI-POST-002` no Dia 5.
+Bloqueio para `READY_FOR_RELEASE`: os Dias 5–7 ainda não possuem PR e checks do head exato.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -76,7 +72,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar o Dia 5 da `LINKEDIN-001` para revisar concisão, ritmo, redundância e consistência de voz do `LI-POST-002` sem adicionar claims fora do contrato.
+Versionar os Dias 5–7, abrir uma PR e validar o novo head. Depois, solicitar decisão humana separada sobre `final.md`; publicação continuará não autorizada.
 
 ## History
 

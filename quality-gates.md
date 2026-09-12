@@ -98,6 +98,38 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - nenhum `final.md`, novo post, código, dado, Supabase/Vercel, perfil externo ou publicação foi criado ou alterado;
 - estado de saída: `IN_PROGRESS` com expansão GREEN; próximo comando válido: `dia 5` da `LINKEDIN-001`.
 
+### Resultado observado — LINKEDIN-001 · Dia 5
+
+- baseline demonstrou repetição na abertura, no exemplo e na transição para a evidência de validação;
+- hardening condensou esses trechos sem remover ownership, RLS, grants, policies, FKs, migrations, pgTAP, trade-off, limite ou CTA;
+- corpo editorial passou de 341 para 291 palavras e de 2.297 para 1.980 caracteres;
+- exatamente os oito claims aprovados continuam suficientes e rastreáveis;
+- gates factual e de privacidade passaram sem ressalva crítica;
+- rubrica editorial permaneceu em 14/14, sem nota zero;
+- nenhum requisito, claim, métrica, feature, `final.md`, imagem, código, Supabase/Vercel, perfil externo ou publicação foi criado ou alterado;
+- estado de saída: `IN_PROGRESS` com `HARDENING` GREEN; próximo comando válido: `dia 6` da `LINKEDIN-001`.
+
+### Resultado observado — LINKEDIN-001 · Dia 6
+
+- draft organizado em 13 blocos, com maior parágrafo corrido de 32 palavras e lista técnica de três itens;
+- corpo possui 303 palavras e 2.057 caracteres, com progressão entre problema, decisão, exemplo, trade-off, evidência, limite, aprendizado e CTA;
+- RLS permanece expandida na primeira ocorrência; migrations e pgTAP receberam contexto em português;
+- formato textual autossuficiente validado sem emoji, hashtag, link externo ou imagem;
+- exatamente oito claims, gates factual/privacidade e rubrica editorial 14/14 foram preservados;
+- nenhum `final.md`, claim, código, dado, Supabase/Vercel, perfil externo ou publicação foi criado ou alterado;
+- estado de saída: `EXPERIENCE_VALIDATION`; próximo comando válido: `dia 7` da `LINKEDIN-001`.
+
+### Resultado observado — LINKEDIN-001 · Dia 7
+
+- oito claims, fontes, limites, 10 requisitos funcionais, 6 NFRs e 10 critérios de aceite foram revalidados;
+- Supabase `fin_control` permaneceu `ACTIVE_HEALTHY` em 2026-09-11, com sete migrations, RLS/grants/policies/FKs esperadas e somente `SEC-AUTH-001` no Security Advisor;
+- inspeção remota não consultou linhas de negócio nem executou mutação;
+- gates factual, rastreabilidade, privacidade, segurança editorial, formato e rubrica 14/14 ficaram verdes;
+- corpo permaneceu em 303 palavras, 2.057 caracteres e 13 blocos, sem `final.md`, dado sensível, imagem ou link operacional;
+- PR `#32` foi mesclada em `fce2159` com Quality Gates/Vercel verdes, mas cobre somente até o Dia 4;
+- Dias 5–7 ainda não foram versionados nem validados remotamente no head exato;
+- estado de saída: `QUALITY_VALIDATION`; `READY_FOR_RELEASE` bloqueado até nova PR e checks verdes.
+
 ## Gate de Contexto
 - `project-context.md` existe e está atualizado.
 - Estado da máquina de estados está explícito.

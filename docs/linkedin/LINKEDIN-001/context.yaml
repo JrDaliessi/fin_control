@@ -1,7 +1,7 @@
 id: LINKEDIN-001
 type: linkedin-content-small-release
-state: IN_PROGRESS
-phase: dia-4
+state: QUALITY_VALIDATION
+phase: dia-7
 derived_from:
   - project-brief.md
   - docs/releases/
@@ -25,13 +25,19 @@ implementation:
   - docs/linkedin/posts/LI-POST-002/draft.md
   - docs/linkedin/posts/LI-POST-002/day-3-validation.md
   - docs/linkedin/posts/LI-POST-002/day-4-validation.md
+  - docs/linkedin/posts/LI-POST-002/day-5-validation.md
+  - docs/linkedin/posts/LI-POST-002/day-6-experience-validation.md
+  - docs/linkedin/posts/LI-POST-002/day-7-release-readiness.md
 quality_gates:
   - quality-gates.md#linkedin
   - quality-gates.md#content
   - quality-gates.md#resultado-observado--linkedin-001--dia-1
   - quality-gates.md#resultado-observado--linkedin-001--dia-4
+  - quality-gates.md#resultado-observado--linkedin-001--dia-5
+  - quality-gates.md#resultado-observado--linkedin-001--dia-6
+  - quality-gates.md#resultado-observado--linkedin-001--dia-7
 related_context:
   - docs/features/UX-CHART-003C/
   - architecture.md
   - docs/governance/ai-jail.md
-next_action: dia-5-li-post-002
+next_action: versionar-dias-5-a-7-e-validar-head

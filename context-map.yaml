@@ -51,6 +51,9 @@ routes:
     - docs/linkedin/posts/LI-POST-002/day-3-validation.md
     - docs/linkedin/posts/LI-POST-002/supabase-evidence-2026-09-10.md
     - docs/linkedin/posts/LI-POST-002/day-4-validation.md
+    - docs/linkedin/posts/LI-POST-002/day-5-validation.md
+    - docs/linkedin/posts/LI-POST-002/day-6-experience-validation.md
+    - docs/linkedin/posts/LI-POST-002/day-7-release-readiness.md
     - docs/linkedin/posts/LI-POST-003/brief.md
     - docs/linkedin/posts/LI-POST-003/sources.md
   quality:

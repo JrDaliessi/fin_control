@@ -1,7 +1,7 @@
 # Brief — LI-POST-002
 
 - Estado: `IN_PROGRESS`
-- Fase: Dia 4 concluído com expansão controlada validada
+- Fase: Dia 7 com quality gates locais verdes e readiness remota pendente
 
 ## Tema
 
@@ -61,3 +61,26 @@ Revisar novamente o estado dos hardenings antes do draft e antes da publicação
 - trade-off entre schema/testes explícitos e defesa em profundidade;
 - CTA específico sobre regra de isolamento e forma de validação;
 - nenhum claim, tema, métrica ou compromisso de publicação acrescentado.
+
+## Hardening do Dia 5
+
+- abertura condensada sem perder problema ou contexto;
+- exemplo e responsabilidades das camadas reunidos em um único fluxo;
+- repetição sobre validação fora da interface removida;
+- claims, trade-off, limite e CTA preservados.
+
+## Experiência e formato do Dia 6
+
+- abertura dividida em blocos curtos para leitura móvel;
+- exemplo técnico separado da responsabilidade da aplicação e da RLS;
+- “migrations” explicada como alterações versionadas do banco e pgTAP contextualizado como teste de banco;
+- formato textual autossuficiente, sem emoji, hashtag, link externo ou imagem nesta versão;
+- decisões de versão final e publicação continuam reservadas ao Dia 7 e à aprovação humana específica.
+
+## Quality gate do Dia 7
+
+- evidências e limites dos oito claims revalidados;
+- Supabase confirmado novamente em modo somente leitura, sem acesso a linhas de negócio;
+- gates factual, privacidade, editorial, formato, rastreabilidade e segurança editorial verdes;
+- `READY_FOR_RELEASE` condicionado ao versionamento dos Dias 5–7 e aos checks remotos do head exato;
+- criação de `final.md` e publicação permanecem decisões humanas distintas e ainda não autorizadas.

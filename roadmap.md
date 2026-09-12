@@ -335,7 +335,7 @@ SR-023 entra somente com calculos deterministas, consentimento, minimizacao e po
 
 Small release inicial: `LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl`.
 
-Estado atual: `IN_PROGRESS`. O Dia 4 expandiu o `LI-POST-002` com contexto, exemplo tenant-safe, trade-off e CTA, preservando os oito claims; gates factual/privacidade ficaram verdes e a rubrica editorial atingiu 14/14. Nenhum conteúdo foi publicado.
+Estado atual: `QUALITY_VALIDATION`. O Dia 7 deixou os gates locais do `LI-POST-002` verdes e revalidou a evidência Supabase; `READY_FOR_RELEASE` aguarda versionamento e checks remotos dos Dias 5–7. Nenhum `final.md` ou conteúdo publicado existe.
 
 Sequência planejada:
 1. aprovar posicionamento, público, claims permitidos e critérios editoriais;

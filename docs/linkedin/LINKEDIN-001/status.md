@@ -1,7 +1,7 @@
 # Status — LINKEDIN-001
 
-- Estado: `IN_PROGRESS`
-- Fase concluída: `Dia 4`
+- Estado: `QUALITY_VALIDATION`
+- Fase concluída: `Dia 7`
 - Aprovação de ativação: confirmada em 2026-09-09
 - Publicação externa: não autorizada
 - Alteração do perfil real: não autorizada
@@ -71,6 +71,36 @@
 - o texto continua sem e-mail, UUID, credencial, valor financeiro, dado da conta demo, imagem ou link operacional;
 - nenhum `final.md` foi criado e nenhuma publicação ou alteração externa foi executada.
 
+## Validação do Dia 5
+
+- baseline do Dia 4 foi revisada por repetição na abertura, no exemplo e na transição para validação;
+- abertura e exemplo foram condensados sem retirar nenhum dos oito claims;
+- corpo editorial reduzido de 341 para 291 palavras e de 2.297 para 1.980 caracteres;
+- migrations, pgTAP, trade-off, riscos residuais e CTA permanecem explícitos;
+- gates factual e de privacidade passaram sem ressalva;
+- rubrica editorial permaneceu em 14/14, sem nota zero;
+- nenhum `final.md`, imagem, link, perfil externo ou publicação foi criado ou alterado.
+
+## Validação do Dia 6
+
+- draft reorganizado em 13 blocos, com maior parágrafo corrido de 32 palavras;
+- corpo permanece conciso em 303 palavras e 2.057 caracteres;
+- RLS, migrations e pgTAP receberam contexto acessível sem alterar os claims;
+- formato textual autossuficiente foi validado sem emoji, hashtag, link externo ou imagem;
+- gates factual, privacidade, editorial e formato passaram;
+- exatamente oito claims permanecem rastreáveis e a rubrica editorial segue em 14/14;
+- nenhum `final.md`, perfil externo ou publicação foi criado ou alterado.
+
+## Validação do Dia 7
+
+- oito claims, fontes, limites e hardenings foram revalidados sem drift factual;
+- inspeção read-only do Supabase em 2026-09-11 confirmou novamente o estado de `EVD-FIN-008`;
+- gates factual, rastreabilidade, privacidade, segurança editorial, formato e rubrica editorial passaram;
+- contrato cobre 10 requisitos funcionais, 6 não funcionais e 10 critérios de aceite;
+- PR `#32` foi mesclada no commit `fce2159` com checks verdes, mas contém somente até o Dia 4;
+- Dias 5–7 ainda não possuem commit ou checks do head exato;
+- estado permanece `QUALITY_VALIDATION`; `READY_FOR_RELEASE`, `final.md` e publicação não foram autorizados.
+
 ## Próximo passo
 
-Executar o Dia 5 para revisar concisão, ritmo, redundância e consistência de voz do `LI-POST-002`, preservando os oito claims aprovados.
+Criar uma branch limpa a partir de `origin/develop`, versionar os Dias 5–7, abrir uma nova PR e aguardar os checks do head exato. Depois, solicitar decisão humana separada sobre `final.md`.
