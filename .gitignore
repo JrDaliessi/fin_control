@@ -14,3 +14,10 @@ yarn-error.log*
 pnpm-debug.log*
 
 .vercel
+
+# Local Codex attachments
+.codex-remote-attachments/
+
+# Private LinkedIn working notes
+docs/linkedin/private/
+docs/linkedin/**/private/
