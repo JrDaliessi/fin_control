@@ -1,6 +1,6 @@
 # Status — LINKEDIN-001
 
-- Estado: `QUALITY_VALIDATION`
+- Estado: `READY_FOR_RELEASE`
 - Fase concluída: `Dia 7`
 - Aprovação de ativação: confirmada em 2026-09-09
 - Publicação externa: não autorizada
@@ -97,10 +97,10 @@
 - inspeção read-only do Supabase em 2026-09-11 confirmou novamente o estado de `EVD-FIN-008`;
 - gates factual, rastreabilidade, privacidade, segurança editorial, formato e rubrica editorial passaram;
 - contrato cobre 10 requisitos funcionais, 6 não funcionais e 10 critérios de aceite;
-- PR `#32` foi mesclada no commit `fce2159` com checks verdes, mas contém somente até o Dia 4;
-- Dias 5–7 ainda não possuem commit ou checks do head exato;
-- estado permanece `QUALITY_VALIDATION`; `READY_FOR_RELEASE`, `final.md` e publicação não foram autorizados.
+- PR `#32` foi mesclada no commit `fce2159` com checks verdes e contém até o Dia 4;
+- PR `#33` versionou os Dias 5–7 no commit de conteúdo `201fe3f`, com `validate` e Vercel verdes nesse commit;
+- estado avançou para `READY_FOR_RELEASE`; `final.md` e publicação continuam sem autorização.
 
 ## Próximo passo
 
-Criar uma branch limpa a partir de `origin/develop`, versionar os Dias 5–7, abrir uma nova PR e aguardar os checks do head exato. Depois, solicitar decisão humana separada sobre `final.md`.
+Solicitar decisão humana separada sobre a criação de `final.md`. A publicação permanecerá sujeita a outra autorização explícita.

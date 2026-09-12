@@ -2,7 +2,7 @@
 
 - Artefato avaliado: `draft.md`
 - Estado de entrada: `EXPERIENCE_VALIDATION`
-- Estado de saída: `QUALITY_VALIDATION`
+- Estado de saída: `READY_FOR_RELEASE`
 - Versão final aprovada: não
 - Publicação autorizada: não
 
@@ -63,22 +63,22 @@ Resultado: `PASS`.
 
 - PR `#32` foi mesclada em `develop` no commit `fce2159` com Quality Gates e Vercel verdes;
 - esse head contém somente até o Dia 4;
-- alterações dos Dias 5–7 estão preparadas na branch de entrega e ainda não foram submetidas aos checks remotos;
-- os checks da PR `#32` não são evidência do candidato atual.
+- PR `#33` versionou os Dias 5–7 no commit `201fe3f`;
+- `validate`, Vercel e Vercel Preview Comments passaram no commit de conteúdo `201fe3f` da PR `#33`.
 
-## Bloqueio de readiness
+## Readiness remoto
 
-**MOTIVO DO BLOQUEIO:** o candidato atual ainda não possui commit, PR e checks do head exato.
+**RESULTADO:** o candidato editorial possui commit, PR e checks verdes no commit de conteúdo validado.
 
-**EVIDÊNCIA DO BLOQUEIO:** `origin/develop` termina em `fce2159`, enquanto os Dias 5–7 estão preparados na branch `codex/linkedin-001-days-5-7` sem validação remota do head exato.
+**EVIDÊNCIA:** commit `201fe3f` na PR `#33`; `validate`, Vercel e Vercel Preview Comments com resultado `pass`.
 
-**IMPACTO:** o artefato permanece em `QUALITY_VALIDATION`; não pode ser marcado `READY_FOR_RELEASE`.
+**IMPACTO:** o artefato pode avançar para `READY_FOR_RELEASE` sem antecipar a versão final ou a publicação.
 
-**AÇÃO MÍNIMA DE DESBLOQUEIO:** versionar somente os Dias 5–7, abrir PR e aguardar Quality Gates/Vercel verdes.
+**PRÓXIMA DECISÃO:** obter aprovação humana específica antes de criar `final.md`.
 
 ## Próximas decisões humanas
 
-Depois do desbloqueio técnico:
+Com o desbloqueio técnico concluído:
 
 1. decidir se o candidato pode ser materializado como `final.md`;
 2. revisar novamente evidências e privacidade se houver qualquer edição;

@@ -126,9 +126,10 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - inspeção remota não consultou linhas de negócio nem executou mutação;
 - gates factual, rastreabilidade, privacidade, segurança editorial, formato e rubrica 14/14 ficaram verdes;
 - corpo permaneceu em 303 palavras, 2.057 caracteres e 13 blocos, sem `final.md`, dado sensível, imagem ou link operacional;
-- PR `#32` foi mesclada em `fce2159` com Quality Gates/Vercel verdes, mas cobre somente até o Dia 4;
-- Dias 5–7 ainda não foram versionados nem validados remotamente no head exato;
-- estado de saída: `QUALITY_VALIDATION`; `READY_FOR_RELEASE` bloqueado até nova PR e checks verdes.
+- PR `#32` foi mesclada em `fce2159` com Quality Gates/Vercel verdes e cobre até o Dia 4;
+- PR `#33` versionou os Dias 5–7 no commit de conteúdo `201fe3f`; `validate`, Vercel e Vercel Preview Comments passaram nesse commit;
+- regressão local do mesmo head: type-check, lint, 97 suítes/669 testes e build de produção verdes;
+- estado de saída: `READY_FOR_RELEASE`; `final.md` e publicação continuam condicionados a autorizações humanas separadas.
 
 ## Gate de Contexto
 - `project-context.md` existe e está atualizado.

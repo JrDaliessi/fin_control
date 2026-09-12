@@ -1,6 +1,6 @@
 id: LINKEDIN-001
 type: linkedin-content-small-release
-state: QUALITY_VALIDATION
+state: READY_FOR_RELEASE
 phase: dia-7
 derived_from:
   - project-brief.md
@@ -40,4 +40,4 @@ related_context:
   - docs/features/UX-CHART-003C/
   - architecture.md
   - docs/governance/ai-jail.md
-next_action: versionar-dias-5-a-7-e-validar-head
+next_action: solicitar-aprovacao-para-final-md

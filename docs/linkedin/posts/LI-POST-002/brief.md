@@ -82,5 +82,5 @@ Revisar novamente o estado dos hardenings antes do draft e antes da publicação
 - evidências e limites dos oito claims revalidados;
 - Supabase confirmado novamente em modo somente leitura, sem acesso a linhas de negócio;
 - gates factual, privacidade, editorial, formato, rastreabilidade e segurança editorial verdes;
-- `READY_FOR_RELEASE` condicionado ao versionamento dos Dias 5–7 e aos checks remotos do head exato;
+- `READY_FOR_RELEASE` confirmado após o versionamento dos Dias 5–7 e checks remotos verdes no commit de conteúdo `201fe3f` da PR `#33`;
 - criação de `final.md` e publicação permanecem decisões humanas distintas e ainda não autorizadas.

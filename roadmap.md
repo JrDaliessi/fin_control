@@ -335,7 +335,7 @@ SR-023 entra somente com calculos deterministas, consentimento, minimizacao e po
 
 Small release inicial: `LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl`.
 
-Estado atual: `QUALITY_VALIDATION`. O Dia 7 deixou os gates locais do `LI-POST-002` verdes e revalidou a evidência Supabase; `READY_FOR_RELEASE` aguarda versionamento e checks remotos dos Dias 5–7. Nenhum `final.md` ou conteúdo publicado existe.
+Estado atual: `READY_FOR_RELEASE`. O Dia 7 revalidou a evidência Supabase e a PR `#33` passou em `validate` e Vercel no commit de conteúdo `201fe3f`. Nenhum `final.md` ou conteúdo publicado existe; ambas as ações permanecem condicionadas a decisões humanas separadas.
 
 Sequência planejada:
 1. aprovar posicionamento, público, claims permitidos e critérios editoriais;
