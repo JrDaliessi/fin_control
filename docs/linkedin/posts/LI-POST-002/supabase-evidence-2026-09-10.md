@@ -31,3 +31,17 @@ Esse resultado comprova o estado observado na data acima, mas não sustenta prom
 - nenhuma linha de conta, categoria, transação ou usuário foi consultada;
 - nenhum e-mail, UUID, valor financeiro, token ou chave foi coletado;
 - nenhum SQL mutável, migration, alteração de Auth, policy, grant ou dado foi executado.
+
+## Revalidação — 2026-09-11
+
+O gate do Dia 7 repetiu a inspeção somente leitura e encontrou o mesmo estado:
+
+- projeto `fin_control` em `ACTIVE_HEALTHY`;
+- sete migrations aplicadas;
+- RLS habilitada e forçada nas três tabelas financeiras;
+- apenas `SELECT` e `INSERT` para `authenticated` no recorte consultado;
+- seis policies de ownership com rejeição de identidade anônima;
+- FKs compostas tenant-safe preservadas em `transactions`;
+- `auth_leaked_password_protection` permanece como único aviso do Security Advisor no recorte.
+
+Nenhuma linha de usuário ou dado financeiro foi lida e nenhuma mutação foi executada.
