@@ -49,7 +49,7 @@ O incremento entrega a fundação segura e performática para `Tudo` e para per�
 - `FPRD-UXCHART003C2-BR-001` — o início de `Tudo` é a menor `occurred_on` de uma transação visível ao usuário autenticado; `created_at` da conta não participa dessa decisão.
 - `FPRD-UXCHART003C2-BR-002` — a data final histórica é a data civil de referência, inclusiva; no domínio ela é convertida para o dia seguinte exclusivo.
 - `FPRD-UXCHART003C2-BR-003` — quando não existir transação visível, `Tudo` usa o mês civil da referência para preservar a leitura do saldo inicial sem inventar histórico.
-- `FPRD-UXCHART003C2-BR-004` — se a primeira transação visível ocorrer depois da data de referência, o período também usa o mês civil da referência; uma transação futura não transforma histórico em projeção nem pode gerar intervalo invertido. Esta regra de borda é nova e requer aprovação humana neste Dia 1.
+- `FPRD-UXCHART003C2-BR-004` — se a primeira transação visível ocorrer depois da data de referência, o período também usa o mês civil da referência; uma transação futura não transforma histórico em projeção nem pode gerar intervalo invertido. Esta regra de borda foi aprovada em 2026-09-12.
 - `FPRD-UXCHART003C2-BR-005` — nenhuma RPC recebe `user_id`; a identidade é obtida exclusivamente de `auth.uid()` e os dados continuam sujeitos às políticas RLS.
 - `FPRD-UXCHART003C2-BR-006` — trimestre e ano usam fronteiras civis em UTC e preservam buckets parciais nas extremidades do intervalo solicitado.
 - `FPRD-UXCHART003C2-BR-007` — duração máxima de 60 anos e quantidade máxima de 60 buckets são limites independentes; exceder qualquer um falha de forma determinística.

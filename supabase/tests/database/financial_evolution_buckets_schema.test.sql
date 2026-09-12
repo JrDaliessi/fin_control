@@ -175,16 +175,18 @@ select is(
 select ok(
   coalesce(
     (
-      select pg_get_functiondef(oid) ~ '366'
+      select pg_get_functiondef(oid) !~ '366'
         and pg_get_functiondef(oid) ~ '60'
         and pg_get_functiondef(oid) ~ 'week'
         and pg_get_functiondef(oid) ~ 'month'
+        and pg_get_functiondef(oid) ~ 'quarter'
+        and pg_get_functiondef(oid) ~ 'year'
       from pg_proc
       where oid = to_regprocedure('public.load_financial_evolution_buckets(date,date,text)')
     ),
     false
   ),
-  'function contains explicit duration, point and bucket allowlist limits'
+  'function contains long-history limits and the complete aggregate allowlist'
 );
 
 select * from finish();

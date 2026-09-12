@@ -4,8 +4,8 @@ project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product]
 active_artifact: UX-CHART-003C2
-artifact_state: SPEC_READY
-phase: Dia 1
+artifact_state: TEST_STRATEGY_READY
+phase: Dia 2
 last_release: LINKEDIN-001/LI-POST-002
 
 ## Current Goal
@@ -20,11 +20,13 @@ Definir a agregação segura que habilita `Tudo`, trimestre e ano sem expor lan�
 - Supabase foi inspecionado em modo somente leitura em 2026-09-12: PostgreSQL 17.6, sete migrations, RLS ativa e uma RPC agregadora invoker;
 - a RPC atual suporta `week/month`, preserva `search_path` vazio e grant de aplicação para `authenticated`;
 - o índice composto atual de transações é a hipótese inicial para âncora/recorte, mas qualquer novo índice depende de `EXPLAIN`;
+- Dia 2 registrou baseline de 77 testes, RED de 15 cenários Jest e probe pgTAP 3/3 vermelho com rollback confirmado;
+- regressão fora do RED passou com 95 suítes/651 testes, e lint/type-check estão verdes;
 - branch atual: `codex/ux-chart-003c2-day-1`.
 
 ## Blockers
 
-Nenhum bloqueio duro impede o Dia 2 da `UX-CHART-003C2`.
+Nenhum bloqueio duro impede o Dia 3 da `UX-CHART-003C2`; a evidência RED foi aprovada em 2026-09-12.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -52,6 +54,7 @@ Bloqueios externos antes de produção pública completa:
 - active artifact: `docs/features/UX-CHART-003C2/`
 - requirements: `docs/features/UX-CHART-003C2/feature-prd.md`
 - specification: `docs/features/UX-CHART-003C2/feature-spec.md`
+- validation: `docs/features/UX-CHART-003C2/test-strategy.md`
 - artifact context: `docs/features/UX-CHART-003C2/context.yaml`
 - artifact status: `docs/features/UX-CHART-003C2/status.md`
 - parent feature: `docs/features/UX-CHART-003C/`
@@ -74,7 +77,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar o Dia 2 da `UX-CHART-003C2` para criar a matriz e os testes RED em Jest e pgTAP, sem implementação funcional.
+Executar o Dia 3 da `UX-CHART-003C2` para o mínimo GREEN mediante comando explícito.
 
 ## History
 

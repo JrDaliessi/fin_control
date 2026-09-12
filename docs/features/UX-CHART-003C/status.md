@@ -2,8 +2,8 @@
 
 - Estado da feature pai: `IN_PROGRESS`
 - Estado da small release `UX-CHART-003C1`: `RELEASED`
-- Estado da small release `UX-CHART-003C2`: `SPEC_READY`
-- Fase concluída: `Dia 1 da UX-CHART-003C2`
+- Estado da small release `UX-CHART-003C2`: `TEST_STRATEGY_READY`
+- Fase concluída: `Dia 2 da UX-CHART-003C2`
 - Aprovação: confirmada para os requisitos da `UX-CHART-003C2` em 2026-09-12
 - Código funcional alterado: sim; núcleo da `UX-CHART-003C1` em GREEN
 - Banco remoto alterado: não
@@ -65,7 +65,7 @@ Riscos ativos:
 
 ## Próximo passo
 
-Executar o Dia 2 da `UX-CHART-003C2` para criar os testes RED em Jest e pgTAP.
+Executar o Dia 3 da `UX-CHART-003C2` para o mínimo GREEN mediante comando explícito.
 
 ## Validação do Dia 1
 

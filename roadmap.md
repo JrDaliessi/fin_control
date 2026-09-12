@@ -347,13 +347,12 @@ Primeira narrativa planejada: como os candles foram adaptados de uma metáfora d
 
 ## Incremento ativo — UX-CHART-003C2
 
-Estado atual: `SPEC_READY`. O Dia 1 aprovado definiu a agregação segura de histórico completo, com RPC de âncora sem parâmetro de usuário, resolução de `Tudo`, buckets trimestrais/anuais, limites independentes de 60 anos/60 buckets e projeção somente agregada.
+Estado atual: `TEST_STRATEGY_READY`. O Dia 2 registrou baseline verde, 15 cenários Jest em RED, 72 asserções pgTAP no Context Pack e probe remoto 3/3 vermelho com rollback confirmado.
 
 Sequência planejada:
-1. no Dia 2, materializar matriz e testes RED em Jest/pgTAP;
-2. no Dia 3, implementar o mínimo GREEN e a migration forward-only local;
-3. expandir, endurecer, validar experiência e executar gates finais nos Dias 4–7;
-4. somente depois de release, iniciar `UX-CHART-003C3`.
+1. no Dia 3, implementar o mínimo GREEN e a migration forward-only local;
+2. expandir, endurecer, validar experiência e executar gates finais nos Dias 4–7;
+3. somente depois de release, iniciar `UX-CHART-003C3`.
 
 Restrições: nenhum índice sem `EXPLAIN`, nenhuma mutação Supabase remota no Dia 1, nenhum lançamento bruto no agregado e nenhum escopo de drill-down antecipado.
 

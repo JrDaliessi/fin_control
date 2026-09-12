@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(22);
+select plan(27);
 
 select set_config('test.user_a_id', gen_random_uuid()::text, true);
 select set_config('test.user_b_id', gen_random_uuid()::text, true);
@@ -292,6 +292,53 @@ select results_eq(
   'empty month carries the July closing balance'
 );
 
+select results_eq(
+  $$
+    select count(*)::bigint, min(start_on_inclusive), max(end_on_exclusive)
+    from public.load_financial_evolution_buckets(
+      date '2024-02-15', date '2027-04-10', 'quarter'
+    )
+  $$,
+  $$values (14::bigint, date '2024-02-15', date '2027-04-10')$$,
+  'quarter buckets preserve both partial civil boundaries'
+);
+
+select results_eq(
+  $$
+    select count(*)::bigint, min(start_on_inclusive), max(end_on_exclusive)
+    from public.load_financial_evolution_buckets(
+      date '2000-06-15', date '2026-09-13', 'year'
+    )
+  $$,
+  $$values (27::bigint, date '2000-06-15', date '2026-09-13')$$,
+  'annual buckets cover long history without exposing raw movements'
+);
+
+select results_eq(
+  $$
+    select count(*)::bigint
+    from public.load_financial_evolution_buckets(
+      date '1967-09-13', date '2026-09-13', 'year'
+    )
+  $$,
+  $$values (60::bigint)$$,
+  'exactly sixty intersecting annual buckets are accepted'
+);
+
+select throws_ok(
+  $$select * from public.load_financial_evolution_buckets(date '1966-09-12', date '2026-09-13', 'year')$$,
+  '22023',
+  'financial evolution bucket interval exceeds 60 years',
+  'an interval above sixty civil years is rejected independently'
+);
+
+select throws_ok(
+  $$select * from public.load_financial_evolution_buckets(date '2011-08-01', date '2026-09-13', 'quarter')$$,
+  '22023',
+  'financial evolution bucket count exceeds 60',
+  'more than sixty quarter buckets are rejected independently'
+);
+
 reset role;
 select set_config('request.jwt.claim.sub', current_setting('test.user_b_id'), true);
 select set_config(
@@ -366,18 +413,22 @@ select throws_ok(
   $$select * from public.load_financial_evolution_buckets(date '2026-07-01', date '2026-10-01', 'day')$$,
   '22023',
   null,
-  'bucket outside the week and month allowlist is rejected'
+  'bucket outside the aggregate allowlist is rejected'
 );
-select throws_ok(
-  $$select * from public.load_financial_evolution_buckets(date '2024-01-01', date '2025-01-02', 'month')$$,
-  '22023',
-  null,
-  'an interval over 366 days is rejected'
+select results_eq(
+  $$
+    select count(*)::bigint
+    from public.load_financial_evolution_buckets(
+      date '2024-01-01', date '2025-04-01', 'month'
+    )
+  $$,
+  $$values (15::bigint)$$,
+  'a valid aggregate interval may exceed the previous 366-day ceiling'
 );
 select throws_ok(
   $$select * from public.load_financial_evolution_buckets(date '2024-01-01', date '2025-03-01', 'week')$$,
   '22023',
-  null,
+  'financial evolution bucket count exceeds 60',
   'a request exceeding the point ceiling is rejected'
 );
 

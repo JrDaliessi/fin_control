@@ -4,10 +4,11 @@ parent: UX-CHART-003C
 capabilities:
   - software
   - product
-state: SPEC_READY
-phase: Dia 1
+state: TEST_STRATEGY_READY
+phase: Dia 2
 approval: approved
 approved_at: 2026-09-12
+validation_approved_at: 2026-09-12
 branch: codex/ux-chart-003c2-day-1
 derived_from:
   - docs/features/UX-CHART-003C/feature-prd.md
@@ -39,14 +40,16 @@ sources:
   - https://supabase.com/changelog?types=breaking-change
 quality_gates:
   - quality-gates.md#gate-do-dia-1--ux-chart-003c2
+  - quality-gates.md#gate-do-dia-2--ux-chart-003c2
   - quality-gates.md#software
+  - docs/features/UX-CHART-003C2/test-strategy.md
   - docs/features/UX-CHART-003C/test-strategy.md
 restrictions:
-  - no implementation before Day 2 RED contracts
-  - no remote Supabase mutation in Day 1
+  - no implementation before Day 3 approval
+  - no persistent remote Supabase mutation in Day 2
   - no new index without EXPLAIN evidence
   - no UX-CHART-003C3 scope
 approved_decisions:
   - future-only transactions use current civil month fallback
   - valid history ends at reference date inclusive
-next_action: Execute Day 2 validation strategy and RED contracts by explicit command
+next_action: Execute Day 3 minimum GREEN implementation by explicit command

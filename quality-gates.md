@@ -349,6 +349,19 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - nenhum código, teste RED, migration, dependência, mutação remota, commit, push, PR ou deploy foi executado;
 - estado de saída: `SPEC_READY`; próximo comando válido é o Dia 2.
 
+## Gate do Dia 2 — UX-CHART-003C2
+
+- 10 critérios de aceite rastreados em `docs/features/UX-CHART-003C2/test-strategy.md`;
+- baseline dirigido anterior: 5 suítes/77 testes verdes, zero snapshots;
+- RED Jest válido: 3 suítes, 15 falhas por comportamento ausente e 17 regressões verdes;
+- regressão fora dos contratos RED: 95 suítes/651 testes verdes, zero snapshots;
+- três contratos pgTAP novos e dois ampliados; 72 asserções no Context Pack SQL com `plan()` coerente;
+- probe MCP/Supabase falhou 3/3 pelos contratos ausentes e terminou em rollback confirmado;
+- `pgtap` e RPC de âncora não persistiram; RPC agregadora atual permaneceu intacta;
+- ESLint e type-check verdes; nenhuma falha de import ou infraestrutura mascara o RED;
+- nenhum código funcional, migration, índice, dependência, commit, push, merge ou deploy foi executado;
+- estado de saída: `TEST_STRATEGY_READY`; evidência aprovada em 2026-09-12 e Dia 3 liberado mediante comando explícito.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.

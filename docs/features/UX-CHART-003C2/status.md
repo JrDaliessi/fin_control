@@ -1,8 +1,9 @@
 # Status — UX-CHART-003C2
 
-- Estado: `SPEC_READY`
-- Fase concluída: `Dia 1`
+- Estado: `TEST_STRATEGY_READY`
+- Fase concluída: `Dia 2`
 - Aprovação dos requisitos: confirmada em 2026-09-12
+- Aprovação do Dia 2: confirmada em 2026-09-12
 - Feature pai: `UX-CHART-003C`
 - Branch: `codex/ux-chart-003c2-day-1`
 - Código funcional alterado: não
@@ -63,4 +64,15 @@
 
 ## Próximo passo
 
-Executar o Dia 2 para materializar a matriz de rastreabilidade e os testes RED em Jest e pgTAP, sem implementação funcional.
+Executar o Dia 3 para implementar o mínimo GREEN, sem antecipar hardening ou drill-down.
+
+## Validação do Dia 2
+
+- baseline dirigido antes do RED: 5 suítes/77 testes verdes e 0 snapshots;
+- RED Jest: 3 suítes, 15 falhas esperadas, 17 regressões verdes e 0 snapshots;
+- regressão fora do RED: 95 suítes/651 testes verdes;
+- ESLint e type-check verdes após ajustar somente a tipagem do harness;
+- 72 asserções pgTAP no Context Pack SQL, com todos os `plan()` coerentes;
+- probe remoto transacional: 3/3 checks vermelhos pelas capacidades ausentes;
+- rollback confirmado: pgTAP e RPC de âncora não persistiram, e a RPC atual manteve o contrato anterior;
+- nenhum código funcional, migration, índice, dependência ou mutação remota persistente foi criado.
