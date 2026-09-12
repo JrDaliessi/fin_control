@@ -23,6 +23,7 @@ validation:
   - docs/linkedin/posts/LI-POST-002/validation.md
 implementation:
   - docs/linkedin/posts/LI-POST-002/draft.md
+  - docs/linkedin/posts/LI-POST-002/final.md
   - docs/linkedin/posts/LI-POST-002/day-3-validation.md
   - docs/linkedin/posts/LI-POST-002/day-4-validation.md
   - docs/linkedin/posts/LI-POST-002/day-5-validation.md
@@ -40,4 +41,4 @@ related_context:
   - docs/features/UX-CHART-003C/
   - architecture.md
   - docs/governance/ai-jail.md
-next_action: solicitar-aprovacao-para-final-md
+next_action: versionar-e-validar-final-md-na-pr-33

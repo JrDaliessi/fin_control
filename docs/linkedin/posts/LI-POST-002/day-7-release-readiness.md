@@ -85,3 +85,10 @@ Com o desbloqueio técnico concluído:
 3. autorizar publicação separadamente, caso desejada.
 
 Nenhuma dessas decisões foi antecipada pelo Dia 7.
+
+## Decisão posterior ao gate
+
+- criação de `final.md`: aprovada em 2026-09-12 e materializada sem alteração do conteúdo validado;
+- publicação: não autorizada;
+- alteração de perfil: não autorizada;
+- próximo gate: checks do head que inclui `final.md` na PR `#33`.

@@ -83,4 +83,4 @@ Revisar novamente o estado dos hardenings antes do draft e antes da publicação
 - Supabase confirmado novamente em modo somente leitura, sem acesso a linhas de negócio;
 - gates factual, privacidade, editorial, formato, rastreabilidade e segurança editorial verdes;
 - `READY_FOR_RELEASE` confirmado após o versionamento dos Dias 5–7 e checks remotos verdes no commit de conteúdo `201fe3f` da PR `#33`;
-- criação de `final.md` e publicação permanecem decisões humanas distintas e ainda não autorizadas.
+- criação de `final.md` aprovada e materializada em 2026-09-12; publicação permanece uma decisão humana distinta e não autorizada.

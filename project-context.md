@@ -16,16 +16,16 @@ Construir uma narrativa profissional verificável do FinControl para recrutadore
 
 - PR `#31` entregou a fundação e os Dias 1–3 no commit `c42effb`;
 - PR `#32` entregou o Dia 4 no commit `fce2159` com checks verdes;
-- `LI-POST-002` possui oito claims e candidato editorial de 303 palavras com gates locais verdes;
+- `LI-POST-002` possui oito claims e versão final textual de 303 palavras aprovada internamente;
 - Supabase foi revalidado em 2026-09-11 sem alteração de migrations, RLS, grants, policies, FKs ou advisors;
 - PR `#33` versionou os Dias 5–7 no commit de conteúdo `201fe3f`, com `validate` e Vercel verdes nesse commit;
 - `LI-POST-001` permanece bloqueado por `UX-CHART-003C2/003C3`; `LI-POST-003` segue em discovery;
-- nenhum `final.md`, perfil ou publicação foi criado;
+- `final.md` foi criado por aprovação humana em 2026-09-12; nenhum perfil foi alterado e nenhuma publicação foi executada;
 - branch atual: `codex/linkedin-001-days-5-7`.
 
 ## Blockers
 
-Nenhum bloqueio técnico impede a decisão humana sobre a versão final do `LI-POST-002`.
+Nenhum bloqueio técnico impede o versionamento da versão final do `LI-POST-002`.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -72,7 +72,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Solicitar decisão humana separada sobre a criação de `final.md`. Publicação continuará não autorizada até uma autorização posterior e específica.
+Versionar `final.md` na PR `#33` e validar o novo head. Depois, decidir o merge separadamente; publicação continuará não autorizada até uma autorização posterior e específica.
 
 ## History
 

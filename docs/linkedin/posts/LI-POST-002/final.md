@@ -1,6 +1,9 @@
-# Draft — LI-POST-002
+# Final — LI-POST-002
 
-Estado: candidato editorial aprovado e materializado em `final.md` em 2026-09-12. Não autorizado para publicação.
+- Estado editorial: `DONE`
+- Aprovação de finalização: confirmada em 2026-09-12
+- Formato: texto autossuficiente
+- Publicação externa: não autorizada
 
 ---
 
@@ -31,7 +34,3 @@ Isso não significa que o aplicativo seja “100% seguro”. Hardening de autent
 O principal aprendizado foi simples: em sistemas com dados sensíveis, segurança não deve depender de uma única camada — e muito menos de um filtro controlado pela interface.
 
 Nos seus projetos multiusuário, qual regra de isolamento você leva até o banco — e como valida esse comportamento?
-
----
-
-Observação interna: hashtags, links e eventual imagem serão avaliados somente nas fases de refinamento e formato.

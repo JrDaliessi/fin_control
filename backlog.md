@@ -16,9 +16,9 @@ Nenhum item pronto aguardando início no momento.
 - Risco: Médio por exagero de claims, exposição de dados/credenciais, métricas sem fonte e desatualização do estado do produto.
 - Escopo: posicionamento, público, evidências, quatro pilares, calendário inicial e três briefs planejados.
 - Fora do escopo: publicação automática, alteração do perfil real, métricas inventadas, divulgação de credenciais, dados financeiros ou afirmações de produção pública.
-- Fase recomendada: decidir sobre `final.md` do `LI-POST-002`; o post sobre candles depende da conclusão da `UX-CHART-003C2/003C3`.
+- Fase recomendada: validar e integrar `final.md` do `LI-POST-002`; o post sobre candles depende da conclusão da `UX-CHART-003C2/003C3`.
 - Critério de pronto: toda afirmação aponta para evidência, revisão factual/editorial verde, nenhum segredo ou dado pessoal exposto e publicação explicitamente aprovada.
-- Status: IN_PROGRESS — `LI-POST-002` está `READY_FOR_RELEASE` após PR `#33` e checks verdes; `final.md` aguarda decisão humana, `LI-POST-001` segue bloqueado e `LI-POST-003` em discovery.
+- Status: IN_PROGRESS — `LI-POST-002` está `DONE` editorialmente e aguarda validação do novo head e merge da PR `#33`; publicação não autorizada, `LI-POST-001` segue bloqueado e `LI-POST-003` em discovery.
 
 ### UX-CHART-003 — Períodos e granularidade adaptativa
 - Tipo: UX Improvement / Feature.

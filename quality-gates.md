@@ -131,6 +131,15 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - regressão local do mesmo head: type-check, lint, 97 suítes/669 testes e build de produção verdes;
 - estado de saída: `READY_FOR_RELEASE`; `final.md` e publicação continuam condicionados a autorizações humanas separadas.
 
+### Finalização aprovada — LI-POST-002
+
+- aprovação humana para materializar `final.md` confirmada em 2026-09-12;
+- conteúdo final preserva o candidato validado: 303 palavras, 2.057 caracteres, 13 blocos e exatamente oito claims;
+- nenhum e-mail, UUID, senha, token, cookie, dado financeiro, imagem ou link operacional foi adicionado;
+- `LI-POST-002` avançou para `DONE` editorial;
+- publicação, agendamento e alteração de perfil permanecem não autorizados;
+- próximo gate: versionar a versão final na PR `#33` e validar o novo head antes do merge.
+
 ## Gate de Contexto
 - `project-context.md` existe e está atualizado.
 - Estado da máquina de estados está explícito.

@@ -99,8 +99,15 @@
 - contrato cobre 10 requisitos funcionais, 6 não funcionais e 10 critérios de aceite;
 - PR `#32` foi mesclada no commit `fce2159` com checks verdes e contém até o Dia 4;
 - PR `#33` versionou os Dias 5–7 no commit de conteúdo `201fe3f`, com `validate` e Vercel verdes nesse commit;
-- estado avançou para `READY_FOR_RELEASE`; `final.md` e publicação continuam sem autorização.
+- estado avançou para `READY_FOR_RELEASE`; `final.md` foi aprovado e publicação continua sem autorização.
+
+## Finalização do LI-POST-002
+
+- aprovação humana para criar `final.md` confirmada em 2026-09-12;
+- texto final preserva integralmente o candidato validado de 303 palavras e seus oito claims;
+- `LI-POST-002` avançou para `DONE` editorial;
+- nenhuma publicação, agendamento ou alteração de perfil foi executada.
 
 ## Próximo passo
 
-Solicitar decisão humana separada sobre a criação de `final.md`. A publicação permanecerá sujeita a outra autorização explícita.
+Versionar e validar `final.md` na PR `#33`. Depois, decidir o merge separadamente; a publicação permanecerá sujeita a outra autorização explícita.
