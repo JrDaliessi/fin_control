@@ -333,6 +333,22 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - `UX-CHART-003C1` encerra em `READY_FOR_RELEASE`; a feature pai permanece `IN_PROGRESS` para `003C2/003C3`;
 - nenhuma migration, mutação Supabase, merge ou deploy foi executado.
 
+## Gate do Dia 1 — UX-CHART-003C2
+
+- entrada compatível: feature pai `IN_PROGRESS`, `003C1` liberada e small release `003C2` em discovery;
+- Hot Context, mapa, workflow do Dia 1, PRD/Spec/testes da feature pai, ADR 0022, código relacionado, migrations e testes SQL foram consultados;
+- Supabase foi inspecionado em modo somente leitura em 2026-09-12: PostgreSQL 17.6, sete migrations, RPC agregadora invoker, RLS/grants/indexes e advisors conhecidos;
+- `feature-prd.md`, `feature-spec.md`, `context.yaml` e `status.md` próprios foram criados;
+- 7 requisitos funcionais, 6 não funcionais e 10 critérios de aceite possuem IDs estáveis;
+- contratos preservam RLS, `auth.uid()`, `SECURITY INVOKER`, `search_path` vazio, ACL explícita, projeção agregada, 60 anos e 60 buckets;
+- plano de performance exige `EXPLAIN (ANALYZE, BUFFERS)` e proíbe índice especulativo;
+- nenhum novo ADR foi necessário porque a solução permanece dentro do ADR 0022;
+- YAMLs parseados, 23 rotas ativas existentes e cardinalidade dos IDs confirmada automaticamente;
+- ESLint, type-check e `git diff --check` verdes; lint executado com `npm.cmd` após o wrapper `npm` do PATH local apontar para módulo ausente;
+- as decisões de borda sobre transações futuras e término histórico na referência inclusiva foram aprovadas em 2026-09-12;
+- nenhum código, teste RED, migration, dependência, mutação remota, commit, push, PR ou deploy foi executado;
+- estado de saída: `SPEC_READY`; próximo comando válido é o Dia 2.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.

@@ -1,0 +1,52 @@
+id: UX-CHART-003C2
+title: Agregação segura para histórico completo
+parent: UX-CHART-003C
+capabilities:
+  - software
+  - product
+state: SPEC_READY
+phase: Dia 1
+approval: approved
+approved_at: 2026-09-12
+branch: codex/ux-chart-003c2-day-1
+derived_from:
+  - docs/features/UX-CHART-003C/feature-prd.md
+  - docs/features/UX-CHART-003C/feature-spec.md
+  - docs/features/UX-CHART-003C/test-strategy.md
+  - adr/0022-all-custom-periods-and-progressive-drilldown.md
+depends_on:
+  - UX-CHART-003C1
+  - UX-CHART-003B
+  - UX-CHART-002
+affects:
+  - src/features/financial-analytics/domain/
+  - src/features/financial-analytics/application/
+  - src/features/financial-analytics/infrastructure/
+  - src/app/(private)/dashboard/
+  - supabase/migrations/
+  - supabase/tests/
+related_context:
+  - project-context.md
+  - architecture.md
+  - database-model.md
+  - module-contracts.md
+  - quality-gates.md
+  - docs/features/UX-CHART-003C/
+sources:
+  - live Supabase migrations, function metadata, indexes, RLS policies and advisors inspected read-only on 2026-09-12
+  - https://supabase.com/docs/guides/database/functions
+  - https://supabase.com/docs/guides/database/postgres/row-level-security
+  - https://supabase.com/changelog?types=breaking-change
+quality_gates:
+  - quality-gates.md#gate-do-dia-1--ux-chart-003c2
+  - quality-gates.md#software
+  - docs/features/UX-CHART-003C/test-strategy.md
+restrictions:
+  - no implementation before Day 2 RED contracts
+  - no remote Supabase mutation in Day 1
+  - no new index without EXPLAIN evidence
+  - no UX-CHART-003C3 scope
+approved_decisions:
+  - future-only transactions use current civil month fallback
+  - valid history ends at reference date inclusive
+next_action: Execute Day 2 validation strategy and RED contracts by explicit command

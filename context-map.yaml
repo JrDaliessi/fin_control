@@ -28,40 +28,34 @@ routes:
     - project-stack.md
     - project-toolchain.md
   active-artifact:
-    - docs/linkedin/LINKEDIN-001/brief.md
-    - docs/linkedin/LINKEDIN-001/feature-prd.md
-    - docs/linkedin/LINKEDIN-001/content-spec.md
-    - docs/linkedin/LINKEDIN-001/validation-strategy.md
-    - docs/linkedin/LINKEDIN-001/rubrics.md
-    - docs/linkedin/LINKEDIN-001/validation-fixtures.md
-    - docs/linkedin/LINKEDIN-001/context.yaml
-    - docs/linkedin/LINKEDIN-001/status.md
-    - docs/linkedin/positioning.md
-    - docs/linkedin/audience.md
-    - docs/linkedin/evidence-base.md
-    - docs/linkedin/content-pillars.md
-    - docs/linkedin/content-calendar.md
-    - docs/linkedin/posts/LI-POST-001/brief.md
-    - docs/linkedin/posts/LI-POST-001/sources.md
-    - docs/linkedin/posts/LI-POST-002/brief.md
-    - docs/linkedin/posts/LI-POST-002/sources.md
-    - docs/linkedin/posts/LI-POST-002/claim-matrix.md
-    - docs/linkedin/posts/LI-POST-002/validation.md
-    - docs/linkedin/posts/LI-POST-002/draft.md
-    - docs/linkedin/posts/LI-POST-002/final.md
-    - docs/linkedin/posts/LI-POST-002/day-3-validation.md
-    - docs/linkedin/posts/LI-POST-002/supabase-evidence-2026-09-10.md
-    - docs/linkedin/posts/LI-POST-002/day-4-validation.md
-    - docs/linkedin/posts/LI-POST-002/day-5-validation.md
-    - docs/linkedin/posts/LI-POST-002/day-6-experience-validation.md
-    - docs/linkedin/posts/LI-POST-002/day-7-release-readiness.md
-    - docs/linkedin/posts/LI-POST-003/brief.md
-    - docs/linkedin/posts/LI-POST-003/sources.md
+    - docs/features/UX-CHART-003C2/feature-prd.md
+    - docs/features/UX-CHART-003C2/feature-spec.md
+    - docs/features/UX-CHART-003C2/context.yaml
+    - docs/features/UX-CHART-003C2/status.md
+    - docs/features/UX-CHART-003C/feature-prd.md
+    - docs/features/UX-CHART-003C/feature-spec.md
+    - docs/features/UX-CHART-003C/test-strategy.md
+    - docs/features/UX-CHART-003C/context.yaml
+    - docs/features/UX-CHART-003C/status.md
+    - adr/0022-all-custom-periods-and-progressive-drilldown.md
+    - src/features/financial-analytics/domain/
+    - src/features/financial-analytics/application/
+    - src/features/financial-analytics/infrastructure/
+    - supabase/migrations/20260826190714_create_financial_evolution_snapshot.sql
+    - supabase/migrations/20260907041839_create_financial_evolution_buckets.sql
+    - supabase/tests/database/financial_evolution_snapshot_schema.test.sql
+    - supabase/tests/database/financial_evolution_snapshot_behavior.test.sql
+    - supabase/tests/database/financial_evolution_snapshot_performance.test.sql
+    - supabase/tests/database/financial_evolution_buckets_schema.test.sql
+    - supabase/tests/database/financial_evolution_buckets_behavior.test.sql
+    - supabase/tests/database/financial_evolution_buckets_performance.test.sql
+    - supabase/tests/database/transactions_rls.test.sql
+    - supabase/tests/database/transactions_rls_performance.test.sql
   quality:
     - quality-gates.md
-    - docs/linkedin/evidence-base.md
-    - docs/linkedin/LINKEDIN-001/validation-strategy.md
-    - docs/linkedin/LINKEDIN-001/rubrics.md
+    - docs/features/UX-CHART-003C2/feature-prd.md
+    - docs/features/UX-CHART-003C2/feature-spec.md
+    - docs/features/UX-CHART-003C/test-strategy.md
   agents:
     - .agents/registry.yaml
     - .agents/workflows/engineering-conductor-agent.md
@@ -115,7 +109,7 @@ relations:
       - UX-CHART-003B
       - UX-CHART-002
     affects:
-      - src/features/financial-periods/
+      - src/features/financial-analytics/
       - src/features/financial-analytics/
       - src/app/
       - supabase/migrations/
@@ -128,6 +122,31 @@ relations:
       - adr/0019-contextual-candle-statement.md
       - adr/0020-adaptive-financial-periods.md
       - adr/0021-contextual-interval-volume-insights.md
+      - adr/0022-all-custom-periods-and-progressive-drilldown.md
+  UX-CHART-003C2:
+    derived_from:
+      - docs/features/UX-CHART-003C/feature-prd.md
+      - docs/features/UX-CHART-003C/feature-spec.md
+      - docs/features/UX-CHART-003C/test-strategy.md
+      - adr/0022-all-custom-periods-and-progressive-drilldown.md
+    depends_on:
+      - UX-CHART-003C1
+      - UX-CHART-003B
+      - UX-CHART-002
+    affects:
+      - src/features/financial-analytics/domain/
+      - src/features/financial-analytics/application/
+      - src/features/financial-analytics/infrastructure/
+      - src/app/(private)/dashboard/
+      - supabase/migrations/
+      - supabase/tests/
+    related_context:
+      - docs/features/UX-CHART-003C2/
+      - docs/features/UX-CHART-003C/
+      - database-model.md
+      - module-contracts.md
+      - quality-gates.md
+    adrs:
       - adr/0022-all-custom-periods-and-progressive-drilldown.md
   LINKEDIN-001:
     derived_from:

@@ -335,7 +335,7 @@ SR-023 entra somente com calculos deterministas, consentimento, minimizacao e po
 
 Small release inicial: `LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl`.
 
-Estado atual: `READY_FOR_RELEASE`. O Dia 7 revalidou a evidência Supabase e a PR `#33` passou em `validate` e Vercel no commit de conteúdo `201fe3f`. O `final.md` do `LI-POST-002` foi aprovado internamente em 2026-09-12 e aguarda integração; nenhum conteúdo foi publicado.
+Estado atual: `IN_PROGRESS` com publicação pausada. A PR `#33` foi mesclada por squash em `develop` no commit `ca33431`; o `final.md` do `LI-POST-002` está integrado e nenhum conteúdo foi publicado.
 
 Sequência planejada:
 1. aprovar posicionamento, público, claims permitidos e critérios editoriais;
@@ -344,6 +344,18 @@ Sequência planejada:
 4. publicar somente após aceite humano explícito do texto final.
 
 Primeira narrativa planejada: como os candles foram adaptados de uma metáfora de trading para uma leitura acessível de finanças pessoais. O draft depende da conclusão da `UX-CHART-003C2/003C3` para refletir o fluxo completo.
+
+## Incremento ativo — UX-CHART-003C2
+
+Estado atual: `SPEC_READY`. O Dia 1 aprovado definiu a agregação segura de histórico completo, com RPC de âncora sem parâmetro de usuário, resolução de `Tudo`, buckets trimestrais/anuais, limites independentes de 60 anos/60 buckets e projeção somente agregada.
+
+Sequência planejada:
+1. no Dia 2, materializar matriz e testes RED em Jest/pgTAP;
+2. no Dia 3, implementar o mínimo GREEN e a migration forward-only local;
+3. expandir, endurecer, validar experiência e executar gates finais nos Dias 4–7;
+4. somente depois de release, iniciar `UX-CHART-003C3`.
+
+Restrições: nenhum índice sem `EXPLAIN`, nenhuma mutação Supabase remota no Dia 1, nenhum lançamento bruto no agregado e nenhum escopo de drill-down antecipado.
 
 ## Cadencia
 
