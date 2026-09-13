@@ -9,8 +9,7 @@ main ─────────────────────────
   │
   └── develop ─────────────────── integração contínua
        │
-       ├── feature/<ID>-<desc> ── nova feature/story
-       ├── fix/<ID>-<desc> ────── correção de bug
+       ├── codex/<ID>-<desc> ──── feature, correção ou documentação
        └── hotfix/<ID>-<desc> ── correção urgente em produção
 ```
 
@@ -20,16 +19,15 @@ main ─────────────────────────
 |--------|-----------|------------|------------|
 | `main` | — | — | Protegida |
 | `develop` | `main` | `main` | `--no-ff` |
-| `feature/*` | `develop` | `develop` | `--squash` |
-| `fix/*` | `develop` | `develop` | `--squash` |
+| `codex/*` | `develop` ou `main`, conforme destino | destino de origem | `--squash` |
 | `hotfix/*` | `main` | `main` + `develop` | `--no-ff` |
 
 ### Nomeação
 
 ```
-feature/SR-010-categorias
-feature/UI-002-shell-nav
-fix/BUG-002-sessao-expirada
+codex/SR-010-categorias
+codex/UI-002-shell-nav
+codex/BUG-002-sessao-expirada
 hotfix/SEC-001-rls-bypass
 ```
 
@@ -104,7 +102,7 @@ fix(auth): proxy quebra com URL inválida do Supabase | Dia 3 BUG-001
 
 ```bash
 git checkout develop
-git merge --squash feature/SR-010-categorias
+git merge --squash codex/SR-010-categorias
 git commit -m "feat(categories): persistência e RLS de categorias [SR-010]
 
 Dias 1-7 concluídos.
@@ -162,7 +160,7 @@ Formato: **Semantic Versioning** (`vMAJOR.MINOR.PATCH`)
 
 ```
 1. git checkout develop && git pull
-2. git checkout -b feature/SR-010-categorias
+2. git checkout -b codex/SR-010-categorias
 
    # Dia 1 — Discovery
    git commit -m "docs(categories): discovery e contratos | Dia 1 SR-010"
@@ -186,9 +184,9 @@ Formato: **Semantic Versioning** (`vMAJOR.MINOR.PATCH`)
    git commit -m "ci(categories): validação final e quality gates | Dia 7 SR-010"
 
 3. git checkout develop
-4. git merge --squash feature/SR-010-categorias
+4. git merge --squash codex/SR-010-categorias
 5. git commit -m "feat(categories): persistência e RLS [SR-010] ..."
-6. git branch -d feature/SR-010-categorias
+6. git branch -d codex/SR-010-categorias
 7. git push origin develop
 ```
 
@@ -198,14 +196,14 @@ Formato: **Semantic Versioning** (`vMAJOR.MINOR.PATCH`)
 
 ```bash
 # Criar feature branch
-git checkout -b feature/SR-010-categorias develop
+git checkout -b codex/SR-010-categorias develop
 
 # Commit com template
 git commit  # abre o template .gitmessage
 
 # Squash merge para develop
 git checkout develop
-git merge --squash feature/SR-010-categorias
+git merge --squash codex/SR-010-categorias
 
 # Release para main
 git checkout main

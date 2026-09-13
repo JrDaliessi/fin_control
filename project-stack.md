@@ -4,6 +4,16 @@
 
 Stack vigente, aprovada e já materializada antes da migração `GOV-V4-001`. Este documento consolida a decisão existente; não seleciona tecnologia nova.
 
+## Evolução aprovada, ainda não implementada
+
+A direção futura é extrair capacidades server-side gradualmente para uma API Node.js/NestJS/TypeScript, mantendo o PostgreSQL hospedado no Supabase:
+
+```text
+Next.js → API NestJS → PostgreSQL no Supabase
+```
+
+Esta direção não altera a stack executável atual. Dependências, hospedagem, autenticação, estratégia de conexão, monorepo e primeiro recorte vertical permanecem sujeitos a discovery, comparação de opções e aprovação antes da implementação. Consulte o [ADR 0023](adr/0023-incremental-nestjs-api-extraction.md) e o [roadmap do backend](docs/showcase/backend-evolution-roadmap.md).
+
 ## Aplicação
 
 - Node.js `>=22 <23`;

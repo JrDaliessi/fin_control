@@ -345,6 +345,27 @@ Sequência planejada:
 
 Primeira narrativa planejada: como os candles foram adaptados de uma metáfora de trading para uma leitura acessível de finanças pessoais. O draft depende da conclusão da `UX-CHART-003C2/003C3` para refletir o fluxo completo.
 
+## Marco 15 — Showcase público e evolução do backend
+
+Small release inicial: `REPO-SHOWCASE-001 — Apresentação pública para avaliação técnica`.
+
+Objetivo imediato: tornar a entrada do repositório intuitiva para recrutadores, com demonstração, visita guiada, arquitetura, decisões, segurança, evidências e limites claramente identificados, sem alterar o funcionamento do aplicativo.
+
+Direção arquitetural aprovada, ainda não implementada:
+
+```text
+Next.js → API NestJS → PostgreSQL no Supabase
+```
+
+Sequência futura obrigatória:
+1. documentar e validar o modelo atual, regras, queries e fronteiras de autorização;
+2. comparar opções de Auth, conexão, hospedagem, monorepo e observabilidade;
+3. selecionar um primeiro recorte vertical pequeno e reversível;
+4. definir OpenAPI, erros públicos e testes antes da implementação;
+5. migrar uma capacidade por vez, preservando equivalência e rollback;
+6. consolidar a API apenas depois de evidência operacional.
+
+Restrições: nenhuma reescrita integral, nenhum NestJS usado apenas como proxy, nenhuma desativação de RLS sem decisão de segurança e nenhuma feature futura apresentada como entregue.
 ## Cadencia
 
 Cada SR executa, sem salto, Dias 1 a 7. Nenhum marco autoriza implementacao one-shot ou varias SRs simultaneas.
