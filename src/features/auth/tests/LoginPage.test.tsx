@@ -25,10 +25,16 @@ async function fillCredentials() {
   return user;
 }
 
-function renderLoginPage(onSignIn: (input: SignInWithPasswordInput) => Promise<void>) {
+function renderLoginPage(
+  onSignIn: (input: SignInWithPasswordInput) => Promise<void>,
+  initialCredentials?: SignInWithPasswordInput
+) {
   render(
     <ThemeProvider>
-      <LoginPage onSignIn={onSignIn} />
+      <LoginPage
+        initialCredentials={initialCredentials}
+        onSignIn={onSignIn}
+      />
     </ThemeProvider>,
   );
 }
@@ -76,6 +82,29 @@ describe("LoginPage", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeEnabled();
     expect(screen.getByRole("radiogroup", { name: "Tema" })).toBeInTheDocument();
+  });
+
+  it("renders editable demo credentials when they are provided", async () => {
+    const user = userEvent.setup();
+    renderLoginPage(jest.fn(async () => undefined), {
+      email: "testedemo@example.com",
+      password: "senha-demo"
+    });
+
+    expect(screen.getByLabelText("E-mail")).toHaveValue(
+      "testedemo@example.com"
+    );
+    expect(screen.getByLabelText("Senha")).toHaveValue("senha-demo");
+    expect(
+      screen.getByText(
+        "Acesso de demonstração preparado. Selecione Entrar para explorar o app."
+      )
+    ).toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText("E-mail"));
+    await user.type(screen.getByLabelText("E-mail"), "outro@example.com");
+
+    expect(screen.getByLabelText("E-mail")).toHaveValue("outro@example.com");
   });
 
   it("shows a loading state and prevents duplicate submissions", async () => {

@@ -8,6 +8,7 @@ import { ThemeSwitcher } from "@/shared/components/ui/ThemeSwitcher";
 import type { SignInWithPasswordInput } from "../../domain/interfaces/auth.gateway";
 
 type LoginPageProps = {
+  initialCredentials?: SignInWithPasswordInput;
   onSignIn(input: SignInWithPasswordInput): Promise<void>;
 };
 
@@ -16,9 +17,9 @@ type SubmissionStatus = "idle" | "loading" | "success" | "error";
 const genericErrorMessage =
   "Não foi possível entrar. Verifique suas credenciais e tente novamente.";
 
-export function LoginPage({ onSignIn }: LoginPageProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export function LoginPage({ initialCredentials, onSignIn }: LoginPageProps) {
+  const [email, setEmail] = useState(initialCredentials?.email ?? "");
+  const [password, setPassword] = useState(initialCredentials?.password ?? "");
   const [status, setStatus] = useState<SubmissionStatus>("idle");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -76,7 +77,9 @@ export function LoginPage({ onSignIn }: LoginPageProps) {
             Entrar na sua conta
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Use seu e-mail e sua senha para acessar sua conta.
+            {initialCredentials
+              ? "Acesso de demonstração preparado. Selecione Entrar para explorar o app."
+              : "Use seu e-mail e sua senha para acessar sua conta."}
           </p>
 
           <form

@@ -7,7 +7,13 @@ import { SupabaseAuthGateway } from "@/features/auth/infrastructure/supabase/sup
 import { LoginPage } from "@/features/auth/presentation/pages/LoginPage";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export function AuthLoginContainer() {
+type AuthLoginContainerProps = {
+  initialCredentials?: SignInWithPasswordInput;
+};
+
+export function AuthLoginContainer({
+  initialCredentials
+}: AuthLoginContainerProps) {
   const router = useRouter();
 
   async function handleSignIn(input: SignInWithPasswordInput) {
@@ -21,5 +27,11 @@ export function AuthLoginContainer() {
     router.refresh();
   }
 
-  return <LoginPage onSignIn={handleSignIn} />;
+  return (
+    <LoginPage
+      initialCredentials={initialCredentials}
+      key={initialCredentials ? "demo" : "standard"}
+      onSignIn={handleSignIn}
+    />
+  );
 }
