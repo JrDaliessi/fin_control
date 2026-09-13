@@ -86,7 +86,7 @@ describe("dashboard routes", () => {
 
     expect(
       screen.getByRole("heading", { name: "Visão geral" })
-    ).toBeInTheDocument();
+    ).toHaveClass("sr-only");
     expect(
       screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
     ).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe("dashboard routes", () => {
 
     expect(
       screen.getByRole("heading", { name: "Visão geral" })
-    ).toBeInTheDocument();
+    ).toHaveClass("sr-only");
     expect(
       screen.getByRole("heading", { name: "Como seu dinheiro evoluiu" })
     ).toBeInTheDocument();

@@ -3,44 +3,31 @@ import { render, screen } from "@testing-library/react";
 import { DashboardPage } from "../presentation/pages/DashboardPage";
 
 describe("DashboardPage", () => {
-  it("presents the approved dashboard hierarchy and neutral supporting copy", () => {
+  it("omits the redundant visual dashboard introduction", () => {
     render(<DashboardPage />);
 
     expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
     expect(
       screen.getByRole("heading", { name: "Visão geral", level: 1 })
-    ).toBeInTheDocument();
+    ).toHaveClass("sr-only");
     expect(
-      screen.getByText(
+      screen.queryByText(
         "Aqui está o que aconteceu com seu dinheiro no período selecionado."
       )
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(/usuario@example\.com/i)).not.toBeInTheDocument();
   });
 
-  it("offers only actions backed by existing account and transaction flows", () => {
+  it("omits quick actions already available in the global navigation", () => {
     render(<DashboardPage />);
 
-    const actions = screen.getByRole("navigation", { name: "Ações rápidas" });
-    const actionLinks = screen.getAllByRole("link");
-    const actionHrefs = actionLinks
-      .map((link) => link.getAttribute("href"));
-    expect(actions).toHaveClass("w-full", "sm:w-auto");
-    expect(actionHrefs).toHaveLength(2);
-    expect(actionHrefs).toEqual(
-      expect.arrayContaining(["/accounts", "/transactions"])
-    );
-    expect(screen.getByRole("link", { name: "Contas" })).toHaveAttribute(
-      "href",
-      "/accounts"
-    );
-    expect(screen.getByRole("link", { name: "Transações" })).toHaveAttribute(
-      "href",
-      "/transactions"
-    );
-    for (const link of actionLinks) {
-      expect(link).toHaveClass("min-h-11", "focus-visible:ring-2");
-    }
+    expect(
+      screen.queryByRole("navigation", { name: "Ações rápidas" })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Contas" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Transações" })
+    ).not.toBeInTheDocument();
   });
 
   it("composes server-rendered financial content through its React slot", () => {
