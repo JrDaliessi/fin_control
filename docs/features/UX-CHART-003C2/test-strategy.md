@@ -154,3 +154,15 @@ Ordem mínima GREEN:
 - regressão anterior, lint e type-check verdes;
 - nenhum código funcional, migration, índice ou mutação remota persistente;
 - próximo passo restrito ao Dia 3 após aprovação humana.
+
+## Evidência executada — Dia 3
+
+- RED reconfirmado antes da implementação: 3 suítes, 15 falhas esperadas e 17 regressões verdes;
+- GREEN dirigido após a implementação mínima: 3 suítes e 32 testes verdes;
+- o resolvedor `Tudo` cobre âncora válida, nula, igual e futura, término inclusivo e granularidades trimestral/anual;
+- application consulta a âncora somente em `all`, preserva presets/personalizado e sanitiza falhas do provider;
+- infrastructure chama `load_financial_history_start` sem payload de tenant e mantém a allowlist fechada em `week/month/quarter/year`;
+- migration criada com a CLI Supabase 2.117.0 e validada pelos seis arquivos pgTAP em transações com rollback;
+- inspeção posterior confirmou ausência de mutação persistente no Supabase remoto;
+- regressão completa: 98 suítes/683 testes; ESLint, type-check e build verdes;
+- nenhum índice foi adicionado e `UX-CHART-003C3` permaneceu fora do incremento.

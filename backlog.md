@@ -32,9 +32,9 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: `003A`, `003B` e `003C1` concluídas e mescladas; `003C2` está `TEST_STRATEGY_READY` com Dia 2 aprovado e segue para o Dia 3.
+- Fase recomendada: `003A`, `003B` e `003C1` concluídas e mescladas; `003C2` concluiu o núcleo GREEN do Dia 3 e segue para expansão controlada no Dia 4.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A`, `003B` e `003C1` estão mescladas; `003C2` está `TEST_STRATEGY_READY`; `003C3` permanece planejada.
+- Status: IN_PROGRESS — `UX-CHART-003A`, `003B` e `003C1` estão mescladas; `003C2` está `IN_PROGRESS` após o Dia 3; `003C3` permanece planejada.
 
 ### UX-CHART-003C — Tudo, período personalizado e drill-down
 - Tipo: Small Release / UX Improvement.
@@ -45,7 +45,7 @@ Nenhum item pronto aguardando início no momento.
 - Fatiamento: `003C1` domínio/URL; `003C2` agregação segura; `003C3` drill-down progressivo.
 - Risco: Alto por RLS e performance de histórico extenso; mitigação definida na Feature Spec.
 - Critério de pronto: critérios `FPRD-UXCHART003C-AC-001` a `AC-010` verdes e gates de software, segurança, experiência e release concluídos.
-- Status: IN_PROGRESS — `003C1` foi `RELEASED` pela PR `#30` no commit `a96b564`; `003C2` está `TEST_STRATEGY_READY` com RED observado e granularidades trimestral/anual seguem bloqueadas no adapter; `003C3` permanece pendente.
+- Status: IN_PROGRESS — `003C1` foi `RELEASED` pela PR `#30` no commit `a96b564`; `003C2` possui núcleo GREEN local e migration validada apenas em transação com rollback; `003C3` permanece pendente.
 
 ### UX-CHART-003C2 — Agregação segura para histórico completo
 - Tipo: Small Release / Software / Product.
@@ -56,7 +56,7 @@ Nenhum item pronto aguardando início no momento.
 - Fora do escopo: drill-down, linhas de extrato, redesign, índice especulativo e publicação LinkedIn.
 - Risco: Alto por segurança tenant e plano de consulta; exige pgTAP multiusuário/anônimo e `EXPLAIN (ANALYZE, BUFFERS)`.
 - Critério de pronto: `FPRD-UXCHART003C2-AC-001` a `AC-010` verdes, migration forward-only reproduzível e compatibilidade de períodos existentes comprovada.
-- Status: TEST_STRATEGY_READY — Dia 2 e evidência RED aprovados; próximo comando válido é o Dia 3.
+- Status: IN_PROGRESS — Dia 3 concluído com 98 suítes/683 testes, SQL transacional verde e nenhuma mutação remota persistente; próximo comando válido é o Dia 4.
 
 ## DISCOVERY
 

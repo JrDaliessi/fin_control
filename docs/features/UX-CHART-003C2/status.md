@@ -1,14 +1,15 @@
 # Status — UX-CHART-003C2
 
-- Estado: `TEST_STRATEGY_READY`
-- Fase concluída: `Dia 2`
+- Estado: `IN_PROGRESS`
+- Fase concluída: `Dia 3`
 - Aprovação dos requisitos: confirmada em 2026-09-12
 - Aprovação do Dia 2: confirmada em 2026-09-12
+- Aprovação do Dia 3: confirmada em 2026-09-13
 - Feature pai: `UX-CHART-003C`
 - Branch: `codex/ux-chart-003c2-day-1`
-- Código funcional alterado: não
-- Migration criada/aplicada: não
-- Supabase remoto alterado: não
+- Código funcional alterado: sim, núcleo mínimo GREEN
+- Migration criada/aplicada: criada localmente; não aplicada de forma persistente
+- Supabase remoto alterado: não; validações terminaram em rollback
 
 ## Entrada validada
 
@@ -64,7 +65,7 @@
 
 ## Próximo passo
 
-Executar o Dia 3 para implementar o mínimo GREEN, sem antecipar hardening ou drill-down.
+Preparar o Dia 4 para expansão controlada, sem antecipar drill-down da `UX-CHART-003C3`.
 
 ## Validação do Dia 2
 
@@ -76,3 +77,30 @@ Executar o Dia 3 para implementar o mínimo GREEN, sem antecipar hardening ou dr
 - probe remoto transacional: 3/3 checks vermelhos pelas capacidades ausentes;
 - rollback confirmado: pgTAP e RPC de âncora não persistiram, e a RPC atual manteve o contrato anterior;
 - nenhum código funcional, migration, índice, dependência ou mutação remota persistente foi criado.
+
+## Entregáveis do Dia 3
+
+- `resolveAllFinancialPeriod` implementado reutilizando as regras civis e os limites já aprovados;
+- port específico `FinancialHistoryStartQueryRepository` adicionado sem acoplar consumidores que não precisam da âncora;
+- `ListFinancialEvolutionUseCase` passou a consultar a âncora somente para `all` e preserva fluxos existentes;
+- adapter Supabase chama `load_financial_history_start` sem argumentos e aceita apenas `week/month/quarter/year` na RPC agregada;
+- migration `20260913173700_extend_financial_history_aggregation.sql` criada pelo comando oficial;
+- RPCs permanecem `SECURITY INVOKER`, com `search_path = ''`, identidade por `auth.uid()`, anonimato rejeitado e ACL exclusiva para `authenticated`;
+- nenhuma descrição, categoria, conta, UUID ou lançamento bruto foi adicionada ao retorno agregado;
+- nenhum índice especulativo foi criado.
+
+## Validação do Dia 3
+
+- RED reconfirmado: 3 suítes, 15 falhas esperadas e 17 regressões verdes;
+- GREEN dirigido: 3 suítes e 32 testes verdes;
+- seis contratos pgTAP e 72 asserções executados transacionalmente sem erro ou `not ok` reportado;
+- rollback confirmado por leitura posterior do catálogo remoto;
+- regressão completa: 98 suítes e 683 testes verdes, zero snapshots;
+- ESLint, type-check, build de produção e `git diff --check` verdes;
+- aplicação persistente da migration e deploy não fazem parte deste checkpoint.
+
+## Riscos após o Dia 3
+
+- aplicação remota persistente continua condicionada ao gate e à autorização da fase correspondente;
+- revisão ampliada das fronteiras históricas e do plano observado permanece para hardening;
+- `UX-CHART-003C3` continua fora do escopo.

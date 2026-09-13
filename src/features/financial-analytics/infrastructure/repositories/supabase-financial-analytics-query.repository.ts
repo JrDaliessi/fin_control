@@ -1,5 +1,7 @@
 import type {
   FinancialAnalyticsQueryRepository,
+  FinancialHistoryStartQueryRepository,
+  LoadFinancialHistoryStartInput,
   LoadEvolutionBucketsInput,
   LoadEvolutionSnapshotInput
 } from "../../application/ports/financial-analytics-query.repository";
@@ -20,19 +22,24 @@ type SupabaseRpcResult = Readonly<{
   data:
     | readonly FinancialEvolutionSnapshotRow[]
     | readonly FinancialEvolutionBucketRow[]
+    | string
     | null;
   error: unknown;
 }>;
 
-type FinancialAnalyticsSupabaseClient = Readonly<{
-  rpc(
+type FinancialAnalyticsRpc = {
+  bivarianceHack(
     functionName: string,
-    parameters: Readonly<{
+    parameters?: Readonly<{
       p_start_on: string;
       p_end_on: string;
-      p_bucket?: "week" | "month";
+      p_bucket?: "week" | "month" | "quarter" | "year";
     }>
   ): PromiseLike<SupabaseRpcResult>;
+}["bivarianceHack"];
+
+type FinancialAnalyticsSupabaseClient = Readonly<{
+  rpc: FinancialAnalyticsRpc;
 }>;
 
 type SupabaseFinancialAnalyticsQueryRepositoryDependencies = Readonly<{
@@ -42,7 +49,9 @@ type SupabaseFinancialAnalyticsQueryRepositoryDependencies = Readonly<{
 const repositoryErrorMessage = "financial analytics repository unavailable";
 
 export class SupabaseFinancialAnalyticsQueryRepository
-  implements FinancialAnalyticsQueryRepository
+  implements
+    FinancialAnalyticsQueryRepository,
+    FinancialHistoryStartQueryRepository
 {
   private readonly supabaseClient: FinancialAnalyticsSupabaseClient;
 
@@ -50,6 +59,31 @@ export class SupabaseFinancialAnalyticsQueryRepository
     supabaseClient
   }: SupabaseFinancialAnalyticsQueryRepositoryDependencies) {
     this.supabaseClient = supabaseClient;
+  }
+
+  async loadFinancialHistoryStart(
+    input: LoadFinancialHistoryStartInput
+  ): Promise<string | null> {
+    void input.userId;
+
+    try {
+      const { data, error } = await this.supabaseClient.rpc(
+        "load_financial_history_start"
+      );
+
+      if (
+        error ||
+        (data !== null &&
+          (typeof data !== "string" ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(data)))
+      ) {
+        throw new Error(repositoryErrorMessage);
+      }
+
+      return data;
+    } catch {
+      throw new Error(repositoryErrorMessage);
+    }
   }
 
   async loadEvolutionSnapshot(
@@ -82,7 +116,9 @@ export class SupabaseFinancialAnalyticsQueryRepository
     try {
       if (
         input.bucketGranularity !== "week" &&
-        input.bucketGranularity !== "month"
+        input.bucketGranularity !== "month" &&
+        input.bucketGranularity !== "quarter" &&
+        input.bucketGranularity !== "year"
       ) {
         throw new Error(repositoryErrorMessage);
       }

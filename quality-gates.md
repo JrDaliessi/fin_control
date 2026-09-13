@@ -362,6 +362,17 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - nenhum código funcional, migration, índice, dependência, commit, push, merge ou deploy foi executado;
 - estado de saída: `TEST_STRATEGY_READY`; evidência aprovada em 2026-09-12 e Dia 3 liberado mediante comando explícito.
 
+## Gate do Dia 3 — UX-CHART-003C2
+
+- confirmação humana registrada antes da implementação e RED reconfirmado com 3 suítes, 15 falhas esperadas e 17 regressões verdes;
+- resolvedor puro de `Tudo`, port segregado de âncora, orquestração application e adapter Supabase implementados sem ampliar o escopo para drill-down;
+- migration `20260913173700_extend_financial_history_aggregation.sql` criada pela CLI Supabase 2.117.0, sem índice novo;
+- seis contratos pgTAP, totalizando 72 asserções, executados sobre a migration em transações remotas revertidas, sem erro ou `not ok` reportado;
+- rollback confirmado por inspeção posterior: RPC de âncora e suporte persistente a `quarter/year` continuaram ausentes no banco remoto;
+- GREEN dirigido: 3 suítes/32 testes; regressão completa: 98 suítes/683 testes e zero snapshots;
+- ESLint, type-check, build Next.js 16.3.3 e `git diff --check` verdes;
+- estado de saída: `IN_PROGRESS`; aplicação persistente da migration, expansão e hardening permanecem fora do Dia 3.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.

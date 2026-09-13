@@ -4,13 +4,13 @@ project: FinControl
 project_state: OPERATING
 active_capabilities: [software, product]
 active_artifact: UX-CHART-003C2
-artifact_state: TEST_STRATEGY_READY
-phase: Dia 2
+artifact_state: IN_PROGRESS
+phase: Dia 3
 last_release: LINKEDIN-001/LI-POST-002
 
 ## Current Goal
 
-Definir a agregação segura que habilita `Tudo`, trimestre e ano sem expor lançamentos brutos, romper RLS ou degradar históricos extensos.
+Consolidar a agregação segura de `Tudo`, trimestre e ano após o núcleo mínimo GREEN, sem expor lançamentos brutos, romper RLS ou degradar históricos extensos.
 
 ## Current Delivery State
 
@@ -21,12 +21,15 @@ Definir a agregação segura que habilita `Tudo`, trimestre e ano sem expor lan�
 - a RPC atual suporta `week/month`, preserva `search_path` vazio e grant de aplicação para `authenticated`;
 - o índice composto atual de transações é a hipótese inicial para âncora/recorte, mas qualquer novo índice depende de `EXPLAIN`;
 - Dia 2 registrou baseline de 77 testes, RED de 15 cenários Jest e probe pgTAP 3/3 vermelho com rollback confirmado;
-- regressão fora do RED passou com 95 suítes/651 testes, e lint/type-check estão verdes;
+- Dia 3 implementou o resolvedor `Tudo`, o port de âncora, a orquestração application e o adapter Supabase para `quarter/year`;
+- migration `20260913173700_extend_financial_history_aggregation.sql` foi criada pela CLI oficial e validada com os seis contratos pgTAP em transações revertidas;
+- regressão completa passou com 98 suítes/683 testes; lint, type-check e build estão verdes;
+- nenhuma função ou migration foi persistida no Supabase remoto durante o Dia 3;
 - branch atual: `codex/ux-chart-003c2-day-1`.
 
 ## Blockers
 
-Nenhum bloqueio duro impede o Dia 3 da `UX-CHART-003C2`; a evidência RED foi aprovada em 2026-09-12.
+Nenhum bloqueio duro impede o Dia 4 da `UX-CHART-003C2`; o núcleo mínimo GREEN foi concluído em 2026-09-13.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -38,8 +41,8 @@ Bloqueios externos antes de produção pública completa:
 
 - `CI-ACTIONS-001` — BAIXO: `actions/checkout@v4` e `actions/setup-node@v4` dependem de runtime Node.js 20 e o runner atual as força para Node.js 24;
 - `CI-VERCEL-002` — MÉDIO: contrato local/CI em Node.js 22 e projeto Vercel reportado em Node.js 24;
-- `UX-CHART-003C2` — ALTO: RLS/ACL e plano de consulta precisam de pgTAP e `EXPLAIN` antes da migration remota;
-- `UX-CHART-003C2` — MÉDIO: fronteiras históricas e transações futuras precisam de testes de borda explícitos;
+- `UX-CHART-003C2` — ALTO: aplicação persistente da migration ainda depende do gate e da autorização da fase correspondente;
+- `UX-CHART-003C2` — MÉDIO: ampliar validações de borda e revisar o plano observado permanece para os Dias 4–5;
 - publicação externa — ALTO: permanece pausada e exige aprovação humana específica.
 
 ## Current Context
@@ -77,7 +80,7 @@ Bloqueios externos antes de produção pública completa:
 
 ## Next Action
 
-Executar o Dia 3 da `UX-CHART-003C2` para o mínimo GREEN mediante comando explícito.
+Preparar o Dia 4 da `UX-CHART-003C2` para expansão controlada mediante novo comando explícito.
 
 ## History
 

@@ -260,6 +260,54 @@ export function resolveCustomFinancialPeriod({
   };
 }
 
+export type ResolveAllFinancialPeriodInput = Readonly<{
+  historyStartOn: string | null;
+  referenceOn: string;
+}>;
+
+export function resolveAllFinancialPeriod({
+  historyStartOn,
+  referenceOn: referenceOnInput
+}: ResolveAllFinancialPeriodInput): FinancialPeriod {
+  let referenceOn: string;
+
+  try {
+    referenceOn = CivilDate.fromString(referenceOnInput).value;
+  } catch {
+    throw new Error("referenceOn is invalid");
+  }
+
+  if (historyStartOn === null) {
+    return {
+      ...resolveFinancialPeriod({ kind: "month", referenceOn }),
+      kind: "all"
+    };
+  }
+
+  let normalizedHistoryStartOn: string;
+
+  try {
+    normalizedHistoryStartOn = CivilDate.fromString(historyStartOn).value;
+  } catch {
+    throw new Error("historyStartOn is invalid");
+  }
+
+  if (compareCivilDates(normalizedHistoryStartOn, referenceOn) > 0) {
+    return {
+      ...resolveFinancialPeriod({ kind: "month", referenceOn }),
+      kind: "all"
+    };
+  }
+
+  return {
+    ...resolveCustomFinancialPeriod({
+      from: normalizedHistoryStartOn,
+      to: referenceOn
+    }),
+    kind: "all"
+  };
+}
+
 function countIntersectingCivilBuckets(
   startOnInclusive: string,
   endOnExclusive: string,

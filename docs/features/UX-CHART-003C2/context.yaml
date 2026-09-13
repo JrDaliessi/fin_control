@@ -4,8 +4,8 @@ parent: UX-CHART-003C
 capabilities:
   - software
   - product
-state: TEST_STRATEGY_READY
-phase: Dia 2
+state: IN_PROGRESS
+phase: Dia 3
 approval: approved
 approved_at: 2026-09-12
 validation_approved_at: 2026-09-12
@@ -41,6 +41,7 @@ sources:
 quality_gates:
   - quality-gates.md#gate-do-dia-1--ux-chart-003c2
   - quality-gates.md#gate-do-dia-2--ux-chart-003c2
+  - quality-gates.md#gate-do-dia-3--ux-chart-003c2
   - quality-gates.md#software
   - docs/features/UX-CHART-003C2/test-strategy.md
   - docs/features/UX-CHART-003C/test-strategy.md
@@ -52,4 +53,4 @@ restrictions:
 approved_decisions:
   - future-only transactions use current civil month fallback
   - valid history ends at reference date inclusive
-next_action: Execute Day 3 minimum GREEN implementation by explicit command
+next_action: Prepare Day 4 controlled expansion by explicit command

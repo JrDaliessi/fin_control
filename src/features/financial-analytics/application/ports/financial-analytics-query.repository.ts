@@ -17,6 +17,16 @@ export type LoadEvolutionBucketsInput = Readonly<{
   bucketGranularity: Exclude<FinancialBucketGranularity, "day">;
 }>;
 
+export type LoadFinancialHistoryStartInput = Readonly<{
+  userId: string;
+}>;
+
+export interface FinancialHistoryStartQueryRepository {
+  loadFinancialHistoryStart(
+    input: LoadFinancialHistoryStartInput
+  ): Promise<string | null>;
+}
+
 export interface FinancialAnalyticsQueryRepository {
   loadEvolutionSnapshot(
     input: LoadEvolutionSnapshotInput
