@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import type {
   FinancialAnalyticsQueryRepository,
+  FinancialHistoryStartQueryRepository,
   LoadEvolutionBucketsInput,
   LoadEvolutionSnapshotInput
 } from "../application/ports/financial-analytics-query.repository";
@@ -36,6 +37,7 @@ function createRepository(
   >
 ) {
   return {
+    loadFinancialHistoryStart: jest.fn(async () => null),
     loadEvolutionSnapshot: jest.fn(
       async (input: LoadEvolutionSnapshotInput) => {
         void input;
@@ -48,7 +50,8 @@ function createRepository(
         throw new Error("aggregate buckets are not used by daily periods");
       }
     )
-  } satisfies FinancialAnalyticsQueryRepository;
+  } satisfies FinancialAnalyticsQueryRepository &
+    FinancialHistoryStartQueryRepository;
 }
 
 const request = {

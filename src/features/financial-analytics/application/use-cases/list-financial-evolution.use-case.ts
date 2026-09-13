@@ -1,8 +1,12 @@
-import type { FinancialAnalyticsQueryRepository } from "../ports/financial-analytics-query.repository";
+import type {
+  FinancialAnalyticsQueryRepository,
+  FinancialHistoryStartQueryRepository
+} from "../ports/financial-analytics-query.repository";
 import { resolveReferenceCivilDate } from "../services/resolve-reference-civil-date";
 import { aggregateFinancialEvolution } from "../../domain/services/aggregate-financial-evolution";
 import { aggregateFinancialCandles } from "../../domain/services/aggregate-financial-candles";
 import {
+  resolveAllFinancialPeriod,
   resolveCustomFinancialPeriod,
   resolveFinancialPeriod
 } from "../../domain/services/resolve-financial-period";
@@ -43,7 +47,8 @@ export type FinancialEvolutionDto = Readonly<{
 }>;
 
 type ListFinancialEvolutionDependencies = Readonly<{
-  financialAnalyticsQueryRepository: FinancialAnalyticsQueryRepository;
+  financialAnalyticsQueryRepository: FinancialAnalyticsQueryRepository &
+    FinancialHistoryStartQueryRepository;
 }>;
 
 function summarize(
@@ -87,7 +92,8 @@ function summarize(
 }
 
 export class ListFinancialEvolutionUseCase {
-  private readonly repository: FinancialAnalyticsQueryRepository;
+  private readonly repository: FinancialAnalyticsQueryRepository &
+    FinancialHistoryStartQueryRepository;
 
   constructor({
     financialAnalyticsQueryRepository
@@ -104,25 +110,39 @@ export class ListFinancialEvolutionUseCase {
       throw new Error("user is required");
     }
 
-    const period =
-      request.kind === "custom"
-        ? (() => {
-            if (typeof request.from !== "string" || typeof request.to !== "string") {
-              throw new Error("period kind custom requires dates");
-            }
+    const referenceOn = resolveReferenceCivilDate({
+      referenceInstant: request.referenceInstant,
+      timeZone: request.timeZone
+    });
+    let period: FinancialPeriod;
 
-            return resolveCustomFinancialPeriod({
-              from: request.from,
-              to: request.to
-            });
-          })()
-        : resolveFinancialPeriod({
-            kind: request.kind,
-            referenceOn: resolveReferenceCivilDate({
-              referenceInstant: request.referenceInstant,
-              timeZone: request.timeZone
-            })
-          });
+    if (request.kind === "custom") {
+      if (typeof request.from !== "string" || typeof request.to !== "string") {
+        throw new Error("period kind custom requires dates");
+      }
+
+      period = resolveCustomFinancialPeriod({
+        from: request.from,
+        to: request.to
+      });
+    } else if (request.kind === "all") {
+      let historyStartOn: string | null;
+
+      try {
+        historyStartOn = await this.repository.loadFinancialHistoryStart({
+          userId
+        });
+      } catch {
+        throw new Error("financial evolution unavailable");
+      }
+
+      period = resolveAllFinancialPeriod({ historyStartOn, referenceOn });
+    } else {
+      period = resolveFinancialPeriod({
+        kind: request.kind,
+        referenceOn
+      });
+    }
 
     if (period.bucketGranularity !== "day") {
       let bucketSnapshot: Awaited<

@@ -4,9 +4,9 @@ capabilities:
   - software
   - product
 state: IN_PROGRESS
-phase: Entre small releases
-active_small_release: null
-active_small_release_state: null
+phase: Dia 2 da UX-CHART-003C2
+active_small_release: UX-CHART-003C2
+active_small_release_state: TEST_STRATEGY_READY
 approved_at: 2026-09-08
 derived_from:
   - docs/product/prd.md
@@ -42,4 +42,4 @@ small_releases:
   - UX-CHART-003C1
   - UX-CHART-003C2
   - UX-CHART-003C3
-next_action: Iniciar o Dia 1 da UX-CHART-003C2 mediante novo comando explícito
+next_action: Executar o Dia 3 da UX-CHART-003C2 mediante comando explícito

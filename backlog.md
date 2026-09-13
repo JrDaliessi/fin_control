@@ -16,9 +16,9 @@ Nenhum item pronto aguardando início no momento.
 - Risco: Médio por exagero de claims, exposição de dados/credenciais, métricas sem fonte e desatualização do estado do produto.
 - Escopo: posicionamento, público, evidências, quatro pilares, calendário inicial e três briefs planejados.
 - Fora do escopo: publicação automática, alteração do perfil real, métricas inventadas, divulgação de credenciais, dados financeiros ou afirmações de produção pública.
-- Fase recomendada: validar e integrar `final.md` do `LI-POST-002`; o post sobre candles depende da conclusão da `UX-CHART-003C2/003C3`.
+- Fase recomendada: manter publicação pausada; o post sobre candles depende da conclusão da `UX-CHART-003C2/003C3`.
 - Critério de pronto: toda afirmação aponta para evidência, revisão factual/editorial verde, nenhum segredo ou dado pessoal exposto e publicação explicitamente aprovada.
-- Status: IN_PROGRESS — `LI-POST-002` está `DONE` editorialmente e aguarda validação do novo head e merge da PR `#33`; publicação não autorizada, `LI-POST-001` segue bloqueado e `LI-POST-003` em discovery.
+- Status: IN_PROGRESS — `LI-POST-002` está `DONE` editorialmente e integrado pela PR `#33`; publicação não autorizada, `LI-POST-001` segue bloqueado e `LI-POST-003` em discovery.
 
 ### UX-CHART-003 — Períodos e granularidade adaptativa
 - Tipo: UX Improvement / Feature.
@@ -32,9 +32,9 @@ Nenhum item pronto aguardando início no momento.
 - Acessibilidade: botões com `aria-pressed`, nomes completos, teclado, alvos de 44 px, rolagem confinada, estado na URL e tabela equivalente ao gráfico.
 - Risco: Alto por OHLC agregado, intervalos civis parciais, performance e migration; mitigado por TDD de domínio, pgTAP e rollout separado.
 - Small releases: `UX-CHART-003A` barra `Semana`/`7D`/`Quinzena`/`15D`/`Mês` sobre a RPC atual; `UX-CHART-003B` `3M`/`Ano` e agregação server-side; `UX-CHART-003C` `Tudo`/personalizado e drill-down para o extrato contextual.
-- Fase recomendada: `003A`, `003B` e `003C1` concluídas e mescladas; `003C2` só começa após novo comando.
+- Fase recomendada: `003A`, `003B` e `003C1` concluídas e mescladas; `003C2` concluiu o núcleo GREEN do Dia 3 e segue para expansão controlada no Dia 4.
 - Critério de pronto: cards, linha, candles, tabela e extrato usam o mesmo intervalo; nenhuma visualização excede os limites aprovados; URLs existentes continuam válidas; RLS, performance, responsividade e quality gates ficam verdes.
-- Status: IN_PROGRESS — `UX-CHART-003A`, `003B` e `003C1` estão mescladas; `003C2/003C3` permanecem planejadas.
+- Status: IN_PROGRESS — `UX-CHART-003A`, `003B` e `003C1` estão mescladas; `003C2` está `IN_PROGRESS` após o Dia 3; `003C3` permanece planejada.
 
 ### UX-CHART-003C — Tudo, período personalizado e drill-down
 - Tipo: Small Release / UX Improvement.
@@ -45,7 +45,18 @@ Nenhum item pronto aguardando início no momento.
 - Fatiamento: `003C1` domínio/URL; `003C2` agregação segura; `003C3` drill-down progressivo.
 - Risco: Alto por RLS e performance de histórico extenso; mitigação definida na Feature Spec.
 - Critério de pronto: critérios `FPRD-UXCHART003C-AC-001` a `AC-010` verdes e gates de software, segurança, experiência e release concluídos.
-- Status: IN_PROGRESS — `003C1` foi `RELEASED` pela PR `#30` no commit `a96b564`; `003C2/003C3` permanecem pendentes e granularidades trimestral/anual seguem bloqueadas no adapter.
+- Status: IN_PROGRESS — `003C1` foi `RELEASED` pela PR `#30` no commit `a96b564`; `003C2` possui núcleo GREEN local e migration validada apenas em transação com rollback; `003C3` permanece pendente.
+
+### UX-CHART-003C2 — Agregação segura para histórico completo
+- Tipo: Small Release / Software / Product.
+- Objetivo: habilitar `Tudo`, trimestre e ano com âncora server-side e agregados tenant-safe, sem transferir lançamentos brutos.
+- Prioridade: Alta; small release ativa.
+- Dependências: `UX-CHART-003C1`, RPC de evolução existente, RLS de transações/contas e ADR 0022.
+- Escopo: RPC de primeira transação visível, resolução de `Tudo`, buckets `quarter/year`, limites de 60 anos/60 buckets, ACL/RLS, testes e evidência de plano.
+- Fora do escopo: drill-down, linhas de extrato, redesign, índice especulativo e publicação LinkedIn.
+- Risco: Alto por segurança tenant e plano de consulta; exige pgTAP multiusuário/anônimo e `EXPLAIN (ANALYZE, BUFFERS)`.
+- Critério de pronto: `FPRD-UXCHART003C2-AC-001` a `AC-010` verdes, migration forward-only reproduzível e compatibilidade de períodos existentes comprovada.
+- Status: IN_PROGRESS — Dia 3 concluído com 98 suítes/683 testes, SQL transacional verde e nenhuma mutação remota persistente; próximo comando válido é o Dia 4.
 
 ## DISCOVERY
 

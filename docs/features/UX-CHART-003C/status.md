@@ -2,8 +2,9 @@
 
 - Estado da feature pai: `IN_PROGRESS`
 - Estado da small release `UX-CHART-003C1`: `RELEASED`
-- Fase concluída: `Dia 7`
-- Aprovação: confirmada em 2026-09-08
+- Estado da small release `UX-CHART-003C2`: `TEST_STRATEGY_READY`
+- Fase concluída: `Dia 2 da UX-CHART-003C2`
+- Aprovação: confirmada para os requisitos da `UX-CHART-003C2` em 2026-09-12
 - Código funcional alterado: sim; núcleo da `UX-CHART-003C1` em GREEN
 - Banco remoto alterado: não
 - Integração: PR `#30` mesclada em `develop` no commit `a96b564` em 2026-09-09
@@ -42,9 +43,17 @@
 - drill-down acontece no mesmo painel: ano, trimestre, mês e extrato final;
 - históricos longos entregam apenas agregados; lançamentos são buscados somente no mês final.
 
+## Dia 1 da UX-CHART-003C2
+
+- PRD próprio registra 7 requisitos funcionais, 6 não funcionais e 10 critérios de aceite;
+- Spec própria define contratos de âncora, `Tudo`, trimestre/ano, RLS/ACL, migration, rollback e performance;
+- discovery remoto somente leitura confirmou PostgreSQL 17.6, sete migrations, RPC invoker atual, policies e índices;
+- transação somente futura e término de `Tudo` na referência são decisões novas aguardando aceite;
+- nenhum código, teste RED, migration ou banco remoto foi alterado.
+
 ## Bloqueios e riscos
 
-Nenhum bloqueio duro para o Dia 7 da `003C1`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fatias.
+Nenhum bloqueio duro impede o Dia 2 da `003C2`. Migration, Supabase remoto e drill-down permanecem bloqueados até as respectivas fases/fatias.
 
 O `SUPPLY-CHAIN-003` foi resolvido e confirmado pelo workflow remoto `Quality Gates #146` da PR `#30`.
 
@@ -56,7 +65,7 @@ Riscos ativos:
 
 ## Próximo passo
 
-Versionar o Dia 7, atualizar a PR `#30` e validar os checks do novo head. Merge e início da `003C2` exigem comandos próprios.
+Executar o Dia 3 da `UX-CHART-003C2` para o mínimo GREEN mediante comando explícito.
 
 ## Validação do Dia 1
 

@@ -109,21 +109,107 @@ describe("SupabaseFinancialAnalyticsQueryRepository", () => {
     expect(rpc.mock.calls[0]?.[1]).not.toHaveProperty("user_id");
   });
 
-  it("rejects quarter and year before the matching migration is available", async () => {
-    const rpc = jest.fn();
+  it.each(["quarter", "year"] as const)(
+    "loads %s buckets after the matching migration contract",
+    async (bucketGranularity) => {
+      const bucketRow = {
+        account_count: "1",
+        start_on_inclusive: "2024-01-01",
+        end_on_exclusive: "2027-01-01",
+        open_in_cents: "10000",
+        high_in_cents: "10000",
+        low_in_cents: "10000",
+        close_in_cents: "10000",
+        income_in_cents: "0",
+        expense_in_cents: "0",
+        volume_in_cents: "0",
+        transaction_count: "0"
+      };
+      const rpc = jest.fn(
+        async (functionName: string, parameters: Record<string, string>) => {
+          void functionName;
+          void parameters;
+          return { data: [bucketRow], error: null };
+        }
+      );
+      const repository = new SupabaseFinancialAnalyticsQueryRepository({
+        supabaseClient: { rpc } as never
+      });
+
+      await expect(
+        repository.loadEvolutionBuckets({
+          userId: analyticsUserId,
+          startOnInclusive: "2024-01-01",
+          endOnExclusive: "2027-01-01",
+          bucketGranularity
+        })
+      ).resolves.toEqual(expect.objectContaining({ accountCount: 1 }));
+      expect(rpc).toHaveBeenCalledWith("load_financial_evolution_buckets", {
+        p_start_on: "2024-01-01",
+        p_end_on: "2027-01-01",
+        p_bucket: bucketGranularity
+      });
+    }
+  );
+
+  it("loads the first visible transaction date without forwarding userId", async () => {
+    const rpc = jest.fn(async (functionName: string) => {
+      void functionName;
+      return {
+        data: "2020-04-03",
+        error: null
+      };
+    });
     const repository = new SupabaseFinancialAnalyticsQueryRepository({
       supabaseClient: { rpc } as never
-    });
+    }) as unknown as {
+      loadFinancialHistoryStart(input: { userId: string }): Promise<string | null>;
+    };
 
     await expect(
-      repository.loadEvolutionBuckets({
-        userId: analyticsUserId,
-        startOnInclusive: "2024-01-01",
-        endOnExclusive: "2027-01-01",
-        bucketGranularity: "quarter"
-      })
-    ).rejects.toThrow("financial analytics repository unavailable");
-    expect(rpc).not.toHaveBeenCalled();
+      repository.loadFinancialHistoryStart({ userId: analyticsUserId })
+    ).resolves.toBe("2020-04-03");
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("load_financial_history_start");
+    expect(rpc.mock.calls[0]).toHaveLength(1);
+  });
+
+  it("accepts a null financial history start", async () => {
+    const rpc = jest.fn(async () => ({ data: null, error: null }));
+    const repository = new SupabaseFinancialAnalyticsQueryRepository({
+      supabaseClient: { rpc } as never
+    }) as unknown as {
+      loadFinancialHistoryStart(input: { userId: string }): Promise<string | null>;
+    };
+
+    await expect(
+      repository.loadFinancialHistoryStart({ userId: analyticsUserId })
+    ).resolves.toBeNull();
+  });
+
+  it("sanitizes history-start provider failures", async () => {
+    const providerError = {
+      code: "42501",
+      message: "permission denied for public.transactions"
+    };
+    const rpc = jest.fn(async () => ({ data: null, error: providerError }));
+    const repository = new SupabaseFinancialAnalyticsQueryRepository({
+      supabaseClient: { rpc } as never
+    }) as unknown as {
+      loadFinancialHistoryStart(input: { userId: string }): Promise<string | null>;
+    };
+
+    const promise = repository.loadFinancialHistoryStart({
+      userId: analyticsUserId
+    });
+
+    await expect(promise).rejects.toThrow(
+      "financial analytics repository unavailable"
+    );
+    await promise.catch((error: unknown) => {
+      expect((error as Error).message).not.toContain(providerError.code);
+      expect((error as Error).message).not.toContain(providerError.message);
+    });
   });
 
   it("sanitizes RPC failures and provider details", async () => {

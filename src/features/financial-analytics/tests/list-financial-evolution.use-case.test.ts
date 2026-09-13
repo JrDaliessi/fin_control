@@ -16,7 +16,7 @@ type LoadEvolutionBucketsInput = Readonly<{
   userId: string;
   startOnInclusive: string;
   endOnExclusive: string;
-  bucketGranularity: "week" | "month";
+  bucketGranularity: "week" | "month" | "quarter" | "year";
 }>;
 
 const bucketSnapshot = {
@@ -77,9 +77,14 @@ function createRepository(
   snapshot: Awaited<
     ReturnType<FinancialAnalyticsQueryRepository["loadEvolutionSnapshot"]>
   >,
-  aggregatedSnapshot: FinancialEvolutionBucketSnapshot = bucketSnapshot
+  aggregatedSnapshot: FinancialEvolutionBucketSnapshot = bucketSnapshot,
+  historyStartOn: string | null = "2020-04-03"
 ) {
   const repository = {
+    loadFinancialHistoryStart: jest.fn(async (input: { userId: string }) => {
+      void input;
+      return historyStartOn;
+    }),
     loadEvolutionSnapshot: jest.fn(
       async (input: LoadEvolutionSnapshotInput) => {
         void input;
@@ -118,6 +123,7 @@ describe("ListFinancialEvolutionUseCase", () => {
     const result = await useCase.execute(request);
 
     expect(repository.loadEvolutionSnapshot).toHaveBeenCalledTimes(1);
+    expect(repository.loadFinancialHistoryStart).not.toHaveBeenCalled();
     expect(repository.loadEvolutionSnapshot).toHaveBeenCalledWith({
       userId: analyticsUserId,
       startOnInclusive: "2026-03-01",
@@ -253,6 +259,104 @@ describe("ListFinancialEvolutionUseCase", () => {
     });
     expect(result.points).toHaveLength(1);
     expect(result.candles).toHaveLength(1);
+  });
+
+  it("resolves all from the server-side history anchor before loading buckets", async () => {
+    const repository = createRepository(
+      { accountCount: 1, openingBalanceInCents: 0, movements: [] },
+      createCoveredBucketSnapshot("2020-04-03", "2026-09-13")
+    );
+    const useCase = new ListFinancialEvolutionUseCase({
+      financialAnalyticsQueryRepository: repository
+    });
+
+    const result = await useCase.execute({
+      ...request,
+      kind: "all",
+      referenceInstant: "2026-09-12T15:00:00.000Z"
+    });
+
+    expect(repository.loadFinancialHistoryStart).toHaveBeenCalledWith({
+      userId: analyticsUserId
+    });
+    expect(repository.loadEvolutionSnapshot).not.toHaveBeenCalled();
+    expect(repository.loadEvolutionBuckets).toHaveBeenCalledWith({
+      userId: analyticsUserId,
+      startOnInclusive: "2020-04-03",
+      endOnExclusive: "2026-09-13",
+      bucketGranularity: "quarter"
+    });
+    expect(result.period).toEqual({
+      kind: "all",
+      bucketGranularity: "quarter",
+      referenceOn: "2026-09-12",
+      startOnInclusive: "2020-04-03",
+      endOnExclusive: "2026-09-13"
+    });
+  });
+
+  it.each([
+    ["without movements", null],
+    ["with future-only movements", "2026-10-01"]
+  ])(
+    "falls back to the reference civil month %s",
+    async (_scenario, historyStartOn) => {
+      const repository = createRepository(
+        { accountCount: 1, openingBalanceInCents: 2_500, movements: [] },
+        bucketSnapshot,
+        historyStartOn
+      );
+      const useCase = new ListFinancialEvolutionUseCase({
+        financialAnalyticsQueryRepository: repository
+      });
+
+      const result = await useCase.execute({
+        ...request,
+        kind: "all",
+        referenceInstant: "2026-09-12T15:00:00.000Z"
+      });
+
+      expect(repository.loadFinancialHistoryStart).toHaveBeenCalledTimes(1);
+      expect(repository.loadEvolutionBuckets).not.toHaveBeenCalled();
+      expect(repository.loadEvolutionSnapshot).toHaveBeenCalledWith({
+        userId: analyticsUserId,
+        startOnInclusive: "2026-09-01",
+        endOnExclusive: "2026-10-01"
+      });
+      expect(result.period).toEqual({
+        kind: "all",
+        bucketGranularity: "day",
+        referenceOn: "2026-09-12",
+        startOnInclusive: "2026-09-01",
+        endOnExclusive: "2026-10-01"
+      });
+    }
+  );
+
+  it("sanitizes a history-anchor repository failure", async () => {
+    const repository = createRepository({
+      accountCount: 1,
+      openingBalanceInCents: 0,
+      movements: []
+    });
+    repository.loadFinancialHistoryStart.mockRejectedValue(
+      new Error("sensitive relation public.transactions")
+    );
+    const useCase = new ListFinancialEvolutionUseCase({
+      financialAnalyticsQueryRepository: repository
+    });
+
+    const promise = useCase.execute({
+      ...request,
+      kind: "all"
+    });
+
+    await expect(promise).rejects.toThrow("financial evolution unavailable");
+    await promise.catch((error: unknown) => {
+      expect((error as Error).message).not.toContain("transactions");
+    });
+    expect(repository.loadEvolutionSnapshot).not.toHaveBeenCalled();
+    expect(repository.loadEvolutionBuckets).not.toHaveBeenCalled();
   });
 
   it.each([

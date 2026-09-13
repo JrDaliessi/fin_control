@@ -20,12 +20,12 @@ Nenhum teste existente será enfraquecido. Expectativas alteradas refletem apena
 | --- | --- | --- | --- | --- |
 | `FPRD-UXCHART003C-AC-001` | nove opções, `all`, `custom`, URL preservada após refresh | presentation/App Router | `FinancialPeriodSelector.test.tsx`, `DashboardRoutes.test.tsx`, `financial-period-search-params.test.ts` | `003C1` RED |
 | `FPRD-UXCHART003C-AC-002` | data inválida, ordem invertida, >60 anos, >60 buckets | domain | `resolve-custom-financial-period.test.ts` | `003C1` RED |
-| `FPRD-UXCHART003C-AC-003` | primeira transação e fallback sem movimentos | application/infrastructure/SQL | use case de evolução, repository e pgTAP de âncora | `003C2` planejado |
+| `FPRD-UXCHART003C-AC-003` | primeira transação e fallback sem movimentos | application/infrastructure/SQL | use case de evolução, repository e pgTAP de âncora | `003C2` RED |
 | `FPRD-UXCHART003C-AC-004` | fronteiras 31d/6m/2a/15a, buckets parciais e resposta agregada mínima | domain/SQL | resolver custom e pgTAP de comportamento | domínio em `003C1` RED; SQL em `003C2` |
 | `FPRD-UXCHART003C-AC-005` | ano→trimestres, trimestre→meses, voltar no painel único | application/presentation | testes de drill-down e painel | `003C3` planejado |
 | `FPRD-UXCHART003C-AC-006` | tabela e gráfico disparam o mesmo intervalo por teclado/clique | presentation | tabelas, gráficos e switcher | `003C3` planejado |
 | `FPRD-UXCHART003C-AC-007` | mês final, máximo 31 dias, concorrência e resposta obsoleta | application/presentation | extrato e painel contextual | `003C3` planejado |
-| `FPRD-UXCHART003C-AC-008` | anônimo, dois tenants, invoker, ACL e ausência de detalhe bruto | SQL/infrastructure | pgTAP schema/behavior/RLS e mapper | `003C2` planejado |
+| `FPRD-UXCHART003C-AC-008` | anônimo, dois tenants, invoker, ACL e ausência de detalhe bruto | SQL/infrastructure | pgTAP schema/behavior/RLS e mapper | `003C2` RED |
 | `FPRD-UXCHART003C-AC-009` | até 60 pontos e 320/390/768/1280 px sem overflow | domain/presentation/e2e | resolver, testes DOM e browser autenticado | `003C1`, `003C3`, Dia 6 |
 | `FPRD-UXCHART003C-AC-010` | sete valores antigos, parâmetros repetidos e telemetria sanitizada | domain/route/observability | regressão Jest e inspeção de eventos | `003C1` RED; Dia 7 |
 
@@ -63,7 +63,7 @@ Arquivo novo: `src/features/financial-analytics/tests/financial-period-search-pa
 
 `FinancialPeriodSelector.test.tsx` passa a exigir nove opções, ordem previsível, `Tudo` como submit GET e `Personalizado` como acionador acessível de escolha de datas. Os sete valores anteriores permanecem cobertos.
 
-## Contratos planejados — UX-CHART-003C2
+## Contratos executados em RED — UX-CHART-003C2
 
 ### Jest
 
@@ -81,6 +81,8 @@ Arquivo novo: `src/features/financial-analytics/tests/financial-period-search-pa
 - performance: claims configuradas, filtro por proprietário e evidência do índice existente antes de qualquer índice novo.
 
 O probe remoto, quando autorizado na fase correspondente, será transacional e terminará em `rollback`.
+
+Evidência de 2026-09-12: baseline dirigido com 77 testes verdes; 15 cenários Jest falharam pelas capacidades ausentes e 17 regressões permaneceram verdes; probe pgTAP remoto falhou 3/3 e o rollback foi confirmado sem extensão, função ou dados persistentes. A matriz detalhada está em `docs/features/UX-CHART-003C2/test-strategy.md`.
 
 ## Contratos planejados — UX-CHART-003C3
 

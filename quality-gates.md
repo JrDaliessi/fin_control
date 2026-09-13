@@ -333,6 +333,46 @@ Resultados históricos abaixo são evidência de ciclos anteriores e não substi
 - `UX-CHART-003C1` encerra em `READY_FOR_RELEASE`; a feature pai permanece `IN_PROGRESS` para `003C2/003C3`;
 - nenhuma migration, mutação Supabase, merge ou deploy foi executado.
 
+## Gate do Dia 1 — UX-CHART-003C2
+
+- entrada compatível: feature pai `IN_PROGRESS`, `003C1` liberada e small release `003C2` em discovery;
+- Hot Context, mapa, workflow do Dia 1, PRD/Spec/testes da feature pai, ADR 0022, código relacionado, migrations e testes SQL foram consultados;
+- Supabase foi inspecionado em modo somente leitura em 2026-09-12: PostgreSQL 17.6, sete migrations, RPC agregadora invoker, RLS/grants/indexes e advisors conhecidos;
+- `feature-prd.md`, `feature-spec.md`, `context.yaml` e `status.md` próprios foram criados;
+- 7 requisitos funcionais, 6 não funcionais e 10 critérios de aceite possuem IDs estáveis;
+- contratos preservam RLS, `auth.uid()`, `SECURITY INVOKER`, `search_path` vazio, ACL explícita, projeção agregada, 60 anos e 60 buckets;
+- plano de performance exige `EXPLAIN (ANALYZE, BUFFERS)` e proíbe índice especulativo;
+- nenhum novo ADR foi necessário porque a solução permanece dentro do ADR 0022;
+- YAMLs parseados, 23 rotas ativas existentes e cardinalidade dos IDs confirmada automaticamente;
+- ESLint, type-check e `git diff --check` verdes; lint executado com `npm.cmd` após o wrapper `npm` do PATH local apontar para módulo ausente;
+- as decisões de borda sobre transações futuras e término histórico na referência inclusiva foram aprovadas em 2026-09-12;
+- nenhum código, teste RED, migration, dependência, mutação remota, commit, push, PR ou deploy foi executado;
+- estado de saída: `SPEC_READY`; próximo comando válido é o Dia 2.
+
+## Gate do Dia 2 — UX-CHART-003C2
+
+- 10 critérios de aceite rastreados em `docs/features/UX-CHART-003C2/test-strategy.md`;
+- baseline dirigido anterior: 5 suítes/77 testes verdes, zero snapshots;
+- RED Jest válido: 3 suítes, 15 falhas por comportamento ausente e 17 regressões verdes;
+- regressão fora dos contratos RED: 95 suítes/651 testes verdes, zero snapshots;
+- três contratos pgTAP novos e dois ampliados; 72 asserções no Context Pack SQL com `plan()` coerente;
+- probe MCP/Supabase falhou 3/3 pelos contratos ausentes e terminou em rollback confirmado;
+- `pgtap` e RPC de âncora não persistiram; RPC agregadora atual permaneceu intacta;
+- ESLint e type-check verdes; nenhuma falha de import ou infraestrutura mascara o RED;
+- nenhum código funcional, migration, índice, dependência, commit, push, merge ou deploy foi executado;
+- estado de saída: `TEST_STRATEGY_READY`; evidência aprovada em 2026-09-12 e Dia 3 liberado mediante comando explícito.
+
+## Gate do Dia 3 — UX-CHART-003C2
+
+- confirmação humana registrada antes da implementação e RED reconfirmado com 3 suítes, 15 falhas esperadas e 17 regressões verdes;
+- resolvedor puro de `Tudo`, port segregado de âncora, orquestração application e adapter Supabase implementados sem ampliar o escopo para drill-down;
+- migration `20260913173700_extend_financial_history_aggregation.sql` criada pela CLI Supabase 2.117.0, sem índice novo;
+- seis contratos pgTAP, totalizando 72 asserções, executados sobre a migration em transações remotas revertidas, sem erro ou `not ok` reportado;
+- rollback confirmado por inspeção posterior: RPC de âncora e suporte persistente a `quarter/year` continuaram ausentes no banco remoto;
+- GREEN dirigido: 3 suítes/32 testes; regressão completa: 98 suítes/683 testes e zero snapshots;
+- ESLint, type-check, build Next.js 16.3.3 e `git diff --check` verdes;
+- estado de saída: `IN_PROGRESS`; aplicação persistente da migration, expansão e hardening permanecem fora do Dia 3.
+
 ### Resultado observado — SR-012
 - Matriz de domain e application documentada em `test-strategy.md`.
 - 3 suítes e 37 cenários foram criados antes da implementação.
