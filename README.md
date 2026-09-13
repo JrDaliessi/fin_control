@@ -1,166 +1,165 @@
 # FinControl
 
-PWA de finanças pessoais que busca explicar o dinheiro do usuário, antecipar riscos e apoiar decisões financeiras. O produto combina lançamentos manuais, visão consolidada e, em ciclos futuros, análises assistidas por IA — sem executar ações financeiras sensíveis sem confirmação explícita.
+**Gestão financeira pessoal com foco em clareza, segurança e decisões de engenharia explicáveis.**
 
-> Projeto em desenvolvimento. Não use dados financeiros reais nesta etapa.
+[![Quality Gates](https://github.com/JrDaliessi/fin_control/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/JrDaliessi/fin_control/actions/workflows/ci.yml)
 
-## Estado atual
+[Testar aplicação](https://fin-control-two.vercel.app) · [Portfólio](https://curriculo-web-ten.vercel.app/) · [Visita técnica guiada](docs/showcase/README.md) · [Arquitetura](architecture.md) · [Decisões arquiteturais](adr/README.md) · [Roadmap](roadmap.md)
 
-- Projeto: `OPERATING`
-- Última release integrada: `GOV-V4-001`, PR `#29`, merge `42dd6db`
-- Small release ativa: `UX-CHART-003C — Tudo, período personalizado e drill-down`
-- Fase atual: Dia 3 concluído em `IN_PROGRESS`, com o núcleo da `003C1` em GREEN
-- Próximo ciclo: Dia 4 da `UX-CHART-003C1`, com expansão controlada do seletor personalizado
-- Produção pública completa continua condicionada aos hardenings descritos em `project-context.md`
+> O endereço publicado é um ambiente de demonstração. Não use dados financeiros reais. As credenciais da conta compartilhada não são armazenadas no repositório.
 
-O estado operacional fica em [`project-context.md`](project-context.md); as rotas de contexto ficam em [`context-map.yaml`](context-map.yaml), e o histórico anterior permanece em `docs/history/`.
+### Acesso para avaliação
 
-## Funcionalidades disponíveis
+O link público abre a tela de autenticação. As informações da conta preparada para recrutadores ficam centralizadas na seção FinControl do [portfólio](https://curriculo-web-ten.vercel.app/#portfolio), sem duplicar a senha no Git. A evolução recomendada é uma sessão demo de um clique, isolada e restaurada periodicamente.
 
-- cadastro local de receitas e despesas;
-- resumo mensal básico;
-- dashboard financeiro inicial;
-- contas financeiras persistidas e isoladas por usuário;
-- login por e-mail/senha, logout local e sessão verificada;
-- rotas financeiras protegidas por Proxy e layout privado;
-- manifest PWA e experiência mobile-first inicial.
+## O produto
 
-Contas financeiras usam Supabase Database com RLS; transações ainda permanecem na sessão da aplicação. A UI-001 está somente em arquitetura e não alterou o comportamento disponível.
+O FinControl transforma receitas, despesas, contas e períodos financeiros em uma visão consolidada que ajuda a entender o que aconteceu com o dinheiro. A interface é uma PWA mobile-first e combina indicadores, visualizações e alternativas textuais acessíveis.
 
-## Stack
+Hoje o projeto demonstra:
 
-- Next.js 16 com App Router;
-- React 19 e TypeScript;
-- Tailwind CSS;
-- Supabase Auth e Database;
-- Jest e Testing Library;
-- PWA;
-- TDD.
+- autenticação por e-mail e sessão protegida;
+- contas, categorias e transações persistentes;
+- dashboard com saldo, receitas, despesas e evolução financeira;
+- gráficos de linha e candles financeiros, sem finalidade de trading;
+- períodos financeiros adaptativos e URLs compartilháveis;
+- expansão de gráficos e tabelas equivalentes para acessibilidade;
+- extrato contextual, volume movimentado e insights determinísticos;
+- experiência responsiva, temas claro/escuro/sistema e instalação PWA;
+- isolamento por usuário com PostgreSQL, RLS, constraints e grants mínimos.
 
-As versões exatas estão fixadas em [`package.json`](package.json) e [`package-lock.json`](package-lock.json).
+## Por que este repositório existe
 
-## Arquitetura
-
-O projeto segue **Feature-Based + Clean Architecture leve**. Cada feature mantém as responsabilidades separadas em:
-
-- `presentation`: interface, componentes, hooks e estados visuais;
-- `application`: casos de uso e orquestração;
-- `domain`: entidades, contratos e regras puras;
-- `infrastructure`: Supabase, adapters e outros detalhes técnicos.
-
-`src/app` é a camada de entrada e composição do App Router. A apresentação não acessa o Supabase diretamente, e o domínio não depende de React, Next.js ou Supabase.
+Além do produto funcionando, este repositório registra **por que** cada mudança existe e **como** ela foi validada. Requisitos, ADRs, migrations, testes e releases formam uma cadeia rastreável:
 
 ```text
-src/
-  app/                 # rotas, layouts e composição
-  features/
-    accounts/          # contas financeiras
-    auth/              # autenticação e sessão
-    dashboard/         # visão consolidada
-    transactions/      # receitas, despesas e resumo mensal
-  lib/supabase/        # clients e adapters Supabase
-  shared/              # utilitários e componentes compartilhados
-tests/                 # setup e testes transversais
-public/                # manifest e ativos públicos
+problema → requisitos → decisão arquitetural → testes → implementação → validação → release
 ```
 
-Consulte [`architecture.md`](architecture.md) e os registros em [`adr/`](adr/) para detalhes e decisões arquiteturais.
+Para uma avaliação rápida, comece pela [visita técnica guiada](docs/showcase/README.md). Ela aponta os arquivos mais relevantes sem exigir a leitura de toda a documentação de engenharia.
 
-## Pré-requisitos
+Contribuições e critérios de apresentação de commits/PRs estão em [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-- Node.js compatível com Next.js 16;
-- npm;
-- projeto Supabase para executar os fluxos de autenticação.
+## Arquitetura atual
 
-## Configuração local
+O projeto usa **Feature-Based + Clean Architecture leve**. A regra central é manter interface, casos de uso, domínio e detalhes de infraestrutura separados.
 
-1. Instale as dependências:
+```mermaid
+flowchart LR
+    UI[Next.js / React<br/>presentation] --> APP[Casos de uso<br/>application]
+    APP --> DOMAIN[Regras e contratos<br/>domain]
+    INFRA[Adapters<br/>infrastructure] --> DOMAIN
+    INFRA --> AUTH[Supabase Auth]
+    INFRA --> DB[(PostgreSQL<br/>Supabase)]
+    APP -. injeção por contrato .-> INFRA
+```
 
-   ```bash
-   npm install
-   ```
+- `src/app`: rotas e composição do App Router;
+- `src/features`: módulos por domínio, separados por camada;
+- `src/shared`: componentes e utilitários transversais;
+- `supabase/migrations`: evolução versionada do banco;
+- `supabase/tests/database`: contratos pgTAP de schema, RLS e comportamento;
+- `adr`: decisões arquiteturais e trade-offs.
 
-2. Crie o arquivo local de ambiente a partir do exemplo:
+Detalhes e restrições estão em [`architecture.md`](architecture.md).
 
-   ```powershell
-   Copy-Item .env.example .env.local
-   ```
+## Próxima evolução: API NestJS
 
-3. Preencha em `.env.local`:
+A direção aprovada é evoluir incrementalmente para:
 
-   ```dotenv
-   NEXT_PUBLIC_SUPABASE_URL=https://abcdefghijklmnopqrst.supabase.co
-   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_sua_chave
-   ```
+```text
+Next.js → API NestJS → PostgreSQL no Supabase
+```
 
-   Substitua os valores ilustrativos pelos dados do diálogo **Connect** do seu projeto. A URL deve ser a **Project URL completa**, iniciada por `https://`, sem `<`, `>` ou outros marcadores de placeholder.
+Essa arquitetura **ainda não está implementada**. Antes da extração do backend, o trabalho começa pelo inventário verificável do modelo atual: entidades, relacionamentos, PKs, FKs, constraints, índices, regras de negócio e fronteiras de autorização.
 
-4. Inicie o ambiente de desenvolvimento:
+A migração seguirá um recorte vertical por vez, mantendo o aplicativo utilizável e evitando uma reescrita integral. O plano, alternativas e riscos estão documentados em:
 
-   ```bash
-   npm run dev
-   ```
+- [Roadmap da evolução do backend](docs/showcase/backend-evolution-roadmap.md);
+- [ADR 0023 — extração incremental para API NestJS](adr/0023-incremental-nestjs-api-extraction.md).
 
-5. Acesse `http://localhost:3000`.
+## Stack atual
 
-`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` é a opção preferida. `NEXT_PUBLIC_SUPABASE_ANON_KEY` permanece disponível apenas como fallback temporário para projetos legados.
+| Área | Tecnologias |
+| --- | --- |
+| Web | Next.js 16, React 19, TypeScript 6, Tailwind CSS |
+| Dados e identidade | Supabase Auth, PostgreSQL, RLS, migrations SQL |
+| Visualização | Apache ECharts com adapter local e fallback textual |
+| Validação | Jest, Testing Library, pgTAP, ESLint, TypeScript |
+| Entrega | GitHub Actions, Vercel e PWA |
 
-Se a configuração pública do Supabase estiver ausente ou malformada, o Proxy trata a sessão como não autenticada: rotas privadas redirecionam para `/login`, que permanece acessível. Esse fallback evita erro global, mas o login real só funciona depois que a URL e a chave locais forem corrigidas.
+As versões exatas ficam em [`package.json`](package.json), e o contrato vigente da stack está em [`project-stack.md`](project-stack.md).
 
-### Segurança das variáveis
+## Onde observar as decisões técnicas
 
-- nunca envie `.env.local` ao Git;
-- nunca exponha `SUPABASE_SERVICE_ROLE_KEY` ou secret keys no navegador;
-- variáveis com prefixo `NEXT_PUBLIC_` são públicas;
-- `SUPABASE_SERVICE_ROLE_KEY` não é necessária na release atual e deve permanecer vazia;
-- dados financeiros persistentes só serão habilitados com autenticação, autorização, RLS por proprietário e testes de isolamento.
+| Interesse | Ponto de partida |
+| --- | --- |
+| Fronteiras entre camadas | [`architecture.md`](architecture.md) |
+| Modelo e integridade dos dados | [`database-model.md`](database-model.md) |
+| Contratos entre módulos | [`module-contracts.md`](module-contracts.md) |
+| Decisões e alternativas | [`adr/`](adr/) |
+| Features e critérios de aceite | [`docs/features/`](docs/features/) |
+| Migrations e segurança do banco | [`supabase/migrations/`](supabase/migrations/) |
+| Testes de RLS e schema | [`supabase/tests/database/`](supabase/tests/database/) |
+| Releases verificadas | [`docs/releases/`](docs/releases/) |
+| Quality gates | [`quality-gates.md`](quality-gates.md) |
 
-## Comandos
+## Qualidade e segurança
+
+O pipeline verifica lint, tipos, testes, auditoria de dependências e build. Comportamentos relevantes seguem Validation First e TDD, incluindo testes de domínio, aplicação, apresentação e banco.
+
+No banco, as fronteiras críticas usam RLS por proprietário, funções `SECURITY INVOKER`, privilégios explícitos e relacionamentos tenant-safe. Isso reduz risco, mas não representa uma promessa de segurança absoluta; hardenings pendentes permanecem documentados de forma transparente.
+
+Consulte [`SECURITY.md`](SECURITY.md) antes de testar ou reportar uma vulnerabilidade.
+
+## Executar localmente
+
+Pré-requisitos: Node.js 22 e npm 11.
 
 ```bash
-npm run dev          # servidor de desenvolvimento
-npm run lint         # lint sem tolerância a warnings
-npm run type-check   # validação TypeScript
-npm run test         # testes Jest
-npm run test:watch   # testes em modo interativo
-npm run test:ci      # testes sequenciais para CI
+npm install
+```
+
+Crie o ambiente local a partir do exemplo:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Preencha apenas as variáveis públicas do seu próprio projeto Supabase:
+
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sua-chave-publicavel
+```
+
+Depois execute:
+
+```bash
+npm run dev
+```
+
+A aplicação ficará disponível em `http://localhost:3000`.
+
+Nunca envie `.env.local`, chaves secretas ou `SUPABASE_SERVICE_ROLE_KEY` ao Git. Variáveis `NEXT_PUBLIC_*` são incorporadas ao cliente e devem conter somente valores publicáveis.
+
+## Comandos úteis
+
+```bash
+npm run dev          # desenvolvimento
+npm run lint         # lint sem warnings
+npm run type-check   # análise TypeScript
+npm run test:ci      # suíte Jest sequencial
 npm run build        # build de produção
-npm start            # executa o build de produção
 npm audit            # auditoria de dependências
 ```
 
-Antes de considerar uma entrega concluída, o pipeline mínimo deve permanecer verde: lint, type-check, testes, auditoria e build.
+## Estado do desenvolvimento
 
-## Desenvolvimento por fases
+O FinControl evolui em small releases. O estado operacional atual fica em [`project-context.md`](project-context.md), o trabalho priorizado em [`backlog.md`](backlog.md) e o histórico concluído em [`docs/releases/`](docs/releases/).
 
-O projeto usa ciclos operacionais controlados:
+Funcionalidades planejadas são identificadas como futuras e não são apresentadas como entregues. A publicação do código também não transforma automaticamente o ambiente de demonstração em produto pronto para uso com dados reais.
 
-| Comando | Objetivo |
-| --- | --- |
-| `dia 0` | bootstrap e governança |
-| `dia 1` | contexto, discovery e arquitetura |
-| `dia 2` | estratégia de testes e TDD |
-| `dia 3` | implementação mínima |
-| `dia 4` | expansão controlada |
-| `dia 5` | refatoração e hardening |
-| `dia 6` | UX, acessibilidade e PWA |
-| `dia 7` | qualidade, segurança e entrega |
+## Autor
 
-Cada fase consulta o contexto central, valida os critérios de entrada e exige aprovação humana antes da execução. Features relevantes são divididas em small releases e começam pelos testes essenciais.
-
-## Documentação do projeto
-
-- [`engineering-rules.md`](engineering-rules.md): regras-mestre e protocolo operacional;
-- [`project-context.md`](project-context.md): fonte central de verdade;
-- [`architecture.md`](architecture.md): arquitetura e fronteiras;
-- [`roadmap.md`](roadmap.md): direção e marcos do produto;
-- [`backlog.md`](backlog.md): fila priorizada de trabalho;
-- [`test-strategy.md`](test-strategy.md): estratégia de testes;
-- [`quality-gates.md`](quality-gates.md): critérios de qualidade;
-- [`.agents/workflows/`](.agents/workflows/): workflows dos Dias 0 a 7.
-
-## Escopo e limites atuais
-
-O MVP prioriza entrada manual e importação de extratos antes de Open Finance. Pagamentos automáticos, movimentação autônoma de dinheiro, integrações bancárias não oficiais e recomendações financeiras sensíveis sem confirmação estão fora do escopo.
-
-O backlog oficial e os critérios de pronto de cada small release estão em [`backlog.md`](backlog.md).
+Desenvolvido por [Amauri Daliessi](https://curriculo-web-ten.vercel.app/) como um case aberto de engenharia de produto, arquitetura de software e evolução incremental. Veja também o [perfil no GitHub](https://github.com/JrDaliessi).

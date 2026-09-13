@@ -28,35 +28,14 @@ routes:
     - project-stack.md
     - project-toolchain.md
   active-artifact:
-    - docs/linkedin/LINKEDIN-001/brief.md
-    - docs/linkedin/LINKEDIN-001/feature-prd.md
-    - docs/linkedin/LINKEDIN-001/content-spec.md
-    - docs/linkedin/LINKEDIN-001/validation-strategy.md
-    - docs/linkedin/LINKEDIN-001/rubrics.md
-    - docs/linkedin/LINKEDIN-001/validation-fixtures.md
-    - docs/linkedin/LINKEDIN-001/context.yaml
-    - docs/linkedin/LINKEDIN-001/status.md
-    - docs/linkedin/positioning.md
-    - docs/linkedin/audience.md
-    - docs/linkedin/evidence-base.md
-    - docs/linkedin/content-pillars.md
-    - docs/linkedin/content-calendar.md
-    - docs/linkedin/posts/LI-POST-001/brief.md
-    - docs/linkedin/posts/LI-POST-001/sources.md
-    - docs/linkedin/posts/LI-POST-002/brief.md
-    - docs/linkedin/posts/LI-POST-002/sources.md
-    - docs/linkedin/posts/LI-POST-002/claim-matrix.md
-    - docs/linkedin/posts/LI-POST-002/validation.md
-    - docs/linkedin/posts/LI-POST-002/draft.md
-    - docs/linkedin/posts/LI-POST-002/final.md
-    - docs/linkedin/posts/LI-POST-002/day-3-validation.md
-    - docs/linkedin/posts/LI-POST-002/supabase-evidence-2026-09-10.md
-    - docs/linkedin/posts/LI-POST-002/day-4-validation.md
-    - docs/linkedin/posts/LI-POST-002/day-5-validation.md
-    - docs/linkedin/posts/LI-POST-002/day-6-experience-validation.md
-    - docs/linkedin/posts/LI-POST-002/day-7-release-readiness.md
-    - docs/linkedin/posts/LI-POST-003/brief.md
-    - docs/linkedin/posts/LI-POST-003/sources.md
+    - README.md
+    - CONTRIBUTING.md
+    - SECURITY.md
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - docs/showcase/README.md
+    - docs/showcase/backend-evolution-roadmap.md
+    - docs/showcase/status.md
+    - adr/0023-incremental-nestjs-api-extraction.md
   quality:
     - quality-gates.md
     - docs/linkedin/evidence-base.md
@@ -86,6 +65,16 @@ routes:
     - docs/linkedin/content-pillars.md
     - docs/linkedin/content-calendar.md
     - docs/linkedin/LINKEDIN-001/
+  showcase:
+    - README.md
+    - CONTRIBUTING.md
+    - SECURITY.md
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - docs/git-workflow.md
+    - docs/showcase/README.md
+    - docs/showcase/backend-evolution-roadmap.md
+    - docs/showcase/status.md
+    - adr/0023-incremental-nestjs-api-extraction.md
   releases:
     - docs/releases/
 
@@ -144,6 +133,30 @@ relations:
       - docs/features/UX-CHART-003C/
       - architecture.md
       - docs/governance/ai-jail.md
+  REPO-SHOWCASE-001:
+    derived_from:
+      - project-brief.md
+      - docs/linkedin/evidence-base.md
+      - architecture.md
+      - database-model.md
+    depends_on:
+      - verified-project-evidence
+      - public-repository
+      - valid-demo-link
+    affects:
+      - README.md
+      - CONTRIBUTING.md
+      - SECURITY.md
+      - .github/PULL_REQUEST_TEMPLATE.md
+      - docs/showcase/
+      - roadmap.md
+      - backlog.md
+    related_context:
+      - docs/linkedin/
+      - docs/releases/
+      - quality-gates.md
+    adrs:
+      - adr/0023-incremental-nestjs-api-extraction.md
 
 budgets:
   hot_context_target: 2000

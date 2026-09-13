@@ -1,4 +1,4 @@
-# <tipo>(<escopo>): <descrição> | Dia <N> <ID>
+# <tipo>(<escopo>): <resultado objetivo> | [Dia <N>] <ID>
 #
 # ─── TIPOS ────────────────────────────────────────────
 # feat      → Nova funcionalidade
@@ -27,6 +27,7 @@
 #
 # ─── EXEMPLO ─────────────────────────────────────────
 # feat(accounts): implementar listagem por usuário | Dia 3 SR-009
+# docs(showcase): orientar avaliação técnica | REPO-SHOWCASE-001
 #
 # ─── CORPO (opcional) ────────────────────────────────
 # Detalhes técnicos, decisões, contexto relevante.

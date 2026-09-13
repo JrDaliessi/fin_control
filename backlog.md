@@ -6,6 +6,19 @@ Nenhum item pronto aguardando início no momento.
 
 ## IN_PROGRESS
 
+### REPO-SHOWCASE-001 — Apresentação pública para avaliação técnica
+- Tipo: Document / Content Deliverable.
+- Descrição objetiva: transformar a entrada do repositório em uma visita guiada curta, factual e navegável para recrutadores e avaliadores.
+- Objetivo de negócio: reduzir o tempo necessário para compreender produto, arquitetura, qualidade, segurança e próxima evolução do FinControl.
+- Valor esperado: primeira impressão profissional sem esconder limites ou apresentar trabalho futuro como concluído.
+- Prioridade: Alta antes do anúncio público inicial.
+- Dependências: repositório público, link demonstrativo válido, banco de evidências e direção arquitetural aprovada.
+- Escopo: README orientado ao produto, guia técnico, roadmap NestJS, ADR da direção futura, política de segurança e links rastreáveis.
+- Fora do escopo: alterar o app, publicar no LinkedIn, divulgar credenciais demo, implementar NestJS, escolher hospedagem da API ou mudar o banco.
+- Risco: Médio por claims desatualizados, exposição de dados e confusão entre arquitetura atual e planejada.
+- Critério de pronto: links locais e públicos válidos, claims sustentados, nenhum segredo, nenhuma alteração funcional e revisão humana antes da publicação do post.
+- Status: IN_PROGRESS — conteúdo e quality gate documental concluídos em `READY_FOR_RELEASE`; aguarda revisão humana e versionamento.
+
 ### LINKEDIN-001 — Posicionamento e portfólio técnico do FinControl
 - Tipo: Content / LinkedIn Deliverable.
 - Descrição objetiva: transformar releases verificadas do FinControl em posicionamento profissional, banco de evidências, pilares, calendário e briefs de posts.

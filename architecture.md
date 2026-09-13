@@ -6,6 +6,12 @@ O projeto usa Feature-Based + Clean Architecture leve sobre Next.js App Router.
 ## Justificativa
 Essa arquitetura permite crescimento por domínio sem criar rigidez excessiva. Ela separa interface, regras de aplicação, domínio e infraestrutura, mantendo o projeto testável e evolutivo.
 
+## Evolução arquitetural planejada
+
+A direção futura aprovada é extrair capacidades server-side por recortes verticais para uma API NestJS, mantendo PostgreSQL no Supabase. A arquitetura abaixo continua sendo a realidade executável; NestJS ainda não faz parte do runtime nem das dependências.
+
+O discovery começará pelo modelo, contratos, regras e fronteiras existentes. Estratégia de autenticação, conexão, deploy e coexistência serão decididas com evidência antes do primeiro endpoint. Consulte o `ADR 0023` e `docs/showcase/backend-evolution-roadmap.md`.
+
 ## Camadas
 
 ### presentation

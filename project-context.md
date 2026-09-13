@@ -2,30 +2,29 @@
 
 project: FinControl
 project_state: OPERATING
-active_capabilities: [software, product, linkedin, content]
-active_artifact: LINKEDIN-001
+active_capabilities: [software, product, content, linkedin]
+active_artifact: REPO-SHOWCASE-001
 artifact_state: READY_FOR_RELEASE
-phase: Dia 7
-last_release: UX-CHART-003C1
+phase: Modo rápido
+last_release: LINKEDIN-001/LI-POST-002
 
 ## Current Goal
 
-Construir uma narrativa profissional verificável do FinControl para recrutadores, sem inventar métricas, resultados ou capacidades.
+Preparar uma entrada pública intuitiva e factual para recrutadores, distinguindo claramente a arquitetura atual da evolução planejada para NestJS, sem alterar o aplicativo.
 
 ## Current Delivery State
 
-- PR `#31` entregou a fundação e os Dias 1–3 no commit `c42effb`;
-- PR `#32` entregou o Dia 4 no commit `fce2159` com checks verdes;
-- `LI-POST-002` possui oito claims e versão final textual de 303 palavras aprovada internamente;
-- Supabase foi revalidado em 2026-09-11 sem alteração de migrations, RLS, grants, policies, FKs ou advisors;
-- PR `#33` versionou os Dias 5–7 no commit de conteúdo `201fe3f`, com `validate` e Vercel verdes nesse commit;
-- `LI-POST-001` permanece bloqueado por `UX-CHART-003C2/003C3`; `LI-POST-003` segue em discovery;
-- `final.md` foi criado por aprovação humana em 2026-09-12; nenhum perfil foi alterado e nenhuma publicação foi executada;
-- branch atual: `codex/linkedin-001-days-5-7`.
+- `origin/main` contém a promoção `Develop (#34)` no commit `b8bab6c`, incluindo `LI-POST-002` concluído editorialmente e ainda não publicado;
+- o repositório `JrDaliessi/fin_control` foi confirmado como público em 2026-09-13;
+- `REPO-SHOWCASE-001` materializa README orientado ao produto, visita técnica guiada, roadmap NestJS, ADR 0023 e política de segurança;
+- o link principal `https://fin-control-two.vercel.app` foi validado em navegador e redireciona para `/login`;
+- o portfólio `https://curriculo-web-ten.vercel.app/` foi validado e centraliza o acesso demo, mas seu link de código do FinControl ainda aponta para o repositório antigo `fincontrol-showcase`;
+- o quality gate passou em links, YAML, escopo, credenciais, diff, ESLint, type-check, 97 suítes/669 testes, audit sem vulnerabilidades e build de produção.
+- a branch `codex/repo-showcase-001` foi criada diretamente de `origin/main`; a PR `#35` e seus testes RED permanecem isolados.
 
 ## Blockers
 
-Nenhum bloqueio técnico impede o versionamento da versão final do `LI-POST-002`.
+Nenhum bloqueio técnico impede o versionamento da `REPO-SHOWCASE-001`.
 
 Bloqueios externos antes de produção pública completa:
 
@@ -38,7 +37,8 @@ Bloqueios externos antes de produção pública completa:
 - `CI-ACTIONS-001` — BAIXO: `actions/checkout@v4` e `actions/setup-node@v4` dependem de runtime Node.js 20 e o runner atual as força para Node.js 24;
 - `CI-VERCEL-002` — MÉDIO: contrato local/CI em Node.js 22 e projeto Vercel reportado em Node.js 24;
 - `LINKEDIN-001` — MÉDIO: claims podem ficar imprecisos ou desatualizados sem vínculo obrigatório ao banco de evidências;
-- publicação externa — ALTO: exige aprovação humana explícita e revisão de privacidade em cada post.
+- publicação externa — ALTO: exige aprovação humana explícita e revisão de privacidade em cada post;
+- `REPO-SHOWCASE-001` — MÉDIO: o link de código no portfólio precisa ser atualizado de `fincontrol-showcase` para o repositório público real `fin_control`.
 
 ## Current Context
 
@@ -49,18 +49,16 @@ Bloqueios externos antes de produção pública completa:
 - architecture: `architecture.md`
 - stack: `project-stack.md`
 - toolchain: `project-toolchain.md`
-- active artifact: `docs/linkedin/LINKEDIN-001/`
-- requirements: `docs/linkedin/LINKEDIN-001/feature-prd.md`
-- specification: `docs/linkedin/LINKEDIN-001/content-spec.md`
-- validation: `docs/linkedin/LINKEDIN-001/validation-strategy.md`, `docs/linkedin/LINKEDIN-001/rubrics.md`
-- priority post: `docs/linkedin/posts/LI-POST-002/`
-- positioning: `docs/linkedin/positioning.md`
-- audience: `docs/linkedin/audience.md`
-- evidence: `docs/linkedin/evidence-base.md`
-- live evidence: `docs/linkedin/posts/LI-POST-002/supabase-evidence-2026-09-10.md`
+- active artifact: `docs/showcase/`
+- active status: `docs/showcase/status.md`
+- active ADR: `adr/0023-incremental-nestjs-api-extraction.md`
+- database contracts: `database-model.md`, `module-contracts.md`, `supabase/migrations/`
+- editorial evidence: `docs/linkedin/evidence-base.md`
 - editorial plan: `docs/linkedin/content-pillars.md`, `docs/linkedin/content-calendar.md`
 - quality gates: `quality-gates.md`
 - context routes: `context-map.yaml`
+- showcase: `README.md`, `SECURITY.md`, `docs/showcase/`
+- next architecture direction: `adr/0023-incremental-nestjs-api-extraction.md`
 
 ## Current Decisions
 
@@ -69,10 +67,12 @@ Bloqueios externos antes de produção pública completa:
 - publicação, alteração do perfil e comunicação externa exigem aprovação humana específica;
 - o primeiro case de candles só entra em draft após concluir `UX-CHART-003C2/003C3`;
 - a trilha editorial não altera a prioridade ou os gates das features de software.
+- a evolução `Next.js → API NestJS → PostgreSQL no Supabase` está aprovada como direção e discovery, não como implementação concluída;
+- o repositório oficial é `JrDaliessi/fin_control`; `fincontrol-showcase` não será mais utilizado.
 
 ## Next Action
 
-Versionar `final.md` na PR `#33` e validar o novo head. Depois, decidir o merge separadamente; publicação continuará não autorizada até uma autorização posterior e específica.
+Versionar `REPO-SHOWCASE-001`, abrir uma PR documental para `main` e validar seu head. A continuidade da `UX-CHART-003C2` permanece isolada na PR `#35` e exige comando próprio.
 
 ## History
 
