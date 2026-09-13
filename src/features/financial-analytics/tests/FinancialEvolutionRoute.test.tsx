@@ -158,7 +158,7 @@ describe("dashboard route boundaries", () => {
     expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
     expect(
       screen.getByRole("heading", { name: "Visão geral", level: 1 })
-    ).toBeInTheDocument();
+    ).toHaveClass("sr-only");
     expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
     expect(screen.getByRole("status")).toHaveTextContent(
       "Carregando evolução financeira..."
